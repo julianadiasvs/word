@@ -1,0 +1,910 @@
+# Translation of Plugins - EWWW Image Optimizer - Stable (latest release) in Portuguese (Brazil)
+# This file is distributed under the same license as the Plugins - EWWW Image Optimizer - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2017-10-17 14:57:25+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: GlotPress/3.0.0-alpha\n"
+"Language: pt_BR\n"
+"Project-Id-Version: Plugins - EWWW Image Optimizer - Stable (latest release)\n"
+
+#: common.php:9299
+msgid "Verified"
+msgstr "Verificado"
+
+#: bulk.php:700
+msgid "more..."
+msgstr "mais..."
+
+#: bulk.php:690
+msgid "Temporary failure, attempts remaining:"
+msgstr "Falha temporária, tentativas restantes:"
+
+#: ewww-image-optimizer.php:167
+msgid "The regular version of the EWWW Image Optimizer plugin is not permitted on Kinsta sites. Please deactivate EWWW Image Optimizer and install EWWW Image Optimizer Cloud to optimize your images."
+msgstr "A versão normal do plugin EWWW Image Optimizer não é permitida em sites Kinsta. Por favor, desative o EWWW Image Optimizer e instale o EWWW Image Optimizer Cloud para otimizar suas imagens."
+
+#: bulk.php:686
+msgid "Operation timed out, you may need to increase the max_execution_time or memory_limit for PHP"
+msgstr "A operação expirou, você pode precisar aumentar o max_execution_time ou memory_limit do PHP."
+
+#: common.php:10128
+msgid "Enable Embedded Help"
+msgstr "Ativar ajuda integrada"
+
+#: common.php:10131
+msgid "Enable the support beacon, which gives you access to documentation and our support team right from your WordPress dashboard. To assist you more efficiently, we may collect the current url, IP address, browser/device information, and debugging information."
+msgstr "Habilite o beacon de suporte, que dá acesso à documentação e à equipe de suporte dentro do seu painel do Wordpress. Para ajudar você de forma mais eficiente, podemos coletar a URL atual, o endereço de IP, informações do navegador e dispositivo e informações de depuração."
+
+#: bulk.php:200
+msgid "Please disable Scheduled optimization before continuing."
+msgstr "Desative a otimização agendada antes de continuar."
+
+#: aux-optimize.php:1163
+msgid "Why are there so many images?"
+msgstr "Por que há tantas imagens?"
+
+#: common.php:9698
+msgid "All methods used by the EWWW Image Optimizer are intended to produce visually identical images."
+msgstr "Todos os métodos usados pelo EWWW Image Optimizer destinam-se a produzir imagens visualmente idênticas."
+
+#: common.php:9478
+msgid "Disabled automatically, async requests blocked"
+msgstr "Desbilitado automaticamente, solicitações assíncronas bloqueadas"
+
+#: common.php:9473
+msgid "Disabled, sleep function missing"
+msgstr "Desabilitado, função dormir não foi encontrada."
+
+#: common.php:9471
+msgid "Disabled by administrator"
+msgstr "Desabilitado pelo administrador"
+
+#: common.php:9484
+msgid "Disabled by Shield's Lock to Location feature"
+msgstr "Desabilitado pelo Shield's Lock para recurso de localização"
+
+#: classes/class-ewwwio-tracking.php:365 common.php:1865
+msgid "Allow"
+msgstr "Permitir"
+
+#: classes/class-ewwwio-tracking.php:364 common.php:1756
+msgid "Learn more."
+msgstr "Saiba mais."
+
+#: common.php:9985
+msgid "*Settings to disable creation and optimization of individual sizes must be configured for each individual site."
+msgstr "*Configurações para desativar a criação e otimização de tamanhos individuais devem ser configuradas em cada site individualmente."
+
+#: common.php:9626 common.php:10157
+msgid "Allow EWWW Image Optimizer to anonymously track how this plugin is used and help us make the plugin better. Opt-in to tracking and receive 500 API image credits free. No sensitive data is tracked."
+msgstr "Permita que o EWWW Image Optimizer rastreie anonimamente como este plugin é usado e nos ajude a melhorar o plugin. Opte pelo rastreamento e receba grátis 500 créditos de API de imagem. Dados confidenciais não são rastreados."
+
+#: common.php:9625 common.php:10153
+msgid "Allow Usage Tracking?"
+msgstr "Permitir rastreamento de uso?"
+
+#: common.php:9622
+msgid "Allow individual sites to configure their own settings and override all network options."
+msgstr "Permita que sites individuais configurem seus próprios plugins e sobreponham todas as opções da rede."
+
+#: common.php:9622
+msgid "Allow Single-site Override"
+msgstr "Permitir sobreposição de site individual"
+
+#: common.php:10123
+msgid "Documentation"
+msgstr "Documentação"
+
+#: classes/class-ewwwio-tracking.php:366 common.php:1866
+msgid "Do not allow"
+msgstr "Não permitir"
+
+#. Translators: %s: number of seconds, localized
+#. Translators: %s: The localized number of seconds
+#. Translators: %s: localized number of seconds
+#. translators: %s: localized number of seconds
+#. translators: %s: number of seconds
+#: classes/class-ewww-flag.php:621 classes/class-ewww-nextgen.php:934
+#: classes/class-ewww-nextcellent.php:685 classes/class-ewwwio-cli.php:298
+#: classes/class-ewwwio-cli.php:397 classes/class-ewwwio-cli.php:475
+#: common.php:5164 bulk.php:1943 bulk.php:1949
+msgid "Elapsed: %s second"
+msgid_plural "Elapsed: %s seconds"
+msgstr[0] "Tempo decorrido: %s segundo"
+msgstr[1] "Tempo decorrido: %s segundos"
+
+#. translators: %s: JPG, PNG, GIF, or PDF
+#: common.php:7843 common.php:7881
+msgid "%s compression disabled"
+msgstr "%s compressões desativadas"
+
+#: common.php:9874
+msgid "*Include Media Library Folders has been disabled because it will cause the scanner to ignore the disabled resizes."
+msgstr "*Incluir pastas da biblioteca de mídia foi desativado porque fará com que o examinador ignore as dimensões desativadas."
+
+#. translators: %d: number of images
+#: classes/class-ewwwio-cli.php:94
+msgid "%1$d image in the Media Library has been selected."
+msgid_plural "%1$d images in the Media Library have been selected."
+msgstr[0] "%1$d imagem na biblioteca de mídia foi selecionada."
+msgstr[1] "%1$d imagens na biblioteca de mídia foram selecionadas."
+
+#: common.php:3370
+msgid "Unable to restore image."
+msgstr "Não é possível restaurar a imagem"
+
+#: common.php:3357
+msgid "No image ID was provided."
+msgstr "O ID da imagem não foi fornecido."
+
+#: bulk.php:697
+msgid "remaining"
+msgstr "restantes"
+
+#: common.php:9703
+msgid "Store a copy of your original images on our secure server for 30 days. *Requires an active API key."
+msgstr "Armazene uma cópia de suas imagens originais por 30 dias em nosso servidor seguro. *Requer uma chave de API ativa."
+
+#: bulk.php:692
+msgid "Previous failure due to broken/missing metadata, skipped resizes for attachment:"
+msgstr "Falha anterior devido a metadados quebrados / ausentes, redimensionamentos ignorados para o anexo:"
+
+#: bulk.php:1475
+msgid "Increasing PHP's memory_limit setting will allow for faster scanning with fewer database queries. Please allow up to 10 minutes for changes to memory limit to be detected."
+msgstr "Aumentar a configuração do memory_limit do PHP permitirá uma verificação mais rápida com menos consultas ao banco de dados. Aguarde até 10 minutos para que as alterações no limite de memória sejam detectadas."
+
+#. translators: 1: $table_prefix 2: wp-config.php
+#: common.php:4714
+msgid "<strong>ERROR</strong>: %1$s in %2$s can only contain numbers, letters, and underscores."
+msgstr "<strong>ERRO</strong>: %1$s em %2$s pode conter apenas números, letras e sublinhado (_)."
+
+#: common.php:9934
+msgid "in pixels"
+msgstr "Em pixels"
+
+#: common.php:10498
+msgid "Detect Scaled Images"
+msgstr "Detectar imagens escaladas"
+
+#: common.php:9925
+msgid "*Imsanity settings override the EWWW resize dimensions."
+msgstr "*As configurações do Imsanity substituem as dimensões de redimensionamento do EWWW."
+
+#: common.php:8212
+msgid "Image Size"
+msgstr "Tamanho da imagem"
+
+#: common.php:8212 common.php:9567
+msgid "Savings"
+msgstr "Economia"
+
+#: common.php:9903
+msgid "A file that matches any pattern or path provided will not be optimized."
+msgstr "Um arquivo que corresponda a qualquer padrão ou caminho fornecido não será otimizado."
+
+#: unique.php:1282 unique.php:1309 unique.php:1336 unique.php:1363
+#: unique.php:1390 unique.php:1436
+msgid "unknown"
+msgstr "Desconhecido"
+
+#: aux-optimize.php:32 classes/class-ewww-nextgen.php:683 common.php:10258
+msgid "Debugging Information"
+msgstr "Informação de depuração"
+
+#: unique.php:2810 unique.php:2850
+msgid "extraction of files failed"
+msgstr "extração dos arquivos falhou"
+
+#. translators: %s: Image filename
+#: unique.php:1761
+msgid "Could not find %s"
+msgstr "Não foi possível encontrar %s"
+
+#. translators: %s: Image filename
+#: unique.php:1767
+msgid "%s is not writable"
+msgstr "%s não é gravável"
+
+#. translators: 1: type of images, like media, or nextgen 2: number of seconds
+#: classes/class-ewwwio-cli.php:74
+msgctxt "string will be something like \"media\" or \"nextgen\""
+msgid "Optimizing %1$s with a %2$d second pause between images."
+msgstr "Otimizando %1$s com um intervalo de %2$d segundo entre as imagens."
+
+#: classes/class-ewwwio-cli.php:70
+msgid "Forcing re-optimization of previously processed images."
+msgstr "Forçando re-otimização de imagens previamente processadas."
+
+#: classes/class-ewwwio-cli.php:88 classes/class-ewwwio-cli.php:149
+#: classes/class-ewwwio-cli.php:174 classes/class-ewwwio-cli.php:200
+msgid "Bulk status has been reset, starting from the beginning."
+msgstr "A pilha de status foi redefinida a partir do início."
+
+#: classes/class-ewwwio-cli.php:219
+msgid "Bulk status has been reset, the next bulk operation will start from the beginning."
+msgstr "A pilha de status foi redefinida. A próxima operação em massa começará do início."
+
+#: classes/class-ewwwio-cli.php:221
+msgid "Please specify a valid library option, see \"wp-cli help ewwwio optimize\" for more information."
+msgstr "Por favor, especifique uma opção de biblioteca válida. Veja \"wp-cli help ewwwio optimize\" para mais informações."
+
+#: classes/class-ewwwio-cli.php:194
+msgid "NextGEN/Nextcellent not installed."
+msgstr "NextGEN/Nextcellent não instalado."
+
+#: classes/class-ewwwio-cli.php:210
+msgid "Grand Flagallery not installed."
+msgstr "Grand Flagallery não instalado."
+
+#: common.php:9991
+msgid "Conversion is only available for images in the Media Library (except WebP). By default, all images have a link available in the Media Library for one-time conversion. Turning on individual conversion operations below will enable conversion filters any time an image is uploaded or modified."
+msgstr "Conversão é disponível apenas para imagens na Biblioteca de mídia (exceto WebP). Por padrão, todas as imagens têm um link disponível na Biblioteca de mídia para a conversão de uma só vez. Ligando as operações de conversão individual abaixo permitirá a conversão por filtros qualquer momento de uma imagem carregada ou modificada."
+
+#: common.php:9992
+msgid "NOTE:"
+msgstr "OBS:"
+
+#: common.php:9992
+msgid "The plugin will attempt to update image locations for any posts that contain the images. You may still need to manually update locations/urls for converted images."
+msgstr "O plugin tentará atualizar locais de imagem para quaisquer lugares que contêm as imagens. Você ainda pode precisar atualizar manualmente locais/urls para imagens convertidas."
+
+#: common.php:9996
+msgid "Hide Conversion Links"
+msgstr "Esconder links de conversão"
+
+#: common.php:10000
+msgid "Site or Network admins can use this to prevent other users from using the conversion links in the Media Library which bypass the settings below."
+msgstr "Site ou rede de administradores podem usar isso para evitar que outros usuários de usar os links de conversão na Biblioteca de mídia que ignoram as configurações abaixo."
+
+#: common.php:10006
+msgid "This will remove the original image from the server after a successful conversion."
+msgstr "Isto irá remover a imagem original do servidor após uma conversão bem-sucedida."
+
+#: common.php:10052
+msgid "JPG/PNG to WebP"
+msgstr "JPG/PNG para WebP"
+
+#: common.php:10056
+msgid "JPG to WebP conversion is lossy, but quality loss is minimal. PNG to WebP conversion is lossless."
+msgstr "JPG para conversão WebP com perdas, mas a perda de qualidade é mínima. PNG para conversão WebP é sem perdas."
+
+#: common.php:10057
+msgid "Originals are never deleted, and WebP images should only be served to supported browsers."
+msgstr "Originais nunca são apagadas, e as imagens WebP só devem ser servidas para os navegadores suportados."
+
+#: common.php:10058
+msgid "You can use the rewrite rules below to serve WebP images with Apache."
+msgstr "Você pode usar as regras de reescrita abaixo para servir imagens WebP com Apache."
+
+#: common.php:10014
+msgid "Removes metadata and increases cpu usage dramatically."
+msgstr "Remove metadados e uso da CPU aumenta dramaticamente."
+
+#: common.php:10015
+msgid "PNG is generally much better than JPG for logos and other images with a limited range of colors. Checking this option will slow down JPG processing significantly, and you may want to enable it only temporarily."
+msgstr "PNG é geralmente muito melhor do que JPG para logotipos e outras imagens com uma gama limitada de cores. Marcar esta opção irá desacelerar significativamente o processamento JPG, e você pode querer permitir que apenas temporariamente."
+
+#: common.php:10024
+msgid "This is not a lossless conversion."
+msgstr "Esta não é uma conversão sem perdas."
+
+#: common.php:10025
+msgid "JPG is generally much better than PNG for photographic use because it compresses the image and discards data. PNGs with transparency are not converted by default."
+msgstr "JPG é, geralmente, muito melhor do que a PNG para uso fotográfico porque comprime os dados de imagem e de devoluções. PNGs com transparência não são convertidos por padrão."
+
+#: common.php:10026
+msgid "HEX format (#123def)"
+msgstr "Formato HEX (#123def)"
+
+#: common.php:10027
+msgid "Background color is used only if the PNG has transparency. Leave this value blank to skip PNGs with transparency."
+msgstr "A cor do fundo é usado apenas se o PNG tem transparência. Deixe esse valor em branco para pular PNGs com transparência."
+
+#: common.php:9813
+msgid "Valid values are 1-100."
+msgstr "Os valores válidos são 1-100."
+
+#: common.php:10035
+msgid "No warnings here, just do it."
+msgstr "Nenhuma advertência aqui, apenas fazê-lo."
+
+#: common.php:10036
+msgid "PNG is generally better than GIF, but animated images cannot be converted."
+msgstr "PNG geralmente é melhor que GIF, mas imagens animadas não pode ser convertido."
+
+#: common.php:9635 common.php:10162
+msgid "Save Changes"
+msgstr "Salvar alterações"
+
+#: common.php:10208
+msgid "There are many ways to serve WebP images to visitors with supported browsers. You may choose any you wish, but it is recommended to serve them with an .htaccess file using mod_rewrite and mod_headers. The plugin can insert the rules for you if the file is writable, or you can edit .htaccess yourself."
+msgstr "Existem muitas maneiras de servir WebP imagens para visitantes com navegadores suportados. Você pode escolher qualquer que você quiser, mas recomenda-se a servi-los com um arquivo .htaccess usando mod_rewrite e mod_headers. O plug-in pode inserir as regras para você se o arquivo é gravável, ou você pode editar .htaccess."
+
+#: common.php:10203
+msgid "Rules verified successfully"
+msgstr "Regras verificada com êxito"
+
+#: common.php:10224
+msgid "The image to the right will display a WebP image with WEBP in white text, if your site is serving WebP images and your browser supports WebP."
+msgstr "A imagem à direita mostra uma imagem WebP com WebP no texto branco, se o seu site está servindo WebP imagens e seu navegador suporta WebP."
+
+#: common.php:10225
+msgid "Insert Rewrite Rules"
+msgstr "Inserir regras de regravação"
+
+#: unique.php:304
+msgid "EWWW Image Optimizer could not create the tool folder"
+msgstr "EWWW Image Optimizer não pode criar a pasta de ferramenta"
+
+#: unique.php:304
+msgid "Please adjust permissions or create the folder"
+msgstr "Por favor, ajustar as permissões ou criar a pasta"
+
+#. translators: %s: Folder location where executables should be installed
+#: unique.php:322 unique.php:343
+msgid "EWWW Image Optimizer could not install tools in %s"
+msgstr "EWWW Image Optimizer não pode instalar ferramentas em %s"
+
+#: unique.php:703
+msgid "Settings Page"
+msgstr "Página de configurações"
+
+#. translators: 1-6: jpegtran, optipng, pngout, pngquant, gifsicle, and cwebp
+#. (links) 7: Settings Page (link) 8: Installation Instructions (link)
+#: unique.php:695
+msgid "EWWW Image Optimizer uses %1$s, %2$s, %3$s, %4$s, %5$s, and %6$s. You are missing: %7$s. Please install via the %8$s or the %9$s."
+msgstr "EWWW Imagem Optimizer usa %1$s, %2$s, %3$s, %4$s, %5$s, e %6$s. Você está em falta: %7$s. Por favor, instale via os %8$s ou %9$s."
+
+#: unique.php:1748 unique.php:1836 unique.php:1841
+msgid "Optimization skipped"
+msgstr "Otimização pulada"
+
+#: unique.php:2800 unique.php:2840 unique.php:2863
+msgid "could not move pngout"
+msgstr "não pode mover pngout"
+
+#: unique.php:2805 unique.php:2845
+msgid "could not set permissions"
+msgstr "não foi possível definir permissões"
+
+#. translators: 1-4: number(s) of images
+#. translators: 1-4: number of images
+#: classes/class-ewww-flag.php:117 classes/class-ewww-nextgen.php:626
+#: classes/class-ewwwio-cli.php:106 classes/class-ewwwio-cli.php:116
+#: classes/class-ewwwio-cli.php:182 classes/class-ewwwio-cli.php:206
+msgid "%1$d images have been selected (%2$d unoptimized), with %3$d resizes (%4$d unoptimized)."
+msgstr "%1$d imagens foram selecionadas (%2$d não otimizadas), com %3$d redimensionamentos (%4$d não otimizadas)."
+
+#. Translators: %s: The compression results/savings
+#. translators: %s: compression results
+#: classes/class-ewww-flag.php:607 classes/class-ewwwio-cli.php:287
+msgid "Optimized size – %s"
+msgstr "Tamanho otimizados - %s"
+
+#. Translators: %s: The compression results/savings
+#. translators: %s: compression results
+#: classes/class-ewww-flag.php:616 classes/class-ewwwio-cli.php:293
+msgid "Thumbnail – %s"
+msgstr "Thumbnail – %s"
+
+#: classes/class-ewww-flag.php:656 classes/class-ewww-nextgen.php:967
+#: classes/class-ewww-nextcellent.php:719 classes/class-ewwwio-cli.php:238
+#: classes/class-ewwwio-cli.php:312 classes/class-ewwwio-cli.php:411
+#: classes/class-ewwwio-cli.php:488
+msgid "Finished Optimization!"
+msgstr "Otimização finalizada"
+
+#: mwebp.php:21
+msgid "The migration is split into two parts. First, the plugin needs to scan all folders for webp images. Once it has obtained the list of images to rename, it will proceed with the renaming"
+msgstr "A migração é dividida em duas partes. Primeiro, o plugin precisa escanear todas as pastas para imagens WebP. Uma vez que tenha obtido a lista de imagens para mudar o nome, ele vai continuar com a mudança de nome"
+
+#: mwebp.php:22
+msgid "Start Migration"
+msgstr "Começar migração"
+
+#: mwebp.php:122
+msgid "Scanning"
+msgstr "Escaneando"
+
+#. translators: %d: number of images
+#: mwebp.php:147
+msgid "%d Webp images left to rename."
+msgstr "%d imagens WebP estavam para mudar o nome."
+
+#: mwebp.php:236
+msgid "Skipped:"
+msgstr "Ignorados:"
+
+#: classes/class-ewww-nextcellent.php:490
+msgid "Galleries"
+msgstr "Galerias"
+
+#. Translators: %s: The compression results/savings
+#. translators: %s: compression results
+#: classes/class-ewww-nextgen.php:920 classes/class-ewww-nextcellent.php:678
+#: classes/class-ewwwio-cli.php:383 classes/class-ewwwio-cli.php:464
+msgid "Full size - %s"
+msgstr "Tamanho completo - %s"
+
+#. Translators: %s: The compression results/savings
+#. translators: %s: compression results
+#: classes/class-ewww-nextgen.php:924 classes/class-ewww-nextcellent.php:681
+#: classes/class-ewwwio-cli.php:387 classes/class-ewwwio-cli.php:471
+msgid "Thumbnail - %s"
+msgstr "Miniatura - %s"
+
+#: common.php:7776
+msgid "Azure Storage image"
+msgstr "Armazenamento de imagem Azure"
+
+#: aux-optimize.php:161 common.php:7784
+msgid "Amazon S3 image"
+msgstr "Armazenamento de imagem Amazon S3"
+
+#: classes/class-ewww-flag.php:288 classes/class-ewww-nextgen.php:802
+#: classes/class-ewww-nextcellent.php:571
+msgid "Operation timed out, you may need to increase the max_execution_time for PHP"
+msgstr "Operação expirada. Você pode precisar aumentar o max_execution_time para o PHP"
+
+#: classes/class-ewww-flag.php:592 classes/class-ewww-nextgen.php:905
+#: classes/class-ewww-nextcellent.php:669 common.php:4556 common.php:5145
+#: common.php:5149 bulk.php:1827
+msgid "License Exceeded"
+msgstr "Licença Excedida"
+
+#: classes/class-ewww-flag.php:289 classes/class-ewww-nextgen.php:803
+#: classes/class-ewww-nextcellent.php:572 bulk.php:688
+msgid "Optimization stopped, reload page to resume."
+msgstr "Otimização parada. Recarregue a página para retomar."
+
+#: classes/class-ewww-flag.php:290 classes/class-ewww-nextgen.php:804
+#: classes/class-ewww-nextcellent.php:573 bulk.php:689
+msgid "Operation Interrupted"
+msgstr "Operação Interrompida"
+
+#: classes/class-ewww-flag.php:291 classes/class-ewww-nextgen.php:805
+#: classes/class-ewww-nextcellent.php:574
+msgid "Temporary failure, seconds left to retry:"
+msgstr "Falha temporária. Segundos restantes para para repetir:"
+
+#: classes/class-ewww-flag.php:292 classes/class-ewww-nextgen.php:806
+#: classes/class-ewww-nextcellent.php:575 bulk.php:175 bulk.php:693
+msgid "Could not remove image from table."
+msgstr "Não foi possível remover a imagem da tabela"
+
+#: classes/class-ewww-flag.php:129 classes/class-ewww-flag.php:139
+#: classes/class-ewww-nextgen.php:638 classes/class-ewww-nextgen.php:648
+#: classes/class-ewww-nextcellent.php:437
+#: classes/class-ewww-nextcellent.php:447 bulk.php:282 bulk.php:292
+msgid "Click to toggle"
+msgstr "Clique para alternar"
+
+#: common.php:9951 common.php:9984
+msgid "Disable Resizes"
+msgstr "Desativar redimensionamentos"
+
+#: common.php:9958
+msgid "Disable Optimization"
+msgstr "Desativar Otimização"
+
+#: common.php:9958
+msgid "Disable Creation"
+msgstr "Desativar Criação"
+
+#. translators: 1: Number of image credits for the compression API
+#: common.php:4011 common.php:4020
+msgid "%1$d image credit remaining."
+msgid_plural "%1$d image credits remaining."
+msgstr[0] "%1$d crédito de imagem restante."
+msgstr[1] "%1$d créditos de imagem restante."
+
+#. translators: %d: number of images
+#: bulk.php:685
+msgid "%d images"
+msgstr "%d imagens"
+
+#: classes/class-ewww-flag.php:113 classes/class-ewww-nextgen.php:622
+#: bulk.php:219
+msgid "Resume previous optimization"
+msgstr "Retomar a otimização anterior"
+
+#: bulk.php:372
+msgid "There are no images to optimize."
+msgstr "Não há imagens para otimizar."
+
+#: classes/class-ewwwio-cli.php:96 classes/class-ewwwio-cli.php:156
+msgid "Scanning, this could take a while"
+msgstr "Escaneando imagens. Isso pode levar algum tempo"
+
+#: classes/class-ewww-flag.php:162 classes/class-ewww-nextgen.php:671
+#: classes/class-ewww-nextcellent.php:466
+msgid "If you would like to start over again, press the Reset Status button to reset the bulk operation status."
+msgstr "Se você preferir começar tudo de novo, pressione o botão Redefinir Status para redefinir o status de operação em massa."
+
+#: classes/class-ewww-flag.php:166 classes/class-ewww-nextgen.php:675
+#: classes/class-ewww-nextcellent.php:470
+msgid "Reset Status"
+msgstr "Redefinir Status"
+
+#: bulk.php:45
+msgid "Show Optimized Images"
+msgstr "Mostrar imagens otimizadas"
+
+#: common.php:4862 common.php:4924
+msgid "Previously Optimized"
+msgstr "Otimizado anteriormente"
+
+#: classes/class-ewww-image.php:864 common.php:5025
+msgid "No savings"
+msgstr "Sem reduções"
+
+#: classes/class-ewww-nextgen.php:287 common.php:3238 common.php:3241
+#: common.php:4863 unique.php:2632
+msgid "License exceeded"
+msgstr "Licença excedida"
+
+#: aux-optimize.php:125
+msgid "Filename"
+msgstr "Nome do arquivo"
+
+#: aux-optimize.php:126
+msgid "Image Type"
+msgstr "Tipo de imagem"
+
+#: aux-optimize.php:128 classes/class-ewww-flag.php:694
+#: classes/class-ewww-nextgen.php:378 classes/class-ewww-nextgen.php:404
+#: classes/class-ewww-nextgen.php:407 classes/class-ewww-nextcellent.php:273
+#: common.php:2563 common.php:2581 common.php:7725
+msgid "Image Optimizer"
+msgstr "Otimizador de imagem"
+
+#. translators: %s: human-readable filesize
+#. translators: %s: size of the image
+#: aux-optimize.php:165 aux-optimize.php:203 aux-optimize.php:256
+#: common.php:8059
+msgid "Image Size: %s"
+msgstr "Tamanho da imagem: %s"
+
+#: classes/class-ewww-flag.php:524 classes/class-ewww-flag.php:526
+#: classes/class-ewww-flag.php:630 classes/class-ewww-flag.php:632
+#: classes/class-ewww-flag.php:681 classes/class-ewww-nextgen.php:364
+#: classes/class-ewww-nextgen.php:838 classes/class-ewww-nextgen.php:840
+#: classes/class-ewww-nextgen.php:943 classes/class-ewww-nextgen.php:945
+#: classes/class-ewww-nextcellent.php:609
+#: classes/class-ewww-nextcellent.php:611
+#: classes/class-ewww-nextcellent.php:694
+#: classes/class-ewww-nextcellent.php:696
+#: classes/class-ewww-nextcellent.php:743 common.php:2651 common.php:5175
+#: bulk.php:1547 bulk.php:1549 bulk.php:1963 bulk.php:1965
+msgid "Optimizing"
+msgstr "Otimizando"
+
+#: aux-optimize.php:1217 mwebp.php:240 bulk.php:179 bulk.php:2036
+msgid "Finished"
+msgstr "Finalizado"
+
+#: classes/class-ewww-flag.php:59 classes/class-ewww-flag.php:66
+#: classes/class-ewww-flag.php:73 classes/class-ewww-flag.php:102
+#: classes/class-ewww-nextgen.php:59 classes/class-ewww-nextgen.php:611
+#: classes/class-ewww-nextgen.php:981 classes/class-ewww-nextcellent.php:50
+#: classes/class-ewww-nextcellent.php:411 common.php:2459 common.php:8521
+#: common.php:9215 common.php:9217 bulk.php:197
+msgid "Bulk Optimize"
+msgstr "Otimização em massa"
+
+#: classes/class-ewww-flag.php:111 classes/class-ewww-nextgen.php:620
+#: classes/class-ewww-nextcellent.php:420 bulk.php:213 bulk.php:216
+msgid "Start optimizing"
+msgstr "Começar otimização"
+
+#: classes/class-ewww-nextcellent.php:422
+msgid "Resume previous bulk operation"
+msgstr "Retomar a operação em massa anterior"
+
+#: bulk.php:270
+msgid "Importing"
+msgstr "Importando"
+
+#: classes/class-ewww-flag.php:123 classes/class-ewww-nextgen.php:632
+#: classes/class-ewww-nextcellent.php:431 bulk.php:276
+msgid "Stop Optimizing"
+msgstr "Parar otimização"
+
+#: classes/class-ewww-flag.php:148 classes/class-ewww-nextgen.php:657
+#: bulk.php:301
+msgid "Force re-optimize"
+msgstr "Forçar re-otimização"
+
+#: classes/class-ewww-flag.php:149 classes/class-ewww-nextgen.php:658
+msgid "Choose how long to pause between images (in seconds, 0 = disabled)"
+msgstr "Escolha o tempo para fazer uma pausa entre as imagens (em segundos, 0 = desativado)"
+
+#: classes/class-ewww-flag.php:98 classes/class-ewww-nextgen.php:606
+#: classes/class-ewww-nextcellent.php:406 classes/class-ewwwio-cli.php:265
+#: classes/class-ewwwio-cli.php:357 bulk.php:225
+msgid "You do not appear to have uploaded any images yet."
+msgstr "Parece que você não carregou nenhuma imagem ainda."
+
+#: classes/class-ewww-flag.php:154 classes/class-ewww-nextgen.php:663
+#: classes/class-ewww-nextcellent.php:457
+msgid "Previously optimized images will be skipped by default."
+msgstr "Imagens otimizadas anteriormente serão ignorados por padrão."
+
+#: classes/class-ewww-flag.php:597 classes/class-ewww-nextgen.php:910
+#: classes/class-ewww-nextcellent.php:675 classes/class-ewwwio-cli.php:279
+#: classes/class-ewwwio-cli.php:375 classes/class-ewwwio-cli.php:462
+msgid "Optimized image:"
+msgstr "Imagem otimizada"
+
+#. Translators: %s: The compression results/savings
+#. translators: %s: compression results
+#: classes/class-ewww-flag.php:599 classes/class-ewwwio-cli.php:281
+msgid "Full size – %s"
+msgstr "Tamanho completo - %s"
+
+#: common.php:1737
+msgid "Settings saved"
+msgstr "Configurações salvas"
+
+#: common.php:2460 mwebp.php:19
+msgid "Migrate WebP Images"
+msgstr "Migrar imagens WebP"
+
+#: common.php:2496
+msgid "Image Store Optimize"
+msgstr "Image Store Optimize"
+
+#: common.php:2496
+msgid "Optimize"
+msgstr "Otimizar"
+
+#: common.php:2557
+msgid "Image Store Optimization"
+msgstr "Image Store Optimization"
+
+#: common.php:2562
+msgid "Choose a gallery or"
+msgstr "Escolha uma galeria ou"
+
+#: common.php:2562
+msgid "optimize all galleries"
+msgstr "otimize todas as galerias"
+
+#: common.php:2563
+msgid "Gallery ID"
+msgstr "ID da galeria"
+
+#: common.php:2563
+msgid "Gallery Name"
+msgstr "Nome da galeria"
+
+#: common.php:2563
+msgid "Images"
+msgstr "Imagens"
+
+#: common.php:2570 common.php:2580
+msgid "Optimize Gallery"
+msgstr "Otimizar galeria"
+
+#: common.php:2581
+msgid "Title"
+msgstr "Título"
+
+#: common.php:2581
+msgid "Gallery"
+msgstr "Galeria"
+
+#: common.php:2674 common.php:2676
+msgid "Settings"
+msgstr "Configurações"
+
+#: classes/class-ewww-flag.php:404 classes/class-ewww-flag.php:407
+#: classes/class-ewww-flag.php:473 classes/class-ewww-flag.php:476
+#: classes/class-ewww-nextgen.php:263 classes/class-ewww-nextgen.php:266
+#: classes/class-ewww-nextgen.php:316 classes/class-ewww-nextgen.php:319
+#: classes/class-ewww-nextcellent.php:165
+#: classes/class-ewww-nextcellent.php:168
+#: classes/class-ewww-nextcellent.php:208
+#: classes/class-ewww-nextcellent.php:211 common.php:3195 common.php:3198
+msgid "No attachment ID was provided."
+msgstr "Nenhum ID do anexo foi fornecido."
+
+#: classes/class-ewww-image.php:922 bulk.php:177 bulk.php:698
+msgid "Original Restored"
+msgstr "Original restaurada"
+
+#. translators: 1: Number of image credits used 2: Number of image credits
+#. available 3: days until subscription renewal
+#: common.php:4030
+msgid "used %1$d of %2$d, usage will reset in %3$d day."
+msgid_plural "used %1$d of %2$d, usage will reset in %3$d days."
+msgstr[0] "usado %1$d de %2$d, o uso será redefinido em %3$d dia."
+msgstr[1] "usado %1$d de %2$d, o uso será redefinido em %3$d dias."
+
+#: common.php:7768
+msgid "Cloudinary image"
+msgstr "imagem Cloudinary"
+
+#: common.php:7803
+msgid "Could not retrieve file path."
+msgstr "Não foi possível recuperar o caminho do arquivo."
+
+#. translators: %s: name of a tool like jpegtran
+#: classes/class-ewww-flag.php:745 classes/class-ewww-flag.php:751
+#: classes/class-ewww-flag.php:757 classes/class-ewww-nextgen.php:455
+#: classes/class-ewww-nextgen.php:462 classes/class-ewww-nextgen.php:469
+#: classes/class-ewww-nextcellent.php:310
+#: classes/class-ewww-nextcellent.php:317
+#: classes/class-ewww-nextcellent.php:324 common.php:7837 common.php:7856
+#: common.php:7869 unique.php:1585 unique.php:1940 unique.php:2218
+#: unique.php:2222 unique.php:2508
+msgid "%s is missing"
+msgstr "%s está faltando"
+
+#: common.php:7847
+msgid "JPG to PNG"
+msgstr "JPG para PNG"
+
+#: common.php:7848
+msgid "WARNING: Removes metadata. Requires GD or ImageMagick. PNG is generally much better than JPG for logos and other images with a limited range of colors."
+msgstr "AVISO: Remove metadados. Requer GD ou ImageMagick. PNG é geralmente muito melhor do que JPG para logotipos e outras imagens com uma gama limitada de cores."
+
+#: common.php:7860
+msgid "PNG to JPG"
+msgstr "PNG para JPG"
+
+#: common.php:7861
+msgid "WARNING: This is not a lossless conversion and requires GD or ImageMagick. JPG is much better than PNG for photographic use because it compresses the image and discards data. Transparent images will only be converted if a background color has been set."
+msgstr "ATENÇÃO: Esta não é uma conversão sem perdas e requer GD ou ImageMagick. JPG é muito melhor do que PNG para uso fotográfico porque comprime os dados de imagem e de devoluções. Imagens transparentes só serão convertidas se uma cor de fundo foi definido."
+
+#: common.php:7873
+msgid "GIF to PNG"
+msgstr "GIF para PNG"
+
+#: common.php:7874
+msgid "PNG is generally better than GIF, but does not support animation. Animated images will not be converted."
+msgstr "PNG geralmente é melhor que GIF, mas não suporta animação. Imagens animadas não serão convertidos."
+
+#: classes/class-ewww-flag.php:761 classes/class-ewww-nextgen.php:473
+#: classes/class-ewww-nextcellent.php:328 common.php:7890 unique.php:1795
+#: unique.php:2625
+msgid "Unsupported file type"
+msgstr "Tipo de arquivo não suportado"
+
+#: classes/class-ewww-flag.php:779 classes/class-ewww-nextgen.php:555
+#: classes/class-ewww-nextcellent.php:356 common.php:7935 common.php:8012
+msgid "Re-optimize"
+msgstr "Re-otimizar"
+
+#: aux-optimize.php:193 aux-optimize.php:246 classes/class-ewww-flag.php:786
+#: classes/class-ewww-nextgen.php:562 classes/class-ewww-nextcellent.php:363
+#: common.php:7944 common.php:8030 common.php:8036
+msgid "Restore original"
+msgstr "Restaurar original"
+
+#: classes/class-ewww-flag.php:799 classes/class-ewww-nextgen.php:570
+#: classes/class-ewww-nextcellent.php:376 common.php:7962 common.php:8073
+msgid "Optimize now!"
+msgstr "Otimizar agora"
+
+#: common.php:8882
+msgid "Insertion successful"
+msgstr "Inserção bem sucedida"
+
+#: common.php:8884
+msgid "Insertion failed"
+msgstr "Inserção falhou"
+
+#. translators: 1: An error message 2: The folder where pngout should be
+#. installed
+#: common.php:1684
+msgid "Pngout was not installed: %1$s. Make sure this folder is writable: %2$s"
+msgstr "Pngout não foi instalada: %1$s. Certifique-se esta pasta é gravável: %2$s"
+
+#. translators: s: Installation Instructions (link)
+#. translators: %s: Installation Instructions
+#: unique.php:325 unique.php:345 unique.php:704
+msgid "Installation Instructions"
+msgstr "Instruções de instalação"
+
+#: common.php:10124
+msgid "Plugin Support"
+msgstr "Suporte do plugin"
+
+#: common.php:9215
+msgid "Media Library"
+msgstr "Biblioteca de mídia"
+
+#. translators: %s: Bulk Optimize (link)
+#: common.php:9223
+msgid "New images uploaded to the Media Library will be optimized automatically. If you have existing images you would like to optimize, you can use the %s tool."
+msgstr "Novas imagens enviadas à Biblioteca de mídia serão otimizadas automaticamente. Se você tem as imagens existentes que você gostaria de otimizar, você pode usar a ferramenta %s."
+
+#: common.php:9249
+msgid "Cloud optimization API Key"
+msgstr "Chave de API de otimização na nuvem"
+
+#: common.php:9264
+msgid "Verified,"
+msgstr "Verificado,"
+
+#: common.php:9268 common.php:9319
+msgid "Not Verified"
+msgstr "Não verificado"
+
+#: common.php:9407 unique.php:687
+msgid "automatically"
+msgstr "automaticamente"
+
+#: common.php:9407 unique.php:688
+msgid "manually"
+msgstr "manualmente"
+
+#: common.php:9486
+msgid "Enabled"
+msgstr "Habilitado"
+
+#: common.php:9650
+msgid "Purchase an API key."
+msgstr "Adquirir uma chave de API."
+
+#: common.php:9650
+msgid "API Key will be validated when you save your settings."
+msgstr "A chave de API será validado quando você salvar suas configurações."
+
+#: common.php:10134
+msgid "Debugging"
+msgstr "Depuração"
+
+#: common.php:10138
+msgid "Use this to provide information for support purposes, or if you feel comfortable digging around in the code to fix a problem you are experiencing."
+msgstr "Use-o para fornecer informações para fins de suporte, ou se você se sentir confortável mexa no código para corrigir um problema que você está enfrentando."
+
+#: common.php:10013 common.php:10023
+msgid "WARNING:"
+msgstr "AVISO:"
+
+#: common.php:9710
+msgid "When enabled, uploads to the Media Library will be transferred to Cloudinary after optimization. Cloudinary generates resizes, so only the full-size image is uploaded."
+msgstr "Quando ativado, envios para a Biblioteca de mídia serão transferidos para Cloudinary após a otimização. Cloudinary gera redimensionamento, portanto, apenas a imagem no tamanho completo é carregado."
+
+#: common.php:9867
+msgid "This will enable scheduled optimization of unoptimized images for your theme, buddypress, and any additional folders you have configured below. Runs hourly: wp_cron only runs when your site is visited, so it may be even longer between optimizations."
+msgstr "Isto irá permitir a otimização programada de imagens não otimizadas para o seu tema, BuddyPress, e todas as pastas adicionais que você tenha configurado abaixo. É executado a cada hora: wp_cron só funciona quando o site é visitado, por isso pode ser ainda maior entre otimizações."
+
+#. translators: %s: the folder where WordPress is installed
+#: common.php:9894
+msgid "One path per line, must be within %s. Use full paths, not relative paths."
+msgstr "Um caminho por linha, deve estar dentro de %s. Use caminhos completos, e não caminhos relativos."
+
+#: aux-optimize.php:1210 classes/class-ewww-flag.php:412
+#: classes/class-ewww-flag.php:415 classes/class-ewww-flag.php:482
+#: classes/class-ewww-flag.php:485 classes/class-ewww-flag.php:504
+#: classes/class-ewww-nextgen.php:272 classes/class-ewww-nextgen.php:275
+#: classes/class-ewww-nextgen.php:325 classes/class-ewww-nextgen.php:328
+#: classes/class-ewww-nextgen.php:819 classes/class-ewww-nextcellent.php:174
+#: classes/class-ewww-nextcellent.php:177
+#: classes/class-ewww-nextcellent.php:217
+#: classes/class-ewww-nextcellent.php:220
+#: classes/class-ewww-nextcellent.php:588 common.php:684 common.php:3205
+#: common.php:3208 common.php:3222 common.php:3225 common.php:8463
+#: common.php:8477 common.php:8491 common.php:8506 common.php:8874
+#: common.php:8877 common.php:8898 common.php:8901 common.php:10395
+#: common.php:10579 common.php:10596 mwebp.php:112 bulk.php:890 unique.php:531
+msgid "Access denied."
+msgstr "Acesso negado."
+
+#: aux-optimize.php:82 aux-optimize.php:307 aux-optimize.php:335
+#: aux-optimize.php:360 aux-optimize.php:406 classes/class-ewww-flag.php:563
+#: classes/class-ewww-flag.php:649 classes/class-ewww-nextgen.php:879
+#: classes/class-ewww-nextgen.php:961 classes/class-ewww-nextgen.php:1011
+#: classes/class-ewww-nextcellent.php:647
+#: classes/class-ewww-nextcellent.php:712 common.php:3361 common.php:5092
+#: mwebp.php:133 mwebp.php:228 bulk.php:896 bulk.php:1513 bulk.php:1532
+#: bulk.php:1736 bulk.php:1996 bulk.php:2024
+msgid "Access token has expired, please reload the page."
+msgstr "O token de acesso expirou, recarregue a página."

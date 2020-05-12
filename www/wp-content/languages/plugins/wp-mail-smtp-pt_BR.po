@@ -1,0 +1,69 @@
+# Translation of Plugins - WP Mail SMTP by WPForms - Stable (latest release) in Portuguese (Brazil)
+# This file is distributed under the same license as the Plugins - WP Mail SMTP by WPForms - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2018-11-29 18:53:13+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: GlotPress/3.0.0-alpha\n"
+"Language: pt_BR\n"
+"Project-Id-Version: Plugins - WP Mail SMTP by WPForms - Stable (latest release)\n"
+
+#. Author of the plugin
+msgid "WPForms"
+msgstr "WPForms"
+
+#. Author URI of the plugin
+msgid "https://wpforms.com/"
+msgstr "https://wpforms.com/"
+
+#: src/Admin/Area.php:208 src/Admin/Area.php:209 src/Admin/Area.php:802
+msgid "Settings"
+msgstr "Configurações"
+
+#: src/Admin/Pages/SettingsTab.php:138
+msgid "From Name"
+msgstr "Nome do remetente"
+
+#: src/Admin/Pages/TestTab.php:59
+msgid "Send a Test Email"
+msgstr "Enviar um e-mail de teste"
+
+#: src/Providers/OptionsAbstract.php:276
+msgid "Authentication"
+msgstr "Autenticação"
+
+#: src/Providers/OptionsAbstract.php:186
+msgid "SMTP Host"
+msgstr "Host do SMTP"
+
+#: src/Providers/OptionsAbstract.php:240
+msgid "SMTP Port"
+msgstr "Porta SMTP"
+
+#: src/Providers/OptionsAbstract.php:200
+msgid "Encryption"
+msgstr "Criptografia"
+
+#: src/Admin/Pages/SettingsTab.php:179
+msgid "Return Path"
+msgstr "Endereço de retorno (return-path)"
+
+#: src/Admin/Pages/SettingsTab.php:188
+msgid "Set the return-path to match the From Email"
+msgstr "Configura o endereço de retorno para corresponder ao E-mail do remetente"
+
+#: src/Admin/Pages/SettingsTab.php:92
+msgid "From Email"
+msgstr "E-mail do remetente"
+
+#: src/Admin/Pages/SettingsTab.php:201
+msgid "Mailer"
+msgstr "Mailer"
+
+#. Plugin Name of the plugin
+#: src/Admin/Area.php:197 src/Admin/Area.php:198 src/SiteHealth.php:40
+msgid "WP Mail SMTP"
+msgstr "WP Mail SMTP"
