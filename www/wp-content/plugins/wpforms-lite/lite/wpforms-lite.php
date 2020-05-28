@@ -1116,7 +1116,7 @@ class WPForms_Lite {
 									<h5 class="addon-name">
 										<?php
 										printf(
-											/* translators: %s - addon name*/
+											/* translators: %s - addon name. */
 											esc_html__( '%s Addon', 'wpforms-lite' ),
 											$addon['name']
 										);

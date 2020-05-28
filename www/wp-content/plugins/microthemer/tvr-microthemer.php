@@ -5,7 +5,7 @@ Plugin URI: https://themeover.com/microthemer
 Text Domain: microthemer
 Domain Path: /languages
 Description: Microthemer is a feature-rich visual design plugin for customizing the appearance of ANY WordPress Theme or Plugin Content (e.g. posts, pages, contact forms, headers, footers, sidebars) down to the smallest detail. For CSS coders, Microthemer is a proficiency tool that allows them to rapidly restyle a WordPress theme or plugin. For non-coders, Microthemer's intuitive point and click editing opens the door to advanced theme and plugin customization.
-Version: 6.1.5.9
+Version: 6.1.6.6
 Author: Themeover
 Author URI: https://themeover.com
 */
@@ -198,10 +198,10 @@ if (!class_exists('tvr_common')) {
 		}
 
 		// strip preview= and page builder parameters
-		public static function strip_page_builder_and_other_params($url){
+		public static function strip_page_builder_and_other_params($url, $strip_preview = true){
 
 		    // strip preview params (regular and elementor)
-			$url = tvr_common::strip_preview_params($url);
+			//$url = tvr_common::strip_preview_params($url); // test what happens
 
 			$other_params = tvr_common::params_to_strip();
 
@@ -312,7 +312,7 @@ if ( is_admin() ) {
 		// define
 		class tvr_microthemer_admin {
 
-			var $version = '6.1.5.9';
+			var $version = '6.1.6.6';
 			var $db_chg_in_ver = '6.0.6.5';
 			var $locale = '';
 			var $time = 0;
@@ -7521,26 +7521,30 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			function search_by_title_or_slug( $search, $wp_query ) {
 
 				if ( ! empty( $search ) && ! empty( $wp_query->query_vars['search_terms'] ) ) {
-					global $wpdb;
+
+				    global $wpdb;
 
 					$q = $wp_query->query_vars;
 					$n = ! empty( $q['exact'] ) ? '' : '%';
-
 					$search = array();
 
-					foreach ( ( array ) $q['search_terms'] as $term )
-						$sql_term = $n . $wpdb->esc_like( $term ) . $n;
-					$search[] = $wpdb->prepare(
-						"$wpdb->posts.post_title LIKE %s or 
-						$wpdb->posts.post_name LIKE %s or 
-						$wpdb->posts.post_type LIKE %s",
-						$sql_term,
-						$sql_term,
-						$sql_term
-					);
+					foreach ( ( array ) $q['search_terms'] as $term ) {
 
-					if ( ! is_user_logged_in() )
+					    $sql_term = $n . $wpdb->esc_like( $term ) . $n;
+
+						$search[] = $wpdb->prepare(
+                        "$wpdb->posts.post_title LIKE %s or 
+                            $wpdb->posts.post_name LIKE %s or 
+                            $wpdb->posts.post_type LIKE %s",
+                            $sql_term,
+                            $sql_term,
+                            $sql_term
+						);
+                    }
+
+					if ( ! is_user_logged_in() ){
 						$search[] = "$wpdb->posts.post_password = ''";
+                    }
 
 					$search = ' AND ' . implode( ' AND ', $search );
 				}
@@ -7580,21 +7584,37 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 				    // I noticed a strange bug whereby "kit" should have got an elementor template post in 'My Templates'
                     // category, but also got the search result in all other post categories inc regular page/post
-                    if ($item->post_type !== $post_type){
+                    if ($item->post_type !== $post_type or $item->post_status === 'auto-draft'){
                         continue;
                     }
 
 					$label = $item->post_title;
+
+                    if ($item->post_status === 'draft'){
+	                    $label.= ' — Draft';
+                    }
+
+
 					$path = $customPostsPathPrefix.'/'.$item->post_name.'/';
 					//$url = rtrim($root_home_url, '/') . $path;
 
-					// if non-standard permalink structure, we have to use the DB method of gettin the URL
-					if ($permalink_structure !== '/%postname%/' or $item->post_type === 'ct_template'){
+					// if non-standard permalink structure, we have to use the DB method of getting the URL
+					if ($permalink_structure !== '/%postname%/' or
+                        $item->post_type === 'ct_template' or
+                        $item->post_status === 'draft'){
 
-						// it seems to be a quirk of Oxygen that the template admin screen must be loaded first
-					    if ($item->post_type === 'ct_template'){
+					    // format URL as draft preview
+					    if ($item->post_status === 'draft'){
+						    $url = $item->guid.'&preview=true'; // maybe build this using id and pos_type
+                        }
+
+                        // it seems to be a quirk of Oxygen that the template admin screen must be loaded first
+					    elseif ($item->post_type === 'ct_template'){
 							$url = $this->wp_blog_admin_url . 'post.php?post=' . $item->ID.'&action=edit';
-						} else {
+						}
+
+						// non-standard permalink structure
+						else {
 							$url = get_permalink($item);
                         }
 
@@ -7603,8 +7623,8 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						$path = $this->root_rel($url, false, true);
 					}
 
-					// exception for Oxygen - template pages produce PHP error is loaded on frontend
-					// without ct_builder paramter
+					// exception for Oxygen - template pages produce PHP error if loaded on frontend
+					// without ct_builder parameter
 					/*if ($item->post_type === 'ct_template'){
 						$path = tvr_common::append_url_param($path, 'ct_builder', 'true');
 					}*/
@@ -7614,7 +7634,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						'value' => $path,
 						'category' => $category,
 						'item_id' => !empty($item->ID) ? $item->ID : false,
-						'all' => $item, // debug
+						//'all' => $item, // debug
                         //'config' => array_merge($common_config, array('post_type'=> $post_type))
 					);
 				}
@@ -7638,10 +7658,11 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				/*$root_home_url = $blog_details
                     ? rtrim($blog_details->path, '/')
                     : $this->home_url;*/
+
                 $permalink_structure = get_option('permalink_structure');
 				$users_can_register = get_option('users_can_register');
 			    $common_config = array(
-                    'post_status'=>'publish',
+                    'post_status' => array('publish', 'draft'), // we want user to be able to access drafts
                     'numberposts' => 8,
                     'suppress_filters' => false,
                     'orderby' => 'modified',
@@ -11697,7 +11718,7 @@ if (!is_admin()) {
 			var $preferencesName = 'preferences_themer_loader';
 			// @var array $preferences Stores the ui options for this plugin
 			var $preferences = array();
-			var $version = '6.1.5.9';
+			var $version = '6.1.6.6';
 			var $microthemeruipage = 'tvr-microthemer.php';
 			var $file_stub = '';
 			var $min_stub = '';
@@ -11825,19 +11846,6 @@ if (!is_admin()) {
 
 			// non-logged in mode
 			function mt_nonlog(){
-
-				// fix for Oxygen that auto logs user back in via JavaScript
-                // didn't work
-			    /*if (isset($_GET['mt_nonlog_redirect'])){
-
-			        $plain_non_log = tvr_common::strip_url_param(
-				        $this->currentPageURL(), 'mt_nonlog_redirect'
-                    );
-
-				    wp_redirect($plain_non_log);
-
-				    exit;
-                }*/
 
 				if (isset($_GET['mt_nonlog'])) {
 
@@ -12056,6 +12064,8 @@ if (!is_admin()) {
 
 				$frontendJS_deps = array('jquery');
 				$min = !TVR_DEV_MODE ? '-min' : '/page';
+				// todo maybe make frontend.js dep (if looged in) so MT can catch errors
+				$in_footer = !empty($this->preferences['active_scripts_footer']);
 
 				// if the user has used MTs animation events feature, include JS file
 				if (!empty($this->preferences['active_events'])){
@@ -12086,7 +12096,9 @@ if (!is_admin()) {
 				}
 
 				// enqueue any native wp libraries the user has specified
-				$deps = array(''); // maybe make frontend.js dep (if looged in) so MT can catch errors
+				$deps = !empty($this->preferences['active_scripts_deps'])
+					? preg_split("/[\s,]+/", $this->preferences['active_scripts_deps'])
+					: array();
 				if (!empty($this->preferences['enq_js']) and is_array($this->preferences['enq_js'])){
 					foreach ($this->preferences['enq_js'] as $k => $arr){
 						if (empty($arr['disabled'])){
@@ -12101,7 +12113,7 @@ if (!is_admin()) {
 					// add minification support soon
 					$path = $this->micro_root_url . $this->file_stub . '-scripts.js' . $this->num_save_append;
 					wp_register_script('mt_user_js', $path);
-					wp_enqueue_script('mt_user_js', false, $deps);
+					wp_enqueue_script('mt_user_js', false, $deps, $this->num_save_append, $in_footer);
 				}
 			}
 

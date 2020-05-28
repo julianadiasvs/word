@@ -88,7 +88,7 @@ var WPFormsSettingsEducation = window.WPFormsSettingsEducation || ( function( do
 			}
 
 			var message    = wpforms_admin.upgrade[type].message.replace( /%name%/g, feature ),
-				upgradeURL = encodeURI( wpforms_admin.upgrade[type].url + '&utm_content=' + feature.trim() );
+				upgradeURL = wpforms_admin.upgrade[type].url + '&utm_content=' + encodeURIComponent( feature.trim() );
 
 			$.alert( {
 				title   : feature + ' ' + wpforms_admin.upgrade[type].title,

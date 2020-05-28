@@ -1,5 +1,34 @@
 CHANGELOG
 
+= 6.1.6.6 (May 20th 2020) =
+
+# Bugs fixed
+* MT grid settings data structure could be mis-formatted, resulting in a JavaScript error.
+
+= 6.1.6.5 (May 18th 2020) =
+
+# Bugs fixed
+* Issue loading post or page drafts via the new Pages menu, and then editing with Oxygen.
+
+= 6.1.6.4 (May 15th 2020) =
+
+# Bugs fixed
+* The number showing an element already has an MT selector was not showing due to z-index increase in 6.1.6.1 update.
+* Compatibility issue with Elementor Modern Events Calendar plugin. It uses dynamic ids that change on each page load. MT now ignores these dynamic ids when suggesting selectors.
+
+= 6.1.6.2 (May 15th 2020) =
+
+# Bugs fixed
+* Microthemer was reloading the page when clicking links in targeting mode if the href property had an empty value.
+
+= 6.1.6.1 (May 13th 2020) =
+
+# Enhancement
+* Custom JavaScript added with Microthemer can be set to load in the footer via the preferences.
+
+# Bugs fixed
+* Increased the z-index of Microthemer's targeting overlays to fix conflict with Oxygen Pro menu.
+
 = 6.1.5.9 (May 10th 2020) =
 
 # Bugs fixed

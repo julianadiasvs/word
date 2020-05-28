@@ -83,6 +83,12 @@ $this->display_log();
 					'explain' => __('General JavaScript errors on your site can interfere with Microthemer, and other plugins. Microthemer can check for errors and warn you about them.', 'microthemer')
 				),
 
+				'active_scripts_footer' => array(
+					'label' => __('Load the JS you add with Microthemer in the footer'),
+					'explain' => __('Load your active-scripts.js file just before the closing body tag', 'microthemer')
+				),
+
+
 				'global_styles_on_login' => array(
 					'label' => __('Enable global CSS on WordPress login pages', 'microthemer'),
 					'explain' => __('Load Microthemer\'s global active-styles.css file on WordPress login, registration, and forgot password pages' , 'microthemer')
@@ -125,6 +131,10 @@ $this->display_log();
 				'gfont_subset' => array(
 					'label' => __('Google Font subset URL parameter', 'microthemer'),
 					'explain' => __('You can instruct Google Fonts to include a font subset by entering an URL parameter here. For example "&subset=latin,latin-ext" (without the quotes). Note: Microthemer only generates a Google Font URL if it detects that you have applied Google Fonts in your design.', 'microthemer'),
+				),
+				'active_scripts_deps' => array(
+					'label' => __('List WP script handles your JS depends on'),
+					'explain' => __('If your custom JavaScript depends on a library, enter the library handles (comma separated)', 'microthemer')
 				),
 				'tooltip_delay' => array(
 					'label' => __('Tooltip delay time (in milliseconds)', 'microthemer'),
