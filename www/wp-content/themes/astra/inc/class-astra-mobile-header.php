@@ -103,7 +103,6 @@ if ( ! class_exists( 'Astra_Mobile_Header' ) ) :
 			$item_output .= '<button ' . astra_attr(
 				'ast-menu-toggle',
 				array(
-					'role'          => 'button',
 					'aria-expanded' => 'false',
 				),
 				$item

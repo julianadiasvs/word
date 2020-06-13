@@ -136,7 +136,7 @@ class CMB2 {
 		$active = Param::get( 'rank-math-tab', 'general' );
 		echo '<div id="' . $field->prop( 'id' ) . '" class="rank-math-tabs">';
 		?>
-		<div class="rank-math-tabs-navigation wp-clearfix">
+		<div class="rank-math-tabs-navigation <?php echo $field->prop( 'classes' ); ?>">
 
 			<?php
 			foreach ( $field->args( 'tabs' ) as $id => $tab ) :
@@ -148,8 +148,11 @@ class CMB2 {
 					printf( '<span class="separator">%s</span>', $tab['title'] );
 					continue;
 				}
+
+				$class  = isset( $tab['classes'] ) ? $tab['classes'] : '';
+				$class .= $id === $active ? ' active' : '';
 				?>
-				<a href="#setting-panel-<?php echo $id; ?>"<?php echo $id === $active ? 'class="active"' : ''; ?>><span class="<?php echo esc_attr( $tab['icon'] ); ?>"></span><?php echo $tab['title']; ?></a>
+				<a href="#setting-panel-<?php echo $id; ?>" class="<?php echo $class; ?>"><span class="<?php echo esc_attr( $tab['icon'] ); ?>"></span><?php echo $tab['title']; ?></a>
 			<?php endforeach; ?>
 
 		</div>
@@ -215,7 +218,7 @@ class CMB2 {
 	 */
 	public static function render_tab( $field_args, $field ) {
 		printf(
-			true === $field->prop( 'open' ) ? '<div id="%1$s" class="rank-math-tab">' : '</div><!-- /#%1$s -->',
+			true === $field->prop( 'open' ) ? '<div id="%1$s" class="rank-math-tab ' . $field->prop( 'classes' ) . '">' : '</div><!-- /#%1$s -->',
 			$field->prop( 'id' )
 		);
 
@@ -231,6 +234,17 @@ class CMB2 {
 	 */
 	public static function sanitize_htmlentities( $value ) {
 		return htmlentities( $value );
+	}
+
+	/**
+	 * Handles sanitization for Separator Character option.
+	 *
+	 * @param mixed $value The unsanitized value from the form.
+	 *
+	 * @return mixed Sanitized value to be stored.
+	 */
+	public static function sanitize_separator( $value ) {
+		return htmlentities( wp_strip_all_tags( $value, true ) );
 	}
 
 	/**
@@ -275,6 +289,36 @@ class CMB2 {
 	}
 
 	/**
+	 * Handles sanitization of rank_math_permalink.
+	 *
+	 * @param string $value The unsanitized value from the form.
+	 *
+	 * @return string Sanitized value to be stored.
+	 */
+	public static function sanitize_permalink( $value ) {
+		if ( empty( $value ) ) {
+			return '';
+		}
+
+		return sanitize_title( $value );
+	}
+
+	/**
+	 * Handles sanitization of floating point values.
+	 *
+	 * @param string $value The unsanitized value from the form.
+	 *
+	 * @return string Sanitized value to be stored.
+	 */
+	public static function sanitize_float( $value ) {
+		if ( empty( $value ) ) {
+			return 0;
+		}
+
+		return filter_var( $value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION );
+	}
+
+	/**
 	 * Handles sanitization for webmaster tag and remove <meta> tag.
 	 *
 	 * @param mixed $value The unsanitized value from the form.
@@ -289,7 +333,7 @@ class CMB2 {
 			$value = $matches[1];
 		}
 
-		return $value;
+		return htmlentities( wp_strip_all_tags( $value ) );
 	}
 
 	/**
@@ -321,8 +365,14 @@ class CMB2 {
 			return '';
 		}
 
-		return implode(',', array_map( function ( $entry ) {
-			return $entry['value'];
-		}, $values ) );
+		return implode(
+			',',
+			array_map(
+				function ( $entry ) {
+					return sanitize_text_field( $entry['value']  );
+				},
+				$values
+			)
+		);
 	}
 }

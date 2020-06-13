@@ -161,15 +161,6 @@
   font-size: 1.06666rem;
 }
 
-@media (max-width: 544px) {
-  #learndash_next_prev_link a {
-    width: 100%;
-  }
-  #learndash_next_prev_link a.prev-link {
-    margin-bottom: 1em;
-  }
-}
-
 #learndash_next_prev_link a.next-link {
   float: right;
 }
@@ -520,14 +511,6 @@ body #learndash_profile #course_list .certificate_icon_large:before {
 body #learndash_profile .profile_info {
   margin-bottom: 1em;
   position: relative;
-}
-
-@media (min-width: 545px) {
-  body #learndash_profile .profile_edit_profile {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-  }
 }
 
 body #learndash_profile .course_progress,
@@ -1033,18 +1016,6 @@ body .wpProQuiz_content .wpProQuiz_time_limit .wpProQuiz_progress {
  */
 #ld_course_info_mycourses_list .ld-course-info-my-courses {
   padding: 10px 0;
-}
-
-@media (max-width: 544px) {
-  #ld_course_info_mycourses_list .ld-course-info-my-courses img {
-    display: block;
-    margin-right: initial;
-    max-width: 100%;
-    margin: 10px 0;
-  }
-  #ld_course_info_mycourses_list .ld-course-info-my-courses .ld-entry-title {
-    margin: 0 0 20px;
-  }
 }
 
 body.single-sfwd-quiz {

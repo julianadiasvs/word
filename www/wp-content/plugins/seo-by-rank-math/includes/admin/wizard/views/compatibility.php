@@ -20,17 +20,23 @@ $wp_version_ok = version_compare( $wp_version, rank_math()->wordpress_version, '
 $dom_ext       = extension_loaded( 'dom' );
 $simplexml_ext = extension_loaded( 'SimpleXML' );
 $gd_ext        = extension_loaded( 'gd' );
+$mb_string     = extension_loaded( 'mbstring' );
+$all_good      = $php_version_ok && $wp_version_ok && $dom_ext && $simplexml_ext && $gd_ext && $mb_string;
 
-$all_good = $php_version_ok && $wp_version_ok && $dom_ext && $simplexml_ext && $gd_ext;
+?>
+
+<?php $wizard->cmb->show_form(); ?>
+
+<?php
 
 if ( $all_good ) :
 	?>
 <br>
-<h2 class="text-center">
+<h2 class="text-center compatibility-check">
 	<i class="dashicons <?php echo $php_version_recommend ? 'dashicons-warning' : 'dashicons-yes'; ?>"></i> <?php esc_html_e( 'Your website is compatible to run Rank Math SEO', 'rank-math' ); ?>
 	<a href="#" data-target="rank-math-compatibility-collapsible" class="rank-math-collapsible-trigger">
-		<span class="dashicons dashicons-arrow-down"><span><?php esc_html_e( 'More', 'rank-math' ); ?></span></span>
-		<span class="dashicons dashicons-arrow-up"><span><?php esc_html_e( 'Less', 'rank-math' ); ?></span></span>
+		<span class="dashicons dashicons-arrow-down-alt2"><span><?php esc_html_e( 'More', 'rank-math' ); ?></span></span>
+		<span class="dashicons dashicons-arrow-up-alt2"><span><?php esc_html_e( 'Less', 'rank-math' ); ?></span></span>
 	</a>
 </h2>
 <div id="rank-math-compatibility-collapsible" class="rank-math-collapsible-content">
@@ -93,6 +99,12 @@ if ( $all_good ) :
 			</th>
 			<td><span class="dashicons dashicons-<?php echo $gd_ext ? 'yes' : 'no'; ?>"></span></td>
 		</tr>
+		<tr class="check-<?php echo $mb_string ? 'yes' : 'no'; ?>">
+			<th>
+				<?php echo $mb_string ? esc_html__( 'PHP MBstring Extension installed', 'rank-math' ) : esc_html__( 'PHP MBstring Extension missing', 'rank-math' ); ?>
+			</th>
+			<td><span class="dashicons dashicons-<?php echo $mb_string ? 'yes' : 'no'; ?>"></span></td>
+		</tr>
 	</table>
 	<?php if ( $all_good ) { ?>
 		<p class="description checklist-ok">
@@ -126,7 +138,7 @@ if ( $all_good ) :
 					esc_html__( 'The following active plugins on your site may cause conflict issues when used alongside this plugin: ', 'rank-math' );
 			?>
 		</p>
-		<table class="form-table wizard-conflicts">
+		<table class="form-table wp-core-ui wizard-conflicts">
 			<?php foreach ( $conflicting_plugins as $pk => $plugin ) { ?>
 				<tr>
 					<td><span class="dashicons dashicons-warning"></span></td>
@@ -149,6 +161,6 @@ if ( $all_good ) :
 
 <footer class="form-footer rank-math-custom wp-core-ui rank-math-ui text-center">
 	<?php if ( $all_good ) : ?>
-	<button type="submit" class="button button-primary"><?php esc_html_e( 'Start Wizard', 'rank-math' ); ?> <i class="dashicons dashicons-arrow-right-alt2"></i></button>
+	<button type="submit" class="button button-primary button-animated"><?php esc_html_e( 'Start Wizard', 'rank-math' ); ?> <i class="dashicons dashicons-arrow-right-alt2"></i></button>
 	<?php endif; ?>
 </footer>

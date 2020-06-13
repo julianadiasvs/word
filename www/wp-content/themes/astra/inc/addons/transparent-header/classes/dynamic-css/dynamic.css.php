@@ -123,7 +123,7 @@ function astra_ext_transparent_header_dynamic_css( $dynamic_css, $dynamic_css_fi
 			' max-width' => astra_get_css_value( $transparent_header_logo_width['tablet'], 'px' ),
 		),
 	);
-	$css              .= astra_parse_css( $tablet_css_output, '', '768' );
+	$css              .= astra_parse_css( $tablet_css_output, '', astra_get_tablet_breakpoint() );
 
 	// Mobile Transparent Heder Logo Width.
 	$mobile_css_output = array(
@@ -134,7 +134,7 @@ function astra_ext_transparent_header_dynamic_css( $dynamic_css, $dynamic_css_fi
 			' max-width' => astra_get_css_value( $transparent_header_logo_width['mobile'], 'px' ),
 		),
 	);
-	$css              .= astra_parse_css( $mobile_css_output, '', '543' );
+	$css              .= astra_parse_css( $mobile_css_output, '', astra_get_mobile_breakpoint( 1 ) );
 
 	$transparent_header_base = array(
 		'.ast-theme-transparent-header #masthead'         => array(
@@ -342,14 +342,14 @@ function astra_ext_transparent_header_dynamic_css( $dynamic_css, $dynamic_css_fi
 
 	/* Parse CSS from array() */
 	if ( 'both' === $transparent_header_devices || 'desktop' === $transparent_header_devices ) {
-		$css .= astra_parse_css( $transparent_header_base, '769' );
+		$css .= astra_parse_css( $transparent_header_base, astra_get_tablet_breakpoint( '', 1 ) );
 
 		// If Transparent header is active on mobile + desktop, enqueue CSS without media queeries.
 		// If only for desktop add media query for the transparent header.
 		if ( 'both' === $transparent_header_devices ) {
 			$css .= astra_parse_css( $transparent_header_desktop );
 		} else {
-			$css .= astra_parse_css( $transparent_header_desktop, '769' );
+			$css .= astra_parse_css( $transparent_header_desktop, astra_get_tablet_breakpoint( '', 1 ) );
 		}
 	}
 
@@ -360,7 +360,7 @@ function astra_ext_transparent_header_dynamic_css( $dynamic_css, $dynamic_css_fi
 					'display' => 'none',
 				),
 			),
-			'768'
+			astra_get_tablet_breakpoint()
 		);
 
 		$css .= astra_parse_css(
@@ -370,7 +370,7 @@ function astra_ext_transparent_header_dynamic_css( $dynamic_css, $dynamic_css_fi
 				),
 			),
 			'',
-			'768'
+			astra_get_tablet_breakpoint()
 		);
 
 		$css .= astra_parse_css(
@@ -380,7 +380,7 @@ function astra_ext_transparent_header_dynamic_css( $dynamic_css, $dynamic_css_fi
 				),
 			),
 			'',
-			'768'
+			astra_get_tablet_breakpoint()
 		);
 	}
 
@@ -392,7 +392,7 @@ function astra_ext_transparent_header_dynamic_css( $dynamic_css, $dynamic_css_fi
 				),
 			),
 			'',
-			'768'
+			astra_get_tablet_breakpoint()
 		);
 
 		$css .= astra_parse_css(
@@ -401,7 +401,7 @@ function astra_ext_transparent_header_dynamic_css( $dynamic_css, $dynamic_css_fi
 					'display' => 'none',
 				),
 			),
-			'768'
+			astra_get_tablet_breakpoint()
 		);
 
 		$css .= astra_parse_css(
@@ -411,21 +411,22 @@ function astra_ext_transparent_header_dynamic_css( $dynamic_css, $dynamic_css_fi
 				),
 			),
 			'',
-			'768'
+			astra_get_tablet_breakpoint()
 		);
 	}
 
 	if ( 'both' === $transparent_header_devices || 'mobile' === $transparent_header_devices ) {
-		$css .= astra_parse_css( $transparent_header_base, '', '768' );
-		$css .= astra_parse_css( $transparent_header_tablet, '', '768' );
-		$css .= astra_parse_css( $transparent_header_mobile, '', '544' );
+		$css .= astra_parse_css( $transparent_header_base, '', astra_get_tablet_breakpoint() );
+		$css .= astra_parse_css( $transparent_header_tablet, '', astra_get_tablet_breakpoint() );
+		$css .= astra_parse_css( $transparent_header_mobile, '', astra_get_mobile_breakpoint() );
 	}
 
 	if ( 'both' === $transparent_header_devices ) {
 		$css .= astra_parse_css(
 			array(
-				'.ast-theme-transparent-header .main-header-bar, .ast-theme-transparent-header .site-header' => array(
+				'.ast-theme-transparent-header .main-header-bar, .ast-theme-transparent-header.ast-header-break-point .main-header-bar' => array(
 					'border-bottom-width' => astra_get_css_value( $transparent_header_separator, 'px' ),
+					'border-bottom-style' => 'solid',
 					'border-bottom-color' => esc_attr( $transparent_header_separator_color ),
 				),
 			)
@@ -435,13 +436,14 @@ function astra_ext_transparent_header_dynamic_css( $dynamic_css, $dynamic_css_fi
 	if ( 'mobile' === $transparent_header_devices ) {
 		$css .= astra_parse_css(
 			array(
-				'.ast-theme-transparent-header .site-header' => array(
+				'.ast-theme-transparent-header.ast-header-break-point .main-header-bar' => array(
 					'border-bottom-width' => astra_get_css_value( $transparent_header_separator, 'px' ),
+					'border-bottom-style' => 'solid',
 					'border-bottom-color' => esc_attr( $transparent_header_separator_color ),
 				),
 			),
 			'',
-			'768'
+			astra_get_tablet_breakpoint()
 		);
 	}
 
@@ -450,10 +452,11 @@ function astra_ext_transparent_header_dynamic_css( $dynamic_css, $dynamic_css_fi
 			array(
 				'.ast-theme-transparent-header .main-header-bar' => array(
 					'border-bottom-width' => astra_get_css_value( $transparent_header_separator, 'px' ),
+					'border-bottom-style' => 'solid',
 					'border-bottom-color' => esc_attr( $transparent_header_separator_color ),
 				),
 			),
-			'768'
+			astra_get_tablet_breakpoint()
 		);
 	}
 

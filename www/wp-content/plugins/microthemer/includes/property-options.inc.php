@@ -758,42 +758,71 @@ $propertyOptions['text']['word_wrap'] = array(
 	)
 );
 
-$propertyOptions['text']['white_space'] = array(
-	'short_label' => esc_html__('White Space', 'microthemer'),
-	'label' => esc_attr__('White Space', 'microthemer'),
-	'input-class' => 'size-3a',
+$propertyOptions['text']['word_wrap'] = array(
+	'short_label' => esc_html__('Word Wrap', 'microthemer'),
+	'label' => esc_attr__('Word Wrap', 'microthemer'),
+	'input-class' => 'size-4a',
 	'type' => 'combobox',
 	'select_options' => array(
 		"normal",
-		"nowrap",
-		"pre",
-		"pre-line",
-		"pre-wrap"
+		"break-word"
 	),
-	'icon' => '43, 14',
+	'icon' => '41, 14',
 	// ref
-	'ref_desc' => "<p>The white-space property determines how white spaces characters like spaces, tabs, and returns are handled. It also controls how text should wrap.<p>",
+	'ref_desc' => "<p>The word-wrap property determines if whole words can be broken over two lines.<p>",
 	'ref_values' => array(
-		"normal" => "Multiple whitespace characters will be treated as one, text will wrap when necessary (default).",
-		"nowrap" => "Multiple whitespace characters will be treated as one, text will never wrap to the next line until a br tag is used.",
-		"pre" => "Whitespace characters are honoured. Text only wraps on line breaks - acts like the pre tag in HTML",
-		"pre-line" => "Multiple whitespace characters will be treated as one, text will wrap when necessaryand on line breaks",
-		"pre-wrap" => "Whitespace characters are honoured, text will wrap when necessary, and on line breaks"
+		"normal" => "Words will only split in allowed places, like when a hyphen is used.",
+		"break-word" => "Words will break at any point to ensure that they stay within their container element.",
 	),
 	'ref_links' => array(
-		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
-		'css_tricks' => 'https://css-tricks.com/almanac/properties/w/whitespace/',
-		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/white-space',
-		'quackit' => 'http://www.quackit.com/css/properties/css_white-space.cfm',
-		'w3s' => 'http://www.w3schools.com/cssref/pr_text_white-space.asp',
+		'can_i_use' => 'http://caniuse.com/#feat=wordwrap',
+		'css_tricks' => '', // is not there
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/letter-spacing',
+		'quackit' => 'http://www.quackit.com/css/css3/properties/css_word-wrap.cfm',
+		'w3s' => 'http://www.w3schools.com/cssref/css3_pr_word-wrap.asp',
 	),
 	'tutorials' => array(
 		array(
-			'url' => 'https://perishablepress.com/wrapping-content/',
-			'title' => 'Wrapping Long URLs and Text Content with CSS',
+			'url' => 'http://www.impressivewebs.com/word-wrap-css3/',
+			'title' => 'Word-Wrap: A CSS3 Property That Works in Every Browser',
 		),
 	)
 );
+
+// todo uncomment when icon is ready
+/*$propertyOptions['text']['word_break'] = array(
+	'short_label' => esc_html__('Word Break', 'microthemer'),
+	'label' => esc_attr__('Word Break', 'microthemer'),
+	//'input-class' => 'size-3a',
+	'type' => 'combobox',
+	'select_options' => array(
+		"normal",
+		"break-all",
+		"keep-all",
+		"break-word",
+	),
+	'icon' => '', // needed
+	// ref
+	'ref_desc' => "<p>The word-break CSS property sets whether line breaks appear wherever the text would otherwise overflow its content box. <p>",
+	'ref_values' => array(
+		"normal" => "Default value. Uses default line break rules",
+		"break-all" => "To prevent overflow, word may be broken at any character",
+		"keep-all" => 'Word breaks should not be used for Chinese/Japanese/Korean (CJK) text. Non-CJK text behavior is the same as value "normal"',
+		"break-word" => "To prevent overflow, word may be broken at arbitrary points",
+	),
+	'ref_links' => array(
+		'css_tricks' => 'https://css-tricks.com/almanac/properties/w/word-break/',
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/word-break',
+		'quackit' => 'https://qhmit.com/css/css3/properties/css_word-break.cfm',
+		'w3s' => 'https://www.w3schools.com/cssref/css3_pr_word-break.asp',
+	),
+	'tutorials' => array(
+		array(
+			'url' => 'https://www.bitdegree.org/learn/css-word-break',
+			'title' => 'CSS Word Break',
+		),
+	)
+);*/
 
 $propertyOptions['text']['direction'] = array(
 	'short_label' => esc_html__('Direction', 'microthemer'),

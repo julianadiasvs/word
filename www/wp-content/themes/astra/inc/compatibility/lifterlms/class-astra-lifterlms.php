@@ -469,7 +469,7 @@ if ( ! class_exists( 'Astra_LifterLMS' ) ) :
 				),
 			);
 
-			$css_output .= astra_parse_css( $css_global_button_tablet, '', '768' );
+			$css_output .= astra_parse_css( $css_global_button_tablet, '', astra_get_tablet_breakpoint() );
 
 			/**
 			 * Global button CSS - Mobile.
@@ -483,7 +483,7 @@ if ( ! class_exists( 'Astra_LifterLMS' ) ) :
 				),
 			);
 
-			$css_output .= astra_parse_css( $css_global_button_mobile, '', '544' );
+			$css_output .= astra_parse_css( $css_global_button_mobile, '', astra_get_mobile_breakpoint() );
 
 			wp_add_inline_style( 'lifterlms-styles', apply_filters( 'astra_theme_lifterlms_dynamic_css', $css_output ) );
 

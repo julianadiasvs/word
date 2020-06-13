@@ -511,7 +511,7 @@ $this->default_preferences = array(
 	"global_styles_on_login" => 1,
 	"dock_wizard_right" => 0,
 	"active_scripts_footer" => 0,
-	"active_scripts_priority" => 0,
+	"active_scripts_deps" => 0, // comma sep list of dependencies
 	"hover_inspect" => 0, // this is hard set in $this->getPreferences()
 	"allow_scss" => 0, // if enabled by default, invalid css/scss will prevent stylesheet update.
 	"server_scss" => 0, // give user option to compile scss on the server
@@ -573,7 +573,6 @@ $this->default_preferences = array(
 	"num_saves" => 0, // keep track of saves for caching purposes
 	// "show_adv_wizard" => 0,
 	"adv_wizard_tab" => 'refine-targeting',
-	"grid_focus" => 'gridtemplate',
 	"overwrite_existing_mqs" => 1,
 	// defaults dependant on lang
 	"tooltip_en_prop" => 1, // $this->is_en() ? 0 : 1,

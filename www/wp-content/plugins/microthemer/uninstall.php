@@ -1,7 +1,8 @@
 <?php
 
-if( ! defined( 'WP_UNINSTALL_PLUGIN' ) )
-    exit();
+if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+	exit();
+}
 
 // Recursively delete a directory and it's contents
 function mt_destroy_dir($dir) {

@@ -390,6 +390,140 @@ if ( ! class_exists( 'Astra_Edd' ) ) :
 		 */
 		public function add_inline_scripts() {
 
+			$is_site_rtl = is_rtl();
+
+			$max_tablet_edd_css = array(
+				'.tablet-columns-1 .ast-edd-archive-article' => array(
+					'width' => '100%',
+				),
+				'.tablet-columns-2 .ast-edd-archive-article' => array(
+					'width' => '47.6%',
+					'width' => 'calc(50% - 10px)',
+				),
+				'.tablet-columns-3 .ast-edd-archive-article, .edd_downloads_list[class*="edd_download_columns_"] .edd_download' => array(
+					'width' => '30.2%',
+					'width' => 'calc(33.33% - 14px)',
+				),
+				'.tablet-columns-4 .ast-edd-archive-article' => array(
+					'width' => '21.5%',
+					'width' => 'calc(25% - 15px)',
+				),
+				'.tablet-columns-5 .ast-edd-archive-article' => array(
+					'width' => '16.2%',
+					'width' => 'calc(20% - 16px)',
+				),
+				'.tablet-columns-6 .ast-edd-archive-article' => array(
+					'width' => '12.7%',
+					'width' => 'calc(16.66% - 16.66px)',
+				),
+			);
+
+			/* Parse CSS from array() -> max-width: (tablet-breakpoint) px & min-width: (mobile-breakpoint + 1) px */
+			$edd_css_output = astra_parse_css( $max_tablet_edd_css, astra_get_mobile_breakpoint( '', 1 ), astra_get_tablet_breakpoint() );
+
+			if ( $is_site_rtl ) {
+				$max_tablet_edd_lang_direction_css = array(
+					'[class*="columns-"] .ast-edd-archive-article:nth-child(n)' => array(
+						'margin-left' => '20px',
+						'clear'       => 'none',
+					),
+					'.tablet-columns-2 .ast-edd-archive-article:nth-child(2n), .tablet-columns-3 .ast-edd-archive-article:nth-child(3n), .tablet-columns-4 .ast-edd-archive-article:nth-child(4n), .tablet-columns-5 .ast-edd-archive-article:nth-child(5n), .tablet-columns-6 .ast-edd-archive-article:nth-child(6n), .edd_downloads_list[class*="edd_download_columns_"] .edd_download:nth-child(3n)' => array(
+						'margin-left' => '0',
+						'clear'       => 'left',
+					),
+					'.tablet-columns-2 .ast-edd-archive-article:nth-child(2n+1), .tablet-columns-3 .ast-edd-archive-article:nth-child(3n+1), .tablet-columns-4 .ast-edd-archive-article:nth-child(4n+1), .tablet-columns-5 .ast-edd-archive-article:nth-child(5n+1), .tablet-columns-6 .ast-edd-archive-article:nth-child(6n+1), .edd_downloads_list[class*="edd_download_columns_"] .edd_download:nth-child(3n+1)' => array(
+						'clear' => 'right',
+					),
+				);
+			} else {
+				$max_tablet_edd_lang_direction_css = array(
+					'[class*="columns-"] .ast-edd-archive-article:nth-child(n)' => array(
+						'margin-right' => '20px',
+						'clear'        => 'none',
+					),
+					'.tablet-columns-2 .ast-edd-archive-article:nth-child(2n), .tablet-columns-3 .ast-edd-archive-article:nth-child(3n), .tablet-columns-4 .ast-edd-archive-article:nth-child(4n), .tablet-columns-5 .ast-edd-archive-article:nth-child(5n), .tablet-columns-6 .ast-edd-archive-article:nth-child(6n), .edd_downloads_list[class*="edd_download_columns_"] .edd_download:nth-child(3n)' => array(
+						'margin-right' => '0',
+						'clear'        => 'right',
+					),
+					'.tablet-columns-2 .ast-edd-archive-article:nth-child(2n+1), .tablet-columns-3 .ast-edd-archive-article:nth-child(3n+1), .tablet-columns-4 .ast-edd-archive-article:nth-child(4n+1), .tablet-columns-5 .ast-edd-archive-article:nth-child(5n+1), .tablet-columns-6 .ast-edd-archive-article:nth-child(6n+1), .edd_downloads_list[class*="edd_download_columns_"] .edd_download:nth-child(3n+1)' => array(
+						'clear' => 'left',
+					),
+				);
+			}
+
+			/* Parse CSS from array() -> max-width: (tablet-breakpoint) px & min-width: (mobile-breakpoint + 1) px */
+			$edd_css_output .= astra_parse_css( $max_tablet_edd_lang_direction_css, astra_get_mobile_breakpoint( '', 1 ), astra_get_tablet_breakpoint() );
+
+			$mobile_edd_css = array(
+				'.mobile-columns-1 .ast-edd-archive-article' => array(
+					'width' => '100%',
+				),
+				'.mobile-columns-3 .ast-edd-archive-article' => array(
+					'width' => '28.2%',
+					'width' => 'calc(33.33% - 14px)',
+				),
+				'.mobile-columns-4 .ast-edd-archive-article' => array(
+					'width' => '19%',
+					'width' => 'calc(25% - 15px)',
+				),
+				'.mobile-columns-5 .ast-edd-archive-article' => array(
+					'width' => '13%',
+					'width' => 'calc(20% - 16px)',
+				),
+				'.mobile-columns-6 .ast-edd-archive-article' => array(
+					'width' => '10.2%',
+					'width' => 'calc(16.66% - 16.66px)',
+				),
+				'.edd_downloads_list[class*="edd_download_columns_"] .edd_download, .edd_downloads_list[class*="edd_download_columns_"] .edd_download:nth-child(2n+1), .mobile-columns-2 .ast-edd-archive-article' => array(
+					'width' => '46.1%',
+					'width' => 'calc(50% - 10px)',
+				),
+			);
+
+			/* Parse CSS from array() -> max-width: (mobile-breakpoint) px */
+			$edd_css_output .= astra_parse_css( $mobile_edd_css, '', astra_get_mobile_breakpoint() );
+
+			if ( $is_site_rtl ) {
+				$mobile_edd_lang_direction_css = array(
+					'[class*="columns-"] .ast-edd-archive-article:nth-child(n)' => array(
+						'margin-left' => '20px',
+						'clear'       => 'none',
+					),
+					'.mobile-columns-1 .ast-edd-archive-article:nth-child(n)' => array(
+						'margin-left' => '0',
+					),
+					'.edd_downloads_list[class*="edd_download_columns_"] .edd_download:nth-child(2n), .mobile-columns-2 .ast-edd-archive-article:nth-child(2n), .mobile-columns-3 .ast-edd-archive-article:nth-child(3n), .mobile-columns-4 .ast-edd-archive-article:nth-child(4n), .mobile-columns-5 .ast-edd-archive-article:nth-child(5n), .mobile-columns-6 .ast-edd-archive-article:nth-child(6n)' => array(
+						'margin-left' => '0',
+						'clear'       => 'left',
+					),
+					'.mobile-columns-2 .ast-edd-archive-article:nth-child(2n+1), .mobile-columns-3 .ast-edd-archive-article:nth-child(3n+1), .mobile-columns-4 .ast-edd-archive-article:nth-child(4n+1), .mobile-columns-5 .ast-edd-archive-article:nth-child(5n+1), .mobile-columns-6 .ast-edd-archive-article:nth-child(6n+1)' => array(
+						'clear' => 'right',
+					),
+				);
+			} else {
+				$mobile_edd_lang_direction_css = array(
+					'[class*="columns-"] .ast-edd-archive-article:nth-child(n)' => array(
+						'margin-right' => '20px',
+						'clear'        => 'none',
+					),
+					'.mobile-columns-1 .ast-edd-archive-article:nth-child(n)' => array(
+						'margin-right' => '0',
+					),
+					'.edd_downloads_list[class*="edd_download_columns_"] .edd_download:nth-child(2n), .mobile-columns-2 .ast-edd-archive-article:nth-child(2n), .mobile-columns-3 .ast-edd-archive-article:nth-child(3n), .mobile-columns-4 .ast-edd-archive-article:nth-child(4n), .mobile-columns-5 .ast-edd-archive-article:nth-child(5n), .mobile-columns-6 .ast-edd-archive-article:nth-child(6n)' => array(
+						'margin-right' => '0',
+						'clear'        => 'right',
+					),
+					'.mobile-columns-2 .ast-edd-archive-article:nth-child(2n+1), .mobile-columns-3 .ast-edd-archive-article:nth-child(3n+1), .mobile-columns-4 .ast-edd-archive-article:nth-child(4n+1), .mobile-columns-5 .ast-edd-archive-article:nth-child(5n+1), .mobile-columns-6 .ast-edd-archive-article:nth-child(6n+1)' => array(
+						'clear' => 'left',
+					),
+				);
+			}
+
+			/* Parse CSS from array() -> max-width: (mobile-breakpoint) px */
+			$edd_css_output .= astra_parse_css( $mobile_edd_lang_direction_css, '', astra_get_mobile_breakpoint() );
+
+			wp_add_inline_style( 'astra-edd', apply_filters( 'astra_theme_edd_dynamic_css', $edd_css_output ) );
+
 			// Inline js for EDD Cart updates.
 			wp_add_inline_script(
 				'edd-ajax',
@@ -414,7 +548,6 @@ if ( ! class_exists( 'Astra_Edd' ) ) :
 					});
 				});"
 			);
-
 		}
 
 		/**
@@ -520,7 +653,7 @@ if ( ! class_exists( 'Astra_Edd' ) ) :
 						'max-width' => astra_get_css_value( $edd_archive_max_width, 'px' ),
 					),
 				);
-				$css_output .= astra_parse_css( $site_width, '769' );
+				$css_output .= astra_parse_css( $site_width, astra_get_tablet_breakpoint( '', 1 ) );
 
 			else :
 				// Easy Digital DOwnloads shop archive default width.
@@ -531,7 +664,7 @@ if ( ! class_exists( 'Astra_Edd' ) ) :
 				);
 
 				/* Parse CSS from array()*/
-				$css_output .= astra_parse_css( $site_width, '769' );
+				$css_output .= astra_parse_css( $site_width, astra_get_tablet_breakpoint( '', 1 ) );
 			endif;
 
 			$dynamic_css .= apply_filters( 'astra_theme_edd_dynamic_css', $css_output );

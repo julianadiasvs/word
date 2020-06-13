@@ -1,13 +1,24 @@
 <?php 
+
+// Event schedules failed
 if ( !wp_next_scheduled ( 'cau_set_schedule_mail' ) ) {
 	echo '<div id="message" class="error"><p><b>'.__( 'Companion Auto Update was not able to set the event for sending you emails, please re-activate the plugin in order to set the event', 'companion-auto-update' ).'.</b></p></div>';
 }
 
+// Database requires an update
 if ( cau_incorrectDatabaseVersion() ) {
         echo '<div id="message" class="error"><p><b>'.__( 'Companion Auto Update Database Update', 'companion-auto-update' ).' &ndash;</b>
         '.__( 'We need you to update to the latest database version', 'companion-auto-update' ).'. <a href="'.cau_url( 'status' ).'&run=db_update" class="button button-alt" style="background: #FFF;">'.__( 'Run updater now', 'companion-auto-update' ).'</a></p></div>';
 }
 
+// Update log DB is empty
+if ( cau_updateLogDBisEmpty() ) {
+        echo '<div id="message" class="error"><p><b>'.__( 'Companion Auto Update Database Update', 'companion-auto-update' ).' &ndash;</b>
+        '.__( 'We need to add some information to your database', 'companion-auto-update' ).'. <a href="'.cau_url( 'status' ).'&run=db_info_update" class="button button-alt" style="background: #FFF;">'.__( 'Run updater now', 'companion-auto-update' ).'</a></p></div>';
+}
+
+
+// Save settings
 if( isset( $_POST['submit'] ) ) {
 
 	check_admin_referer( 'cau_save_settings' );
@@ -166,7 +177,7 @@ $cs_hooks_p 		= wp_get_schedule( 'cau_custom_hooks_plugins' );
 $cs_hooks_t 		= wp_get_schedule( 'cau_custom_hooks_themes' );
 $availableIntervals = wp_get_schedules();
 
-	?>
+?>
 
 <div class="cau-column-wide">
 	

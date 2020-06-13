@@ -2,9 +2,9 @@
 # This file is distributed under the GNU General Public License v2 or later.=!>
 msgid ""
 msgstr ""
-"Project-Id-Version: Astra 2.3.4\n"
+"Project-Id-Version: Astra 2.4.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/astra\n"
-"POT-Creation-Date: 2020-03-17 07:32:09+00:00\n"
+"POT-Creation-Date: 2020-06-02 09:09:16+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -24,49 +24,93 @@ msgstr ""
 "X-Textdomain-Support: yes\n"
 "X-Generator: grunt-wp-i18n 1.0.3\n"
 
+#: admin/bsf-analytics/class-bsf-analytics.php:183
+#. translators: %s product name
+msgid ""
+"Want to help make <strong>%1s</strong> even more awesome? Allow us to "
+"collect non-sensitive diagnostic data and usage information. "
+msgstr ""
+
+#: admin/bsf-analytics/class-bsf-analytics.php:186
+msgid "This will be applicable for all sites from the network."
+msgstr ""
+
+#: admin/bsf-analytics/class-bsf-analytics.php:208
+#. translators: %s usage doc link
+msgid " Know More."
+msgstr ""
+
+#: admin/bsf-analytics/class-bsf-analytics.php:215
+msgid "Yes! Allow it"
+msgstr ""
+
+#: admin/bsf-analytics/class-bsf-analytics.php:223
+msgid "No Thanks"
+msgstr ""
+
+#: admin/bsf-analytics/class-bsf-analytics.php:292
+msgid "Every two days"
+msgstr ""
+
+#: admin/bsf-analytics/class-bsf-analytics.php:346
+msgid "Usage Tracking"
+msgstr ""
+
+#: admin/bsf-analytics/class-bsf-analytics.php:377
+msgid "Allow Brainstorm Force products to track non-sensitive usage tracking data."
+msgstr ""
+
+#: admin/bsf-analytics/class-bsf-analytics.php:380
+msgid " This will be applicable for all sites from the network."
+msgstr ""
+
+#: admin/bsf-analytics/class-bsf-analytics.php:385
+msgid "Learn More."
+msgstr ""
+
 #: comments.php:52 comments.php:75
 msgid "Comments Navigation"
 msgstr ""
 
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:402
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:405
 msgid "Browse:"
 msgstr ""
 
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:404
-#: inc/core/common-functions.php:841
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:407
+#: inc/core/common-functions.php:853
 msgid "Home"
 msgstr ""
 
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:405
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:408
 msgid "404 Not Found"
 msgstr ""
 
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:406
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:409
 #: inc/customizer/configurations/layout/class-astra-sidebar-layout-configs.php:113
 msgid "Archives"
 msgstr ""
 
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:408
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:411
 #. Translators: %s is the search query.
 msgid "Search results for: %s"
 msgstr ""
 
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:410
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:413
 #. Translators: %s is the page number.
 msgid "Page %s"
 msgstr ""
 
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:412
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:415
 #. Translators: %s is the page number.
 msgid "Comment Page %s"
 msgstr ""
 
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:414
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:417
 #. Translators: Minute archive title. %s is the minute time format.
 msgid "Minute %s"
 msgstr ""
 
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:416
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:419
 #. Translators: Weekly archive title. %s is the week date format.
 msgid "Week %s"
 msgstr ""
@@ -121,6 +165,9 @@ msgstr ""
 #: inc/customizer/configurations/buttons/class-astra-customizer-button-configs.php:524
 #: inc/customizer/configurations/buttons/class-astra-customizer-button-configs.php:540
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:104
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:141
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:228
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:315
 msgid "Background Color"
 msgstr ""
 
@@ -333,7 +380,7 @@ msgid "Right"
 msgstr ""
 
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-configs.php:265
-#: inc/core/class-astra-admin-settings.php:908
+#: inc/core/class-astra-admin-settings.php:931
 #: inc/customizer/configurations/buttons/class-astra-customizer-button-configs.php:212
 msgid "Spacing"
 msgstr ""
@@ -362,10 +409,10 @@ msgstr ""
 
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-typo-configs.php:57
 #: inc/addons/heading-colors/customizer/class-astra-heading-colors-configs.php:290
-#: inc/core/class-astra-admin-settings.php:895
+#: inc/core/class-astra-admin-settings.php:918
 #: inc/customizer/class-astra-customizer-register-sections-panels.php:285
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:210
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:237
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:249
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:276
 #: inc/customizer/configurations/typography/class-astra-archive-typo-configs.php:43
 #: inc/customizer/configurations/typography/class-astra-single-typo-configs.php:46
 msgid "Typography"
@@ -425,6 +472,9 @@ msgstr ""
 #: inc/addons/heading-colors/customizer/class-astra-heading-colors-configs.php:377
 #: inc/customizer/configurations/typography/class-astra-body-typo-configs.php:255
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:171
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:212
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:299
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:386
 #: inc/customizer/custom-controls/typography/class-astra-control-typography.php:111
 msgid "Inherit"
 msgstr ""
@@ -482,12 +532,12 @@ msgstr ""
 msgid "Letter Spacing"
 msgstr ""
 
-#: inc/addons/transparent-header/classes/class-astra-ext-transparent-header-markup.php:329
+#: inc/addons/transparent-header/classes/class-astra-ext-transparent-header-markup.php:327
 #: inc/addons/transparent-header/classes/class-astra-transparent-header-panels-and-sections.php:48
 msgid "Transparent Header"
 msgstr ""
 
-#: inc/addons/transparent-header/classes/class-astra-ext-transparent-header-markup.php:332
+#: inc/addons/transparent-header/classes/class-astra-ext-transparent-header-markup.php:330
 #: inc/compatibility/lifterlms/class-astra-lifterlms.php:708
 #: inc/compatibility/lifterlms/class-astra-lifterlms.php:720
 #: inc/metabox/class-astra-meta-boxes.php:232
@@ -495,11 +545,11 @@ msgstr ""
 msgid "Customizer Setting"
 msgstr ""
 
-#: inc/addons/transparent-header/classes/class-astra-ext-transparent-header-markup.php:333
+#: inc/addons/transparent-header/classes/class-astra-ext-transparent-header-markup.php:331
 msgid "Enabled"
 msgstr ""
 
-#: inc/addons/transparent-header/classes/class-astra-ext-transparent-header-markup.php:334
+#: inc/addons/transparent-header/classes/class-astra-ext-transparent-header-markup.php:332
 #: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:49
 msgid "Disabled"
 msgstr ""
@@ -596,17 +646,17 @@ msgid "Logo"
 msgstr ""
 
 #: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:213
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:56
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:95
 msgid "Different Logo For Retina Devices?"
 msgstr ""
 
 #: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:230
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:71
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:110
 msgid "Retina Logo"
 msgstr ""
 
 #: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:246
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:118
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:157
 msgid "Logo Width"
 msgstr ""
 
@@ -621,7 +671,7 @@ msgid "Bottom Border Color"
 msgstr ""
 
 #: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:307
-#: inc/core/class-astra-admin-settings.php:882
+#: inc/core/class-astra-admin-settings.php:905
 #: inc/customizer/configurations/colors-background/class-astra-advanced-footer-colors-configs.php:42
 #: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:238
 msgid "Colors & Background"
@@ -632,12 +682,12 @@ msgstr ""
 #: inc/customizer/configurations/colors-background/class-astra-advanced-footer-colors-configs.php:144
 #: inc/customizer/configurations/colors-background/class-astra-footer-colors-configs.php:90
 #: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:252
-#: inc/customizer/configurations/layout/class-astra-site-container-layout-configs.php:133
+#: inc/customizer/configurations/layout/class-astra-site-container-layout-configs.php:134
 msgid "Background"
 msgstr ""
 
 #: inc/addons/transparent-header/classes/sections/class-astra-customizer-transparent-header-configs.php:328
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:200
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:239
 msgid "Site Title"
 msgstr ""
 
@@ -689,7 +739,7 @@ msgstr ""
 msgid "%1$s at %2$s"
 msgstr ""
 
-#: inc/class-astra-mobile-header.php:110
+#: inc/class-astra-mobile-header.php:109
 msgid "Menu Toggle"
 msgstr ""
 
@@ -764,41 +814,41 @@ msgstr ""
 #: inc/compatibility/edd/class-astra-edd.php:225
 #: inc/compatibility/edd/customizer/class-astra-customizer-register-edd-section.php:40
 #: inc/compatibility/edd/customizer/sections/class-astra-edd-sidebar-configs.php:57
-#: inc/core/class-astra-admin-settings.php:1069
+#: inc/core/class-astra-admin-settings.php:1092
 msgid "Easy Digital Downloads"
 msgstr ""
 
 #: inc/compatibility/edd/class-astra-edd.php:344
-#: inc/compatibility/woocommerce/class-astra-woocommerce.php:1058
+#: inc/compatibility/woocommerce/class-astra-woocommerce.php:1436
 msgid "View your shopping cart"
 msgstr ""
 
-#: inc/compatibility/edd/class-astra-edd.php:572
+#: inc/compatibility/edd/class-astra-edd.php:705
 #: inc/compatibility/edd/customizer/sections/layout/class-astra-edd-archive-layout-configs.php:74
 #: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-layout-configs.php:91
 msgid "Add To Cart"
 msgstr ""
 
-#: inc/compatibility/edd/class-astra-edd.php:574
+#: inc/compatibility/edd/class-astra-edd.php:707
 msgid "View Details"
 msgstr ""
 
-#: inc/compatibility/edd/class-astra-edd.php:633
+#: inc/compatibility/edd/class-astra-edd.php:766
 msgid "Easy Digital Downloads Sidebar"
 msgstr ""
 
-#: inc/compatibility/edd/class-astra-edd.php:635
+#: inc/compatibility/edd/class-astra-edd.php:768
 #: inc/compatibility/woocommerce/class-astra-woocommerce.php:423
 msgid ""
 "This sidebar will be used on Product archive, Cart, Checkout and My Account "
 "pages."
 msgstr ""
 
-#: inc/compatibility/edd/class-astra-edd.php:647
+#: inc/compatibility/edd/class-astra-edd.php:780
 msgid "EDD Single Product Sidebar"
 msgstr ""
 
-#: inc/compatibility/edd/class-astra-edd.php:649
+#: inc/compatibility/edd/class-astra-edd.php:782
 msgid "This sidebar will be used on EDD Single Product page."
 msgstr ""
 
@@ -1000,7 +1050,7 @@ msgstr ""
 
 #: inc/compatibility/learndash/customizer/class-astra-customizer-register-learndash-section.php:40
 #: inc/compatibility/learndash/customizer/sections/class-astra-learndash-sidebar-configs.php:57
-#: inc/core/class-astra-admin-settings.php:1082
+#: inc/core/class-astra-admin-settings.php:1105
 msgid "LearnDash"
 msgstr ""
 
@@ -1101,7 +1151,7 @@ msgstr ""
 
 #: inc/compatibility/lifterlms/customizer/class-astra-liferlms-section-configs.php:39
 #: inc/compatibility/lifterlms/customizer/sections/class-astra-lifter-sidebar-configs.php:57
-#: inc/core/class-astra-admin-settings.php:1096
+#: inc/core/class-astra-admin-settings.php:1119
 msgid "LifterLMS"
 msgstr ""
 
@@ -1150,12 +1200,12 @@ msgid "WooCommerce Layout"
 msgstr ""
 
 #: inc/compatibility/woocommerce/customizer/sections/class-astra-woo-shop-sidebar-configs.php:57
-#: inc/core/class-astra-admin-settings.php:1056
+#: inc/core/class-astra-admin-settings.php:1079
 msgid "WooCommerce"
 msgstr ""
 
-#: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-cart-layout-configs.php:45
-msgid "Enable Upsells"
+#: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-cart-layout-configs.php:47
+msgid "Enable Cross-sells"
 msgstr ""
 
 #: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-layout-configs.php:49
@@ -1191,7 +1241,7 @@ msgstr ""
 msgid "Out of stock"
 msgstr ""
 
-#: inc/compatibility/woocommerce/woocommerce-common-functions.php:137
+#: inc/compatibility/woocommerce/woocommerce-common-functions.php:138
 msgid "Availability:"
 msgstr ""
 
@@ -1203,313 +1253,319 @@ msgstr ""
 msgid "Astra"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:197
+#: inc/core/class-astra-admin-settings.php:212
 msgid ""
 "Hello! Seems like you have used Astra theme to build this website &mdash; "
 "Thanks a ton!"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:198
+#: inc/core/class-astra-admin-settings.php:213
 msgid ""
 "Could you please do us a BIG favor and give it a 5-star rating on "
 "WordPress? This would boost our motivation and help other users make a "
 "comfortable decision while choosing the Astra theme."
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:200
+#: inc/core/class-astra-admin-settings.php:215
 msgid "Ok, you deserve it"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:202
+#: inc/core/class-astra-admin-settings.php:217
 msgid "Nope, maybe later"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:203
+#: inc/core/class-astra-admin-settings.php:218
 msgid "I already did"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:221
-#: inc/core/class-astra-admin-settings.php:224
+#: inc/core/class-astra-admin-settings.php:236
+#: inc/core/class-astra-admin-settings.php:239
 msgid "Get Started"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:249
+#: inc/core/class-astra-admin-settings.php:264
 msgid "Thank you for installing Astra!"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:250
+#: inc/core/class-astra-admin-settings.php:265
 msgid ""
 "Did you know Astra comes with dozens of ready-to-use <a "
 "href=\"https://wpastra.com/ready-websites/?utm_source=install-notice\""
 ">starter templates</a>? Install the Starter Templates plugin to get started."
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:290
+#: inc/core/class-astra-admin-settings.php:301
 #. translators: %1$1s: Theme Name, %2$2s: Minimum Required version of the addon
 msgid ""
-"Glad to see you have updated the %1$1s! Please update the %2$2s to version "
-"%3$3s or higher."
+"Please update the %1$1s to version %2$2s or higher. Ignore if already "
+"updated."
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:331
+#: inc/core/class-astra-admin-settings.php:358
 msgid "Activate Importer Plugin"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:335
-#: inc/core/class-astra-admin-settings.php:346
-#: inc/core/class-astra-admin-settings.php:352
-#: inc/core/class-astra-admin-settings.php:477
-#: inc/core/class-astra-admin-settings.php:509
+#: inc/core/class-astra-admin-settings.php:362
+#: inc/core/class-astra-admin-settings.php:373
+#: inc/core/class-astra-admin-settings.php:379
+#: inc/core/class-astra-admin-settings.php:494
+#: inc/core/class-astra-admin-settings.php:531
 msgid "See Library &#187;"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:336
-#: inc/core/class-astra-admin-settings.php:475
-#: inc/core/class-astra-admin-settings.php:507
+#: inc/core/class-astra-admin-settings.php:363
+#: inc/core/class-astra-admin-settings.php:492
+#: inc/core/class-astra-admin-settings.php:529
 msgid "Activating Importer Plugin "
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:342
+#: inc/core/class-astra-admin-settings.php:369
 msgid "Install Importer Plugin"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:349
+#: inc/core/class-astra-admin-settings.php:376
 msgid "Details &#187;"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:478
-#: inc/core/class-astra-admin-settings.php:510
+#: inc/core/class-astra-admin-settings.php:495
+#: inc/core/class-astra-admin-settings.php:532
 msgid "Activating"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:479
-#: inc/core/class-astra-admin-settings.php:511
+#: inc/core/class-astra-admin-settings.php:496
+#: inc/core/class-astra-admin-settings.php:533
 msgid "Deactivating"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:480
-#: inc/core/class-astra-admin-settings.php:512
-#: inc/core/class-astra-admin-settings.php:1335
-#: inc/core/class-astra-admin-settings.php:1352
+#: inc/core/class-astra-admin-settings.php:497
+#: inc/core/class-astra-admin-settings.php:534
+#: inc/core/class-astra-admin-settings.php:1366
+#: inc/core/class-astra-admin-settings.php:1383
 msgid "Activate"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:481
-#: inc/core/class-astra-admin-settings.php:513
-#: inc/core/class-astra-admin-settings.php:1369
+#: inc/core/class-astra-admin-settings.php:498
+#: inc/core/class-astra-admin-settings.php:535
+#: inc/core/class-astra-admin-settings.php:1400
 msgid "Deactivate"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:482
-#: inc/core/class-astra-admin-settings.php:514
+#: inc/core/class-astra-admin-settings.php:499
+#: inc/core/class-astra-admin-settings.php:536
 msgid "Settings"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:638
+#: inc/core/class-astra-admin-settings.php:661
 msgid "Import Starter Template"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:645
+#: inc/core/class-astra-admin-settings.php:668
 msgid "Starter Templates?"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:648
+#: inc/core/class-astra-admin-settings.php:671
 #. translators: %1$s: Starter site link.
 msgid "Did you know %1$s offers a free library of %2$s "
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:657
-msgid "Import your favorite site one click and start your project in style!"
+#: inc/core/class-astra-admin-settings.php:680
+msgid "Import your favorite site in one click and start your project with style!"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:705
+#: inc/core/class-astra-admin-settings.php:728
 msgid "Knowledge Base"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:709
+#: inc/core/class-astra-admin-settings.php:732
 msgid "Not sure how something works? Take a peek at the knowledge base and learn."
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:713
+#: inc/core/class-astra-admin-settings.php:736
 msgid "Visit Knowledge Base &#187;"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:747
+#: inc/core/class-astra-admin-settings.php:770
 #. translators: %1$s: Astra Theme name.
 msgid "%1$s Community"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:757
+#: inc/core/class-astra-admin-settings.php:780
 #. translators: %1$s: Astra Theme name.
 msgid ""
 "Join the community of super helpful %1$s users. Say hello, ask questions, "
 "give feedback and help each other!"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:764
+#: inc/core/class-astra-admin-settings.php:787
 msgid "Join Our Facebook Group &#187;"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:794
+#: inc/core/class-astra-admin-settings.php:817
 #. translators: %1$s: Astra Knowledge doc link.
 msgid "Five Star Support"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:801
+#: inc/core/class-astra-admin-settings.php:824
 #. translators: %1$s: Astra Theme name.
 msgid "Got a question? Get in touch with %1$s developers. We're happy to help!"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:808
+#: inc/core/class-astra-admin-settings.php:831
 msgid "Submit a Ticket &#187;"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:829
+#: inc/core/class-astra-admin-settings.php:852
 #. translators: %1$s: Astra Knowledge doc link.
 msgid "More Options Available with Astra Pro!"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:836
+#: inc/core/class-astra-admin-settings.php:859
 msgid "Upload Logo"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:841
+#: inc/core/class-astra-admin-settings.php:864
 msgid "Set Colors"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:846
+#: inc/core/class-astra-admin-settings.php:869
 msgid "Customize Fonts"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:851
+#: inc/core/class-astra-admin-settings.php:874
 msgid "Layout Options"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:856
+#: inc/core/class-astra-admin-settings.php:879
 msgid "Header Options"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:861
+#: inc/core/class-astra-admin-settings.php:884
 msgid "Blog Layouts"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:866
+#: inc/core/class-astra-admin-settings.php:889
 msgid "Footer Settings"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:871
+#: inc/core/class-astra-admin-settings.php:894
 msgid "Sidebar Options"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:889
-#: inc/core/class-astra-admin-settings.php:902
-#: inc/core/class-astra-admin-settings.php:915
-#: inc/core/class-astra-admin-settings.php:928
-#: inc/core/class-astra-admin-settings.php:941
-#: inc/core/class-astra-admin-settings.php:954
-#: inc/core/class-astra-admin-settings.php:967
-#: inc/core/class-astra-admin-settings.php:980
-#: inc/core/class-astra-admin-settings.php:995
-#: inc/core/class-astra-admin-settings.php:1011
-#: inc/core/class-astra-admin-settings.php:1024
-#: inc/core/class-astra-admin-settings.php:1037
-#: inc/core/class-astra-admin-settings.php:1050
-#: inc/core/class-astra-admin-settings.php:1063
-#: inc/core/class-astra-admin-settings.php:1076
-#: inc/core/class-astra-admin-settings.php:1090
-#: inc/core/class-astra-admin-settings.php:1103
-#: inc/core/class-astra-admin-settings.php:1116
+#: inc/core/class-astra-admin-settings.php:912
+#: inc/core/class-astra-admin-settings.php:925
+#: inc/core/class-astra-admin-settings.php:938
+#: inc/core/class-astra-admin-settings.php:951
+#: inc/core/class-astra-admin-settings.php:964
+#: inc/core/class-astra-admin-settings.php:977
+#: inc/core/class-astra-admin-settings.php:990
+#: inc/core/class-astra-admin-settings.php:1003
+#: inc/core/class-astra-admin-settings.php:1018
+#: inc/core/class-astra-admin-settings.php:1034
+#: inc/core/class-astra-admin-settings.php:1047
+#: inc/core/class-astra-admin-settings.php:1060
+#: inc/core/class-astra-admin-settings.php:1073
+#: inc/core/class-astra-admin-settings.php:1086
+#: inc/core/class-astra-admin-settings.php:1099
+#: inc/core/class-astra-admin-settings.php:1113
+#: inc/core/class-astra-admin-settings.php:1126
+#: inc/core/class-astra-admin-settings.php:1139
 msgid "Learn More &#187;"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:921
+#: inc/core/class-astra-admin-settings.php:944
 msgid "Blog Pro"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:934
+#: inc/core/class-astra-admin-settings.php:957
 #: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:361
 msgid "Mobile Header"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:947
+#: inc/core/class-astra-admin-settings.php:970
 msgid "Header Sections"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:960
+#: inc/core/class-astra-admin-settings.php:983
 msgid "Nav Menu"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:973
+#: inc/core/class-astra-admin-settings.php:996
 msgid "Sticky Header"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:986
+#: inc/core/class-astra-admin-settings.php:1009
 msgid "Page Headers"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:987
+#: inc/core/class-astra-admin-settings.php:1010
 msgid "Make your header layouts look more appealing and sexy!"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:1001
+#: inc/core/class-astra-admin-settings.php:1024
 msgid "Custom Layouts"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:1003
+#: inc/core/class-astra-admin-settings.php:1026
 msgid "Add content conditionally in the various hook areas of the theme."
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:1017
+#: inc/core/class-astra-admin-settings.php:1040
 msgid "Site Layouts"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:1030
+#: inc/core/class-astra-admin-settings.php:1053
 #: inc/customizer/class-astra-customizer-register-sections-panels.php:168
 #: inc/customizer/class-astra-customizer-register-sections-panels.php:274
 msgid "Footer Widgets"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:1043
+#: inc/core/class-astra-admin-settings.php:1066
 msgid "Scroll To Top"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:1083
+#: inc/core/class-astra-admin-settings.php:1106
 msgid "Supercharge your LearnDash website with amazing design features."
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:1109
+#: inc/core/class-astra-admin-settings.php:1132
 msgid "White Label"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:1125
+#: inc/core/class-astra-admin-settings.php:1148
 msgid "Links to Customizer Settings:"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:1199
+#: inc/core/class-astra-admin-settings.php:1222
 #. translators: %1s Astra Theme
 msgid "Extend %1s with free plugins!"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:1428
-#: inc/core/class-astra-admin-settings.php:1471
+#: inc/core/class-astra-admin-settings.php:1458
+#: inc/core/class-astra-admin-settings.php:1507
+#: inc/lib/notices/class-astra-notices.php:125
+msgid "WordPress Nonce not validated."
+msgstr ""
+
+#: inc/core/class-astra-admin-settings.php:1465
+#: inc/core/class-astra-admin-settings.php:1514
 msgid "No plugin specified"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:1454
+#: inc/core/class-astra-admin-settings.php:1491
 msgid "Plugin Successfully Activated"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:1492
+#: inc/core/class-astra-admin-settings.php:1535
 msgid "Plugin Successfully Deactivated"
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:1524
+#: inc/core/class-astra-admin-settings.php:1567
 #. translators: %1$1s: Addon Name, %2$2s: Minimum Required version of the Astra
 #. Addon
 msgid "Update to the latest version of %1$2s to make changes in settings below."
 msgstr ""
 
-#: inc/core/class-astra-admin-settings.php:1557
+#: inc/core/class-astra-admin-settings.php:1600
 msgid " Lightning Fast & Fully Customizable WordPress theme!"
 msgstr ""
 
@@ -1645,16 +1701,16 @@ msgid ""
 "searching can help."
 msgstr ""
 
-#: inc/core/common-functions.php:847
+#: inc/core/common-functions.php:859
 msgid "This page doesn't seem to exist."
 msgstr ""
 
-#: inc/core/common-functions.php:853 inc/core/common-functions.php:945
+#: inc/core/common-functions.php:865 inc/core/common-functions.php:957
 #. translators: 1: search string
 msgid "Search Results for: %s"
 msgstr ""
 
-#: inc/core/common-functions.php:1143
+#: inc/core/common-functions.php:1160
 #: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:35
 #: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:155
 #: inc/extras.php:400
@@ -1665,7 +1721,7 @@ msgstr ""
 #: inc/customizer/astra-pro/class-astra-pro-upgrade-link-configs.php:33
 #: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:389
 #: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:606
-#: inc/customizer/configurations/layout/class-astra-site-container-layout-configs.php:166
+#: inc/customizer/configurations/layout/class-astra-site-container-layout-configs.php:167
 #: inc/customizer/configurations/typography/class-astra-archive-typo-configs.php:147
 #: inc/customizer/configurations/typography/class-astra-content-typo-configs.php:268
 #: inc/customizer/configurations/typography/class-astra-single-typo-configs.php:112
@@ -1779,7 +1835,7 @@ msgstr ""
 msgid "Enter valid email address!"
 msgstr ""
 
-#: inc/customizer/class-astra-customizer.php:793
+#: inc/customizer/class-astra-customizer.php:805
 #: inc/customizer/configurations/typography/class-astra-body-typo-configs.php:58
 msgid "Default System Font"
 msgstr ""
@@ -1984,7 +2040,7 @@ msgstr ""
 
 #: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:389
 #: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:606
-#: inc/customizer/configurations/layout/class-astra-site-container-layout-configs.php:166
+#: inc/customizer/configurations/layout/class-astra-site-container-layout-configs.php:167
 #: inc/customizer/configurations/typography/class-astra-archive-typo-configs.php:147
 #: inc/customizer/configurations/typography/class-astra-content-typo-configs.php:268
 #: inc/customizer/configurations/typography/class-astra-single-typo-configs.php:112
@@ -2167,35 +2223,39 @@ msgstr ""
 msgid "Archives Layout"
 msgstr ""
 
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:43
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:70
+msgid "Customize Transparent Header."
+msgstr ""
+
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:82
 msgid "Site Logo"
 msgstr ""
 
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:84
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:123
 msgid "Different Logo For Mobile Devices?"
 msgstr ""
 
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:99
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:138
 msgid "Mobile Logo (optional)"
 msgstr ""
 
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:133
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:172
 msgid "Site Icon"
 msgstr ""
 
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:148
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:187
 msgid "Display Site Title"
 msgstr ""
 
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:168
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:207
 msgid "Display Site Tagline"
 msgstr ""
 
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:189
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:228
 msgid "Inline Logo & Site Title"
 msgstr ""
 
-#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:228
+#: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:267
 msgid "Site Tagline"
 msgstr ""
 
@@ -2253,111 +2313,195 @@ msgid "Post / Page Title"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:71
+#: inc/customizer/custom-controls/class-astra-customizer-control-base.php:65
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:89
 msgid "No file selected"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:72
+#: inc/customizer/custom-controls/class-astra-customizer-control-base.php:66
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:90
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:158
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:245
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:332
 msgid "Less Settings"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:73
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:120
+#: inc/customizer/custom-controls/class-astra-customizer-control-base.php:67
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:91
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:160
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:247
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:334
 msgid "More Settings"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:110
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:147
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:234
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:321
 msgid "Background Image"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:115
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:152
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:239
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:326
 msgid "No Image Selected"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:118
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:155
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:242
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:329
 msgid "Remove"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:119
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:156
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:243
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:330
 msgid "Select Image"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:128
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:169
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:256
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:343
 msgid "No Repeat"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:129
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:170
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:257
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:344
 msgid "Repeat All"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:130
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:171
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:258
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:345
 msgid "Repeat Horizontally"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:131
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:172
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:259
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:346
 msgid "Repeat Vertically"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:138
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:179
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:266
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:353
 msgid "Left Top"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:139
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:180
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:267
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:354
 msgid "Left Center"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:140
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:181
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:268
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:355
 msgid "Left Bottom"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:141
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:182
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:269
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:356
 msgid "Right Top"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:142
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:183
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:270
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:357
 msgid "Right Center"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:143
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:184
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:271
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:358
 msgid "Right Bottom"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:144
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:185
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:272
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:359
 msgid "Center Top"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:145
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:186
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:273
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:360
 msgid "Center Center"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:146
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:187
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:274
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:361
 msgid "Center Bottom"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:152
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:193
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:280
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:367
 msgid "Background Size"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:155
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:196
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:283
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:370
 msgid "Cover"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:158
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:199
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:286
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:373
 msgid "Contain"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:161
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:202
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:289
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:376
 msgid "Auto"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:168
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:209
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:296
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:383
 msgid "Background Attachment"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:174
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:215
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:302
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:389
 msgid "Scroll"
 msgstr ""
 
 #: inc/customizer/custom-controls/background/class-astra-control-background.php:177
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:218
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:305
+#: inc/customizer/custom-controls/responsive-background/class-astra-control-responsive-background.php:392
 msgid "Fixed"
 msgstr ""
 
@@ -2467,16 +2611,12 @@ msgstr ""
 msgid "Click here to assign a widget for this area."
 msgstr ""
 
-#: inc/extras.php:1775
+#: inc/extras.php:1773
 msgid "Astra Pro"
 msgstr ""
 
 #: inc/lib/batch-processing/class-wp-background-process.php:425
 msgid "Every %d Minutes"
-msgstr ""
-
-#: inc/lib/notices/class-astra-notices.php:120
-msgid "WordPress Nonce not validated."
 msgstr ""
 
 #: inc/metabox/class-astra-meta-boxes.php:159
@@ -2577,49 +2717,49 @@ msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:403
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:406
 msgctxt "breadcrumbs aria label"
 msgid "Breadcrumbs"
 msgstr ""
 
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:876
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:879
 msgctxt "minute and hour archives time format"
 msgid "g:i a"
 msgstr ""
 
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:893
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:896
 msgctxt "minute archives time format"
 msgid "i"
 msgstr ""
 
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:910
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:913
 msgctxt "hour archives time format"
 msgid "g a"
 msgstr ""
 
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:926
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:955
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:982
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:1009
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:1349
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:929
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:958
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:985
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:1012
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:1352
 msgctxt "yearly archives date format"
 msgid "Y"
 msgstr ""
 
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:927
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:983
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:1353
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:930
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:986
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:1356
 msgctxt "monthly archives date format"
 msgid "F"
 msgstr ""
 
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:928
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:1357
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:931
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:1360
 msgctxt "daily archives date format"
 msgid "j"
 msgstr ""
 
-#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:956
+#: inc/addons/breadcrumbs/class-astra-breadcrumb-trail.php:959
 msgctxt "weekly archives date format"
 msgid "W"
 msgstr ""
@@ -2627,17 +2767,17 @@ msgstr ""
 #: inc/compatibility/woocommerce/class-astra-woocommerce.php:212
 #. translators: 1: number of products
 msgctxt "product categories"
-msgid "<mark class=\"count\">%1$s Product</mark>"
-msgid_plural "<mark class=\"count\">%1$s Products</mark>"
+msgid "%1$s Product"
+msgid_plural "%1$s Products"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/core/common-functions.php:1140
+#: inc/core/common-functions.php:1157
 msgctxt "label"
 msgid "Search for:"
 msgstr ""
 
-#: inc/core/common-functions.php:1141
+#: inc/core/common-functions.php:1158
 msgctxt "placeholder"
 msgid "Search &hellip;"
 msgstr ""

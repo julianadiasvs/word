@@ -29,24 +29,66 @@ function cau_set_email() {
 	return $emailArray;
 
 }
+// Mail format
+function cau_is_html() {
+
+	// Check if cau_get_db_value() function exists.
+	if ( !function_exists( 'cau_get_db_value' ) ) require_once( plugin_dir_path( __FILE__ ) . 'cau_function.php' );
+
+	// Check if html
+	if( cau_get_db_value( 'html_or_text' ) == 'html' ) {
+		$html = true;
+	} else {
+		$html = false;
+	}
+
+}
 
 // Set the content for the emails about pending updates
-function cau_pending_message( $single, $plural ) {
+function cau_pending_message( $single, $plural, $list ) {
 
-	return sprintf( esc_html__( 'There are one or more %1$s updates waiting on your WordPress site at %2$s but we noticed that you disabled auto-updating for %3$s. 
+	// What markup to use
+	if( cau_is_html() ) $break = '<br />';
+	else $break = "\n";
 
-Leaving your site outdated is a security risk so please consider manually updating them via your dashboard.', 'companion-auto-update' ), $single, get_site_url(), $plural );
+	// Base text
+	$text = sprintf( esc_html__( 'You have pending %1$s updates on your WordPress site at %2$s.', 'companion-auto-update' ), $single, get_site_url() );
+	$text .= $break;
+
+	if( !empty( $list ) ) {
+		
+		$text .= $break;
+		$text .= sprintf( esc_html__( 'The following %1$s have new versions available.', 'companion-auto-update' ), $plural );
+		$text .= $break;
+
+		if( cau_is_html() ) $text .= "<ol>";
+		foreach ( $list as $key => $value ) {
+			if( cau_is_html() ) {
+				$text .= "<li>$value</li>";
+			} else {
+				$text .= "-$value\n";
+			}
+		}
+		if( cau_is_html() ) $text .= "</ol>";
+		
+		$text .= $break;
+	}
+
+	$text .= __( 'Leaving your site outdated is a security risk so please consider manually updating them.', 'companion-auto-update' );
+	$text .= $break;
+
+	// End
+	$text .= sprintf( esc_html__( 'Head over to %1$s and check the ones you want to update.', 'companion-auto-update' ), get_admin_url().'update-core.php' );
+
+	return $text;
 
 }
 
 // Set the content for the emails about recent updates
 function cau_updated_message( $type, $updatedList ) {
 
-	// Check if cau_get_db_value() function exists.
-	if ( !function_exists( 'cau_get_db_value' ) ) require_once( plugin_dir_path( __FILE__ ) . 'cau_function.php' );
-
 	// What markup to use
-	if( cau_get_db_value( 'html_or_text' ) == 'html' ) $break = '<br />';
+	if( cau_is_html() ) $break = '<br />';
 	else $break = "\n";
 
 	// The message
@@ -84,13 +126,18 @@ function cau_list_theme_updates() {
 
 			require_once ABSPATH . '/wp-admin/includes/update.php';
 			$themes = get_theme_updates();
+			$list 	= array();
 
 			if ( !empty( $themes ) ) {
+				
+				foreach ( $themes as $stylesheet => $theme ) {
+					array_push( $list, $theme->get( 'Name' ) );
+				}
 
-				$subject 		= '[' . get_bloginfo( 'name' ) . '] ' . __('Theme update available.', 'companion-auto-update');
+				$subject 		= '[' . get_bloginfo( 'name' ) . '] ' . __( 'Theme update available.', 'companion-auto-update' );
 				$type 			= __('theme', 'companion-auto-update');
 				$type_plural	= __('themes', 'companion-auto-update');
-				$message 		= cau_pending_message( $type, $type_plural );
+				$message 		= cau_pending_message( $type, $type_plural, $list );
 				
 				foreach ( cau_set_email() as $key => $value) {
 					foreach ($value as $k => $v) {
@@ -122,10 +169,17 @@ function cau_list_plugin_updates() {
 
 			if ( !empty( $plugins ) ) {
 
-				$subject 		= '[' . get_bloginfo( 'name' ) . '] ' . __('Plugin update available.', 'companion-auto-update');
+				$list = array();
+				foreach ( (array) $plugins as $plugin_file => $plugin_data ) {
+					$plugin_data 	= (object) _get_plugin_data_markup_translate( $plugin_file, (array) $plugin_data, false, true );
+					$name 			= $plugin_data->Name;
+					array_push( $list, $name );
+				}
+
+				$subject 		= '[' . get_bloginfo( 'name' ) . '] ' . __( 'Plugin update available.', 'companion-auto-update' );
 				$type 			= __('plugin', 'companion-auto-update');
 				$type_plural	= __('plugins', 'companion-auto-update');
-				$message 		= cau_pending_message( $type, $type_plural );
+				$message 		= cau_pending_message( $type, $type_plural, $list );
 
 				foreach ( cau_set_email() as $key => $value) {
 					foreach ($value as $k => $v) {
@@ -181,12 +235,16 @@ function cau_plugin_updated() {
 		// Get last update date
 		$fileDate 	= date ( 'YmdHi', filemtime( $fullPath ) );
 
-		if( $schedule_mail == 'hourly' ) {
-			$lastday = date( 'YmdHi', strtotime( '-1 hour' ) );
-		} elseif( $schedule_mail == 'twicedaily' ) {
-			$lastday = date( 'YmdHi', strtotime( '-12 hours' ) );
-		} elseif( $schedule_mail == 'daily' ) {
-			$lastday = date( 'YmdHi', strtotime( '-1 day' ) );
+		switch ( $schedule_mail ) {
+			case 'hourly':
+				$lastday = date( 'YmdHi', strtotime( '-1 hour' ) );
+				break;
+			case 'twicedaily':
+				$lastday = date( 'YmdHi', strtotime( '-12 hours' ) );
+				break;
+			default:
+				$lastday = date( 'YmdHi', strtotime( '-1 day' ) );
+				break;
 		}
 
 		if( $fileDate >= $lastday ) {

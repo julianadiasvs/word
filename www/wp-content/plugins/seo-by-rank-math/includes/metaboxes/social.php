@@ -43,10 +43,10 @@ $cmb->add_field(
 		'id'      => 'rank_math_facebook_image',
 		'type'    => 'file',
 		'name'    => esc_html__( 'Image', 'rank-math' ),
-		'options' => array( 'url' => false ),
-		'text'    => array( 'add_upload_file_text' => esc_html__( 'Add Image', 'rank-math' ) ),
+		'options' => [ 'url' => false ],
+		'text'    => [ 'add_upload_file_text' => esc_html__( 'Add Image', 'rank-math' ) ],
 		'desc'    => esc_html__( 'Upload at least 600x315px image. Recommended size is 1200x630px.', 'rank-math' ),
-		'after'   => '<div class="notice notice-warning inline hidden"><p>' . esc_html__( 'Image is smaller than the minimum size, please select a different image.', 'rank-math' ) . '</p></div>',
+		'after'   => '<div class="notice notice-warning inline hidden rank-math-notice"><p>' . esc_html__( 'Image is smaller than the minimum size, please select a different image.', 'rank-math' ) . '</p></div>',
 	]
 );
 
@@ -63,19 +63,19 @@ $cmb->add_field(
 		'id'         => 'rank_math_facebook_description',
 		'type'       => 'textarea',
 		'name'       => esc_html__( 'Description', 'rank-math' ),
-		'attributes' => array(
+		'attributes' => [
 			'rows'            => 3,
 			'data-autoresize' => true,
-		),
+		],
 	]
 );
 
 $cmb->add_field(
 	[
 		'id'      => 'rank_math_facebook_enable_image_overlay',
-		'type'    => 'switch',
+		'type'    => 'toggle',
 		'name'    => esc_html__( 'Add icon overlay to thumbnail', 'rank-math' ),
-		'desc'    => wp_kses_post( __( '<div class="notice notice-alt notice-warning warning inline"><p>Please be careful with this option. Although this option will help increase CTR on Facebook, it might get you penalised if over-used.</p></div>', 'rank-math' ) ),
+		'desc'    => wp_kses_post( __( '<div class="notice notice-alt notice-warning warning inline rank-math-notice"><p>Please be careful with this option. Although this option will help increase CTR on Facebook, it might get you penalised if over-used.</p></div>', 'rank-math' ) ),
 		'default' => $this->do_filter( 'metabox/social/overlay_icon', 'off', 'facebook' ),
 	]
 );
@@ -87,9 +87,9 @@ $cmb->add_field(
 		'name'    => esc_html__( 'Icon overlay', 'rank-math' ),
 		'options' => Helper::choices_overlay_images( 'names' ),
 		'default' => 'play',
-		'dep'     => array(
-			array( 'rank_math_facebook_enable_image_overlay', 'on' ),
-		),
+		'dep'     => [
+			[ 'rank_math_facebook_enable_image_overlay', 'on' ],
+		],
 	]
 );
 
@@ -115,9 +115,9 @@ $cmb->add_field(
 /**
  * Twitter data.
  */
-$dep = array(
-	array( 'rank_math_twitter_use_facebook', 'off' ),
-);
+$dep = [
+	[ 'rank_math_twitter_use_facebook', 'on', '!=' ],
+];
 
 $cmb->add_field(
 	[
@@ -131,18 +131,18 @@ $cmb->add_field(
 $cmb->add_field(
 	[
 		'id'      => 'rank_math_twitter_use_facebook',
-		'type'    => 'switch',
+		'type'    => 'toggle',
 		'name'    => esc_html__( 'Use Data from Facebook Tab', 'rank-math' ),
 		'default' => 'on',
 	]
 );
 
-$card_type = array(
+$card_type = [
 	'summary_large_image' => esc_html__( 'Summary Card with Large Image', 'rank-math' ),
 	'summary_card'        => esc_html__( 'Summary Card', 'rank-math' ),
 	'app'                 => esc_html__( 'App Card', 'rank-math' ),
 	'player'              => esc_html__( 'Player Card', 'rank-math' ),
-);
+];
 if ( Admin_Helper::is_term_profile_page() ) {
 	unset( $card_type['app'], $card_type['player'] );
 }
@@ -157,7 +157,7 @@ $cmb->add_field(
 );
 
 if ( ! Admin_Helper::is_term_profile_page() ) {
-	$player = array( array( 'rank_math_twitter_card_type', 'player' ) );
+	$player = [ [ 'rank_math_twitter_card_type', 'player' ] ];
 	$cmb->add_field(
 		[
 			'id'      => 'rank_math_twitter_player_info',
@@ -169,7 +169,7 @@ if ( ! Admin_Helper::is_term_profile_page() ) {
 		]
 	);
 
-	$app = array( array( 'rank_math_twitter_card_type', 'app' ) );
+	$app = [ [ 'rank_math_twitter_card_type', 'app' ] ];
 	$cmb->add_field(
 		[
 			'id'      => 'rank_math_twitter_app_info',
@@ -182,18 +182,18 @@ if ( ! Admin_Helper::is_term_profile_page() ) {
 	);
 }
 
-$basic   = array( 'relation' => 'and' ) + $dep;
-$basic[] = array( 'rank_math_twitter_card_type', 'app', '!=' );
+$basic   = [ 'relation' => 'and' ] + $dep;
+$basic[] = [ 'rank_math_twitter_card_type', 'app', '!=' ];
 $cmb->add_field(
 	[
 		'id'      => 'rank_math_twitter_image',
 		'type'    => 'file',
 		'name'    => esc_html__( 'Image', 'rank-math' ),
-		'options' => array( 'url' => false ),
-		'text'    => array( 'add_upload_file_text' => esc_html__( 'Add Image', 'rank-math' ) ),
+		'options' => [ 'url' => false ],
+		'text'    => [ 'add_upload_file_text' => esc_html__( 'Add Image', 'rank-math' ) ],
 		'dep'     => $basic,
 		'desc'    => esc_html__( 'Images for this Card support an aspect ratio of 2:1 with minimum dimensions of 300x157 or maximum of 4096x4096 pixels. Images must be less than 5MB in size.', 'rank-math' ),
-		'after'   => '<div class="notice notice-warning inline hidden"><p>' . esc_html__( 'Image is smaller than the minimum size, please select a different image.', 'rank-math' ) . '</p></div>',
+		'after'   => '<div class="notice notice-warning inline hidden rank-math-notice"><p>' . esc_html__( 'Image is smaller than the minimum size, please select a different image.', 'rank-math' ) . '</p></div>',
 	]
 );
 
@@ -211,29 +211,29 @@ $cmb->add_field(
 		'id'         => 'rank_math_twitter_description',
 		'type'       => 'textarea',
 		'name'       => esc_html__( 'Description', 'rank-math' ),
-		'attributes' => array(
+		'attributes' => [
 			'rows'            => 3,
 			'data-autoresize' => true,
-		),
+		],
 		'dep'        => $basic,
 	]
 );
 
 // Image overlay fields.
-$img_overlay   = array( 'relation' => 'and' ) + $dep;
-$img_overlay[] = array( 'rank_math_twitter_card_type', 'player,app', '!=' );
+$img_overlay   = [ 'relation' => 'and' ] + $dep;
+$img_overlay[] = [ 'rank_math_twitter_card_type', 'player,app', '!=' ];
 $cmb->add_field(
 	[
 		'id'      => 'rank_math_twitter_enable_image_overlay',
-		'type'    => 'switch',
+		'type'    => 'toggle',
 		'name'    => esc_html__( 'Add icon overlay to thumbnail', 'rank-math' ),
-		'desc'    => wp_kses_post( __( '<div class="notice notice-alt notice-warning warning inline"><p>Please be careful with this option. Although this option will help increace CTR on Facebook, it might get you penalised if over-used.</p></div>', 'rank-math' ) ),
+		'desc'    => wp_kses_post( __( '<div class="notice notice-alt notice-warning warning inline rank-math-notice"><p>Please be careful with this option. Although this option will help increace CTR on Facebook, it might get you penalised if over-used.</p></div>', 'rank-math' ) ),
 		'default' => $this->do_filter( 'metabox/social/overlay_icon', 'off', 'twitter' ),
 		'dep'     => $img_overlay,
 	]
 );
 
-$img_overlay[] = array( 'rank_math_twitter_enable_image_overlay', 'on' );
+$img_overlay[] = [ 'rank_math_twitter_enable_image_overlay', 'on' ];
 $cmb->add_field(
 	[
 		'id'      => 'rank_math_twitter_image_overlay',
@@ -251,9 +251,9 @@ if ( Admin_Helper::is_user_edit() ) {
 		[
 			'id'   => 'rank_math_twitter_author',
 			'type' => 'text',
-			'name' => esc_html__( 'Author Profile URL', 'rank-math' ),
+			'name' => esc_html__( 'Author Twitter Username', 'rank-math' ),
 			/* translators: option page link */
-			'desc' => sprintf( wp_kses_post( __( 'Insert Twitter username to add twitter:creator tag to posts when the page is shared on Twitter.<br>You can set up default URL for fallback in <a href="%s" target="_blank">SEO &raquo; Titles &amp; Meta &raquo; Social</a>.', 'rank-math' ) ), Helper::get_admin_url( 'options-titles#setting-panel-social' ) ),
+			'desc' => sprintf( wp_kses_post( __( 'Insert Twitter username to add twitter:creator tag to posts when the page is shared on Twitter.<br>You can set up default username for fallback in <a href="%s" target="_blank">SEO &raquo; Titles &amp; Meta &raquo; Social</a>.', 'rank-math' ) ), Helper::get_admin_url( 'options-titles#setting-panel-social' ) ),
 		]
 	);
 }

@@ -83,6 +83,7 @@ if( isset( $_POST['reset'] ) ) {
 	echo '<div id="message" class="updated"><p><b>'.__( 'Succes', 'companion-auto-update' ).' &ndash;</b> '.sprintf( esc_html__( 'The no-update-list has been reset, all %s will be auto-updated from now on', 'companion-auto-update' ), strtolower( $filter_name ) ).'.</p></div>';
 }
 
+
 ?>
 
 <form method="POST">
@@ -156,6 +157,7 @@ if( isset( $_POST['reset'] ) ) {
 				<td class="column-name">
 					<p style="margin-bottom: 0px;"><strong>'. $name .'</strong></p>
 					<small class="description" style="opacity: 0.5; margin-bottom: 3px;">'.$actualSlug.'</small>
+					<p>'.cau_updatePluginInformation( $actualSlug, 'Auto', 'Version' ).'</p>
 				</td>
 
 				<td class="cau_hide_on_mobile column-status">

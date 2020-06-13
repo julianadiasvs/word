@@ -29,7 +29,6 @@ if ( ! function_exists( 'astra_get_foreground_color' ) ) {
 		// bail early if color's not set.
 		if ( 'transparent' == $hex || 'false' == $hex || '#' == $hex || empty( $hex ) ) {
 			return 'transparent';
-
 		}
 
 		// Get clean hex code.
@@ -37,6 +36,19 @@ if ( ! function_exists( 'astra_get_foreground_color' ) ) {
 
 		if ( 3 == strlen( $hex ) ) {
 			$hex = str_repeat( substr( $hex, 0, 1 ), 2 ) . str_repeat( substr( $hex, 1, 1 ), 2 ) . str_repeat( substr( $hex, 2, 1 ), 2 );
+		}
+
+		if ( strpos( $hex, 'rgba' ) !== false ) {
+
+			$rgba = preg_replace( '/[^0-9,]/', '', $hex );
+			$rgba = explode( ',', $rgba );
+
+			$hex = sprintf( '#%02x%02x%02x', $rgba[0], $rgba[1], $rgba[2] );
+		}
+
+		// Return if non hex.
+		if ( ! ctype_xdigit( $hex ) ) {
+			return $hex;
 		}
 
 		// Get r, g & b codes from hex code.
@@ -988,6 +1000,11 @@ if ( ! function_exists( 'astra_adjust_brightness' ) ) {
 		// Get rgb vars.
 		$hex = str_replace( '#', '', $hex );
 
+		// Return if non hex.
+		if ( ! ctype_xdigit( $hex ) ) {
+			return $hex;
+		}
+
 		$shortcode_atts = array(
 			'r' => hexdec( substr( $hex, 0, 2 ) ),
 			'g' => hexdec( substr( $hex, 2, 2 ) ),
@@ -1204,6 +1221,57 @@ if ( ! function_exists( 'astra_responsive_spacing' ) ) {
 	}
 }
 
+/**
+ * Get the tablet breakpoint value.
+ *
+ * @param string $min min.
+ * @param string $max max.
+ *
+ * @since 2.4.0
+ *
+ * @return number $breakpoint.
+ */
+function astra_get_tablet_breakpoint( $min = '', $max = '' ) {
+
+	$update_breakpoint = astra_get_option( 'can-update-theme-tablet-breakpoint', true );
+
+	// Change default for new users.
+	$default = ( true === $update_breakpoint ) ? 921 : 768;
+
+	$header_breakpoint = apply_filters( 'astra_tablet_breakpoint', $default );
+
+	if ( '' !== $min ) {
+		$header_breakpoint = $header_breakpoint - $min;
+	} elseif ( '' !== $max ) {
+		$header_breakpoint = $header_breakpoint + $max;
+	}
+
+	return absint( $header_breakpoint );
+}
+
+/**
+ * Get the mobile breakpoint value.
+ *
+ * @param string $min min.
+ * @param string $max max.
+ *
+ * @since 2.4.0
+ *
+ * @return number header_breakpoint.
+ */
+function astra_get_mobile_breakpoint( $min = '', $max = '' ) {
+
+	$header_breakpoint = apply_filters( 'astra_mobile_breakpoint', 544 );
+
+	if ( '' !== $min ) {
+		$header_breakpoint = $header_breakpoint - $min;
+	} elseif ( '' !== $max ) {
+		$header_breakpoint = $header_breakpoint + $max;
+	}
+
+	return absint( $header_breakpoint );
+}
+
 /*
  * Apply CSS for the element
  */
@@ -1223,10 +1291,10 @@ if ( ! function_exists( 'astra_color_responsive_css' ) ) {
 			$css .= $selector . '{' . $css_property . ':' . esc_attr( $setting['desktop'] ) . ';}';
 		}
 		if ( isset( $setting['tablet'] ) && ! empty( $setting['tablet'] ) ) {
-			$css .= '@media (max-width:768px) {' . $selector . '{' . $css_property . ':' . esc_attr( $setting['tablet'] ) . ';} }';
+			$css .= '@media (max-width:' . astra_get_tablet_breakpoint() . 'px) {' . $selector . '{' . $css_property . ':' . esc_attr( $setting['tablet'] ) . ';} }';
 		}
 		if ( isset( $setting['mobile'] ) && ! empty( $setting['mobile'] ) ) {
-			$css .= '@media (max-width:544px) {' . $selector . '{' . $css_property . ':' . esc_attr( $setting['mobile'] ) . ';} }';
+			$css .= '@media (max-width:' . astra_get_mobile_breakpoint() . 'px) {' . $selector . '{' . $css_property . ':' . esc_attr( $setting['mobile'] ) . ';} }';
 		}
 		return $css;
 	}
@@ -1315,4 +1383,86 @@ function astra_get_db_option( $option, $default = '', $deprecated = '' ) {
 	 * @var Mixed.
 	 */
 	return apply_filters( "astra_get_db_option_{$option}", $value, $option, $default );
+}
+
+/**
+ * Add Responsive bacground CSS
+ *
+ * @param  array $bg_obj_res   Color array.
+ * @param  array $device       Device name.
+ *
+ * @return array         Color code in HEX.
+ */
+function astra_get_responsive_background_obj( $bg_obj_res, $device ) {
+
+	$gen_bg_css = array();
+
+	if ( ! is_array( $bg_obj_res ) ) {
+		return;
+	}
+
+	$bg_obj      = $bg_obj_res[ $device ];
+	$bg_img      = isset( $bg_obj['background-image'] ) ? $bg_obj['background-image'] : '';
+	$bg_tab_img  = isset( $bg_obj_res['tablet']['background-image'] ) ? $bg_obj_res['tablet']['background-image'] : '';
+	$bg_desk_img = isset( $bg_obj_res['desktop']['background-image'] ) ? $bg_obj_res['desktop']['background-image'] : '';
+	$bg_color    = isset( $bg_obj['background-color'] ) ? $bg_obj['background-color'] : '';
+	$tablet_css  = ( isset( $bg_obj_res['tablet']['background-image'] ) && $bg_obj_res['tablet']['background-image'] ) ? true : false;
+	$desktop_css = ( isset( $bg_obj_res['desktop']['background-image'] ) && $bg_obj_res['desktop']['background-image'] ) ? true : false;
+
+	if ( '' !== $bg_img && '' !== $bg_color ) {
+		$gen_bg_css = array(
+			'background-image' => 'linear-gradient(to right, ' . esc_attr( $bg_color ) . ', ' . esc_attr( $bg_color ) . '), url(' . esc_url( $bg_img ) . ')',
+		);
+	} elseif ( '' !== $bg_img ) {
+		$gen_bg_css = array( 'background-image' => 'url(' . esc_url( $bg_img ) . ')' );
+	} elseif ( '' !== $bg_color ) {
+		if ( 'mobile' === $device ) {
+			if ( true == $desktop_css && true == $tablet_css ) {
+				$gen_bg_css = array( 'background-image' => 'linear-gradient(to right, ' . esc_attr( $bg_color ) . ', ' . esc_attr( $bg_color ) . '), url(' . esc_attr( $bg_tab_img ) . ')' );
+			} elseif ( true == $desktop_css ) {
+				$gen_bg_css = array( 'background-image' => 'linear-gradient(to right, ' . esc_attr( $bg_color ) . ', ' . esc_attr( $bg_color ) . '), url(' . esc_attr( $bg_desk_img ) . ')' );
+			} elseif ( true == $tablet_css ) {
+				$gen_bg_css = array( 'background-image' => 'linear-gradient(to right, ' . esc_attr( $bg_color ) . ', ' . esc_attr( $bg_color ) . '), url(' . esc_attr( $bg_tab_img ) . ')' );
+			} else {
+				$gen_bg_css = array(
+					'background-color' => esc_attr( $bg_color ),
+					'background-image' => 'none',
+				);
+			}
+		} elseif ( 'tablet' === $device ) {
+			if ( true == $desktop_css ) {
+				$gen_bg_css = array( 'background-image' => 'linear-gradient(to right, ' . esc_attr( $bg_color ) . ', ' . esc_attr( $bg_color ) . '), url(' . esc_attr( $bg_desk_img ) . ')' );
+			} else {
+				$gen_bg_css = array(
+					'background-color' => esc_attr( $bg_color ),
+					'background-image' => 'none',
+				);
+			}
+		} else {
+			$gen_bg_css = array(
+				'background-color' => esc_attr( $bg_color ),
+				'background-image' => 'none',
+			);
+		}
+	}
+
+	if ( '' !== $bg_img ) {
+		if ( isset( $bg_obj['background-repeat'] ) ) {
+			$gen_bg_css['background-repeat'] = esc_attr( $bg_obj['background-repeat'] );
+		}
+
+		if ( isset( $bg_obj['background-position'] ) ) {
+			$gen_bg_css['background-position'] = esc_attr( $bg_obj['background-position'] );
+		}
+
+		if ( isset( $bg_obj['background-size'] ) ) {
+			$gen_bg_css['background-size'] = esc_attr( $bg_obj['background-size'] );
+		}
+
+		if ( isset( $bg_obj['background-attachment'] ) ) {
+			$gen_bg_css['background-attachment'] = esc_attr( $bg_obj['background-attachment'] );
+		}
+	}
+
+	return $gen_bg_css;
 }

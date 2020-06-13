@@ -6,6 +6,11 @@
 		echo '<div id="message" class="updated"><p><b>'.__( 'Database update completed' ).'</b></p></div>';
 	}
 	
+	if( isset( $_GET['run'] ) && $_GET['run'] == 'db_info_update' ) {
+		cau_savePluginInformation();
+		echo '<div id="message" class="updated"><p><b>'.__( 'Database information update completed' ).'</b></p></div>';
+	}
+	
 	// Date format
 	$dateFormat = get_option( 'date_format' );
 	$dateFormat .= ' '.get_option( 'time_format' );
@@ -20,15 +25,17 @@
 		if( $config->onoroff == 'on' && wp_get_schedule( 'wp_version_check' ) ) {
 			$minorUpdates 	= true;
 			$minorStatus 	= 'enabled';
-			$minorIcon		= 'yes';
+			$minorIcon		= 'yes-alt';
 			$minorInterval 	= wp_get_schedule( 'wp_version_check' );
 			$minorNext 		= date_i18n( $dateFormat, wp_next_scheduled( 'wp_version_check' ) );
+			$minorText 		= __( 'Enabled', 'companion-auto-update' );
 		} else {
 			$minorUpdates 	= false;
 			$minorStatus 	= 'disabled';
-			$minorIcon		= 'no';
+			$minorIcon		= 'marker';
 			$minorInterval 	= '&dash;';
 			$minorNext 		= '&dash;';
+			$minorText 		= __( 'Disabled', 'companion-auto-update' );
 		}
 
 	}
@@ -40,15 +47,17 @@
 		if( $config->onoroff == 'on' && wp_get_schedule( 'wp_version_check' ) ) {
 			$majorUpdates 	= true;
 			$majorStatus 	= 'enabled';
-			$majorIcon		= 'yes';
+			$majorIcon		= 'yes-alt';
 			$majorInterval 	= wp_get_schedule( 'wp_version_check' );
 			$majorNext 		= date_i18n( $dateFormat, wp_next_scheduled( 'wp_version_check' ) );
+			$majorText 		= __( 'Enabled', 'companion-auto-update' );
 		} else {
 			$majorUpdates 	= false;
 			$majorStatus 	= 'disabled';
-			$majorIcon		= 'no';
+			$majorIcon		= 'marker';
 			$majorInterval 	= '&dash;';
 			$majorNext 		= '&dash;';
+			$majorText 		= __( 'Disabled', 'companion-auto-update' );
 		}
 
 	}
@@ -60,15 +69,17 @@
 		if( $config->onoroff == 'on' && wp_get_schedule( 'wp_update_plugins' ) ) {
 			$pluginsUpdates 	= true;
 			$pluginsStatus 		= 'enabled';
-			$pluginsIcon		= 'yes';
+			$pluginsIcon		= 'yes-alt';
 			$pluginsInterval 	= wp_get_schedule( 'wp_update_plugins' );
 			$pluginsNext 		= date_i18n( $dateFormat, wp_next_scheduled( 'wp_update_plugins' ) );
+			$pluginsText 		= __( 'Enabled', 'companion-auto-update' );
 		} else {
 			$pluginsUpdates 	= false;
 			$pluginsStatus 		= 'disabled';
-			$pluginsIcon		= 'no';
+			$pluginsIcon		= 'marker';
 			$pluginsInterval 	= '&dash;';
 			$pluginsNext 		= '&dash;';
+			$pluginsText 		= __( 'Disabled', 'companion-auto-update' );
 		}
 
 	}
@@ -80,15 +91,17 @@
 		if( $config->onoroff == 'on' && wp_get_schedule( 'wp_update_plugins' ) ) {
 			$themesUpdates 		= true;
 			$themesStatus 		= 'enabled';
-			$themesIcon			= 'yes';
+			$themesIcon			= 'yes-alt';
 			$themesInterval 	= wp_get_schedule( 'wp_update_plugins' );
 			$themesNext 		= date_i18n( $dateFormat, wp_next_scheduled( 'wp_update_plugins' ) );
+			$themesText 		= __( 'Enabled', 'companion-auto-update' );
 		} else {
 			$themesUpdates 		= false;
 			$themesStatus 		= 'disabled';
-			$themesIcon			= 'no';
+			$themesIcon			= 'marker';
 			$themesInterval 	= '&dash;';
 			$themesNext 		= '&dash;';
+			$themesText 		= __( 'Disabled', 'companion-auto-update' );
 		}
 
 	}
@@ -113,21 +126,24 @@
 
 		if( $emailCase ) {
 			$setScheduleStatus  	= 'enabled';
-			$setScheduleIcon  		= 'yes';
+			$setScheduleIcon  		= 'yes-alt';
 			$setScheduleInterval 	= wp_get_schedule( 'cau_set_schedule_mail' );
 			$setScheduleNext 		= date_i18n( $dateFormat, wp_next_scheduled( 'cau_set_schedule_mail' ) );
+			$setScheduleText 		= __( 'Enabled', 'companion-auto-update' );
 		} else {
-			$setScheduleStatus  	= 'disabled';
-			$setScheduleIcon  		= 'no';
+			$setScheduleStatus  	= 'warning';
+			$setScheduleIcon  		= 'marker';
 			$setScheduleInterval 	= '&dash;';
 			$setScheduleNext 		= '&dash;';
+			$setScheduleText 		= __( 'Disabled', 'companion-auto-update' );
 		}
 
 	} else {
 		$setScheduleStatus  	= 'disabled';
-		$setScheduleIcon  		= 'no';
+		$setScheduleIcon  		= 'dismiss';
 		$setScheduleInterval 	= '&dash;';
 		$setScheduleNext 		= '&dash;';
+		$setScheduleText 		= __( 'Error', 'companion-auto-update' );
 	}
 
 	// Core notifcations
@@ -135,16 +151,20 @@
 	foreach ( $configs as $config ) {
 		if( $config->onoroff == 'on' ) {
 			$setCoreStatus  	= 'enabled';
-			$setCoreIcon  		= 'yes';
+			$setCoreIcon  		= 'yes-alt';
 			$setCoreInterval 	= wp_get_schedule( 'cau_set_schedule_mail' );
 			$setCoreNext 		= date_i18n( $dateFormat, wp_next_scheduled( 'cau_set_schedule_mail' ) );
+			$setCoreText 		= __( 'Enabled', 'companion-auto-update' );
 		} else {
-			$setCoreStatus  	= 'disabled';
-			$setCoreIcon  		= 'no';
+			$setCoreStatus  	= 'warning';
+			$setCoreIcon  		= 'marker';
 			$setCoreInterval 	= '&dash;';
 			$setCoreNext 		= '&dash;';
+			$setCoreText 		= __( 'Disabled', 'companion-auto-update' );
 		}
 	}
+
+	$schedules = wp_get_schedules();
 
 ?>
 
@@ -156,36 +176,36 @@
 
 	<thead>
 		<tr>
-			<th width="300" class="cau_status_name"><strong><?php _e('Updaters', 'companion-auto-update'); ?></strong></th>
-			<th class="cau_status_active_state"><strong><?php _e('Active?', 'companion-auto-update'); ?></strong></th>
-			<th class="cau_status_interval"><strong><?php _e('Interval', 'companion-auto-update'); ?></strong></th>
-			<th class="cau_status_next"><strong><?php _e('Next', 'companion-auto-update'); ?></strong></th>
+			<th width="300" class="cau_status_name"><strong><?php _e( 'Auto Updater', 'companion-auto-update' ); ?></strong></th>
+			<th class="cau_status_active_state"><strong><?php _e( 'Status', 'companion-auto-update' ); ?></strong></th>
+			<th class="cau_status_interval"><strong><?php _e( 'Interval', 'companion-auto-update' ); ?></strong></th>
+			<th class="cau_status_next"><strong><?php _e( 'Next', 'companion-auto-update' ); ?></strong></th>
 		</tr>
 	</thead>
 
 	<tbody id="the-list">
 		<tr>
-			<td class="cau_status_name"><?php _e('Plugins', 'companion-auto-update'); ?></td>
-			<td class="cau_status_active_state"><span class='cau_<?php echo $pluginsStatus; ?>'><span class="dashicons dashicons-<?php echo $pluginsIcon; ?>"></span></span></td>
-			<td class="cau_status_interval"><?php echo $pluginsInterval; ?></td>
+			<td class="cau_status_name"><?php _e( 'Plugins', 'companion-auto-update' ); ?></td>
+			<td class="cau_status_active_state"><span class='cau_<?php echo $pluginsStatus; ?>'><span class="dashicons dashicons-<?php echo $pluginsIcon; ?>"></span> <?php echo $pluginsText; ?></span></td>
+			<td class="cau_status_interval"><?php echo $schedules[$pluginsInterval]['display']; ?></td>
 			<td class="cau_status_next"><span class="cau_mobile_prefix"><?php _e( 'Next', 'companion-auto-update' ); ?>: </span><?php echo $pluginsNext; ?></td>
 		</tr>
 		<tr>
-			<td class="cau_status_name"><?php _e('Themes', 'companion-auto-update'); ?></td>
-			<td class="cau_status_active_state"><span class='cau_<?php echo $themesStatus; ?>'><span class="dashicons dashicons-<?php echo $themesIcon; ?>"></span></span></td>
-			<td class="cau_status_interval"><?php echo $themesInterval; ?></td>
+			<td class="cau_status_name"><?php _e( 'Themes', 'companion-auto-update' ); ?></td>
+			<td class="cau_status_active_state"><span class='cau_<?php echo $themesStatus; ?>'><span class="dashicons dashicons-<?php echo $themesIcon; ?>"></span> <?php echo $themesText; ?></span></td>
+			<td class="cau_status_interval"><?php echo $schedules[$themesInterval]['display']; ?></td>
 			<td class="cau_status_next"><span class="cau_mobile_prefix"><?php _e( 'Next', 'companion-auto-update' ); ?>: </span><?php echo $themesNext; ?></td>
 		</tr>
 		<tr>
-			<td class="cau_status_name"><?php _e('Core (Minor)', 'companion-auto-update'); ?></td>
-			<td class="cau_status_active_state"><span class='cau_<?php echo $minorStatus; ?>'><span class="dashicons dashicons-<?php echo $minorIcon; ?>"></span></span></td>
-			<td class="cau_status_interval"><?php echo $minorInterval; ?></td>
+			<td class="cau_status_name"><?php _e( 'Core (Minor)', 'companion-auto-update' ); ?></td>
+			<td class="cau_status_active_state"><span class='cau_<?php echo $minorStatus; ?>'><span class="dashicons dashicons-<?php echo $minorIcon; ?>"></span> <?php echo $minorText; ?></span></td>
+			<td class="cau_status_interval"><?php echo $schedules[$minorInterval]['display']; ?></td>
 			<td class="cau_status_next"><span class="cau_mobile_prefix"><?php _e( 'Next', 'companion-auto-update' ); ?>: </span><?php echo $minorNext; ?></td>
 		</tr>
 		<tr>
-			<td class="cau_status_name"><?php _e('Core (Major)', 'companion-auto-update'); ?></td>
-			<td class="cau_status_active_state"><span class='cau_<?php echo $majorStatus; ?>'><span class="dashicons dashicons-<?php echo $majorIcon; ?>"></span></span></td>
-			<td class="cau_status_interval"><?php echo $majorInterval; ?></td>
+			<td class="cau_status_name"><?php _e( 'Core (Major)', 'companion-auto-update' ); ?></td>
+			<td class="cau_status_active_state"><span class='cau_<?php echo $majorStatus; ?>'><span class="dashicons dashicons-<?php echo $majorIcon; ?>"></span> <?php echo $majorText; ?></span></td>
+			<td class="cau_status_interval"><?php echo $schedules[$majorInterval]['display']; ?></td>
 			<td class="cau_status_next"><span class="cau_mobile_prefix"><?php _e( 'Next', 'companion-auto-update' ); ?>: </span><?php echo $majorNext; ?></td>
 		</tr>
 	</tbody>
@@ -196,25 +216,25 @@
 
 	<thead>
 		<tr>
-			<th width="300" class="cau_status_name"><strong><?php _e('Other', 'companion-auto-update'); ?></strong></th>
-			<th class="cau_status_active_state"><strong><?php _e('Active?', 'companion-auto-update'); ?></strong></th>
-			<th class="cau_status_interval"><strong><?php _e('Interval', 'companion-auto-update'); ?></strong></th>
-			<th class="cau_status_next"><strong><?php _e('Next', 'companion-auto-update'); ?></strong></th>
+			<th width="300" class="cau_status_name"><strong><?php _e( 'Email Notifications', 'companion-auto-update' ); ?></strong></th>
+			<th class="cau_status_active_state"><strong><?php _e( 'Status', 'companion-auto-update' ); ?></strong></th>
+			<th class="cau_status_interval"><strong><?php _e( 'Interval', 'companion-auto-update' ); ?></strong></th>
+			<th class="cau_status_next"><strong><?php _e( 'Next', 'companion-auto-update' ); ?></strong></th>
 		</tr>
 	</thead>
 
 	<tbody id="the-list">
 		<tr>
 			<td class="cau_status_name"><?php _e( 'Email Notifications', 'companion-auto-update' ); ?></td>
-			<td class="cau_status_active_state"><span class='cau_<?php echo $setScheduleStatus; ?>'><span class="dashicons dashicons-<?php echo $setScheduleIcon; ?>"></span></span></td>
-			<td class="cau_status_interval"><?php echo $setScheduleInterval; ?></td>
+			<td class="cau_status_active_state"><span class='cau_<?php echo $setScheduleStatus; ?>'><span class="dashicons dashicons-<?php echo $setScheduleIcon; ?>"></span> <?php echo $setScheduleText; ?></span></td>
+			<td class="cau_status_interval"><?php echo $schedules[$setScheduleInterval]['display']; ?></td>
 			<td class="cau_status_next"><span class="cau_mobile_prefix"><?php _e( 'Next', 'companion-auto-update' ); ?>: </span><?php echo $setScheduleNext; ?></td>
 		</tr>
 		<tr>
 			<td class="cau_status_name"><?php _e( 'Core notifications', 'companion-auto-update' ); ?></td>
-			<td class="cau_status_active_state"><span class='cau_<?php echo $setCoreStatus; ?>'><span class="dashicons dashicons-<?php echo $setCoreIcon; ?>"></span></span></td>
-			<td class="cau_status_interval"><?php echo $setCoreInterval; ?></td>
-			<td class="cau_status_next"><span class="cau_mobile_prefix"><?php _e( 'Next', 'companion-auto-update' ); ?>: </span><?php echo $setScheduleNext; ?></td>
+			<td class="cau_status_active_state"><span class='cau_<?php echo $setCoreStatus; ?>'><span class="dashicons dashicons-<?php echo $setCoreIcon; ?>"></span> <?php echo $setCoreText; ?></span></td>
+			<td class="cau_status_interval"><?php echo $schedules[$setCoreInterval]['display']; ?></td>
+			<td class="cau_status_next"><span class="cau_mobile_prefix"><?php _e( 'Next', 'companion-auto-update' ); ?>: </span><?php echo $setCoreNext; ?></td>
 		</tr>
 	</tbody>
 

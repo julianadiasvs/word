@@ -109,7 +109,9 @@ if ( ! class_exists( 'Astra_Admin_Settings' ) ) {
 				// Let extensions hook into saving.
 				do_action( 'astra_admin_settings_scripts' );
 
-				self::save_settings();
+				if ( defined( 'ASTRA_EXT_VER' ) && version_compare( ASTRA_EXT_VER, '2.5.0', '<' ) ) {
+					self::save_settings();
+				}
 			}
 
 			add_action( 'customize_controls_enqueue_scripts', __CLASS__ . '::customizer_scripts' );
@@ -136,7 +138,20 @@ if ( ! class_exists( 'Astra_Admin_Settings' ) ) {
 			add_action( 'astra_notice_before_markup', __CLASS__ . '::notice_assets' );
 
 			add_action( 'admin_notices', __CLASS__ . '::minimum_addon_version_notice' );
+		}
 
+		/**
+		 * Save All admin settings here
+		 */
+		public static function save_settings() {
+
+			// Only admins can save settings.
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return;
+			}
+
+			// Let extensions hook into saving.
+			do_action( 'astra_admin_settings_save' );
 		}
 
 		/**
@@ -279,26 +294,38 @@ if ( ! class_exists( 'Astra_Admin_Settings' ) ) {
 				return;
 			}
 
-			$astra_theme_name = astra_get_theme_name();
-			$astra_addon_name = astra_get_addon_name();
+			if ( version_compare( ASTRA_EXT_VER, ASTRA_EXT_MIN_VER ) < 0 ) {
 
-			$notice_args = array(
-				'id'             => 'ast-minimum-addon-version-notice',
-				'type'           => '',
-				'message'        => sprintf(
+				$message = sprintf(
 					/* translators: %1$1s: Theme Name, %2$2s: Minimum Required version of the addon */
-					__( 'Glad to see you have updated the %1$1s! Please update the %2$2s to version %3$3s or higher.', 'astra' ),
-					$astra_theme_name,
-					$astra_addon_name,
+					__( 'Please update the %1$1s to version %2$2s or higher. Ignore if already updated.', 'astra' ),
+					astra_get_addon_name(),
 					ASTRA_EXT_MIN_VER
-				),
-				'priority'       => 1,
-				'type'           => 'warning',
-				'show_if'        => version_compare( ASTRA_EXT_VER, ASTRA_EXT_MIN_VER ) < 0,
-				'is_dismissible' => false,
-			);
+				);
 
-			Astra_Notices::add_notice( $notice_args );
+				$min_version = get_user_meta( get_current_user_id(), 'ast-minimum-addon-version-notice-min-ver', true );
+
+				if ( ! $min_version ) {
+					update_user_meta( get_current_user_id(), 'ast-minimum-addon-version-notice-min-ver', ASTRA_EXT_MIN_VER );
+				}
+
+				if ( version_compare( $min_version, ASTRA_EXT_MIN_VER, '!=' ) ) {
+					delete_user_meta( get_current_user_id(), 'ast-minimum-addon-version-notice' );
+					update_user_meta( get_current_user_id(), 'ast-minimum-addon-version-notice-min-ver', ASTRA_EXT_MIN_VER );
+				}
+
+				$notice_args = array(
+					'id'                         => 'ast-minimum-addon-version-notice',
+					'type'                       => 'warning',
+					'message'                    => $message,
+					'show_if'                    => true,
+					'repeat-notice-after'        => false,
+					'priority'                   => 18,
+					'display-with-other-notices' => true,
+				);
+
+				Astra_Notices::add_notice( $notice_args );
+			}
 		}
 
 		/**
@@ -369,20 +396,6 @@ if ( ! class_exists( 'Astra_Admin_Settings' ) ) {
 			if ( defined( 'ASTRA_SITES_VER' ) && version_compare( ASTRA_SITES_VER, '2.0.0', '>=' ) ) {
 				self::$starter_templates_slug = 'starter-templates';
 			}
-		}
-
-		/**
-		 * Save All admin settings here
-		 */
-		public static function save_settings() {
-
-			// Only admins can save settings.
-			if ( ! current_user_can( 'manage_options' ) ) {
-				return;
-			}
-
-			// Let extensions hook into saving.
-			do_action( 'astra_admin_settings_save' );
 		}
 
 		/**
@@ -468,6 +481,10 @@ if ( ! class_exists( 'Astra_Admin_Settings' ) ) {
 					}
 				</style>';
 
+				if ( ! current_user_can( 'manage_options' ) ) {
+					return;
+				}
+
 				wp_register_script( 'astra-admin-settings', ASTRA_THEME_URI . 'inc/assets/js/astra-admin-menu-settings.js', array( 'jquery', 'wp-util', 'updates' ), ASTRA_THEME_VERSION, false );
 
 				$localize = array(
@@ -480,6 +497,7 @@ if ( ! class_exists( 'Astra_Admin_Settings' ) ) {
 					'recommendedPluiginActivateText'     => __( 'Activate', 'astra' ),
 					'recommendedPluiginDeactivateText'   => __( 'Deactivate', 'astra' ),
 					'recommendedPluiginSettingsText'     => __( 'Settings', 'astra' ),
+					'astraPluginManagerNonce'            => wp_create_nonce( 'astra-recommended-plugin-nonce' ),
 				);
 
 				wp_localize_script( 'astra-admin-settings', 'astra', apply_filters( 'astra_theme_js_localize', $localize ) );
@@ -500,6 +518,10 @@ if ( ! class_exists( 'Astra_Admin_Settings' ) ) {
 				wp_enqueue_style( 'astra-admin-settings', ASTRA_THEME_URI . 'inc/assets/css/astra-admin-menu-settings.css', array(), ASTRA_THEME_VERSION );
 			}
 
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return;
+			}
+
 			wp_register_script( 'astra-admin-settings', ASTRA_THEME_URI . 'inc/assets/js/astra-admin-menu-settings.js', array( 'jquery', 'wp-util', 'updates' ), ASTRA_THEME_VERSION, false );
 
 			$localize = array(
@@ -512,6 +534,7 @@ if ( ! class_exists( 'Astra_Admin_Settings' ) ) {
 				'recommendedPluiginActivateText'     => __( 'Activate', 'astra' ),
 				'recommendedPluiginDeactivateText'   => __( 'Deactivate', 'astra' ),
 				'recommendedPluiginSettingsText'     => __( 'Settings', 'astra' ),
+				'astraPluginManagerNonce'            => wp_create_nonce( 'astra-recommended-plugin-nonce' ),
 			);
 			wp_localize_script( 'astra-admin-settings', 'astra', apply_filters( 'astra_theme_js_localize', $localize ) );
 
@@ -654,7 +677,7 @@ if ( ! class_exists( 'Astra_Admin_Settings' ) ) {
 					</p>
 					<p>
 						<?php
-							esc_html_e( 'Import your favorite site one click and start your project in style!', 'astra' );
+							esc_html_e( 'Import your favorite site in one click and start your project with style!', 'astra' );
 						?>
 					</p>
 						<?php
@@ -1243,6 +1266,14 @@ if ( ! class_exists( 'Astra_Admin_Settings' ) ) {
 						'settings-link-text' => 'Settings',
 					),
 
+					'leadin'                        =>
+						array(
+							'plugin-name'        => 'HubSpot - CRM, Email Marketing & Analytics',
+							'plugin-init'        => 'leadin/leadin.php',
+							'settings-link'      => admin_url( 'admin.php?page=leadin' ),
+							'settings-link-text' => 'Settings',
+						),
+
 					'custom-fonts'                  =>
 					array(
 						'plugin-name'        => 'Custom Fonts',
@@ -1421,7 +1452,13 @@ if ( ! class_exists( 'Astra_Admin_Settings' ) ) {
 		 */
 		public static function required_plugin_activate() {
 
-			if ( ! current_user_can( 'install_plugins' ) || ! isset( $_POST['init'] ) || ! $_POST['init'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$nonce = ( isset( $_POST['nonce'] ) ) ? sanitize_key( $_POST['nonce'] ) : '';
+
+			if ( false === wp_verify_nonce( $nonce, 'astra-recommended-plugin-nonce' ) ) {
+				wp_send_json_error( esc_html_e( 'WordPress Nonce not validated.', 'astra' ) );
+			}
+
+			if ( ! current_user_can( 'install_plugins' ) || ! isset( $_POST['init'] ) || ! $_POST['init'] ) {
 				wp_send_json_error(
 					array(
 						'success' => false,
@@ -1430,7 +1467,7 @@ if ( ! class_exists( 'Astra_Admin_Settings' ) ) {
 				);
 			}
 
-			$plugin_init = ( isset( $_POST['init'] ) ) ? esc_attr( $_POST['init'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$plugin_init = ( isset( $_POST['init'] ) ) ? esc_attr( $_POST['init'] ) : '';
 
 			$activate = activate_plugin( $plugin_init, '', false, true );
 
@@ -1464,7 +1501,13 @@ if ( ! class_exists( 'Astra_Admin_Settings' ) ) {
 		 */
 		public static function required_plugin_deactivate() {
 
-			if ( ! current_user_can( 'install_plugins' ) || ! isset( $_POST['init'] ) || ! $_POST['init'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$nonce = ( isset( $_POST['nonce'] ) ) ? sanitize_key( $_POST['nonce'] ) : '';
+
+			if ( false === wp_verify_nonce( $nonce, 'astra-recommended-plugin-nonce' ) ) {
+				wp_send_json_error( esc_html_e( 'WordPress Nonce not validated.', 'astra' ) );
+			}
+
+			if ( ! current_user_can( 'install_plugins' ) || ! isset( $_POST['init'] ) || ! $_POST['init'] ) {
 				wp_send_json_error(
 					array(
 						'success' => false,
@@ -1473,7 +1516,7 @@ if ( ! class_exists( 'Astra_Admin_Settings' ) ) {
 				);
 			}
 
-			$plugin_init = ( isset( $_POST['init'] ) ) ? esc_attr( $_POST['init'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$plugin_init = ( isset( $_POST['init'] ) ) ? esc_attr( $_POST['init'] ) : '';
 
 			$deactivate = deactivate_plugins( $plugin_init, '', false );
 

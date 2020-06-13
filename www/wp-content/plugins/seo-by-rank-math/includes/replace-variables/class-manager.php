@@ -119,11 +119,32 @@ class Manager extends Post_Variables {
 	}
 
 	/**
+	 * Should we setup variables or not.
+	 *
+	 * @return bool
+	 */
+	private function should_we_setup() {
+		global $wp_customize;
+		if ( isset( $wp_customize ) || $this->is_setup ) {
+			return false;
+		}
+
+		$current_screen = \function_exists( 'get_current_screen' ) ? get_current_screen() : false;
+		if (
+			$current_screen instanceof \WP_Screen &&
+			\in_array( $current_screen->base, [ 'themes' ], true )
+		) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Set up replacement variables.
 	 */
 	public function setup() {
-		global $wp_customize;
-		if ( isset( $wp_customize ) || $this->is_setup ) {
+		if ( ! $this->should_we_setup() ) {
 			return;
 		}
 
@@ -131,9 +152,11 @@ class Manager extends Post_Variables {
 		$this->is_setup = true;
 
 		// Internal variables.
-		if ( \function_exists( 'get_current_screen' ) ) {
-			$this->is_post_edit = is_admin() && 'post' === get_current_screen()->base;
-			$this->is_term_edit = is_admin() && 'term' === get_current_screen()->base;
+		$current_screen = \function_exists( 'get_current_screen' ) ? get_current_screen() : false;
+		if ( $current_screen instanceof \WP_Screen ) {
+			$screen_base        = $current_screen->base;
+			$this->is_post_edit = is_admin() && 'post' === $screen_base;
+			$this->is_term_edit = is_admin() && 'term' === $screen_base;
 		}
 
 		/**

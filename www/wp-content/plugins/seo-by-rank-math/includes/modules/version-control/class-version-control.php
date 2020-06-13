@@ -9,9 +9,7 @@
 namespace RankMath;
 
 use RankMath\Helper;
-use RankMath\Module\Base;
 use RankMath\Traits\Hooker;
-use MyThemeShop\Helpers\Str;
 use MyThemeShop\Helpers\Param;
 use MyThemeShop\Helpers\Conditional;
 
@@ -83,7 +81,7 @@ class Version_Control {
 		// Sanitize input.
 		$new_value = Param::post( 'beta_optin' ) === 'on' ? 'on' : 'off';
 
-		$settings               = get_option( 'rank-math-options-general', array() );
+		$settings               = get_option( 'rank-math-options-general', [] );
 		$settings['beta_optin'] = $new_value;
 		rank_math()->settings->set( 'general', 'beta_optin', 'on' === $new_value ? true : false );
 		update_option( 'rank-math-options-general', $settings );
@@ -112,7 +110,7 @@ class Version_Control {
 		// Sanitize input.
 		$new_value = Param::post( 'enable_auto_update' ) === 'on' ? 'on' : 'off';
 
-		$settings                       = get_option( 'rank-math-options-general', array() );
+		$settings                       = get_option( 'rank-math-options-general', [] );
 		$settings['enable_auto_update'] = $new_value;
 		rank_math()->settings->set( 'general', 'enable_auto_update', 'on' === $new_value ? true : false );
 		update_option( 'rank-math-options-general', $settings );
@@ -129,11 +127,17 @@ class Version_Control {
 			$beta_optin->hooks();
 		}
 
-		if ( ! Helper::is_plugin_active_for_network() || current_user_can( 'setup_network' ) ) {
-			$this->filter( 'rank_math/tools/pages', 'add_status_page', 20 );
+		if (
+			Helper::is_advanced_mode() && (
+				! Helper::is_plugin_active_for_network() ||
+				current_user_can( 'setup_network' )
+			)
+		) {
+			$this->filter( 'rank_math/tools/pages', 'add_status_page' );
 			$this->filter( 'rank_math/tools/default_tab', 'change_default_tab' );
 		}
-		$this->filter( 'rank_math/admin/get_view', 'network_admin_view', 10, 2 );
+
+		$this->filter( 'rank_math/admin/dashboard_view', 'network_admin_view', 10, 2 );
 		$this->filter( 'rank_math/admin/dashboard_nav_links', 'network_admin_dashboard_tabs' );
 		$this->action( 'admin_enqueue_scripts', 'enqueue', 20 );
 
@@ -182,10 +186,7 @@ class Version_Control {
 	 * @return string       New file path.
 	 */
 	public function network_admin_view( $file, $view ) {
-		if ( 'dashboard-version_control' !== $view ) {
-			return $file;
-		}
-		if ( is_network_admin() && Helper::is_plugin_active_for_network() ) {
+		if ( 'version_control' === Param::get( 'view' ) && is_network_admin() && Helper::is_plugin_active_for_network() ) {
 			return dirname( __FILE__ ) . '/display.php';
 		}
 
@@ -232,9 +233,7 @@ class Version_Control {
 	 * @return array       New pages.
 	 */
 	public function add_status_page( $pages ) {
-		$new_pages = [];
-
-		$new_pages['version_control'] = [
+		$pages['version_control'] = [
 			'url'   => 'status',
 			'args'  => 'view=version_control',
 			'cap'   => 'install_plugins',
@@ -242,8 +241,7 @@ class Version_Control {
 			'class' => '\\RankMath\\Version_Control',
 		];
 
-		$new_pages = array_merge( $new_pages, $pages );
-		return $new_pages;
+		return $pages;
 	}
 
 	/**
@@ -271,8 +269,8 @@ class Version_Control {
 		}
 		$uri = untrailingslashit( plugin_dir_url( __FILE__ ) );
 		wp_enqueue_style( 'rank-math-cmb2' );
-		wp_enqueue_style( 'rank-math-version-control', $uri . '/assets/version-control.css', array(), rank_math()->version );
-		wp_enqueue_script( 'rank-math-version-control', $uri . '/assets/version-control.js', array( 'jquery' ), rank_math()->version, true );
+		wp_enqueue_style( 'rank-math-version-control', $uri . '/assets/css/version-control.css', [], rank_math()->version );
+		wp_enqueue_script( 'rank-math-version-control', $uri . '/assets/js/version-control.js', [ 'jquery' ], rank_math()->version, true );
 	}
 
 	/**
@@ -331,7 +329,7 @@ class Version_Control {
 	 */
 	public function display() {
 		$directory = dirname( __FILE__ );
-		include_once( $directory . '/display.php' );
+		include_once $directory . '/display.php';
 	}
 
 }

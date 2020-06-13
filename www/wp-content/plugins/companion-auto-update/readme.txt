@@ -5,7 +5,7 @@ Tags: auto, automatic, background, update, updates, updating, automatic updates,
 Requires at least: 3.6.0
 Tested up to: 5.4
 Requires PHP: 5.1
-Stable tag: 3.5.2
+Stable tag: 3.5.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,6 +68,17 @@ Your feedback is what made this plugin what is and what it’ll become so keep t
 
 == Changelog ==
 
+= 3.5.3 (June 5, 2020) =
+* NEW: We're working on a better update log. You should see the Update method (Manual/Automatic) in the log now. (Only works for Plugins right now)
+Please report any issues with this feature over at our sticky post: [Problems with the Update method in the new update log?](https://wordpress.org/support/topic/problems-with-the-update-method-in-the-new-update-log/)
+
+* Fix: Not able to see checks in boxes (reverted back to before it all went wrong)
+* Fix: Error date_default_timezone_set(): Timezone ID +00:00 is invalid
+* Tweak: The status tab will no longer show turned-off settings as an error
+* Tweak: Made some improvements to the "Update pending" emails, you can now see a list of all pending updates and go directly to the update page.
+
+Also: Check out what features we're working on at [our blogpost](https://codeermeneer.nl/blog/companion-auto-update-and-its-future/)
+
 = 3.5.2 (April 1, 2020) =
 * Fix: Not able to see checks in boxes
 
@@ -76,8 +87,6 @@ Your feedback is what made this plugin what is and what it’ll become so keep t
 * Tweak: We've added the release notes link to Plain text emails
 * Tweak: Fixed a few typos
 * Tweak: Various minor security improvements
-
-Also: Check out what features we're working on at [our blogpost](https://codeermeneer.nl/blog/companion-auto-update-and-its-future/)
 
 = 3.5.0 (March 5, 2020) =
 * We've had to (temporarily) disable the theme filter because it was causing issues on some installations. We'll try to get it working again in a future update.

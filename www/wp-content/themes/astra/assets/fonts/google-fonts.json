@@ -912,14 +912,6 @@
         }
     },
     {
-        "Baloo": {
-            "variants": [
-                "regular"
-            ],
-            "category": "display"
-        }
-    },
-    {
         "Baloo 2": {
             "variants": [
                 "regular",
@@ -927,14 +919,6 @@
                 "600",
                 "700",
                 "800"
-            ],
-            "category": "display"
-        }
-    },
-    {
-        "Baloo Bhai": {
-            "variants": [
-                "regular"
             ],
             "category": "display"
         }
@@ -952,22 +936,6 @@
         }
     },
     {
-        "Baloo Bhaijaan": {
-            "variants": [
-                "regular"
-            ],
-            "category": "display"
-        }
-    },
-    {
-        "Baloo Bhaina": {
-            "variants": [
-                "regular"
-            ],
-            "category": "display"
-        }
-    },
-    {
         "Baloo Bhaina 2": {
             "variants": [
                 "regular",
@@ -975,14 +943,6 @@
                 "600",
                 "700",
                 "800"
-            ],
-            "category": "display"
-        }
-    },
-    {
-        "Baloo Chettan": {
-            "variants": [
-                "regular"
             ],
             "category": "display"
         }
@@ -1000,14 +960,6 @@
         }
     },
     {
-        "Baloo Da": {
-            "variants": [
-                "regular"
-            ],
-            "category": "display"
-        }
-    },
-    {
         "Baloo Da 2": {
             "variants": [
                 "regular",
@@ -1015,14 +967,6 @@
                 "600",
                 "700",
                 "800"
-            ],
-            "category": "display"
-        }
-    },
-    {
-        "Baloo Paaji": {
-            "variants": [
-                "regular"
             ],
             "category": "display"
         }
@@ -1040,14 +984,6 @@
         }
     },
     {
-        "Baloo Tamma": {
-            "variants": [
-                "regular"
-            ],
-            "category": "display"
-        }
-    },
-    {
         "Baloo Tamma 2": {
             "variants": [
                 "regular",
@@ -1055,14 +991,6 @@
                 "600",
                 "700",
                 "800"
-            ],
-            "category": "display"
-        }
-    },
-    {
-        "Baloo Tammudu": {
-            "variants": [
-                "regular"
             ],
             "category": "display"
         }
@@ -1080,14 +1008,6 @@
         }
     },
     {
-        "Baloo Thambi": {
-            "variants": [
-                "regular"
-            ],
-            "category": "display"
-        }
-    },
-    {
         "Baloo Thambi 2": {
             "variants": [
                 "regular",
@@ -1095,6 +1015,17 @@
                 "600",
                 "700",
                 "800"
+            ],
+            "category": "display"
+        }
+    },
+    {
+        "Balsamiq Sans": {
+            "variants": [
+                "regular",
+                "italic",
+                "700",
+                "700italic"
             ],
             "category": "display"
         }
@@ -2176,6 +2107,19 @@
         }
     },
     {
+        "Comic Neue": {
+            "variants": [
+                "300",
+                "300italic",
+                "regular",
+                "italic",
+                "700",
+                "700italic"
+            ],
+            "category": "handwriting"
+        }
+    },
+    {
         "Coming Soon": {
             "variants": [
                 "regular"
@@ -2491,6 +2435,19 @@
         "Cutive Mono": {
             "variants": [
                 "regular"
+            ],
+            "category": "monospace"
+        }
+    },
+    {
+        "DM Mono": {
+            "variants": [
+                "300",
+                "300italic",
+                "regular",
+                "italic",
+                "500",
+                "500italic"
             ],
             "category": "monospace"
         }
@@ -3029,22 +2986,22 @@
         "Exo": {
             "variants": [
                 "100",
-                "100italic",
                 "200",
-                "200italic",
                 "300",
-                "300italic",
                 "regular",
-                "italic",
                 "500",
-                "500italic",
                 "600",
-                "600italic",
                 "700",
-                "700italic",
                 "800",
-                "800italic",
                 "900",
+                "100italic",
+                "200italic",
+                "300italic",
+                "italic",
+                "500italic",
+                "600italic",
+                "700italic",
+                "800italic",
                 "900italic"
             ],
             "category": "sans-serif"
@@ -3054,22 +3011,22 @@
         "Exo 2": {
             "variants": [
                 "100",
-                "100italic",
                 "200",
-                "200italic",
                 "300",
-                "300italic",
                 "regular",
-                "italic",
                 "500",
-                "500italic",
                 "600",
-                "600italic",
                 "700",
-                "700italic",
                 "800",
-                "800italic",
                 "900",
+                "100italic",
+                "200italic",
+                "300italic",
+                "italic",
+                "500italic",
+                "600italic",
+                "700italic",
+                "800italic",
                 "900italic"
             ],
             "category": "sans-serif"
@@ -4283,8 +4240,14 @@
     {
         "Inconsolata": {
             "variants": [
+                "200",
+                "300",
                 "regular",
-                "700"
+                "500",
+                "600",
+                "700",
+                "800",
+                "900"
             ],
             "category": "monospace"
         }
@@ -4514,6 +4477,31 @@
                 "700italic"
             ],
             "category": "serif"
+        }
+    },
+    {
+        "Jost": {
+            "variants": [
+                "100",
+                "200",
+                "300",
+                "regular",
+                "500",
+                "600",
+                "700",
+                "800",
+                "900",
+                "100italic",
+                "200italic",
+                "300italic",
+                "italic",
+                "500italic",
+                "600italic",
+                "700italic",
+                "800italic",
+                "900italic"
+            ],
+            "category": "sans-serif"
         }
     },
     {
@@ -5432,8 +5420,12 @@
         "Lora": {
             "variants": [
                 "regular",
-                "italic",
+                "500",
+                "600",
                 "700",
+                "italic",
+                "500italic",
+                "600italic",
                 "700italic"
             ],
             "category": "serif"
@@ -5641,6 +5633,20 @@
                 "100",
                 "regular",
                 "700"
+            ],
+            "category": "sans-serif"
+        }
+    },
+    {
+        "Manrope": {
+            "variants": [
+                "200",
+                "300",
+                "regular",
+                "500",
+                "600",
+                "700",
+                "800"
             ],
             "category": "sans-serif"
         }
@@ -9689,12 +9695,16 @@
         "Vollkorn": {
             "variants": [
                 "regular",
-                "italic",
+                "500",
                 "600",
-                "600italic",
                 "700",
-                "700italic",
+                "800",
                 "900",
+                "italic",
+                "500italic",
+                "600italic",
+                "700italic",
+                "800italic",
                 "900italic"
             ],
             "category": "serif"

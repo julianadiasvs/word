@@ -31,6 +31,7 @@ require $control_dir . '/color/class-astra-control-color.php';
 require $control_dir . '/description/class-astra-control-description.php';
 require $control_dir . '/background/class-astra-control-background.php';
 require $control_dir . '/responsive-color/class-astra-control-responsive-color.php';
+require $control_dir . '/responsive-background/class-astra-control-responsive-background.php';
 require $control_dir . '/border/class-astra-control-border.php';
 require $control_dir . '/customizer-link/class-astra-control-customizer-link.php';
 require $control_dir . '/settings-group/class-astra-control-settings-group.php';

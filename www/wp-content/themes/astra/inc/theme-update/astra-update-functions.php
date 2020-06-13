@@ -14,7 +14,6 @@ defined( 'ABSPATH' ) || exit;
  * Open Submenu just below menu for existing users.
  *
  * @since 2.1.3
- *
  * @return void
  */
 function astra_submenu_below_header() {
@@ -146,6 +145,77 @@ function astra_breadcrumb_separator_fix() {
 	// Check if the saved database value for Breadcrumb Separator is "&#187;", then change it to '\00bb'.
 	if ( isset( $theme_options['breadcrumb-separator'] ) && '&#187;' === $theme_options['breadcrumb-separator'] ) {
 		$theme_options['breadcrumb-separator'] = '\00bb';
+		update_option( 'astra-settings', $theme_options );
+	}
+}
+
+/**
+ * Check if we need to change the default value for tablet breakpoint.
+ *
+ * @since 2.4.0
+ * @return void
+ */
+function astra_update_theme_tablet_breakpoint() {
+
+	$theme_options = get_option( 'astra-settings' );
+
+	if ( ! isset( $theme_options['can-update-theme-tablet-breakpoint'] ) ) {
+		// Set a flag to check if we need to change the theme tablet breakpoint value.
+		$theme_options['can-update-theme-tablet-breakpoint'] = false;
+	}
+
+	update_option( 'astra-settings', $theme_options );
+}
+
+/**
+ * Migrate option data from site layout background option to its desktop counterpart.
+ *
+ * @since 2.4.0
+ *
+ * @return void
+ */
+function astra_responsive_base_background_option() {
+
+	$theme_options = get_option( 'astra-settings', array() );
+
+	if ( false === get_option( 'site-layout-outside-bg-obj-responsive', false ) && isset( $theme_options['site-layout-outside-bg-obj'] ) ) {
+
+		$theme_options['site-layout-outside-bg-obj-responsive']['desktop'] = $theme_options['site-layout-outside-bg-obj'];
+		$theme_options['site-layout-outside-bg-obj-responsive']['tablet']  = array(
+			'background-color'      => '',
+			'background-image'      => '',
+			'background-repeat'     => 'repeat',
+			'background-position'   => 'center center',
+			'background-size'       => 'auto',
+			'background-attachment' => 'scroll',
+		);
+		$theme_options['site-layout-outside-bg-obj-responsive']['mobile']  = array(
+			'background-color'      => '',
+			'background-image'      => '',
+			'background-repeat'     => 'repeat',
+			'background-position'   => 'center center',
+			'background-size'       => 'auto',
+			'background-attachment' => 'scroll',
+		);
+	}
+
+	update_option( 'astra-settings', $theme_options );
+}
+
+
+/**
+ * Do not apply new wide/full image CSS for existing users.
+ *
+ * @since 2.4.4
+ *
+ * @return void
+ */
+function astra_gtn_full_wide_image_group_css() {
+	$theme_options = get_option( 'astra-settings', array() );
+
+	// Set flag to not load button specific CSS.
+	if ( ! isset( $theme_options['gtn-full-wide-image-grp-css'] ) ) {
+		$theme_options['gtn-full-wide-image-grp-css'] = false;
 		update_option( 'astra-settings', $theme_options );
 	}
 }

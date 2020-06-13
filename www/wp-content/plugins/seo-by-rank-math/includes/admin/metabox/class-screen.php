@@ -117,19 +117,20 @@ class Screen implements IScreen {
 		$values = array_merge_recursive(
 			$this->screen->get_values(),
 			[
+				'homeUrl'          => home_url(),
 				'objectID'         => $this->get_object_id(),
 				'objectType'       => $this->get_object_type(),
 				'locale'           => Locale::get_site_language(),
 				'localeFull'       => get_locale(),
 				'overlayImages'    => Helper::choices_overlay_images(),
-				'defautOgImage'    => Helper::get_settings( 'titles.open_graph_image', '' ),
+				'defautOgImage'    => Helper::get_settings( 'titles.open_graph_image', rank_math()->plugin_url() . 'assets/admin/img/social-placeholder.jpg' ),
 				'customPermalinks' => (bool) get_option( 'permalink_structure', false ),
 				'isUserRegistered' => Helper::is_site_connected(),
 				'maxTags'          => $this->do_filter( 'focus_keyword/maxtags', 5 ),
 				'showScore'        => Helper::is_score_enabled(),
 				'canUser'          => [
 					'general'  => Helper::has_cap( 'onpage_general' ),
-					'advanced' => Helper::has_cap( 'onpage_advanced' ),
+					'advanced' => Helper::has_cap( 'onpage_advanced' ) && Helper::is_advanced_mode(),
 					'snippet'  => Helper::has_cap( 'onpage_snippet' ),
 					'social'   => Helper::has_cap( 'onpage_social' ),
 					'analysis' => Helper::has_cap( 'onpage_analysis' ),
@@ -232,6 +233,8 @@ class Screen implements IScreen {
 		$twitter_username           = Helper::get_settings( 'titles.twitter_author_names' );
 		$data['twitterAuthor']      = $twitter_username ? $twitter_username : esc_html__( 'username', 'rank-math' );
 		$data['twitterUseFacebook'] = 'off' === $data['twitterUseFacebook'] ? false : true;
+		$data['facebookHasOverlay'] = empty( $data['facebookHasOverlay'] ) || 'off' === $data['facebookHasOverlay'] ? false : true;
+		$data['twitterHasOverlay']  = empty( $data['twitterHasOverlay'] ) || 'off' === $data['twitterHasOverlay'] ? false : true;
 
 		return wp_parse_args( $this->screen->get_object_values(), $data );
 	}
@@ -274,17 +277,17 @@ class Screen implements IScreen {
 	 */
 	private function load_screen( $manual = '' ) {
 		if ( Admin_Helper::is_post_edit() || 'post' === $manual ) {
-			$this->screen = new Post_Screen;
+			$this->screen = new Post_Screen();
 			return;
 		}
 
 		if ( Admin_Helper::is_term_edit() || 'term' === $manual ) {
-			$this->screen = new Taxonomy_Screen;
+			$this->screen = new Taxonomy_Screen();
 			return;
 		}
 
 		if ( User_Screen::is_enable() || 'user' === $manual ) {
-			$this->screen = new User_Screen;
+			$this->screen = new User_Screen();
 			return;
 		}
 	}

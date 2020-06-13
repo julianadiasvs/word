@@ -36,11 +36,20 @@ class Metabox {
 	 * @param CMB2 $cmb The CMB2 metabox object.
 	 */
 	public function metabox_settings_advanced( $cmb ) {
-		$redirection = Cache::get_by_object_id( $cmb->object_id, $cmb->object_type() );
+		// Early Bai!!
+		if ( ! $this->can_add_setting( $cmb ) ) {
+			return;
+		}
 
-		$url = parse_url( get_permalink( $cmb->object_id ), PHP_URL_PATH );
+		$url = 'term' === $cmb->object_type() ? get_term_link( (int) $cmb->object_id ) : get_permalink( $cmb->object_id );
+		if ( is_wp_error( $url ) ) {
+			return;
+		}
+
+		$url = wp_parse_url( $url, PHP_URL_PATH );
 		$url = trim( $url, '/' );
 
+		$redirection = Cache::get_by_object_id( $cmb->object_id, $cmb->object_type() );
 		$redirection = $redirection ? DB::get_redirection_by_id( $redirection->redirection_id, 'active' ) : [
 			'id'          => '',
 			'url_to'      => '',
@@ -53,7 +62,7 @@ class Metabox {
 		$cmb->add_field(
 			[
 				'id'         => 'rank_math_enable_redirection',
-				'type'       => 'switch',
+				'type'       => 'toggle',
 				'name'       => esc_html__( 'Redirection', 'rank-math' ),
 				'desc'       => $message . ' ' . esc_html__( 'Publish or update the post to save the redirection.', 'rank-math' ),
 				'default'    => empty( $redirection['id'] ) ? 'off' : 'on',
@@ -176,10 +185,29 @@ class Metabox {
 				'from_url'       => $cmb->data_to_save['redirection_sources'],
 				'redirection_id' => $redirection->get_id(),
 				'object_id'      => $cmb->object_id,
+				'object_type'    => \property_exists( $cmb, 'object_type' ) ? $cmb->object_type : 'post',
 			]
 		);
 
 		return $response;
+	}
+
+	/**
+	 * Whether to add Redirection Settings.
+	 *
+	 * @param CMB2 $cmb The CMB2 metabox object.
+	 */
+	private function can_add_setting( $cmb ) {
+		if ( 'post' !== $cmb->object_type ) {
+			return true;
+		}
+
+		$post = get_post( $cmb->object_id );
+		if ( empty( $post ) || 'publish' !== $post->post_status ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -190,7 +218,7 @@ class Metabox {
 	 * @return boolean
 	 */
 	private function can_delete( $values ) {
-		if ( 'off' === $values['rank_math_enable_redirection'] ) {
+		if ( ! isset( $values['rank_math_enable_redirection'] ) || 'off' === $values['rank_math_enable_redirection'] ) {
 			return true;
 		}
 
@@ -198,7 +226,7 @@ class Metabox {
 			return true;
 		}
 
-		if ( false === in_array( $values['redirection_header_code'], [ 410, 451 ] ) ) {
+		if ( false === in_array( (int) $values['redirection_header_code'], [ 410, 451 ], true ) ) {
 			if ( empty( $values['redirection_url_to'] ) ) {
 				return true;
 			}
@@ -219,7 +247,7 @@ class Metabox {
 			return false;
 		}
 
-		if ( empty( $values['redirection_id'] ) || in_array( $values['redirection_header_code'], [ 410, 451 ] ) ) {
+		if ( empty( $values['redirection_id'] ) || in_array( (int) $values['redirection_header_code'], [ 410, 451 ], true ) ) {
 			return true;
 		}
 

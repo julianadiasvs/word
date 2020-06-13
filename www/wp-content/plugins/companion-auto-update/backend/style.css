@@ -108,12 +108,12 @@
 }
 
 /* Overwrite core UI */
-.cau_content input[type=checkbox]:checked::before {
+/*.cau_content input[type="checkbox"]:checked::before {
 	content: "";
 	background: url( 'images/check.svg' );
 	background-size: contain;
 	background-position: center center;
-}
+}*/
 .cau_content a {
 	color: #9178B7;
 }

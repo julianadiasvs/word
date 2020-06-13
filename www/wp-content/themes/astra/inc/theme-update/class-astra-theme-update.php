@@ -657,9 +657,9 @@ if ( ! class_exists( 'Astra_Theme_Update' ) ) {
 				case 'ast-full-width-layout':
 				case 'ast-fluid-width-layout':
 				default:
-								$astra_options['site-layout-outside-bg-obj'] = array(
-									'background-color' => isset( $astra_options['site-layout-outside-bg-color'] ) ? $astra_options['site-layout-outside-bg-color'] : '',
-								);
+						$astra_options['site-layout-outside-bg-obj'] = array(
+							'background-color' => isset( $astra_options['site-layout-outside-bg-color'] ) ? $astra_options['site-layout-outside-bg-color'] : '',
+						);
 					break;
 			}
 

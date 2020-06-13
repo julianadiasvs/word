@@ -1,12 +1,22 @@
 <?php
 
 // Get database value
-function cau_get_db_value( $name ) {
+function cau_get_db_value( $name, $table = 'auto_updates' ) {
 
 	global $wpdb;
-	$table_name 	= $wpdb->prefix . "auto_updates"; 
+	$table_name 	= $wpdb->prefix.$table; 
 	$cau_configs 	= $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE name = '%s'", $name ) );
 	foreach ( $cau_configs as $config ) return $config->onoroff;
+
+}
+
+// Get database value
+function cau_get_plugininfo( $check, $field ) {
+
+	global $wpdb;
+	$table_name 	= $wpdb->prefix.'update_log'; 
+	$cau_configs 	= $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE slug = '%s'", $check ) );
+	foreach ( $cau_configs as $config ) return $config->$field;
 
 }
 
@@ -15,11 +25,17 @@ function cau_get_proper_timezone() {
 
 	// WP 5.3 adds the wp_timezone_string function
 	if ( !function_exists( 'wp_timezone_string' ) ) {
-		return get_option( 'timezone_string' ); 
+		$timezone = get_option( 'timezone_string' ); 
 	} else {
-		return wp_timezone_string(); 
+		$timezone = wp_timezone_string(); 
 	}
 
+	// Should fix an reported issue
+	if( $timezone == '+00:00' ) {
+		$timezone = 'UTC';
+	}
+
+	return $timezone;
 
 }
 
@@ -146,11 +162,12 @@ function cau_run_custom_hooks_p() {
 	$listOfAll 	= get_plugins();
 
 	// Loop trough all plugins
-	foreach ( $listOfAll as $key => $value) {
+	foreach ( $listOfAll as $key => $value ) {
 
 		// Get data
 		$fullPath 		= $dirr.'/'.$key;
 		$fileDate 		= date ( 'YmdHi', filemtime( $fullPath ) );
+		$fileTime 		= date ( 'Hi', filemtime( $fullPath ) );
 		$updateSched 	= wp_get_schedule( 'wp_update_plugins' );
 
 		// Check when the last update was
@@ -162,9 +179,23 @@ function cau_run_custom_hooks_p() {
 			$lastday = date( 'YmdHi', strtotime( '-1 day' ) );
 		}
 
-		// Push to array
+		$update_time 	= wp_next_scheduled( 'wp_update_plugins' );
+		$range_start 	= date( 'Hi', strtotime( '-30 minutes', $update_time ) );
+		$range_end 		= date( 'Hi', strtotime( '+30 minutes', $update_time ) );
+
 		if( $fileDate >= $lastday ) {
+
+			// Push to array
 			array_push( $allDates, $fileDate );
+
+			// Update info
+			if( $fileTime > $range_start && $fileTime < $range_end ) {
+				$status = __( 'Automatic', 'companion-auto-update' );
+			} else {
+				$status = __( 'Manual', 'companion-auto-update' );
+			}
+			cau_updatePluginInformation( $key, $status );
+
 		}
 
 	}
@@ -430,14 +461,34 @@ function cau_fetch_log( $limit, $format = 'simple' ) {
 
 	        array_push( $plugslug , $pluginSlug );
 
-	        // Get info from database
-	        // if( cau_check_if_exists( $key, 'slug', $updateLog ) ) {
-	        // 	array_push( $method , 'Method found!' );
-	        // } else {
-	        // 	array_push( $method , 'New' );
-	        // }
+	        // Automatic or Manual (non-db-version)
+			$date_tod 		= date ( 'ydm' );
+			$fileDay 		= date ( 'ydm', filemtime( $fullPath ) );
+			$fileTime 		= date ( 'Hi', filemtime( $fullPath ) );
+			$updateSched 	= wp_next_scheduled( 'wp_update_plugins' );
+			$range_start 	= date( 'Hi', strtotime( '-30 minutes', $updateSched ) );
+			$range_end 		= date( 'Hi', strtotime( '+30 minutes', $updateSched ) );
 
-	        array_push( $method , '-' );
+			if( $date_tod == $fileDay ) {
+
+				if( $fileTime > $range_start && $fileTime < $range_end ) {
+					$status = __( 'Automatic', 'companion-auto-update' );
+				} else {
+					$status = __( 'Manual', 'companion-auto-update' );
+				}
+				
+				array_push( $method , $status );
+
+			} else {
+
+				// Get info from database
+		        if( cau_check_if_exists( $key, 'slug', $updateLog ) ) {
+		        	array_push( $method , cau_get_plugininfo( $key, 'method' ) );
+		        } else {
+		        	array_push( $method , '-' );
+		        }
+
+			}
 
 			// Get plugin name
 			foreach ( $pluginData as $dataKey => $dataValue ) {
@@ -563,10 +614,10 @@ function cau_fetch_log( $limit, $format = 'simple' ) {
 		echo '<thead>
 			<tr>
 				<th><strong>'.__( 'Name', 'companion-auto-update' ).'</strong></th>
-				<th><strong>'.__( 'To', 'companion-auto-update' ).'</strong></th>
+				<th><strong>'.__( 'To version', 'companion-auto-update' ).'</strong></th>
 				<th><strong>'.__( 'Type', 'companion-auto-update' ).'</strong></th>
 				<th><strong>'.__( 'Last updated on', 'companion-auto-update' ).'</strong></th>
-				<th style="display: none;"><strong>'.__( 'Update method', 'companion-auto-update' ).'</strong></th>
+				<th><strong>'.__( 'Update method', 'companion-auto-update' ).'</strong></th>
 			</tr>
 		</thead>';
 
@@ -611,7 +662,7 @@ function cau_fetch_log( $limit, $format = 'simple' ) {
 				echo '<td class="column-date" style="min-width: 100px;"><p>'. $pluginDatesF[$key] .'</p></td>';
 
 				if( $format == 'table' ) {
-					echo '<td class="column-method" style="display: none;"><p>'. $method[$key] .'</p></td>';
+					echo '<td class="column-method"><p>'. $method[$key] .'</p></td>';
 				}
 
 			echo '</tr>';
@@ -771,43 +822,39 @@ function cau_addMoreIntervals( $schedules ) {
 }
 add_filter( 'cron_schedules', 'cau_addMoreIntervals' ); 
 
-// Plugin information to DB
-function cau_savePluginInformation() {
+// Check if the update log db is empty
+function cau_updateLogDBisEmpty() {
 
 	global $wpdb;
 	$updateDB 		= "update_log";
 	$updateLog 		= $wpdb->prefix.$updateDB; 
-	$allPlugins 	= get_plugins();
+	$row_count 		= $wpdb->get_var( "SELECT COUNT(*) FROM $updateLog" );
+
+	if( $row_count > 0 ) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
+// Plugin information to DB
+function cau_savePluginInformation( $method = 'New' ) {
+
+	global $wpdb;
+	$updateDB 		= "update_log";
+	$updateLog 		= $wpdb->prefix.$updateDB; 
 
 	foreach ( $allPlugins as $key => $value ) {
-		foreach ( $value as $k => $v ) {
-			if( $k == 'Version' ) $version = $v;
-		}
-		$slug 		= $key;
-		$version 	= $version;
-
-		if( !cau_check_if_exists( $slug, 'slug', $updateDB ) ) $wpdb->insert( $updateLog, array( 'slug' => $slug, 'oldVersion' => $version ) );
+		if( !cau_check_if_exists( $key, 'slug', $updateDB ) ) $wpdb->insert( $updateLog, array( 'slug' => $key, 'oldVersion' => '-', 'method' => $method ) );
 	}	
-}
-add_action( 'cau_custom_hooks_plugins', 'cau_savePluginInformation' );
-
-// Check for manual updates
-function manual_update_check_init() {
-
-	if( isset( $_GET['action'] ) && $_GET['action'] == 'upgrade-plugin' ) {
-
-		if( isset( $_GET['plugin'] ) ) {
-
-			global $wpdb;
-			$updateLog = $wpdb->prefix."update_log"; 
-
-			if( cau_check_if_exists( $_GET['plugin'], 'slug', 'update_log' ) ) $wpdb->query( $wpdb->prepare( "UPDATE $updateLog SET method = 'Manual' WHERE slug = '%s'", $_GET['plugin']  ) );
-
-			die();
-
-		}
-
-	}
 
 }
-add_action( 'admin_footer', 'manual_update_check_init', 1000 );
+
+function cau_updatePluginInformation( $slug, $method = '-', $newVersion = '-' ) {
+
+	global $wpdb;
+	$updateDB 		= "update_log";
+	$updateLog 		= $wpdb->prefix.$updateDB; 
+	$wpdb->query( $wpdb->prepare( "UPDATE $updateLog SET newVersion = '%s', method = %s WHERE slug = '%s'", $newVersion, $method, $slug ) );
+
+}

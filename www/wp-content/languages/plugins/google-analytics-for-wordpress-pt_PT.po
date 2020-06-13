@@ -1,0 +1,86 @@
+# Translation of Plugins - Google Analytics Dashboard Plugin for WordPress by MonsterInsights - Stable (latest release) in Portuguese (Portugal)
+# This file is distributed under the same license as the Plugins - Google Analytics Dashboard Plugin for WordPress by MonsterInsights - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2018-01-23 10:41:08+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
+"Language: pt\n"
+"Project-Id-Version: Plugins - Google Analytics Dashboard Plugin for WordPress by MonsterInsights - Stable (latest release)\n"
+
+#: languages/vue.php:603
+msgid "Performance"
+msgstr "Desempenho"
+
+#. Author of the plugin
+#: includes/admin/admin.php:31 includes/admin/admin.php:34
+#: includes/admin/admin.php:42 lite/includes/admin/dashboard-widget.php:96
+#: lite/includes/admin/wp-site-health.php:172
+#: lite/includes/admin/wp-site-health.php:224
+#: lite/includes/admin/wp-site-health.php:251
+#: lite/includes/admin/wp-site-health.php:289
+#: lite/includes/admin/wp-site-health.php:316
+#: lite/includes/admin/wp-site-health.php:343
+#: lite/includes/admin/wp-site-health.php:368
+#: lite/includes/admin/wp-site-health.php:407
+msgid "MonsterInsights"
+msgstr "MonsterInsights"
+
+#: includes/admin/admin.php:31 includes/admin/admin.php:37
+#: includes/admin/admin.php:45 includes/admin/admin.php:91
+#: languages/vue.php:169
+msgid "Insights"
+msgstr "Insights"
+
+#: languages/vue.php:1078
+msgid "Enhanced Link Attribution"
+msgstr "Atribuição avançada de ligações"
+
+#: languages/vue.php:455
+msgid "License Key"
+msgstr "Chave da licença"
+
+#: languages/vue.php:504
+msgid "Enable Demographics and Interests Reports for Remarketing and Advertising"
+msgstr "Activar os relatórios de Dados demográficos e Interesses para marketing e publicidade"
+
+#: languages/vue.php:606
+msgid "Custom code"
+msgstr "Código personalizado"
+
+#: includes/admin/reports/overview.php:34 languages/vue.php:209
+msgid "Overview"
+msgstr "Visão geral"
+
+#: languages/vue.php:245
+msgid "General"
+msgstr "Gerais"
+
+#: languages/vue.php:257
+msgid "Advanced"
+msgstr "Avançadas"
+
+#: includes/admin/admin.php:34 includes/admin/admin.php:42
+#: includes/admin/admin.php:182
+msgid "Settings"
+msgstr "Definições"
+
+#: includes/admin/admin.php:39 includes/admin/admin.php:95
+#: languages/vue.php:612
+msgid "Reports"
+msgstr "Relatórios"
+
+#: languages/vue.php:937
+msgid "Custom Dimensions"
+msgstr "Dimensões personalizadas"
+
+#: languages/vue.php:1486
+msgid "Manually enter your UA code"
+msgstr "Inserir manualmente o seu código UA"
+
+#: languages/vue.php:365
+msgid "Save Changes"
+msgstr "Guardar alterações"

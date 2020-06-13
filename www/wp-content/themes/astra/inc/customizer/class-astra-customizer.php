@@ -629,6 +629,18 @@ if ( ! class_exists( 'Astra_Customizer' ) ) {
 				)
 			);
 
+			/**
+			 * Add Controls
+			 */
+
+			Astra_Customizer_Control_Base::add_control(
+				'ast-responsive-background',
+				array(
+					'callback'         => 'Astra_Control_Responsive_Background',
+					'santize_callback' => array( 'Astra_Customizer_Sanitizes', 'sanitize_responsive_background' ),
+				)
+			);
+
 			Astra_Customizer_Control_Base::add_control(
 				'ast-customizer-link',
 				array(

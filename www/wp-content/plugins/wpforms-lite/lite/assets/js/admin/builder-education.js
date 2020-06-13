@@ -117,7 +117,7 @@ var WPFormsBuilderEducation = window.WPFormsBuilderEducation || ( function( docu
 			}
 
 			var message    = wpforms_builder_lite.upgrade[type].message.replace( /%name%/g, feature ),
-				upgradeURL = encodeURI( wpforms_builder_lite.upgrade[type].url + '&utm_content=' + feature.trim() );
+				upgradeURL = wpforms_builder_lite.upgrade[type].url + '&utm_content=' + encodeURIComponent( feature.trim() );
 
 			$.alert( {
 				title   : feature + ' ' + wpforms_builder_lite.upgrade[type].title,
