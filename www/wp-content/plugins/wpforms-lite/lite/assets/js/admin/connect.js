@@ -1,4 +1,4 @@
-/* globals wpforms_admin, wpforms_connect */
+/* globals wpforms_admin */
 /**
  * Connect functionality.
  *
@@ -14,11 +14,11 @@ var WPFormsConnect = window.WPFormsConnect || ( function( document, window, $ ) 
 	 *
 	 * @since 1.5.5
 	 *
-	 * @type {Object}
+	 * @type {object}
 	 */
 	var el = {
 		$connectBtn: $( '#wpforms-settings-connect-btn' ),
-		$connectKey: $( '#wpforms-settings-upgrade-license-key' )
+		$connectKey: $( '#wpforms-settings-upgrade-license-key' ),
 	};
 
 	/**
@@ -26,7 +26,7 @@ var WPFormsConnect = window.WPFormsConnect || ( function( document, window, $ ) 
 	 *
 	 * @since 1.5.5
 	 *
-	 * @type {Object}
+	 * @type {object}
 	 */
 	var app = {
 
@@ -36,6 +36,7 @@ var WPFormsConnect = window.WPFormsConnect || ( function( document, window, $ ) 
 		 * @since 1.5.5
 		 */
 		init: function() {
+
 			$( document ).ready( app.ready );
 		},
 
@@ -45,6 +46,7 @@ var WPFormsConnect = window.WPFormsConnect || ( function( document, window, $ ) 
 		 * @since 1.5.5
 		 */
 		ready: function() {
+
 			app.events();
 		},
 
@@ -54,6 +56,7 @@ var WPFormsConnect = window.WPFormsConnect || ( function( document, window, $ ) 
 		 * @since 1.5.5
 		 */
 		events: function() {
+
 			app.connectBtnClick();
 		},
 
@@ -63,7 +66,9 @@ var WPFormsConnect = window.WPFormsConnect || ( function( document, window, $ ) 
 		 * @since 1.5.5
 		 */
 		connectBtnClick: function() {
+
 			el.$connectBtn.on( 'click', function() {
+
 				app.gotoUpgradeUrl();
 			} );
 		},
@@ -78,13 +83,14 @@ var WPFormsConnect = window.WPFormsConnect || ( function( document, window, $ ) 
 		 * @returns {object} Alert arguments.
 		 */
 		proAlreadyInstalled: function( res ) {
+
 			var buttons = {
 				confirm: {
 					text: wpforms_admin.plugin_activate_btn,
 					btnClass: 'btn-confirm',
 					keys: [ 'enter' ],
 					action: function() {
-						window.location = window.location;
+						window.location.reload();
 					},
 				},
 			};
@@ -104,13 +110,16 @@ var WPFormsConnect = window.WPFormsConnect || ( function( document, window, $ ) 
 		 * @since 1.5.5
 		 */
 		gotoUpgradeUrl: function() {
+
 			var data = {
 				action: 'wpforms_connect_url',
 				key:  el.$connectKey.val(),
 				nonce: wpforms_admin.nonce,
 			};
+
 			$.post( wpforms_admin.ajax_url, data )
 				.done( function( res ) {
+
 					if ( res.success ) {
 						if ( res.data.reload ) {
 							$.alert( app.proAlreadyInstalled( res ) );
@@ -134,6 +143,7 @@ var WPFormsConnect = window.WPFormsConnect || ( function( document, window, $ ) 
 					} );
 				} )
 				.fail( function( xhr ) {
+
 					app.failAlert( xhr );
 				} );
 		},

@@ -3,7 +3,7 @@ Contributors: wpforms, jaredatch, smub, slaFFik
 Tags: contact form, contact form plugin, forms, form builder, custom form, contact button, contact me, custom contact form, form manager, form, forms builder, forms creator, captcha, recaptcha, Akismet, email form, web form, feedback form, payment form, survey form, donation form, email submit form, message form, mailchimp, mailchimp form, aweber, aweber form, paypal, paypal form, stripe, stripe form, getresponse, getresponse form, email subscription, contact form widget, user registration form, wordpress registration, wordpress login form, feedback
 Requires at least: 4.9
 Tested up to: 5.4
-Stable tag: 1.6.0.2
+Stable tag: 1.6.1
 Requires PHP: 5.5
 License: GNU General Public License v2.0 or later
 
@@ -400,6 +400,19 @@ Thank you
 Syed Balkhi
 
 == Changelog ==
+
+= 1.6.1 =
+- Added: Display a list of scheduled actions on WPForms > Tools > Scheduled Actions page.
+- Added: Multiple select option for Dropdown field (off by default).
+- Added: New Modern style option for Dropdown field (off by default).
+- Added: Support Smart Tags in form descriptions.
+- Fixed: Properly handle multiple clicks on various accordion-like elements on Form Builder and Settings > Integrations pages.
+- Fixed: Remove all the plugin-related information on uninstall from the DB when opted-in in plugin settings.
+- Fixed: Replace all new lines characters with spaces in notification email subjects (e.g., when an address field value is used in a subject via a smart tag).
+- Fixed: Make sure the plugin doesn't crash when `iconv` PHP extension is not installed on a server.
+- Fixed: Properly handle fields with choices with new lines in their labels when connected to Conditional Logic.
+- Fixed: Google Invisible v2 reCAPTCHA should show Submit Button Processing Text when the form is submitted.
+- Fixed: Display the list of countries in the "Countries" preset and in the Address field in alphabetical order regardless of the current site language.
 
 = 1.6.0.2 =
 - Fixed: The default value 0 (zero) of the Paragraph Text field does not display on the frontend.

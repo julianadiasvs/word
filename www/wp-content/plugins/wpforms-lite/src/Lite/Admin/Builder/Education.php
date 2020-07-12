@@ -491,6 +491,12 @@ class Education {
 				'img'     => 'addon-icon-stripe.png',
 				'license' => 'pro',
 			),
+			array(
+				'name'    => esc_html__( 'Authorize.Net', 'wpforms-lite' ),
+				'slug'    => 'authorize_net',
+				'img'     => 'addon-icon-authorize-net.png',
+				'license' => 'elite',
+			),
 		);
 
 		foreach ( $payments as $payment ) {

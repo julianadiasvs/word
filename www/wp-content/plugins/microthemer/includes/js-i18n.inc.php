@@ -73,6 +73,8 @@ $TvrLang = array(
 	'untitled_folder' => esc_html__('Untitled folder', 'microthemer'),
 	'custom_code' => esc_html__('Full code editor', 'microthemer'),
 	'item' => esc_html__('item', 'microthemer'),
+	'too_much_css' => esc_html__('The current page loads too much CSS for Microthemer to analyse on this tab.', 'microthemer'),
+	'too_much_css_2' => esc_html__('Please use the "Computed" tab instead.', 'microthemer'),
 
 	//'same_domain' => esc_html__('Domain name mismatch', 'microthemer'),
 	//'same_domain_long' => esc_html__('Microthemer can only load pages that start with your domian name', 'microthemer'),

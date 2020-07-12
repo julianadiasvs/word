@@ -17,7 +17,6 @@ if ( cau_updateLogDBisEmpty() ) {
         '.__( 'We need to add some information to your database', 'companion-auto-update' ).'. <a href="'.cau_url( 'status' ).'&run=db_info_update" class="button button-alt" style="background: #FFF;">'.__( 'Run updater now', 'companion-auto-update' ).'</a></p></div>';
 }
 
-
 // Save settings
 if( isset( $_POST['submit'] ) ) {
 
@@ -27,11 +26,11 @@ if( isset( $_POST['submit'] ) ) {
 	$table_name = $wpdb->prefix . "auto_updates"; 
 
 	// Auto updater
-	if( isset( $_POST['plugins'] ) ) 			$plugins = sanitize_text_field( $_POST['plugins'] ); else $plugins = '';
-	if( isset( $_POST['themes'] ) ) 			$themes = sanitize_text_field( $_POST['themes'] ); else $themes = '';
-	if( isset( $_POST['minor'] ) ) 				$minor = sanitize_text_field( $_POST['minor'] ); else $minor = '';
-	if( isset( $_POST['major'] ) ) 				$major = sanitize_text_field( $_POST['major'] ); else $major = '';
-	if( isset( $_POST['translations'] ) ) 		$translations = sanitize_text_field( $_POST['translations'] ); else $translations = '';
+	if( isset( $_POST['plugins'] ) ) 			$plugins 		= sanitize_text_field( $_POST['plugins'] ); else $plugins = '';
+	if( isset( $_POST['themes'] ) ) 			$themes 		= sanitize_text_field( $_POST['themes'] ); else $themes = '';
+	if( isset( $_POST['minor'] ) ) 				$minor 			= sanitize_text_field( $_POST['minor'] ); else $minor = '';
+	if( isset( $_POST['major'] ) ) 				$major 			= sanitize_text_field( $_POST['major'] ); else $major = '';
+	if( isset( $_POST['translations'] ) ) 		$translations 	= sanitize_text_field( $_POST['translations'] ); else $translations = '';
 
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'plugins'", $plugins ) );
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'themes'", $themes ) );
@@ -40,11 +39,11 @@ if( isset( $_POST['submit'] ) ) {
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'translations'", $translations ) );
 
 	// Emails
-	if( isset( $_POST['cau_send'] ) ) 			$send = sanitize_text_field( $_POST['cau_send'] ); else $send = '';
-	if( isset( $_POST['cau_send_update'] ) ) 	$sendupdate = sanitize_text_field( $_POST['cau_send_update'] ); else $sendupdate = '';
-	if( isset( $_POST['wpemails'] ) ) 			$wpemails = sanitize_text_field( $_POST['wpemails'] ); else $wpemails = '';
-	if( isset( $_POST['cau_email'] ) ) 			$email = sanitize_text_field( $_POST['cau_email'] );
-	if( isset( $_POST['html_or_text'] ) ) 		$html_or_text = sanitize_text_field( $_POST['html_or_text'] );
+	if( isset( $_POST['cau_send'] ) ) 			$send 			= sanitize_text_field( $_POST['cau_send'] ); else $send = '';
+	if( isset( $_POST['cau_send_update'] ) ) 	$sendupdate 	= sanitize_text_field( $_POST['cau_send_update'] ); else $sendupdate = '';
+	if( isset( $_POST['wpemails'] ) ) 			$wpemails 		= sanitize_text_field( $_POST['wpemails'] ); else $wpemails = '';
+	if( isset( $_POST['cau_email'] ) ) 			$email 			= sanitize_text_field( $_POST['cau_email'] );
+	if( isset( $_POST['html_or_text'] ) ) 		$html_or_text 	= sanitize_text_field( $_POST['html_or_text'] );
 
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'email'", $email ) );
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'send'", $send ) );
@@ -169,23 +168,19 @@ if( isset( $_GET['welcome'] ) ) {
 	</div>';
 }
 
-$plugin_schedule 	= wp_get_schedule( 'wp_update_plugins' );
-$theme_schedule 	= wp_get_schedule( 'wp_update_themes' );
-$core_schedule 		= wp_get_schedule( 'wp_version_check' );
-$schedule_mail		= wp_get_schedule( 'cau_set_schedule_mail' );
-$cs_hooks_p 		= wp_get_schedule( 'cau_custom_hooks_plugins' );
-$cs_hooks_t 		= wp_get_schedule( 'cau_custom_hooks_themes' );
-$availableIntervals = wp_get_schedules();
+$plugin_schedule 			= wp_get_schedule( 'wp_update_plugins' );
+$theme_schedule 			= wp_get_schedule( 'wp_update_themes' );
+$core_schedule 				= wp_get_schedule( 'wp_version_check' );
+$schedule_mail				= wp_get_schedule( 'cau_set_schedule_mail' );
+$cs_hooks_p 				= wp_get_schedule( 'cau_custom_hooks_plugins' );
+$cs_hooks_t 				= wp_get_schedule( 'cau_custom_hooks_themes' );
+$availableIntervals 		= cau_wp_get_schedules();
 
 ?>
 
 <div class="cau-column-wide">
 	
 	<form method="POST">
-
-		<div id="message" class="cau">
-			<strong>Got a moment?</strong> &dash; <a href="https://forms.gle/B5MMJKk8teGQH8pcA" target="_blank" class="tell_me_more">Please tell me if you like the redesigned dashboard.</a>
-		</div>
 
 		<div class="welcome-to-cau update-bg welcome-panel cau-dashboard-box">
 			
@@ -305,11 +300,7 @@ $availableIntervals = wp_get_schedules();
 				<p>
 					<select name='plugin_schedule' id='plugin_schedule' class='schedule_interval wide'>
 						<?php foreach ( $availableIntervals as $key => $value ) {
-							foreach ( $value as $display => $interval ) {
-								if( $display == 'display' ) {
-									echo "<option "; if( $plugin_schedule == $key ) { echo "selected "; } echo "value='".$key."'>".$interval."</option>"; 
-								}
-							}
+							echo "<option "; if( $plugin_schedule == $key ) { echo "selected "; } echo "value='".$key."'>".$value."</option>"; 
 						} ?>
 					</select>
 				</p>
@@ -343,11 +334,7 @@ $availableIntervals = wp_get_schedules();
 				<p>
 					<select name='theme_schedule' id='theme_schedule' class='schedule_interval wide'>
 						<?php foreach ( $availableIntervals as $key => $value ) {
-							foreach ( $value as $display => $interval ) {
-								if( $display == 'display' ) {
-									echo "<option "; if( $theme_schedule == $key ) { echo "selected "; } echo "value='".$key."'>".$interval."</option>"; 
-								}
-							}
+							echo "<option "; if( $theme_schedule == $key ) { echo "selected "; } echo "value='".$key."'>".$value."</option>"; 
 						} ?>
 					</select>
 				</p>
@@ -380,11 +367,7 @@ $availableIntervals = wp_get_schedules();
 				<p>
 					<select name='core_schedule' id='core_schedule' class='schedule_interval wide'>
 						<?php foreach ( $availableIntervals as $key => $value ) {
-							foreach ( $value as $display => $interval ) {
-								if( $display == 'display' ) {
-									echo "<option "; if( $core_schedule == $key ) { echo "selected "; } echo "value='".$key."'>".$interval."</option>"; 
-								}
-							}
+							echo "<option "; if( $core_schedule == $key ) { echo "selected "; } echo "value='".$key."'>".$value."</option>"; 
 						} ?>
 					</select>
 				</p>
@@ -415,13 +398,9 @@ $availableIntervals = wp_get_schedules();
 
 				<h4><?php _e( 'Email Notifications', 'companion-auto-update' );?></h4>
 				<p>
-					<select id='schedule_mail' name='schedule_mail'>
+					<select id='schedule_mail' name='schedule_mail' class='schedule_interval wide'>
 						<?php foreach ( $availableIntervals as $key => $value ) {
-							foreach ( $value as $display => $interval ) {
-								if( $display == 'display' ) {
-									echo "<option "; if( $schedule_mail == $key ) { echo "selected "; } echo "value='".$key."'>".$interval."</option>"; 
-								}
-							}
+							echo "<option "; if( $schedule_mail == $key ) { echo "selected "; } echo "value='".$key."'>".$value."</option>"; 
 						} ?>
 					</select>
 				</p>
@@ -449,7 +428,6 @@ $availableIntervals = wp_get_schedules();
 				</div>
 
 			</div>
-
 		</div>
 
 		<?php wp_nonce_field( 'cau_save_settings' ); ?>	

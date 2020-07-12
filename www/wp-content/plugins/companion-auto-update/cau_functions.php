@@ -412,21 +412,31 @@ function cau_fetch_log( $limit, $format = 'simple' ) {
 	switch( $filter ) {
 
 		case 'plugins':
-			$plugins 	= true;
-			$themes 	= false;
-			$core 		= false;
+			$plugins 		= true;
+			$themes 		= false;
+			$core 			= false;
+			$translations 	= false;
 			break;
 
 		case 'themes':
-			$plugins 	= false;
-			$themes 	= true;
-			$core 		= false;
+			$plugins 		= false;
+			$themes 		= true;
+			$core 			= false;
+			$translations 	= false;
+			break;
+
+		case 'translations':
+			$plugins 		= false;
+			$themes 		= false;
+			$core 			= false;
+			$translations 	= true;
 			break;
 		
 		default:
-			$plugins 	= true;
-			$themes 	= true;
-			$core 		= true;
+			$plugins 		= true;
+			$themes 		= true;
+			$core 			= true;
+			$translations 	= false;
 			break;
 	}
 
@@ -559,6 +569,89 @@ function cau_fetch_log( $limit, $format = 'simple' ) {
 
 	}
 
+	// TRANSLATIONS
+	if( $translations ) {
+
+		// There is no way (at this time) to check if someone changed this link, so therefore it won't work when it's changed, sorry
+		$transFolder = get_home_path().'wp-content/languages';
+		if( file_exists( $transFolder ) ) {
+
+			$allThemTranslations 	= array();
+			$allThemTypes 			= array();
+
+			$pt = __( 'Plugin translations', 'companion-auto-update' );
+			$tt = __( 'Theme translations', 'companion-auto-update' );
+			$ct = __( 'Core translations', 'companion-auto-update' );
+
+			// Plugin translations
+			$files = glob( $transFolder.'/plugins/*.{mo}', GLOB_BRACE );
+			foreach( $files as $file ) {
+				array_push( $allThemTranslations, $file );
+				array_push( $allThemTypes, $pt );
+			}
+
+			// Theme translations
+			$files = glob( $transFolder.'/themes/*.{mo}', GLOB_BRACE );
+			foreach( $files as $file ) {
+				array_push( $allThemTranslations, $file );
+				array_push( $allThemTypes, $tt );
+			}
+
+			// Core translations
+			$files = glob( $transFolder.'/*.{mo}', GLOB_BRACE );
+			foreach( $files as $file ) {
+				array_push( $allThemTranslations, $file );
+				array_push( $allThemTypes, $ct );
+			}
+
+			foreach( $allThemTranslations as $key => $trans_file ) {
+
+				$transDate 	= date( 'YmdHi', filemtime( $trans_file ) );
+
+				if( $format == 'table' ) {
+					$transDateF 	= date_i18n( $dateFormat, filemtime( $trans_file ) );
+					$transDateF .= ' &dash; '.date ( 'H:i', filemtime( $trans_file ) );
+				} else {
+					$transDateF 	= date_i18n( $dateFormat, filemtime( $trans_file ) );
+				}
+
+				$trans_name 	= basename( $trans_file );
+				$trans_name 	= str_replace( "-", " ", $trans_name );
+				$trans_name 	= str_replace( ".mo", "", $trans_name );
+				$trans_name 	= str_replace( ".json", "", $trans_name );
+				$trans_lang 	= substr( $trans_name, strrpos( $trans_name, " " ) + 1 );
+				$trans_name 	= str_replace( $trans_lang, "", $trans_name );
+				$trans_lang 	= substr( $trans_lang, strrpos( $trans_lang, "_" ) + 1 );
+
+				// Push
+				array_push( $pluginNames, ucfirst( $trans_name ).': '.$trans_lang ); 
+				array_push( $type, $allThemTypes[$key] ); 
+				array_push( $pluginVersion, '-' );
+				array_push( $pluginDates, $transDate );
+				array_push( $pluginDatesF, $transDateF );
+				array_push( $plugslug , '' );
+		        array_push( $method , '-' );
+
+		    }
+
+		} else {
+			$transDate 	= date('YmdHi');
+			$transDateF 	= 'Could not read translations date.';
+
+			array_push( $pluginNames, 'Translations' ); 
+			array_push( $type, $trans_type.' translations' ); 
+			array_push( $pluginVersion, '-' );
+			array_push( $pluginDates, $transDate );
+			array_push( $pluginDatesF, $transDateF );
+			array_push( $plugslug , '' );
+
+	        // Get info from database
+	        array_push( $method , '-' );
+
+		}
+
+	}
+
 	// CORE
 	if( $core ) {
 
@@ -613,9 +706,9 @@ function cau_fetch_log( $limit, $format = 'simple' ) {
 
 		echo '<thead>
 			<tr>
-				<th><strong>'.__( 'Name', 'companion-auto-update' ).'</strong></th>
-				<th><strong>'.__( 'To version', 'companion-auto-update' ).'</strong></th>
-				<th><strong>'.__( 'Type', 'companion-auto-update' ).'</strong></th>
+				<th><strong>'.__( 'Name', 'companion-auto-update' ).'</strong></th>';
+				if( !$translations ) echo '<th><strong>'.__( 'To version', 'companion-auto-update' ).'</strong></th>';
+				echo '<th><strong>'.__( 'Type', 'companion-auto-update' ).'</strong></th>
 				<th><strong>'.__( 'Last updated on', 'companion-auto-update' ).'</strong></th>
 				<th><strong>'.__( 'Update method', 'companion-auto-update' ).'</strong></th>
 			</tr>
@@ -654,7 +747,7 @@ function cau_fetch_log( $limit, $format = 'simple' ) {
 						$thisType = $type[$key];
 					}
 
-					echo '<td class="cau_hide_on_mobile column-version" style="min-width: 100px;"><p>'. $pluginVersion[$key] .'</p></td>';
+					if( !$translations ) echo '<td class="cau_hide_on_mobile column-version" style="min-width: 100px;"><p>'. $pluginVersion[$key] .'</p></td>';
 					echo '<td class="cau_hide_on_mobile column-description"><p>'. $thisType .'</p></td>';
 
 				}
@@ -812,7 +905,7 @@ function cau_addMoreIntervals( $schedules ) {
 	);
 	
 	// Add a montly interval.
-	$schedules['monthly'] = array(
+	$schedules['once_monthly'] = array(
 		'interval' => 2635200,
 		'display'  => __( 'Once a month' ),
 	);
@@ -821,6 +914,49 @@ function cau_addMoreIntervals( $schedules ) {
 
 }
 add_filter( 'cron_schedules', 'cau_addMoreIntervals' ); 
+
+// Get only unique schedules
+function cau_wp_get_schedules() {
+
+	// Start variables
+	$availableIntervals = wp_get_schedules();
+	$array_unique 		= array();
+	$intervalTimes 		= array();
+	$intervalNames 		= array();
+	$intervalUniques 	= array();
+	$counter 			= 0;
+
+	// Get all intervals
+	foreach ( $availableIntervals as $key => $value ) {
+
+		// Do a bunch of checks to format them the right way
+		foreach ( $value as $display => $interval ) {
+
+			if( $display == 'display' ) {
+				$intervalNames[$counter] 	= $interval; // Add the display name (i.e. "Once a month" or "Once Daily")
+				$counter++; // Make sure the next interval gets a new "key" value
+			} else {
+				if( $interval == '86400' ) $key = 'daily'; // Force the daily interval to be called daily, requires by a bunch of handles of this plugin
+				$intervalTimes[$counter] 	= $key;  // Add the backend name (i.e. "once_monthly" or "daily") 
+				$intervalUniques[$counter] 	= $interval;  // Add the unix timestamp of this interval, used to identify unique items
+			}
+
+		}
+
+	}
+
+	// Prevent duplicates
+	foreach ( array_unique( $intervalUniques ) as $key => $value ) {
+		// $value is the timestamp
+		// $intervalTimes[$key] is the backend name
+		// $intervalNames[$key] is the display name
+		$array_unique[$intervalTimes[$key]] = $intervalNames[$key];
+	}
+
+	// Return the array
+	return $array_unique;
+
+} 
 
 // Check if the update log db is empty
 function cau_updateLogDBisEmpty() {
@@ -843,6 +979,7 @@ function cau_savePluginInformation( $method = 'New' ) {
 	global $wpdb;
 	$updateDB 		= "update_log";
 	$updateLog 		= $wpdb->prefix.$updateDB; 
+	$allPlugins 	= get_plugins();
 
 	foreach ( $allPlugins as $key => $value ) {
 		if( !cau_check_if_exists( $key, 'slug', $updateDB ) ) $wpdb->insert( $updateLog, array( 'slug' => $key, 'oldVersion' => '-', 'method' => $method ) );
@@ -857,4 +994,95 @@ function cau_updatePluginInformation( $slug, $method = '-', $newVersion = '-' ) 
 	$updateLog 		= $wpdb->prefix.$updateDB; 
 	$wpdb->query( $wpdb->prepare( "UPDATE $updateLog SET newVersion = '%s', method = %s WHERE slug = '%s'", $newVersion, $method, $slug ) );
 
+}
+
+function cau_siteHealthSignature() {
+	return '<p style="font-size: 12px; color: #707070;">'.__( 'This was reported by the Companion Auto Update plugin', 'companion-auto-update' ).'</p>';
+}
+
+function cau_add_siteHealthTest( $tests ) {
+    $tests['direct']['cau_disabled'] = array( 'label' => __( 'Companion Auto Update', 'companion-auto-update' ), 'test'  => 'cau_disabled_test' );
+    $tests['direct']['cau_cronjobs'] = array( 'label' => __( 'Companion Auto Update', 'companion-auto-update' ), 'test'  => 'cau_cronjobs_test' );
+    $tests['direct']['cau_siteinde'] = array( 'label' => __( 'Companion Auto Update', 'companion-auto-update' ), 'test'  => 'cau_siteindex_test' );
+    return $tests;
+}
+add_filter( 'site_status_tests', 'cau_add_siteHealthTest' );
+
+function cau_siteindex_test() {
+    $result = array(
+        'label'       => __( 'Search Engine Visibility', 'companion-auto-update' ),
+        'status'      => 'good',
+        'badge'       => array(
+            'label' => __( 'Performance' ),
+            'color' => 'blue',
+        ),
+        'description' => sprintf( '<p>%s</p>', __( "Search Engines can index your site just fine.", 'companion-auto-update' ) ),
+        'actions'     => '',
+        'test'        => 'cau_siteinde',
+    );
+ 
+    if ( get_option( 'blog_public' ) == 0 ) {
+        $result['status'] 		= 'recommended';
+        $result['label'] 		= __( 'Search Engine Visibility ', 'companion-auto-update' );
+        $result['description'] 	= sprintf( '<p>%s</p>', __( "You’ve chosen to disscourage Search Engines from indexing your site. Auto-updating works best on sites with more traffic, consider enabling indexing for your site.", 'companion-auto-update' ) );
+        $result['actions'] 		.= sprintf( '<p><a href="%s">%s</a>', esc_url( admin_url( 'options-reading.php' ) ), __( 'Fix it', 'companion-auto-update' ) );
+    }
+
+    $result['actions'] 		.= cau_siteHealthSignature();
+ 
+    return $result;
+}
+ 
+function cau_disabled_test() {
+    $result = array(
+        'label'       => __( 'Auto updating is enabled', 'companion-auto-update' ),
+        'status'      => 'good',
+        'badge'       => array(
+            'label' => __( 'Security' ),
+            'color' => 'blue',
+        ),
+        'description' => sprintf( '<p>%s</p>', __( "Automatic updating isn't disabled on this site.", 'companion-auto-update' ) ),
+        'actions'     => '',
+        'test'        => 'cau_disabled',
+    );
+ 
+    if ( checkAutomaticUpdaterDisabled() ) {
+        $result['status'] 		= 'critical';
+        $result['label'] 		= __( 'Auto updating is disabled', 'companion-auto-update' );
+        $result['description'] 	= sprintf( '<p>%s</p>', __( "Automatic updating is disabled on this site by either WordPress, another plugin or your webhost.", 'companion-auto-update' ) );
+        $result['description'] 	.= sprintf( '<p>%s</p>', __( "Error code", 'companion-auto-update' ).': <code>AUTOMATIC_UPDATER_DISABLED true</code>' );
+        $result['actions'] 		.= sprintf( '<p><a href="%s">%s</a>', esc_url( cau_url( 'status' ) ), __( 'Fix it', 'companion-auto-update' ) );
+        $result['actions'] 		.= sprintf( ' - <a href="%s">%s</a></p>', esc_url( cau_url( 'support' ) ), __( 'Contact for support', 'companion-auto-update' ) );
+    }
+
+    $result['actions'] 		.= cau_siteHealthSignature();
+ 
+    return $result;
+}
+
+function cau_cronjobs_test() {
+    $result = array(
+        'label'       => __( 'Cronjobs are enabled', 'companion-auto-update' ),
+        'status'      => 'good',
+        'badge'       => array(
+            'label' => __( 'Performance' ),
+            'color' => 'blue',
+        ),
+        'description' => sprintf( '<p>%s</p>', __( "Cronjobs are enabled on this site.", 'companion-auto-update' ) ),
+        'actions'     => '',
+        'test'        => 'cau_cronjobs',
+    );
+ 
+    if ( checkCronjobsDisabled() ) {
+        $result['status'] 		= 'recommended';
+        $result['label'] 		= __( 'Cronjobs are disabled', 'companion-auto-update' );
+        $result['description'] 	= sprintf( '<p>%s</p>', __( "Cronjobs are disabled on this site by either you, WordPress, another plugin or your webhost. Companion Auto Update might experience issues when cronjobs are disabled. ", 'companion-auto-update' ) );
+        $result['description'] 	.= sprintf( '<p>%s</p>', __( "Error code", 'companion-auto-update' ).': <code>DISABLE_WP_CRON true</code>' );
+        $result['actions'] 		.= sprintf( '<p><a href="%s">%s</a>', esc_url( cau_url( 'status' ) ), __( 'Fix it', 'companion-auto-update' ) );
+        $result['actions'] 		.= sprintf( ' - <a href="%s">%s</a></p>', esc_url( cau_url( 'support' ) ), __( 'Contact for support', 'companion-auto-update' ) );
+    }
+
+    $result['actions'] 		.= cau_siteHealthSignature();
+ 
+    return $result;
 }

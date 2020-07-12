@@ -789,6 +789,44 @@ $propertyOptions['text']['word_wrap'] = array(
 	)
 );
 
+$propertyOptions['text']['white_space'] = array(
+	'short_label' => esc_html__('White Space', 'microthemer'),
+	'label' => esc_attr__('White Space', 'microthemer'),
+	'input-class' => 'size-3a',
+	'type' => 'combobox',
+	'select_options' => array(
+		"normal",
+		"nowrap",
+		"pre",
+		"pre-line",
+		"pre-wrap"
+	),
+	'icon' => '43, 14',
+	// ref
+	'ref_desc' => "<p>The white-space property determines how white spaces characters like spaces, tabs, and returns are handled. It also controls how text should wrap.<p>",
+	'ref_values' => array(
+		"normal" => "Multiple whitespace characters will be treated as one, text will wrap when necessary (default).",
+		"nowrap" => "Multiple whitespace characters will be treated as one, text will never wrap to the next line until a br tag is used.",
+		"pre" => "Whitespace characters are honoured. Text only wraps on line breaks - acts like the pre tag in HTML",
+		"pre-line" => "Multiple whitespace characters will be treated as one, text will wrap when necessaryand on line breaks",
+		"pre-wrap" => "Whitespace characters are honoured, text will wrap when necessary, and on line breaks"
+	),
+	'ref_links' => array(
+		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
+		'css_tricks' => 'https://css-tricks.com/almanac/properties/w/whitespace/',
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/white-space',
+		'quackit' => 'http://www.quackit.com/css/properties/css_white-space.cfm',
+		'w3s' => 'http://www.w3schools.com/cssref/pr_text_white-space.asp',
+	),
+	'tutorials' => array(
+		array(
+			'url' => 'https://perishablepress.com/wrapping-content/',
+			'title' => 'Wrapping Long URLs and Text Content with CSS',
+		),
+	)
+);
+
+
 // todo uncomment when icon is ready
 /*$propertyOptions['text']['word_break'] = array(
 	'short_label' => esc_html__('Word Break', 'microthemer'),

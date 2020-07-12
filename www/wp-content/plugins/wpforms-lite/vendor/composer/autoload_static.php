@@ -7,6 +7,7 @@ namespace Composer\Autoload;
 class ComposerStaticInit3c0b097446d5419a7caecddf731f955c
 {
     public static $files = array (
+        'def43f6c87e4f8dfd0c9e1b1bab14fe8' => __DIR__ . '/..' . '/symfony/polyfill-iconv/bootstrap.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
     );
 
@@ -22,6 +23,7 @@ class ComposerStaticInit3c0b097446d5419a7caecddf731f955c
         'S' => 
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
+            'Symfony\\Polyfill\\Iconv\\' => 23,
             'Symfony\\Component\\CssSelector\\' => 30,
         ),
     );
@@ -38,6 +40,10 @@ class ComposerStaticInit3c0b097446d5419a7caecddf731f955c
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
+        ),
+        'Symfony\\Polyfill\\Iconv\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-iconv',
         ),
         'Symfony\\Component\\CssSelector\\' => 
         array (

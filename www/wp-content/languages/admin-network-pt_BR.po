@@ -2,12 +2,12 @@
 # This file is distributed under the same license as the WordPress - 5.4.x - Development - Administration - Network Admin package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-03-05 13:18:59+0000\n"
+"PO-Revision-Date: 2020-06-16 21:50:48+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: GlotPress/3.0.0-alpha\n"
+"X-Generator: GlotPress/3.0.0-alpha.2\n"
 "Language: pt_BR\n"
 "Project-Id-Version: WordPress - 5.4.x - Development - Administration - Network Admin\n"
 
@@ -758,7 +758,7 @@ msgstr "Adicionar Novo leva você para a tela Adicionar Novo Site. Você pode pe
 #. translators: 1: Dashboard URL, 2: Network admin edit URL.
 #: wp-admin/network/site-new.php:193
 msgid "Site added. <a href=\"%1$s\">Visit Dashboard</a> or <a href=\"%2$s\">Edit Site</a>"
-msgstr "Site adicionado. <a href=\"%1$s\">Visitar Painel</a> ou <a href=\"%2$s\">Editar Site</a>"
+msgstr "Site adicionado. <a href=\"%1$s\">Visitar painel</a> ou <a href=\"%2$s\">Editar site</a>"
 
 #: wp-admin/network/menu.php:52
 msgid "All Sites"
@@ -783,7 +783,7 @@ msgstr "Configurações de idioma"
 
 #: wp-admin/network/settings.php:238
 msgid "Allow site administrators to add new users to their site via the \"Users &rarr; Add New\" page"
-msgstr "Permite que os administradores do site adicionem novos usuários aos seus sites através da página \"Usuários &rarr; Adicionar Novo\"."
+msgstr "Permite que os administradores do site adicionem novos usuários aos seus sites através da página \"Usuários &rarr; Adicionar novo\"."
 
 #: wp-admin/network/sites.php:34
 msgid "Dashboard leads to the Dashboard for that site."
@@ -954,7 +954,7 @@ msgstr "A escolha de sites em subdiretórios fica desativada se a instalação t
 
 #: wp-admin/includes/network.php:178
 msgid "Welcome to the Network installation process!"
-msgstr "Bem-vindo ao processo de instalação da rede!"
+msgstr "Boas-vindas ao processo de instalação da rede!"
 
 #: wp-admin/includes/network.php:294
 msgid "Network Details"

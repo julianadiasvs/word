@@ -5,7 +5,7 @@ Plugin URI: https://themeover.com/microthemer
 Text Domain: microthemer
 Domain Path: /languages
 Description: Microthemer is a feature-rich visual design plugin for customizing the appearance of ANY WordPress Theme or Plugin Content (e.g. posts, pages, contact forms, headers, footers, sidebars) down to the smallest detail. For CSS coders, Microthemer is a proficiency tool that allows them to rapidly restyle a WordPress theme or plugin. For non-coders, Microthemer's intuitive point and click editing opens the door to advanced theme and plugin customization.
-Version: 6.2.0.2
+Version: 6.2.0.7
 Author: Themeover
 Author URI: https://themeover.com
 */
@@ -268,36 +268,25 @@ if (!class_exists('tvr_common')) {
 
 		}
 
-		// dequeue rougue scripts loading on MT UI page that cause issues for it
-        // not currently in use - the next post plugin has too many issues
-		public static function dequeue_rogue_scripts(){
+		// dequeue rougue styles or scripts loading on MT UI page that cause issues for it
+		public static function dequeue_rogue_assets(){
 
-				//remove_action('wp_enqueue_scripts', array(, 'animate_load_scripts'));
+			$conflict_styles = array(
 
-               /* remove_action( 'admin_print_scripts', array(
-                        'WINPM_Next_Article_Layout_Grid', 'animate_load_admin_script', 1000
-                ));
-				remove_action( 'wp_footer', array(
-				        'WINPM_Next_Article_Layout_Grid', 'next_print_script_in_footer', 1000
-                ) );*/
+				// admin 2020 plugin assets
+				'uikitcss',
+				'ma_admin_head_css',
+				'ma_admin_editor_css',
+				'ma_admin_menu_css',
+				'ma_admin_mobile_css',
+				'custom_wp_admin_css',
+				'ma_admin_media_css',
+			);
 
-				//add_action('wp_footer', array('WINPM_Next_Article_Layout_Grid', 'next_print_script_in_footer'));
-
-			    $conflict_scripts = array(
-
-				    // Scripts for: https://wordpress.org/plugins/infinite-related-next-post-manager/
-				    'wimpm-next-admin-js',
-				    'wimpm-next-ace-js',
-				    'next-editor-js',
-
-				    'winpm-next-post-js',
-                );
-
-			    foreach ($conflict_scripts as $script_handle){
-				    wp_dequeue_script($script_handle);
-                }
-
-        }
+			foreach ($conflict_styles as $style_handle){
+				wp_dequeue_style($style_handle);
+			}
+		}
 
 
 	}
@@ -312,7 +301,7 @@ if ( is_admin() ) {
 		// define
 		class tvr_microthemer_admin {
 
-			var $version = '6.2.0.2';
+			var $version = '6.2.0.7';
 			var $db_chg_in_ver = '6.0.6.5';
 			var $locale = '';
 			var $time = 0;
@@ -568,8 +557,9 @@ if ( is_admin() ) {
                         add_action('admin_head', array(&$this, 'add_dyn_inline_css'));
                         add_action('admin_init', array(&$this, 'add_js'));
 
-						/*add_action('wp_print_scripts', array('tvr_common', 'dequeue_rogue_scripts'), 1000);
-						add_action('wp_footer', array('tvr_common', 'dequeue_rogue_scripts'), 1000);*/
+						// fix compatibility issues due to a plugin loading scripts or styles on MT interface pages
+						add_action('admin_enqueue_scripts', array('tvr_common', 'dequeue_rogue_assets'), 1000);
+
 					} else {
 						//echo 'it is an ajax request';
 					}
@@ -5024,7 +5014,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			            }
 
 			            // update variable if passed
-			            if (!empty($data['sug_variables'])){
+			            if (isset($data['sug_variables'])){
 				            $this->preferences['my_props']['sug_variables'] = $data['sug_variables'];
 				            $pref_array['default_sug_variables_set'] = 1;
 			            }
@@ -11715,7 +11705,7 @@ if (!is_admin()) {
 			var $preferencesName = 'preferences_themer_loader';
 			// @var array $preferences Stores the ui options for this plugin
 			var $preferences = array();
-			var $version = '6.2.0.2';
+			var $version = '6.2.0.7';
 			var $microthemeruipage = 'tvr-microthemer.php';
 			var $file_stub = '';
 			var $min_stub = '';

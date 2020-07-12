@@ -172,6 +172,10 @@
 
 <div class="cau_status_page">
 
+<div id="message" class="cau">
+	<strong>Got a moment?</strong> &dash; <a href="https://forms.gle/FbnokrbdLFhVHgDZA" target="_blank" class="tell_me_more">Please answer a few questions about the future of the status page in this plugin.</a>
+</div>
+
 <table class="cau_status_list widefat striped">
 
 	<thead>

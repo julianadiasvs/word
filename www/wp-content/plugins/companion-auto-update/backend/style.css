@@ -106,6 +106,9 @@
 	display: inline-block;
 	padding: 5px;
 }
+select.schedule_interval {
+	width: 90%;
+}
 
 /* Overwrite core UI */
 /*.cau_content input[type="checkbox"]:checked::before {

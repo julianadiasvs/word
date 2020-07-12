@@ -3,7 +3,7 @@
  * Plugin Name: Companion Auto Update
  * Plugin URI: http://codeermeneer.nl/portfolio/companion-auto-update/
  * Description: This plugin auto updates all plugins, all themes and the wordpress core.
- * Version: 3.5.3
+ * Version: 3.5.4.1
  * Author: Papin Schipper
  * Author URI: http://codeermeneer.nl/
  * Contributors: papin
@@ -30,7 +30,7 @@ function cau_install() {
 	if (! wp_next_scheduled ( 'cau_custom_hooks_themes' )) wp_schedule_event( time(), 'daily', 'cau_custom_hooks_themes'); // Run custom hooks on theme updates
 }
 add_action( 'cau_set_schedule_mail', 'cau_check_updates_mail' );
-add_action( 'cau_custom_hooks_plugins', 'cau_run_custom_hooks_p' );
+add_action( 'wp_update_plugins', 'cau_run_custom_hooks_p' );
 add_action( 'cau_custom_hooks_themes', 'cau_run_custom_hooks_t' );
 
 // Redirect to welcome screen on activation of plugin
