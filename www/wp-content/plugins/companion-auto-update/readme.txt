@@ -3,9 +3,9 @@ Contributors: Papin, qweb
 Donate link: https://www.paypal.me/dakel/10/
 Tags: auto, automatic, background, update, updates, updating, automatic updates, automatic background updates, easy update, wordpress update, theme update, plugin update, up-to-date, security, update latest version, update core, update wp, update wp core, major updates, minor updates, update to new version, update core, update plugin, update plugins, update plugins automatically, update theme, plugin, theme, advance, control, mail, notifations, enable
 Requires at least: 3.6.0
-Tested up to: 5.4
+Tested up to: 5.5
 Requires PHP: 5.1
-Stable tag: 3.5.4.1
+Stable tag: 3.5.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,11 @@ Your feedback is what made this plugin what is and what it’ll become so keep t
 4. Keep track of updates with the update log
 
 == Changelog ==
+
+= 3.5.5 (August 5, 2020) =
+* Fix: Added better multisite support
+* Better status log: We've added a bunch more checks and you can now see more passed checks.
+* Support for WordPress 5.5
 
 = 3.5.4.1 (June 20, 2020) =
 * Fix: Sometimes the hour settings for intervals wouldn't show up

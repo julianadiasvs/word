@@ -5,7 +5,7 @@ Plugin URI: https://themeover.com/microthemer
 Text Domain: microthemer
 Domain Path: /languages
 Description: Microthemer is a feature-rich visual design plugin for customizing the appearance of ANY WordPress Theme or Plugin Content (e.g. posts, pages, contact forms, headers, footers, sidebars) down to the smallest detail. For CSS coders, Microthemer is a proficiency tool that allows them to rapidly restyle a WordPress theme or plugin. For non-coders, Microthemer's intuitive point and click editing opens the door to advanced theme and plugin customization.
-Version: 6.2.0.7
+Version: 6.2.1.5
 Author: Themeover
 Author URI: https://themeover.com
 */
@@ -258,7 +258,16 @@ if (!class_exists('tvr_common')) {
 					$wp_styles->add_data($handle, $data_key, $data_val);
 				}
 
-				$wp_styles->do_items();
+				// allow CSS to load in footer if O2 is active so MT comes after O2 even when O2 active without O2
+                // Note this didn't work on my local install, but did on a customer who reported issue with Agency Tools
+                // so better to use a more deliberate action hook e.g. wp_footer
+                // Ideally, O2 would enqueue a placeholder stylesheet and replace rather than append to head
+				/*if ( !defined( 'SHOW_CT_BUILDER' ) ) {
+					$wp_styles->do_items($handle);
+				}*/
+
+				// (feels a bit risky, but can add if MT loading before O2 when active by itself causes issue for people)
+                $wp_styles->do_items($handle);
 			}
 
 			else {
@@ -301,7 +310,7 @@ if ( is_admin() ) {
 		// define
 		class tvr_microthemer_admin {
 
-			var $version = '6.2.0.7';
+			var $version = '6.2.1.5';
 			var $db_chg_in_ver = '6.0.6.5';
 			var $locale = '';
 			var $time = 0;
@@ -795,60 +804,65 @@ if ( is_admin() ) {
                 }
             }
 
-            function themeover_connection_url($email, $proxy = false){
 
-	            $base_url = $proxy
-		            ? 'https://validate.themeover.com/'
-		            : 'https://themeover.com/wp-content/tvr-auto-update/validate.php';
 
-	            $params = 'email='.rawurlencode($email)
-	                      .'&domain='.$this->home_url
-	                      .'&mt_version='.$this->version;
+			function themeover_connection_url($email, $proxy = false){
 
-	            return $base_url.'?'.$params;
+				$base_url = $proxy
+					? 'https://validate.themeover.com/'
+					: 'https://themeover.com/wp-content/tvr-auto-update/validate.php';
 
-            }
+				$params = 'email='.rawurlencode($email)
+				          .'&domain='.$this->home_url
+				          .'&mt_version='.$this->version;
+
+				return $base_url.'?'.$params;
+
+			}
 
 
 			/**
-             * Connect to themeover directly or via proxy fallback
-             *
+			 * Connect to themeover directly or via proxy fallback
+			 *
 			 * @param      $url
+			 * @param $email
 			 * @param bool $proxy
 			 *
 			 * @return false|string
 			 */
-            function connect_to_themeover($url, $proxy = false){
+			function connect_to_themeover($url, $email, $proxy = false){
 
-	            //$url = $this->themeover_connection_url($email, $proxy);
-	            $responseString = wp_remote_fopen($url);
-	            $response = json_decode($responseString, true);
+				//$url = $this->themeover_connection_url($email, $proxy);
+				$responseString = wp_remote_fopen($url);
+				$response = json_decode($responseString, true);
 
-	            //$this->show_me.= 'The response'. $responseString;
+				//$this->show_me.= 'The response from '. $url . ': '. $responseString;
 
-	            // if we have a valid result or we have already tried the fallback proxy script, return result
-	            if (!empty($response['message']) or $proxy){
-                    return $responseString;
-	            }
+				// if we have a valid result or we have already tried the fallback proxy script, return result
+				if (!empty($response['message']) or $proxy){
+					return $responseString;
+				}
 
-	            // the initial connection was unsuccessful, possibly due to firewall rules, attempt proxy connection
-	            else {
-	                return $this->connect_to_themeover($url, true);
-                }
+				// the initial connection was unsuccessful, possibly due to firewall rules, attempt proxy connection
+				else {
+					return $this->connect_to_themeover(
+					        $this->themeover_connection_url($email, true), $email, true
+                    );
+				}
 
-            }
+			}
 
 			// check user can unlock / continue using MT
-            function get_validation_response($email, $context = 'unlock'){
+			function get_validation_response($email, $context = 'unlock'){
 
-			    $pref_array = array(
-			        'buyer_email' => $email
-                );
-	            $was_capped_version = $this->is_capped_version();
-	            $response = false;
-	            $url = $this->themeover_connection_url($email);
-	            $responseString = $this->connect_to_themeover($url);
-	            //$this->show_me.= $responseString;
+				$pref_array = array(
+					'buyer_email' => $email
+				);
+				$was_capped_version = $this->is_capped_version();
+				$response = false;
+				$url = $this->themeover_connection_url($email);
+				$responseString = $this->connect_to_themeover($url, $email);
+				//$this->show_me.= $responseString;
 
 				// accommodate new json response format
 				if ( strpos($responseString, '{') !== false ){
@@ -872,12 +886,12 @@ if ( is_admin() ) {
 					$response['code'] = $response_code;
 
 					// if scheduled subscription check, log num tries and bail if deferring
-                    if ($context == 'scheduled'){
-                        $response['message'] = $this->log_subscription_check();
-	                    if ($response['message'] == 'defer'){
-		                    return false;
-	                    }
-                    }
+					if ($context == 'scheduled'){
+						$response['message'] = $this->log_subscription_check();
+						if ($response['message'] == 'defer'){
+							return false;
+						}
+					}
 
 
 				}
@@ -886,17 +900,17 @@ if ( is_admin() ) {
 				else {
 
 					// save subscription response from server (includes renewal_check date)
-				    $pref_array['subscription'] = $response;
+					$pref_array['subscription'] = $response;
 
 					// reset subscription checks if manual unlock attempted
-				    if ($context == 'unlock'){
-					    $pref_array['subscription_checks'] = $this->subscription_check_defaults;
-                    }
+					if ($context == 'unlock'){
+						$pref_array['subscription_checks'] = $this->subscription_check_defaults;
+					}
 
-                }
+				}
 
-	            $this->change_unlock_status($context, $validation, $pref_array, $response, $was_capped_version);
-            }
+				$this->change_unlock_status($context, $validation, $pref_array, $response, $was_capped_version);
+			}
 
 
             function change_unlock_status($context, $validation, $pref_array, $response, $was_capped_version){
@@ -11705,7 +11719,7 @@ if (!is_admin()) {
 			var $preferencesName = 'preferences_themer_loader';
 			// @var array $preferences Stores the ui options for this plugin
 			var $preferences = array();
-			var $version = '6.2.0.7';
+			var $version = '6.2.1.5';
 			var $microthemeruipage = 'tvr-microthemer.php';
 			var $file_stub = '';
 			var $min_stub = '';

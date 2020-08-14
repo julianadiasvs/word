@@ -3,7 +3,7 @@
  * Plugin Name: Companion Auto Update
  * Plugin URI: http://codeermeneer.nl/portfolio/companion-auto-update/
  * Description: This plugin auto updates all plugins, all themes and the wordpress core.
- * Version: 3.5.4.1
+ * Version: 3.5.5
  * Author: Papin Schipper
  * Author URI: http://codeermeneer.nl/
  * Contributors: papin
@@ -23,8 +23,18 @@ function cau_load_translations() {
 add_action( 'init', 'cau_load_translations' );
 
 // Set up the database and required schedules
-function cau_install() {
-	cau_database_creation(); // Db handle
+function cau_install( $network_wide ) {
+    if ( is_multisite() && $network_wide ) {
+    	global $wpdb;
+        $blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+        foreach ( $blog_ids as $blog_id ) {
+            switch_to_blog( $blog_id );
+            cau_database_creation();
+            restore_current_blog();
+        }
+    } else {
+        cau_database_creation();
+    }
 	if (! wp_next_scheduled ( 'cau_set_schedule_mail' )) wp_schedule_event( time(), 'daily', 'cau_set_schedule_mail'); // Set schedule for mail etc.
 	if (! wp_next_scheduled ( 'cau_custom_hooks_plugins' )) wp_schedule_event( time(), 'daily', 'cau_custom_hooks_plugins'); // Run custom hooks on plugin updates
 	if (! wp_next_scheduled ( 'cau_custom_hooks_themes' )) wp_schedule_event( time(), 'daily', 'cau_custom_hooks_themes'); // Run custom hooks on theme updates
@@ -348,8 +358,15 @@ class CAU_auto_update {
 		// WP Email Config
 		$configs = $wpdb->get_results( "SELECT * FROM {$table_name} WHERE name = 'wpemails'");
 		foreach ( $configs as $config ) {
-			if( $config->onoroff == 'on' ) add_filter( 'auto_core_update_send_email', '__return_true' ); // Turn on
-			else add_filter( 'auto_core_update_send_email', '__return_false' ); // Turn off
+			if( $config->onoroff == 'on' ) {
+				add_filter( 'auto_core_update_send_email', '__return_true' ); // Core updates
+				add_filter( 'auto_plugin_update_send_email', '__return_true' ); // Plugin updates
+				add_filter( 'auto_theme_update_send_email', '__return_true' ); // Theme updates
+			} else {
+				add_filter( 'auto_core_update_send_email', '__return_false' ); // Core updates
+				add_filter( 'auto_plugin_update_send_email', '__return_false' ); // Plugin updates
+				add_filter( 'auto_theme_update_send_email', '__return_false' ); // Theme updates
+			}
 		}
 		
 

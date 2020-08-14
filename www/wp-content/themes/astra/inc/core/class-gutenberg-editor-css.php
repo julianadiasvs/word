@@ -185,6 +185,9 @@ if ( ! class_exists( 'Gutenberg_Editor_CSS' ) ) :
 				$body_font_size_desktop = ( '' != $body_font_size ) ? $body_font_size : 15;
 			}
 
+			// check the selection color incase of empty/no theme color.
+			$selection_text_color = ( 'transparent' === $highlight_theme_color ) ? '' : $highlight_theme_color;
+
 			$css = '';
 
 			$desktop_css = array(
@@ -200,7 +203,7 @@ if ( ! class_exists( 'Gutenberg_Editor_CSS' ) ) :
 					'background-color' => esc_attr( $theme_color ),
 				),
 				'.block-editor-block-list__layout .block-editor-block-list__block ::selection,.block-editor-block-list__layout .block-editor-block-list__block.is-multi-selected .editor-block-list__block-edit' => array(
-					'color' => esc_attr( $highlight_theme_color ),
+					'color' => esc_attr( $selection_text_color ),
 				),
 
 				'.ast-separate-container .edit-post-visual-editor, .ast-page-builder-template .edit-post-visual-editor, .ast-plain-container .edit-post-visual-editor, .ast-separate-container #wpwrap #editor .edit-post-visual-editor' => astra_get_responsive_background_obj( $box_bg_obj, 'desktop' ),
@@ -479,6 +482,23 @@ if ( ! class_exists( 'Gutenberg_Editor_CSS' ) ) :
 			);
 
 			$css .= astra_parse_css( $mobile_css, '', astra_get_mobile_breakpoint() );
+
+			if ( is_callable( 'Astra_Woocommerce::astra_global_btn_woo_comp' ) && Astra_Woocommerce::astra_global_btn_woo_comp() ) {
+
+				$woo_global_button_css = array(
+					'.editor-styles-wrapper .wc-block-grid__products .wc-block-grid__product .wp-block-button__link' => array(
+						'border-top-width'    => ( isset( $global_custom_button_border_size['top'] ) && '' !== $global_custom_button_border_size['top'] ) ? astra_get_css_value( $global_custom_button_border_size['top'], 'px' ) : '0',
+						'border-right-width'  => ( isset( $global_custom_button_border_size['right'] ) && '' !== $global_custom_button_border_size['right'] ) ? astra_get_css_value( $global_custom_button_border_size['right'], 'px' ) : '0',
+						'border-left-width'   => ( isset( $global_custom_button_border_size['left'] ) && '' !== $global_custom_button_border_size['left'] ) ? astra_get_css_value( $global_custom_button_border_size['left'], 'px' ) : '0',
+						'border-bottom-width' => ( isset( $global_custom_button_border_size['bottom'] ) && '' !== $global_custom_button_border_size['bottom'] ) ? astra_get_css_value( $global_custom_button_border_size['bottom'], 'px' ) : '0',
+						'border-color'        => $btn_border_color ? $btn_border_color : $btn_bg_color,
+					),
+					'.wc-block-grid__products .wc-block-grid__product .wp-block-button__link:hover' => array(
+						'border-color' => $btn_bg_h_color,
+					),
+				);
+				$css                  .= astra_parse_css( $woo_global_button_css );
+			}
 
 			$page_builder_css = array(
 				'.ast-page-builder-template .editor-post-title__block, .ast-page-builder-template .editor-default-block-appender, .ast-page-builder-template .block-editor-block-list__block' => array(

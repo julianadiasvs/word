@@ -166,6 +166,21 @@
 
 	$schedules = wp_get_schedules();
 
+	$support = wp_http_supports( array( 'ssl' ) );
+	switch ($support) {
+		case '1':
+			$wpORGStatus  	= 'enabled';
+			$wpORGIcon  	= 'yes-alt';
+			$wpORGText		= __( 'Enabled', 'companion-auto-update' );;
+			break;
+		default:
+			$wpORGStatus  	= 'disabled';
+			$wpORGIcon  	= 'no';
+			$wpORGText		= __( 'Disabled', 'companion-auto-update' );;
+			break;
+	}
+
+
 ?>
 
 <h2><?php _e('Status', 'companion-auto-update'); ?></h2>
@@ -244,103 +259,93 @@
 
 </table>
 
-<?php 
+<table class="cau_status_list widefat striped cau_status_warnings">
 
-if( get_option( 'blog_public' ) == 0 ) { ?>
+	<thead>
+		<tr>
+			<th class="cau_plugin_issue_name" colspan="4"><strong><?php _e( 'Status' ); ?></strong></th>
+		</tr>
+	</thead>
 
-	<table class="cau_status_list widefat striped cau_status_warnings">
+	<tbody id="the-list">
+		
+		<tr>
+			<td width="300"><?php _e( 'Connection with WordPress.org', 'companion-auto-update' ); ?></td>
+			<td class="cau_status_active_state"><span class='cau_<?php echo $wpORGStatus; ?>'><span class="dashicons dashicons-<?php echo $wpORGIcon; ?>"></span> <?php echo $wpORGText; ?></span></td>
+			<td></td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td><?php _e( 'Search Engine Visibility', 'companion-auto-update' ); ?></td>
+			<?php if( get_option( 'blog_public' ) == 0 ) { ?>
+				<td class="cau_status_active_state"><span class='cau_disabled'><span class="dashicons dashicons-warning"></span> <?php _e( 'Disabled', 'companion-auto-update' ); ?></span></td>
+				<td><?php _e( 'You’ve chosen to disscourage Search Engines from indexing your site. Auto-updating works best on sites with more traffic, consider enabling indexing for your site.', 'companion-auto-update' ); ?></td>
+				<td><a href="<?php echo admin_url( 'options-reading.php' ); ?>" class="button button-alt"><?php _e( 'Fix it', 'companion-auto-update' ); ?></a></td>
+			<?php } else { ?>
+				<td class="cau_status_active_state"><span class='cau_enabled'><span class="dashicons dashicons-yes-alt"></span> <?php _e( 'Enabled', 'companion-auto-update' ); ?></span></td>
+				<td></td>
+				<td></td>
+			<?php } ?>
+		</tr>
+		
+		<tr>
+			<td><?php _e( 'Cronjobs', 'companion-auto-update' ); ?></td>
+			<?php if( checkCronjobsDisabled() ) { ?>
+				<td class="cau_status_active_state"><span class='cau_disabled'><span class="dashicons dashicons-warning"></span> <?php _e( 'Disabled', 'companion-auto-update' ); ?></span></td>
+				<td><code>DISABLE_WP_CRON true</code></td>
+				<td><a href="https://codeermeneer.nl/contact/" class="button"><?php _e( 'Contact for support', 'companion-auto-update' ); ?></a></td>
+			<?php } else { ?>
+				<td class="cau_status_active_state"><span class='cau_enabled'><span class="dashicons dashicons-yes-alt"></span> <?php _e( 'Enabled', 'companion-auto-update' ); ?></span></td>
+				<td></td>
+				<td></td>
+			<?php } ?>
+		</tr>
 
-		<thead>
-			<tr>
-				<th class="cau_plugin_issue_name"><strong><?php _e( 'Search Engine Visibility' ); ?></strong></th>
-				<th class="cau_plugin_issue_explain"> </th>
-				<th class="cau_plugin_issue_fixit"><strong><?php _e( 'Fix it', 'companion-auto-update' ); ?></strong></th>
-			</tr>
-		</thead>
+		<tr>
+			<td>wp_version_check</td>
+			<?php if ( !has_filter( 'wp_version_check', 'wp_version_check' ) ) { ?>
+				<td class="cau_status_active_state"><span class='cau_disabled'><span class="dashicons dashicons-no"></span> <?php _e( 'Disabled', 'companion-auto-update' ); ?></span></td>
+				<td><?php sprintf( __( 'A plugin has prevented updates by disabling <code>%s</code>.', 'companion-auto-update' ), 'wp_version_check()' ); ?></td>
+				<td><a href="https://codeermeneer.nl/contact/" class="button"><?php _e( 'Contact for support', 'companion-auto-update' ); ?></a></td>
+			<?php } else { ?>
+				<td class="cau_status_active_state"><span class='cau_enabled'><span class="dashicons dashicons-yes-alt"></span> <?php _e( 'No issues detected' , 'companion-auto-update' ); ?></span></td>
+				<td></td>
+				<td></td>
+			<?php } ?>
+		</tr>
 
-		<tbody id="the-list">
-			<tr>
-				<td class="cau_plugin_issue_name"><span class='cau_warning'><span class="dashicons dashicons-warning"></span> <?php _e( 'Warning', 'companion-auto-update' ); ?></span></td>
-				<td class="cau_plugin_issue_explain">
-					<?php _e( 'You’ve chosen to disscourage Search Engines from indexing your site. Auto-updating works best on sites with more traffic, consider enabling indexing for your site.', 'companion-auto-update' ); ?>
-				</td>
-				<td class="cau_plugin_issue_fixit">
-					<a href="<?php echo admin_url( 'options-reading.php' ); ?>" class="button button-alt"><?php _e( 'Fix it', 'companion-auto-update' ); ?></a>
-				</td>
-			</tr>
-		</tbody>
-
-	</table>
-    
-<?php }
-
-if( checkAutomaticUpdaterDisabled() ) { ?>
-
-	<table class="cau_status_list widefat striped cau_status_warnings">
-
-		<thead>
-			<tr>
-				<th class="cau_plugin_issue_name"><strong><?php _e( 'Critical Error', 'companion-auto-update' ); ?></strong></th>
-				<th class="cau_plugin_issue_explain"> </th>
-				<th class="cau_plugin_issue_explain"> </th>
-				<th class="cau_plugin_issue_fixit"><strong><?php _e( 'How to fix', 'companion-auto-update' ); ?></strong></th>
-			</tr>
-		</thead>
-
-		<tbody id="the-list">
-			<tr>
-				<td class="cau_plugin_issue_name"><span class='cau_disabled'><span class="dashicons dashicons-no"></span> <?php _e( 'Critical Error', 'companion-auto-update' ); ?></span></td>
-				<td class="cau_plugin_issue_explain">
-					<?php _e( 'Updating is globally disabled.', 'companion-auto-update' ); ?>
-				</td>
-				<td class="cau_plugin_issue_explain">
-					<code>AUTOMATIC_UPDATER_DISABLED true</code>
-				</td>
-				<td class="cau_plugin_issue_fixit">
+		<tr>
+			<td><?php _e( 'Auto updates', 'companion-auto-update' ); ?></td>
+			<?php if ( checkAutomaticUpdaterDisabled() ) { ?>
+				<td class="cau_status_active_state"><span class='cau_disabled'><span class="dashicons dashicons-no"></span> <?php _e( 'Disabled', 'companion-auto-update' ); ?></span></td>
+				<td><?php _e( 'Updating is globally disabled.', 'companion-auto-update' ); ?></td>
+				<td>
 					<form method="POST">
 						<?php wp_nonce_field( 'cau_fixit' ); ?>
 						<button type="submit" name="fixit" class="button button-primary"><?php _e( 'Fix it', 'companion-auto-update' ); ?></button>
-						<a href="<?php echo cau_url( 'support' ); ?>" class="button"><?php _e( 'Contact for support', 'companion-auto-update' ); ?></a>
+						<a href="https://codeermeneer.nl/contact/" class="button"><?php _e( 'Contact for support', 'companion-auto-update' ); ?></a>
 					</form>
 				</td>
-			</tr>
-		</tbody>
+			<?php } else { ?>
+				<td class="cau_status_active_state"><span class='cau_enabled'><span class="dashicons dashicons-yes-alt"></span> <?php _e( 'Enabled', 'companion-auto-update' ); ?></span></td>
+				<td></td>
+				<td></td>
+			<?php } ?>
+		</tr>
 
-	</table>
+		<tr>
+			<td>VCS</td>
+			<td class="cau_status_active_state"><span class='cau_<?php echo cau_test_is_vcs_checkout( ABSPATH )['status']; ?>'><span class="dashicons dashicons-<?php echo cau_test_is_vcs_checkout( ABSPATH )['icon']; ?>"></span> <?php echo cau_test_is_vcs_checkout( ABSPATH )['description']; ?></span></td>
+			<td></td>
+			<td></td>
+		</tr>
 
-<?php } 
+	</tbody>
 
-if( checkCronjobsDisabled() ) { ?>
+</table>
 
-	<table class="cau_status_list widefat striped cau_status_warnings">
-
-		<thead>
-			<tr>
-				<th class="cau_plugin_issue_name"><strong><?php _e( 'Warning', 'companion-auto-update' ); ?></strong></th>
-				<th class="cau_plugin_issue_explain"> </th>
-				<th class="cau_plugin_issue_explain"> </th>
-				<th class="cau_plugin_issue_fixit"><strong><?php _e( 'How to fix', 'companion-auto-update' ); ?></strong></th>
-			</tr>
-		</thead>
-
-		<tbody id="the-list">
-			<tr>
-				<td class="cau_plugin_issue_name"><span class='cau_warning'><span class="dashicons dashicons-warning"></span> <?php _e( 'Warning', 'companion-auto-update' ); ?></span></td>
-				<td class="cau_plugin_issue_explain">
-					<?php _e( 'Cronjobs are disabled.', 'companion-auto-update' ); ?>
-				</td>
-				<td class="cau_plugin_issue_explain">
-					<code>DISABLE_WP_CRON true</code>
-				</td>
-				<td class="cau_plugin_issue_fixit">
-					<a href="<?php echo cau_url( 'support' ); ?>" class="button"><?php _e( 'Contact for support', 'companion-auto-update' ); ?></a>
-				</td>
-			</tr>
-		</tbody>
-
-	</table>
-
-<?php } 
+<?php 
 
 // Remove the line
 if( isset( $_POST['fixit'] ) ) {
@@ -435,7 +440,7 @@ if( cau_incompatiblePlugins() ) { ?>
 
 		<tbody id="the-list">
 			<tr>
-				<td width="200">WordPress</td>
+				<td width="300">WordPress</td>
 				<td><?php echo get_bloginfo( 'version' ); ?></td>
 			</tr>
 			<tr>

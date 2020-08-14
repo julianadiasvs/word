@@ -1,3 +1,19 @@
+v2.5.1
+- Fix: CSS not working on Menu with third-party plugins having filter 'nav_menu_link_attributes' of lower priority.
+
+v2.5.0
+- New: Typography options for Header Button.
+- Improvement: Filters to support CPT for Blog Meta & Single Blog Meta. ( https://wpastra.com/docs/add-blog-meta-support-cpts )
+- Improvement: Deprecated 'astra_google_fonts_json_file' filter. Use 'astra_google_fonts_php_file' instead. ( https://wpastra.com/docs/deprecated-google-fonts-filter/ )
+- Improvement: Gutenberg above and below space compatibility with Full Width / Contained layout. ( https://wpastra.com/docs/support-for-gutenberg-cover-and-group-blocks/ )
+- Improvement: Header frontend CSS optimization. ( https://wpastra.com/docs/header-improvements-in-astra )
+- Improvement: Support for Gutenberg Cover and Group blocks. ( https://wpastra.com/docs/support-for-gutenberg-cover-and-group-blocks )
+- Improvement: Hardened security of the SelectWoo library.
+- Improvement: Theme check new standards.
+- Improvement: Global Button options support with WooCommerce buttons.
+- Fix: PHP warning on some specific servers when the Elementor plugin is activated.
+- Fix: Text highlight color issue when color is set to blank.
+
 v2.4.5
 - Improvement: Transparent Header Logo notice in Site Identity section if the logo is set from Transparent Header in customizer.
 - Fix: Toggle Button contrast color not working properly.
@@ -10,7 +26,7 @@ v2.4.4
 - Improvement: Gutenberg editor improvements.
 - Improvement: Hardened the security of theme.
 - Fix: Added ID attribute for WP Header and WP Footer schema.
-- Fix: Different image size on elementor product pages in mobile view. 
+- Fix: Different image size on elementor product pages in mobile view.
 - Fix: Renamed .hidden CSS class to .ast-hidden to avoid conflict with other plugins.
 - Fix: UAE Nav Menu widget conflict with Mega Menu.
 - Fix: Submenu icon not appearing properly on AMP pages.
@@ -103,7 +119,7 @@ v2.2.0
 - Fix: Schema error for author name in author info.
 
 v2.1.4
-- Improvement: Updated theme description and tags on WordPress.org. 
+- Improvement: Updated theme description and tags on WordPress.org.
 - Improvement: Updated minimum required version of PHP on WordPress.org.
 
 v2.1.3
@@ -114,7 +130,7 @@ v2.1.3
 - Fix: Compatibility with WordPress 5.3.
 - Fix: Gutenberg editor block mover controls not visible in case of full width stretched layout.
 - Fix: Primary menu padding bug on the closing of the menu on mobile devices.
-- Fix: Hide last menu item not working on mobile device when Above or Below header menu is merged. 
+- Fix: Hide last menu item not working on mobile device when Above or Below header menu is merged.
 - Fix: Submenu not opening below the header. ( https://wpastra.com/docs/display-sub-menu-below-the-header/ )
 - Fix: .hidden CSS class renamed to .ast-hidden class due to conflict with third-party plugins.
 - Fix: Full content displayed on the archive page for post format video, image, and attachment.
@@ -127,23 +143,23 @@ v2.1.2
 - Improvement: Added style and script HTML5 theme support.
 - Fix: Added correct admin styles for fullwidth stretch layout in WordPress editor.
 - Fix: PHP Notice on the add new donation form page of Give.
-- Fix: Remove unwanted schema meta of comment from creative work schema. 
+- Fix: Remove unwanted schema meta of comment from creative work schema.
 - Fix: Transparent header style not working in a few scenarios.
 - Fix: Unwanted border appearing below header when the above header is active.
 - Fix: Upload Theme button not working when Astra Notice enabled.
 
 v2.1.1
-- Fix: HTML markup break errors users facing when minify HTML is enabled from a few caching plugins. 
+- Fix: HTML markup break errors users facing when minify HTML is enabled from a few caching plugins.
 
 v2.1.0
-- New: Introduce filter `astra_get_pro_url`. 
-- New: New filter `astra_single_post_comment_time_enabled` to disable post comment time on single blog page. 
+- New: Introduce filter `astra_get_pro_url`.
+- New: New filter `astra_single_post_comment_time_enabled` to disable post comment time on single blog page.
 - Improvement: Redesign admin notices as per WordPress standards
-- Fix: Broken menu style on iOS safari browsers for version 11 or lower.  
-- Fix: JavaScript conflict with WP Google maps plugin. 
-- Fix: Drag scrollbar not working inside sections in the customizer. 
-- Fix: Search bar not working on android tablet devices.  
-- Fix: Font weights not displaying in the customizer for fonts added from Custom Adobe Fonts plugin. 
+- Fix: Broken menu style on iOS safari browsers for version 11 or lower.
+- Fix: JavaScript conflict with WP Google maps plugin.
+- Fix: Drag scrollbar not working inside sections in the customizer.
+- Fix: Search bar not working on android tablet devices.
+- Fix: Font weights not displaying in the customizer for fonts added from Custom Adobe Fonts plugin.
 - Fix: Removed extra padding that was being applied to all the Gutenberg blocks.
 - Fix: SVG logo not working for mobile devices.
 - Fix: Transparent Header menu background color not working on tablet devices.
@@ -151,21 +167,21 @@ v2.1.0
 v2.0.1
 - Fix: JavaScript error causing customizer to not load for a few users due to conflict with some third-party plugins.
 - Fix: Do not load accessibility fix for skip link in AMP endpoint as it is included in the amphtml (props @amedina)
-- Fix: Rename function astra_is_emp_endpoint() to astra_is_amp_endpoint() and depracate astra_is_emp_endpoint() to fix the typo in the function name.  
+- Fix: Rename function astra_is_emp_endpoint() to astra_is_amp_endpoint() and depracate astra_is_emp_endpoint() to fix the typo in the function name.
 
 v2.0.0
 - Improvement: Loading combined CSS and JS file for params in the customizer.
-- Improvement: Remove unnecessary role attribute from HTML. 
-- Improvement: Crossbrowser compatibility for customizer UI. 
-- Improvement: Optimized number of queries executed on admin pages.  
-- Improvement: Live preview for controls. 
-- Improvement: Optimized logic for generating settings group control data. 
+- Improvement: Remove unnecessary role attribute from HTML.
+- Improvement: Crossbrowser compatibility for customizer UI.
+- Improvement: Optimized number of queries executed on admin pages.
+- Improvement: Live preview for controls.
+- Improvement: Optimized logic for generating settings group control data.
 - Fix: WooCommerce shop page cannot take fullwidth stretch layout when using Elementor/Beaver Builder page builder.
 - Fix: Prevent PHP warning in the customizer for PHP 7.1.
 - Fix: Infinite Scroll not working on WooCommerce Subcategory pages.
-- Fix: Fonts from custom font plugin not appearing in fonts list in the customizer. 
-- Fix: Group popup not closing in customizer for the WooCommerce product catalog section. 
-- Fix: Section title does not stick in the customizer. 
+- Fix: Fonts from custom font plugin not appearing in fonts list in the customizer.
+- Fix: Group popup not closing in customizer for the WooCommerce product catalog section.
+- Fix: Section title does not stick in the customizer.
 - Fix: RTL fixes for customizer custom controls.
 
 v2.0.0-rc.1
@@ -176,8 +192,8 @@ v2.0.0-rc.1
 v2.0.0-beta.4
 - Improvement: Layout design images.
 - Improvement: Control Sequence in WooCommerce Single Product Section in the Customizer.
-- Improvement: Distinguish Astra Sections from Default Sections in the Customizer. 
-- Improvement: Option Labels in the Customizer. 
+- Improvement: Distinguish Astra Sections from Default Sections in the Customizer.
+- Improvement: Option Labels in the Customizer.
 - Fix: PHP Warning in the Customizer while Woocommerce is not Active.
 
 v2.0.0-beta.3
@@ -186,7 +202,7 @@ v2.0.0-beta.3
 
 v2.0.0-beta.2
 - Improvement: Preview for base typography options without page refresh.
-- Fix: Toggle button displays when there are no items to display in the menu. 
+- Fix: Toggle button displays when there are no items to display in the menu.
 
 v1.8.7
 - New: Introduced wp_body_open action hook.
@@ -195,7 +211,7 @@ v1.8.7
 - Fix: Padding added from Elementor product widget not working on the Front-end.
 
 v2.0.0-beta.1
-- New: Introduced a Group Param for customizer Settings. 
+- New: Introduced a Group Param for customizer Settings.
 - Improvement: Live preview for Typography options.
 - Improvement: Customizer performance.
 
@@ -239,7 +255,7 @@ v1.8.0
 - New: Breadcrumb customizer option. Read more about here - https://wpastra.com/docs/add-breadcrumbs-with-astra/
 - New: Action hooks - astra_before_archive_title, astra_after_archive_title, astra_after_archive_description, astra_header_markup_after, astra_header_markup_before.
 - Improvement: Remove body schema when using WooCommerce template.
-- Fix: WP Block pullquote border not visible issue. 
+- Fix: WP Block pullquote border not visible issue.
 - Fix: LearnDash: sortable/dragable elements unable to scroll the page.
 - Fix: HTML 5 Validation error in the main header menu header toggle button classes.
 
@@ -362,7 +378,7 @@ v1.5.0-rc.2
 Fix: Menu highlight labels not working for non mega menus.
 
 v1.5.0-rc.1
-- Improvement: Submenu opens below the header instead of cropping the header. This fix introduces padding difference of ~5px in the header hence for existing sites updating to this version this change will be disabled by default. 
+- Improvement: Submenu opens below the header instead of cropping the header. This fix introduces padding difference of ~5px in the header hence for existing sites updating to this version this change will be disabled by default.
 You can enable this by adding a filter `add_filter( 'astra_submenu_below_header_fix', '__return_true' );` in your child theme's functions'php file.
 For all the new installations this option will be enabled by default and don't need any snippet.
 - Improvement: If the content in header is larger the navigation menu will drop on a new line.
@@ -380,7 +396,7 @@ v1.5.0-beta.3
 v1.5.0-beta.2
 - New: Menu container animation.
 
-v1.5.0-beta.1 
+v1.5.0-beta.1
 - Introducing Nav Menu from Astra Pro
 
 v1.4.9
@@ -397,7 +413,7 @@ v1.4.7
 
 v1.4.6
 - Improvement: Default thumbnail size for blog set to `large` instead of full. credit - (ipokkel)[https://github.com/ipokkel] (#697)[https://github.com/brainstormforce/astra/pull/697]
-- Improvement: Contact form 7 & Gravity Forms compatibility CSS will load only on the pages where contact forms are used. 
+- Improvement: Contact form 7 & Gravity Forms compatibility CSS will load only on the pages where contact forms are used.
 - Fix: SVG logo getting incorrect height in firefox browser.
 - Fix: Header layouts not correctly aligned in case of IE10 & IE 11.
 
@@ -411,7 +427,7 @@ v1.4.3
 - New: Option to select Dropdown target - Submenu icon or Menu Link.
 - Improvement: Ask if the retina logo is to be added using a checkbox setting.
 - Fix: LifterLMS - When center header layout is selected mobile menu toggle doe snot work.
-- Fix: Inline logo and the title does not work correctly if the custom menu item is set to be outside. 
+- Fix: Inline logo and the title does not work correctly if the custom menu item is set to be outside.
 - Fix: When option 'Inline Logo & site title' checked then the site title getting left aligned.
 - Fix: Custom Menu item outside class is added to the body even if the last menu item is disabled.
 

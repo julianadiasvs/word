@@ -1086,3 +1086,52 @@ function cau_cronjobs_test() {
  
     return $result;
 }
+
+// Check for version control
+function cau_test_is_vcs_checkout( $context ) {
+
+	$context_dirs 	= array( ABSPATH );
+	$vcs_dirs 		= array( '.svn', '.git', '.hg', '.bzr' );
+	$check_dirs 	= array();
+	$result 		= array();
+
+	foreach ( $context_dirs as $context_dir ) {
+		// Walk up from $context_dir to the root.
+		do {
+			$check_dirs[] = $context_dir;
+
+			// Once we've hit '/' or 'C:\', we need to stop. dirname will keep returning the input here.
+			if ( $context_dir == dirname( $context_dir ) )
+				break;
+
+		// Continue one level at a time.
+		} while ( $context_dir = dirname( $context_dir ) );
+	}
+
+	$check_dirs = array_unique( $check_dirs );
+
+	// Search all directories we've found for evidence of version control.
+	foreach ( $vcs_dirs as $vcs_dir ) {
+		foreach ( $check_dirs as $check_dir ) {
+			if ( $checkout = @is_dir( rtrim( $check_dir, '\\/' ) . "/$vcs_dir" ) ) {
+				break 2;
+			}
+		}
+	}
+
+	if ( $checkout && ! apply_filters( 'automatic_updates_is_vcs_checkout', true, $context ) ) {
+		$result['description'] 	= sprintf( __( 'The folder %s was detected as being under version control (%s), but the %s filter is allowing updates' , 'companion-auto-update' ), "<code>$check_dir</code>", "<code>automatic_updates_is_vcs_checkout</code>" );
+		$result['icon'] 		= 'warning';
+		$result['status'] 		= 'info';
+	} else if ( $checkout ) {
+		$result['description'] 	= sprintf( __( 'The folder %s was detected as being under version control (%s)' , 'companion-auto-update' ), "<code>$check_dir</code>", "<code>$vcs_dir</code>" );
+		$result['icon'] 		= 'no';
+		$result['status'] 		= 'disabled';
+	} else {
+		$result['description'] 	= __( 'No issues detected' , 'companion-auto-update' );
+		$result['icon'] 		= 'yes-alt';
+		$result['status'] 		= 'enabled';
+	}
+
+	return $result;
+}

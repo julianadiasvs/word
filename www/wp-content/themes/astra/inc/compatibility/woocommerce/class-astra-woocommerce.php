@@ -734,6 +734,11 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) :
 			$woo_shop_archive_width     = astra_get_option( 'shop-archive-width' );
 			$woo_shop_archive_max_width = astra_get_option( 'shop-archive-max-width' );
 
+			// global button border settings.
+			$global_custom_button_border_size = astra_get_option( 'theme-button-border-group-border-size' );
+			$btn_border_color                 = astra_get_option( 'theme-button-border-group-border-color' );
+			$btn_border_h_color               = astra_get_option( 'theme-button-border-group-border-h-color' );
+
 			$css_output = array(
 				'.woocommerce span.onsale, .wc-block-grid__product .wc-block-grid__product-onsale' => array(
 					'background-color' => $theme_color,
@@ -812,7 +817,7 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) :
 					'color' => esc_attr( $link_color ),
 				),
 
-				'.woocommerce a.remove:hover, .ast-woocommerce-cart-menu .main-header-menu .woocommerce-custom-menu-item li:hover > a.remove:hover' => array(
+				'.woocommerce a.remove:hover, .ast-woocommerce-cart-menu .main-header-menu .woocommerce-custom-menu-item .menu-item:hover > .menu-link.remove:hover' => array(
 					'color'            => esc_attr( $link_color ),
 					'border-color'     => esc_attr( $link_color ),
 					'background-color' => esc_attr( '#ffffff' ),
@@ -1236,6 +1241,30 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) :
 			/* Parse CSS from array()*/
 			$css_output .= astra_parse_css( $woo_product_css, astra_get_tablet_breakpoint( '', 1 ) );
 
+			/*
+			* global button settings not working for woocommerce button on shop and single page.
+			* check if the current user is existing user or new user.
+			* if new user load the CSS bty default if existing provide a filter
+			*/
+			if ( self::astra_global_btn_woo_comp() ) {
+
+				$woo_global_button_css = array(
+					'.woocommerce a.button , .woocommerce button.button.alt ,.woocommerce-page table.cart td.actions .button, .woocommerce-page #content table.cart td.actions .button , .woocommerce a.button.alt ,.woocommerce .woocommerce-message a.button , .ast-site-header-cart .widget_shopping_cart .buttons .button.checkout, .woocommerce button.button.alt.disabled , .wc-block-grid__products .wc-block-grid__product .wp-block-button__link ' => array(
+						'border'              => 'solid',
+						'border-top-width'    => ( isset( $global_custom_button_border_size['top'] ) && '' !== $global_custom_button_border_size['top'] ) ? astra_get_css_value( $global_custom_button_border_size['top'], 'px' ) : '0',
+						'border-right-width'  => ( isset( $global_custom_button_border_size['right'] ) && '' !== $global_custom_button_border_size['right'] ) ? astra_get_css_value( $global_custom_button_border_size['right'], 'px' ) : '0',
+						'border-left-width'   => ( isset( $global_custom_button_border_size['left'] ) && '' !== $global_custom_button_border_size['left'] ) ? astra_get_css_value( $global_custom_button_border_size['left'], 'px' ) : '0',
+						'border-bottom-width' => ( isset( $global_custom_button_border_size['bottom'] ) && '' !== $global_custom_button_border_size['bottom'] ) ? astra_get_css_value( $global_custom_button_border_size['bottom'], 'px' ) : '0',
+						'border-color'        => $btn_border_color ? $btn_border_color : $btn_bg_color,
+					),
+					'.woocommerce a.button:hover , .woocommerce button.button.alt:hover , .woocommerce-page table.cart td.actions .button:hover, .woocommerce-page #content table.cart td.actions .button:hover, .woocommerce a.button.alt:hover ,.woocommerce .woocommerce-message a.button:hover , .ast-site-header-cart .widget_shopping_cart .buttons .button.checkout:hover , .woocommerce button.button.alt.disabled:hover , .wc-block-grid__products .wc-block-grid__product .wp-block-button__link:hover' => array(
+						'border-color' => $btn_border_h_color ? $btn_border_h_color : $btn_bg_h_color,
+					),
+				);
+
+				$css_output .= astra_parse_css( $woo_global_button_css );
+			}
+
 			if ( $is_site_rtl ) {
 				$woo_product_lang_direction_css = array(
 					'.woocommerce.woocommerce-checkout form #customer_details.col2-set, .woocommerce-page.woocommerce-checkout form #customer_details.col2-set' => array(
@@ -1443,7 +1472,7 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) :
 						if ( apply_filters( 'astra_woo_default_header_cart_icon', true ) ) {
 							?>
 							<div class="ast-cart-menu-wrap">
-								<span class="count"> 
+								<span class="count">
 									<?php
 									if ( apply_filters( 'astra_woo_header_cart_total', true ) && null != WC()->cart ) {
 										echo WC()->cart->get_cart_contents_count(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -1475,6 +1504,18 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) :
 			$fragments['a.cart-container'] = ob_get_clean();
 
 			return $fragments;
+		}
+
+		/**
+		 * For existing users, do not load the wide/full width image CSS by default.
+		 *
+		 * @since 2.5.0
+		 * @return boolean false if it is an existing user , true if not.
+		 */
+		public static function astra_global_btn_woo_comp() {
+			$astra_settings                       = get_option( ASTRA_THEME_SETTINGS );
+			$astra_settings['global-btn-woo-css'] = isset( $astra_settings['global-btn-woo-css'] ) ? false : true;
+			return apply_filters( 'astra_global_btn_woo_comp', $astra_settings['global-btn-woo-css'] );
 		}
 
 	}

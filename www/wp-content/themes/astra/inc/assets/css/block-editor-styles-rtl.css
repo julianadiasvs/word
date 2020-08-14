@@ -399,6 +399,7 @@ html {
   top: 7px;
   width: auto;
   z-index: 100000;
+  outline: thin dotted;
 }
 
 .logged-in .edit-post-visual-editor .site .skip-link {
