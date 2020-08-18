@@ -13,7 +13,7 @@
 		init: function() {
 
 			// Document ready
-			$( document ).ready( function() {
+			$( function() {
 				WPFormsBuilderLite.ready();
 			} );
 

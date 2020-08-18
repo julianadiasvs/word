@@ -1234,21 +1234,21 @@ class WPForms_About {
 					'status' => 'full',
 					'text'   => [
 						'<strong>' . esc_html__( 'All Addons Included', 'wpforms-lite' ) . '</strong>',
-						esc_html__( 'Form Abandonment, Front-end Post Submission, User Registration, Geo-location, and more (23 total)', 'wpforms-lite' ),
+						esc_html__( 'Form Abandonment, Front-end Post Submission, User Registration, Geo-location, and more (24 total)', 'wpforms-lite' ),
 					],
 				],
 				'ultimate' => [
 					'status' => 'full',
 					'text'   => [
 						'<strong>' . esc_html__( 'All Addons Included', 'wpforms-lite' ) . '</strong>',
-						esc_html__( 'Form Abandonment, Front-end Post Submission, User Registration, Geo-location, and more (23 total)', 'wpforms-lite' ),
+						esc_html__( 'Form Abandonment, Front-end Post Submission, User Registration, Geo-location, and more (24 total)', 'wpforms-lite' ),
 					],
 				],
 				'agency'   => [
 					'status' => 'full',
 					'text'   => [
 						'<strong>' . esc_html__( 'All Addons Included', 'wpforms-lite' ) . '</strong>',
-						esc_html__( 'Form Abandonment, Front-end Post Submission, User Registration, Geo-location, and more (23 total)', 'wpforms-lite' ),
+						esc_html__( 'Form Abandonment, Front-end Post Submission, User Registration, Geo-location, and more (24 total)', 'wpforms-lite' ),
 					],
 				],
 			],

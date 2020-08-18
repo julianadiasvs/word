@@ -30,6 +30,8 @@ class Education {
 			add_action( 'wp_ajax_wpforms_dyk_dismiss', array( $this, 'dyk_ajax_dismiss' ) );
 
 			add_action( 'wp_ajax_wpforms_update_field_recaptcha', array( $this, 'recaptcha_field_callback' ) );
+
+			add_action( 'wpforms_field_options_after_advanced-options', array( $this, 'field_conditional_logic' ), 10, 2 );
 		}
 
 		// Only proceed for the form builder.
@@ -438,6 +440,13 @@ class Education {
 				'plugin'      => 'wpforms-post-submissions/wpforms-post-submissions.php',
 				'plugin_slug' => 'wpforms-post-submissions',
 				'license'     => 'pro',
+			),
+			array(
+				'name'        => esc_html__( 'Webhooks', 'wpforms-lite' ),
+				'slug'        => 'webhooks',
+				'plugin'      => 'wpforms-webhooks/wpforms-webhooks.php',
+				'plugin_slug' => 'wpforms-webhooks',
+				'license'     => 'elite',
 			),
 		);
 

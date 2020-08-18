@@ -3,7 +3,7 @@
  * Plugin Name: Companion Auto Update
  * Plugin URI: http://codeermeneer.nl/portfolio/companion-auto-update/
  * Description: This plugin auto updates all plugins, all themes and the wordpress core.
- * Version: 3.5.5
+ * Version: 3.6.0
  * Author: Papin Schipper
  * Author URI: http://codeermeneer.nl/
  * Contributors: papin
@@ -17,10 +17,12 @@
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
 // Load translations
-function cau_load_translations() {
+function cau_init() {
 	load_plugin_textdomain( 'companion-auto-update', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' ); 
+	add_filter( 'plugins_auto_update_enabled', '__return_false' );
+	add_filter( 'themes_auto_update_enabled', '__return_false' );
 }
-add_action( 'init', 'cau_load_translations' );
+add_action( 'init', 'cau_init' );
 
 // Set up the database and required schedules
 function cau_install( $network_wide ) {
@@ -41,7 +43,8 @@ function cau_install( $network_wide ) {
 }
 add_action( 'cau_set_schedule_mail', 'cau_check_updates_mail' );
 add_action( 'wp_update_plugins', 'cau_run_custom_hooks_p' );
-add_action( 'cau_custom_hooks_themes', 'cau_run_custom_hooks_t' );
+add_action( 'wp_update_themes', 'cau_run_custom_hooks_t' );
+add_action( 'wp_version_check', 'cau_run_custom_hooks_c' );
 
 // Redirect to welcome screen on activation of plugin
 function cau_pluginActivateWelcome() {
@@ -66,7 +69,7 @@ function cau_donateUrl() {
 
 // Database version
 function cau_db_version() {
-	return '3.5.3';
+	return '3.6.0';
 }
 function cau_database_creation() {
 
@@ -150,6 +153,11 @@ function cau_install_data() {
 	// Stuff
 	if( !cau_check_if_exists( 'html_or_text' ) ) $wpdb->insert( $table_name, array( 'name' => 'html_or_text', 'onoroff' => 'html' ) ); // 11
 
+	// Advanced
+	if( !cau_check_if_exists( 'allow_administrator' ) ) $wpdb->insert( $table_name, array( 'name' => 'allow_administrator', 'onoroff' => 'on' ) ); // 12
+	if( !cau_check_if_exists( 'allow_editor' ) ) $wpdb->insert( $table_name, array( 'name' => 'allow_editor', 'onoroff' => '' ) ); // 13
+	if( !cau_check_if_exists( 'allow_author' ) ) $wpdb->insert( $table_name, array( 'name' => 'allow_author', 'onoroff' => '' ) ); // 14
+
 
 }
 register_activation_hook( __FILE__, 'cau_install' );
@@ -185,7 +193,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'cau_functions.php' );
 
 // Add plugin to menu
 function register_cau_menu_page() {
-	add_submenu_page( cau_menloc() , __( 'Auto Updater', 'companion-auto-update' ), __( 'Auto Updater', 'companion-auto-update' ), 'manage_options', 'cau-settings', 'cau_frontend' );
+	if( cau_allowed_user_rights() ) add_submenu_page( cau_menloc() , __( 'Auto Updater', 'companion-auto-update' ), __( 'Auto Updater', 'companion-auto-update' ), 'manage_options', 'cau-settings', 'cau_frontend' );
 }
 add_action( 'admin_menu', 'register_cau_menu_page' );
 
@@ -248,7 +256,7 @@ function cau_frontend() { ?>
 
 // Add a widget to the dashboard.
 function cau_add_widget() {
-	if ( current_user_can( 'manage_options' ) ) wp_add_dashboard_widget( 'cau-update-log', __('Update log', 'companion-auto-update'), 'cau_widget' );	
+	if ( cau_allowed_user_rights() ) wp_add_dashboard_widget( 'cau-update-log', __('Update log', 'companion-auto-update'), 'cau_widget' );	
 }
 add_action( 'wp_dashboard_setup', 'cau_add_widget' );
 
@@ -266,24 +274,30 @@ function cau_widget() {
 }
 
 // Load admin styles
-function load_cau_sytyles( $hook ) {
-
-	// Only load on plugins' pages
-    if( $hook != 'tools_page_cau-settings' && $hook != 'index_page_cau-settings' ) return;
+function load_cau_global_styles( $hook ) {
 
 	// Plugin scripts
     wp_enqueue_style( 'cau_admin_styles', plugins_url( 'backend/style.css' , __FILE__ ) );
+
+	// Check for issues
+    wp_enqueue_style( 'cau_warning_styles', plugins_url( 'backend/warningbar.css' , __FILE__ ) ); 
+
+}
+add_action( 'admin_enqueue_scripts', 'load_cau_global_styles', 99 );
+
+// Load admin styles
+function load_cau_page_styles( $hook ) {
+
+	// Only load on plugins' pages
+    if( $hook != 'tools_page_cau-settings' && $hook != 'index_page_cau-settings' ) return;
 
     // WordPress scripts we need
 	wp_enqueue_style( 'thickbox' );
 	wp_enqueue_script( 'thickbox' );   
 	wp_enqueue_script( 'plugin-install' );   
 
-	// Check for issues
-    wp_enqueue_style( 'cau_warning_styles', plugins_url( 'backend/warningbar.css' , __FILE__ ) ); 
-
 }
-add_action( 'admin_enqueue_scripts', 'load_cau_sytyles', 100 );
+add_action( 'admin_enqueue_scripts', 'load_cau_page_styles', 100 );
 
 // Send e-mails
 require_once( plugin_dir_path( __FILE__ ) . 'cau_emails.php' );
@@ -291,13 +305,14 @@ require_once( plugin_dir_path( __FILE__ ) . 'cau_emails.php' );
 // Add settings link on plugin page
 function cau_settings_link( $links ) { 
 
+
 	$settings_link 	= '<a href="'.cau_url( 'dashboard' ).'">'.__( 'Settings' ).'</a>'; 
 	$settings_link2 = '<a href="https://translate.wordpress.org/projects/wp-plugins/companion-auto-update">'.__( 'Help us translate', 'companion-auto-update' ).'</a>'; 
 	$settings_link3 = '<a href="'.cau_donateUrl().'">'.__( 'Donate to help development', 'companion-auto-update' ).'</a>'; 
 	
 	array_unshift( $links, $settings_link2 ); 
 	array_unshift( $links, $settings_link3 ); 
-	array_unshift( $links, $settings_link ); 
+	if( cau_allowed_user_rights() )	array_unshift( $links, $settings_link ); 
 
 	return $links; 
 

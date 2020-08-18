@@ -230,14 +230,14 @@ class SMTP {
 					<li>%5$s</li>
 					<li>%6$s</li>
 					<li>%7$s</li>
-				</ul>			
+				</ul>
 			</section>',
 			esc_url( WPFORMS_PLUGIN_URL . 'assets/images/smtp/screenshot-tnail.png' ),
 			esc_attr__( 'WP Mail SMTP screenshot', 'wpforms-lite' ),
 			esc_url( WPFORMS_PLUGIN_URL . 'assets/images/smtp/screenshot-full.png' ),
 			esc_html__( 'Over 1,000,000 websites use WP Mail SMTP.', 'wpforms-lite' ),
 			esc_html__( 'Send emails authenticated via trusted parties.', 'wpforms-lite' ),
-			esc_html__( 'Transactional Mailers: Pepipost, SendinBlue, Mailgun, SendGrid, Amazon SES.', 'wpforms-lite' ),
+			esc_html__( 'Transactional Mailers: SMTP.com, Pepipost, SendinBlue, Mailgun, SendGrid, Amazon SES.', 'wpforms-lite' ),
 			esc_html__( 'Web Mailers: Gmail, G Suite, Office 365, Outlook.com.', 'wpforms-lite' )
 		);
 	}
@@ -265,7 +265,7 @@ class SMTP {
 					<h2>%3$s</h2>
 					<p>%4$s</p>
 					<button class="button %5$s" data-plugin="%6$s" data-action="%7$s">%8$s</button>
-				</div>		
+				</div>
 			</section>',
 			esc_url( WPFORMS_PLUGIN_URL . 'assets/images/' . $step['icon'] ),
 			esc_attr__( 'Step 1', 'wpforms-lite' ),
@@ -301,7 +301,7 @@ class SMTP {
 					<h2>%4$s</h2>
 					<p>%5$s</p>
 					<button class="button %6$s" data-url="%7$s">%8$s</button>
-				</div>		
+				</div>
 			</section>',
 			esc_attr( $step['section_class'] ),
 			esc_url( WPFORMS_PLUGIN_URL . 'assets/images/' . $step['icon'] ),
@@ -417,16 +417,57 @@ class SMTP {
 	 * Get $phpmailer instance.
 	 *
 	 * @since 1.5.7
+	 * @since 1.6.1.2 Conditionally returns $phpmailer v5 or v6.
 	 *
-	 * @return \PHPMailer Instance of PHPMailer.
+	 * @return \PHPMailer|\PHPMailer\PHPMailer\PHPMailer Instance of PHPMailer.
 	 */
 	protected function get_phpmailer() {
 
+		if ( version_compare( get_bloginfo( 'version' ), '5.5-alpha', '<' ) ) {
+			$phpmailer = $this->get_phpmailer_v5();
+		} else {
+			$phpmailer = $this->get_phpmailer_v6();
+		}
+
+		return $phpmailer;
+	}
+
+	/**
+	 * Get $phpmailer v5 instance.
+	 *
+	 * @since 1.6.1.2
+	 *
+	 * @return \PHPMailer Instance of PHPMailer.
+	 */
+	private function get_phpmailer_v5() {
+
 		global $phpmailer;
 
-		if ( ! is_object( $phpmailer ) || ! is_a( $phpmailer, 'PHPMailer' ) ) {
+		if ( ! ( $phpmailer instanceof \PHPMailer ) ) {
 			require_once ABSPATH . WPINC . '/class-phpmailer.php';
-			$phpmailer = new \PHPMailer( true ); // phpcs:ignore
+			require_once ABSPATH . WPINC . '/class-smtp.php';
+			$phpmailer = new \PHPMailer( true ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		}
+
+		return $phpmailer;
+	}
+
+	/**
+	 * Get $phpmailer v6 instance.
+	 *
+	 * @since 1.6.1.2
+	 *
+	 * @return \PHPMailer\PHPMailer\PHPMailer Instance of PHPMailer.
+	 */
+	private function get_phpmailer_v6() {
+
+		global $phpmailer;
+
+		if ( ! ( $phpmailer instanceof \PHPMailer\PHPMailer\PHPMailer ) ) {
+			require_once ABSPATH . WPINC . '/PHPMailer/PHPMailer.php';
+			require_once ABSPATH . WPINC . '/PHPMailer/SMTP.php';
+			require_once ABSPATH . WPINC . '/PHPMailer/Exception.php';
+			$phpmailer = new \PHPMailer\PHPMailer\PHPMailer( true ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		}
 
 		return $phpmailer;

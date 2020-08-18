@@ -63,7 +63,9 @@ class WPForms_Lite {
 		$id = 1;
 
 		echo '<div class="wpforms-panel-content-section-title">';
-			esc_html_e( 'Notifications', 'wpforms-lite' );
+			echo '<span id="wpforms-builder-settings-notifications-title">';
+				esc_html_e( 'Notifications', 'wpforms-lite' );
+			echo '</span>';
 			echo '<button class="wpforms-builder-settings-block-add upgrade-modal" data-name="' . esc_attr__( 'Multiple notifications', 'wpforms-lite' ) . '">';
 				esc_html_e( 'Add New Notification', 'wpforms-lite' );
 			echo '</button>';
@@ -489,7 +491,7 @@ class WPForms_Lite {
 			</p>
 		</div>
 		<script type="text/javascript">
-			jQuery( document ).ready( function ( $ ) {
+			jQuery( function ( $ ) {
 				$( document ).on( 'click', '.settings-lite-cta .dismiss', function ( event ) {
 					event.preventDefault();
 					$.post( ajaxurl, {
@@ -989,6 +991,11 @@ class WPForms_Lite {
 				'icon' => 'addon-icon-activecampaign.png',
 			),
 			array(
+				'name' => 'Authorize.Net',
+				'desc' => 'WPForms Authorize.Net addon allows you to connect your WordPress site with Authorize.Net to easily collect payments, donations, and online orders.',
+				'icon' => 'addon-icon-authorize-net.png',
+			),
+			array(
 				'name' => 'Aweber',
 				'desc' => 'WPForms AWeber addon allows you to create AWeber newsletter signup forms in WordPress, so you can grow your email list.',
 				'icon' => 'addon-icon-aweber.png',
@@ -1082,6 +1089,11 @@ class WPForms_Lite {
 				'name' => 'User Registration',
 				'desc' => 'WPForms User Registration addon allows you to create custom WordPress user registration forms.',
 				'icon' => 'addon-icon-user-registration.png',
+			),
+			array(
+				'name' => 'Webhooks',
+				'desc' => 'The Webhooks addon allows you to send form entry data to secondary tools and external services. No code required, and no need for a third party connector.',
+				'icon' => 'addon-icon-webhooks.png',
 			),
 			array(
 				'name' => 'Zapier',

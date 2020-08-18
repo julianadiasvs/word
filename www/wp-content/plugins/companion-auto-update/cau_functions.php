@@ -1,5 +1,24 @@
 <?php
 
+// What user rights can edit plugin settings?
+function cau_allowed_user_rights() {
+
+	// Current user
+	$user 			= wp_get_current_user();
+
+	// Allow roles
+	$allowed_roles 	= array( 'administrator' );
+	if( cau_get_db_value( 'allow_editor' ) == 'on' ) array_push( $allowed_roles, 'editor' );
+	if( cau_get_db_value( 'allow_author' ) == 'on' ) array_push( $allowed_roles, 'author' );
+
+	// Check
+	if ( array_intersect( $allowed_roles, $user->roles ) ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 // Get database value
 function cau_get_db_value( $name, $table = 'auto_updates' ) {
 
@@ -239,9 +258,23 @@ function cau_run_custom_hooks_t() {
 			$lastday = date( 'YmdHi', strtotime( '-1 day' ) );
 		}
 
-		// Push to array
+		$update_time 	= wp_next_scheduled( 'wp_update_themes' );
+		$range_start 	= date( 'Hi', strtotime( '-30 minutes', $update_time ) );
+		$range_end 		= date( 'Hi', strtotime( '+30 minutes', $update_time ) );
+
 		if( $fileDate >= $lastday ) {
+
+			// Push to array
 			array_push( $allDates, $fileDate );
+
+			// Update info
+			if( $fileTime > $range_start && $fileTime < $range_end ) {
+				$status = __( 'Automatic', 'companion-auto-update' );
+			} else {
+				$status = __( 'Manual', 'companion-auto-update' );
+			}
+			cau_updatePluginInformation( $key, $status );
+
 		}
 
 	}
@@ -254,6 +287,52 @@ function cau_run_custom_hooks_t() {
 	// If there have been plugin updates run hook
 	if( $totalNum > 0 ) {
 		do_action( 'cau_after_theme_update' );
+	}
+
+}
+
+// Run custom hooks on core update
+function cau_run_custom_hooks_c() {
+
+	// Create array
+	$totalNum 	= 0;
+
+	// Get data
+	$fullPath 		= ABSPATH.'wp-includes/version.php';
+	$fileDate 		= date ( 'YmdHi', filemtime( $fullPath ) );
+	$updateSched 	= wp_get_schedule( 'wp_version_check' );
+
+	// Check when the last update was
+	if( $updateSched == 'hourly' ) {
+		$lastday = date( 'YmdHi', strtotime( '-1 hour' ) );
+	} elseif( $updateSched == 'twicedaily' ) {
+		$lastday = date( 'YmdHi', strtotime( '-12 hours' ) );
+	} elseif( $updateSched == 'daily' ) {
+		$lastday = date( 'YmdHi', strtotime( '-1 day' ) );
+	}
+
+	// Check manual or automatic
+	$update_time 	= wp_next_scheduled( 'wp_version_check' );
+	$range_start 	= date( 'Hi', strtotime( '-30 minutes', $update_time ) );
+	$range_end 		= date( 'Hi', strtotime( '+30 minutes', $update_time ) );
+
+	if( $fileDate >= $lastday ) {
+
+		// Update info
+		if( $fileTime > $range_start && $fileTime < $range_end ) {
+			$status = __( 'Automatic', 'companion-auto-update' );
+		} else {
+			$status = __( 'Manual', 'companion-auto-update' );
+		}
+		cau_updatePluginInformation( 'core', $status );
+
+		$totalNum++;
+
+	}
+
+	// If there have been plugin updates run hook
+	if( $totalNum > 0 ) {
+		do_action( 'cau_after_core_update' );
 	}
 
 }
@@ -547,8 +626,34 @@ function cau_fetch_log( $limit, $format = 'simple' ) {
 			array_push( $pluginNames , $themeName ); 
 			array_push( $pluginVersion , $themeVersion );
 
-	        // Get info from database
-	        array_push( $method , '-' );
+	        // Automatic or Manual (non-db-version)
+			$date_tod 		= date ( 'ydm' );
+			$fileDay 		= date ( 'ydm', filemtime( $fullPath ) );
+			$fileTime 		= date ( 'Hi', filemtime( $fullPath ) );
+			$updateSched 	= wp_next_scheduled( 'wp_update_themes' );
+			$range_start 	= date( 'Hi', strtotime( '-30 minutes', $updateSched ) );
+			$range_end 		= date( 'Hi', strtotime( '+30 minutes', $updateSched ) );
+
+			if( $date_tod == $fileDay ) {
+
+				if( $fileTime > $range_start && $fileTime < $range_end ) {
+					$status = __( 'Automatic', 'companion-auto-update' );
+				} else {
+					$status = __( 'Manual', 'companion-auto-update' );
+				}
+				
+				array_push( $method , $status );
+
+			} else {
+
+				// Get info from database
+		        if( cau_check_if_exists( $key, 'slug', $updateLog ) ) {
+		        	array_push( $method , cau_get_plugininfo( $key, 'method' ) );
+		        } else {
+		        	array_push( $method , '-' );
+		        }
+
+			}
 
 			// Get last update date
 			$fileDate 	= date( 'YmdHi', filemtime( $fullPath ) );
@@ -655,9 +760,11 @@ function cau_fetch_log( $limit, $format = 'simple' ) {
 	// CORE
 	if( $core ) {
 
-		// There is no way (at this time) to check if someone changed this link, so therefore it won't work when it's changed, sorry
-		$coreFile = get_home_path().'wp-admin/about.php';
+		$coreFile 		= ABSPATH.'wp-includes/version.php';
+		$updateSched 	= wp_get_schedule( 'wp_version_check' );
+
 		if( file_exists( $coreFile ) ) {
+
 			$coreDate 	= date( 'YmdHi', filemtime( $coreFile ) );
 
 			if( $format == 'table' ) {
@@ -666,6 +773,33 @@ function cau_fetch_log( $limit, $format = 'simple' ) {
 			} else {
 				$coreDateF 	= date_i18n( $dateFormat, filemtime( $coreFile ) );
 			}
+
+	        // Automatic or Manual (non-db-version)
+			$date_tod 		= date ( 'ydm' );
+			$fileDay 		= date ( 'ydm', filemtime( $coreFile ) );
+			$fileTime 		= date ( 'Hi', filemtime( $coreFile ) );
+			$range_start 	= date( 'Hi', strtotime( '-30 minutes', $updateSched ) );
+			$range_end 		= date( 'Hi', strtotime( '+30 minutes', $updateSched ) );
+
+			if( $date_tod == $fileDay ) {
+
+				if( $fileTime > $range_start && $fileTime < $range_end ) {
+					$methodVal = __( 'Automatic', 'companion-auto-update' );
+				} else {
+					$methodVal = __( 'Manual', 'companion-auto-update' );
+				}
+
+			} else {
+
+				// Get info from database
+		        if( cau_check_if_exists( $key, 'slug', $updateLog ) ) {
+		        	$methodVal = cau_get_plugininfo( 'core', 'method' );
+		        } else {
+		        	$methodVal = '';
+		        }
+
+			}
+
 
 		} else {
 			$coreDate 	= date('YmdHi');
@@ -680,7 +814,7 @@ function cau_fetch_log( $limit, $format = 'simple' ) {
 		array_push( $plugslug , '' );
 
         // Get info from database
-        array_push( $method , '-' );
+        array_push( $method , $methodVal );
 
 	}
 
@@ -980,10 +1114,20 @@ function cau_savePluginInformation( $method = 'New' ) {
 	$updateDB 		= "update_log";
 	$updateLog 		= $wpdb->prefix.$updateDB; 
 	$allPlugins 	= get_plugins();
+	$allThemes 		= wp_get_themes();
 
+	// Loop trough all themes
+	foreach ( $allThemes as $key => $value ) {
+		if( !cau_check_if_exists( $key, 'slug', $updateDB ) ) $wpdb->insert( $updateLog, array( 'slug' => $key, 'oldVersion' => '-', 'method' => $method ) );
+	}
+
+	// Loop trough all plugins
 	foreach ( $allPlugins as $key => $value ) {
 		if( !cau_check_if_exists( $key, 'slug', $updateDB ) ) $wpdb->insert( $updateLog, array( 'slug' => $key, 'oldVersion' => '-', 'method' => $method ) );
 	}	
+
+	// Core
+	if( !cau_check_if_exists( 'core', 'slug', $updateDB ) ) $wpdb->insert( $updateLog, array( 'slug' => 'core', 'oldVersion' => '-', 'method' => $method ) );
 
 }
 

@@ -37,7 +37,7 @@ var WPFormsConnect = window.WPFormsConnect || ( function( document, window, $ ) 
 		 */
 		init: function() {
 
-			$( document ).ready( app.ready );
+			$( app.ready );
 		},
 
 		/**

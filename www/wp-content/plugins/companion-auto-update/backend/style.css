@@ -61,6 +61,9 @@
 .welcome-to-cau.interval-bg {
     background-image: url('images/interval.svg');
 }
+.welcome-to-cau.advanced-bg {
+	background-image: url('images/settings.svg');
+}
 .welcome-to-cau h2 {
 	margin: 0;
 	margin-bottom: 25px;
@@ -177,10 +180,10 @@ select.schedule_interval {
 .support-sidebar-list {
 	margin-bottom: 25px;
 }
-.nav-tab {
+.cau_content .nav-tab {
 	position: relative;
 }
-.nav-tab .cau_melding {
+.cau_content .nav-tab .cau_melding {
 	display: inline-block;
 	width: 11px;
 	height: 11px;
@@ -189,18 +192,18 @@ select.schedule_interval {
 	position: relative;
 	bottom: -1px;
 }
-.nav-tab .cau_melding.level-okay {
+.cau_content .nav-tab .cau_melding.level-okay {
 	background: #7AD03A;
 }
-.nav-tab .cau_melding.level-low {
+.cau_content .nav-tab .cau_melding.level-low {
 	background: #FFBA00;
 }
-.nav-tab .cau_melding.level-high {
+.cau_content .nav-tab .cau_melding.level-high {
 	background: #FF0000;
 }
 
 /* Table Styling */
-.widefat td {
+.cau_content .widefat td {
 	vertical-align: middle!important;
 }
 table.autoupdate th.head-plugin {
@@ -284,7 +287,7 @@ table.rollbacklist td a.versionselectbutton {
 	margin: 0!important;
 	padding: 0!important;
 }
-#the-list input[type="checkbox"]:not(:checked), #the-list input[type="checkbox"]:checked {
+.cau_content #the-list input[type="checkbox"]:not(:checked), .cau_content #the-list input[type="checkbox"]:checked {
 	width: 45px;
 	height: 45px;
 	position: absolute;
@@ -294,17 +297,17 @@ table.rollbacklist td a.versionselectbutton {
 	display: block;
 	opacity: 0;
 }
-#the-list input[type="checkbox"]:not(:checked) + label, #the-list input[type="checkbox"]:checked + label {
+.cau_content #the-list input[type="checkbox"]:not(:checked) + label, .cau_content #the-list input[type="checkbox"]:checked + label {
 	position: absolute;
 	top: 15px;
 	left: 12px;
 	cursor: pointer;
 }
-#the-list input[type="checkbox"]:not(:checked) + label:before, #the-list input[type="checkbox"]:checked + label:before, #the-list input[type="checkbox"]:not(:checked) + label:after, #the-list input[type="checkbox"]:checked + label:after {
+.cau_content #the-list input[type="checkbox"]:not(:checked) + label:before, .cau_content #the-list input[type="checkbox"]:checked + label:before, .cau_content #the-list input[type="checkbox"]:not(:checked) + label:after, .cau_content #the-list input[type="checkbox"]:checked + label:after {
 	content: '';
 	position: absolute;
 }
-#the-list input[type="checkbox"]:not(:checked) + label:before, #the-list input[type="checkbox"]:checked + label:before {
+.cau_content #the-list input[type="checkbox"]:not(:checked) + label:before, .cau_content #the-list input[type="checkbox"]:checked + label:before {
 	left: 0; 
 	top: -3px;
 	width: 30px; 
@@ -314,7 +317,7 @@ table.rollbacklist td a.versionselectbutton {
 	border-radius: 15px;
 	transition: background-color .2s;
 }
-#the-list input[type="checkbox"]:not(:checked) + label:after, #the-list input[type="checkbox"]:checked + label:after {
+.cau_content #the-list input[type="checkbox"]:not(:checked) + label:after, .cau_content #the-list input[type="checkbox"]:checked + label:after {
 	width: 8px; 
 	height: 8px;
 	transition: all .2s;
@@ -324,11 +327,11 @@ table.rollbacklist td a.versionselectbutton {
 	top: 1px; 
 	left: 5px;
 }
-#the-list input[type="checkbox"]:not(:checked) + label:before {
+.cau_content #the-list input[type="checkbox"]:not(:checked) + label:before {
  	background: #9178B7; 
 	border: 2px solid #9178B7;
 }
-#the-list input[type="checkbox"]:not(:checked) + label:after {
+.cau_content #the-list input[type="checkbox"]:not(:checked) + label:after {
 	background: #9178B7;
 	border-color: #FFF;
 	left: 18px;
@@ -448,14 +451,14 @@ table.rollbacklist td a.versionselectbutton {
 		box-sizing: border-box;
 		padding-left: 5px;
 	}
-	.nav-tab-wrapper {
+	.cau_content .nav-tab-wrapper {
 		position: relative;
 		top: -20px;
 		border-bottom: 1px solid #CCC!important;
 		padding-bottom: 15px!important;
 		margin-bottom: 0px!important;
 	}
-	.nav-tab {
+	.cau_content .nav-tab {
 		font-size: 12px;
 		margin: 5px 5px 0 0!important;
 		box-sizing: border-box;

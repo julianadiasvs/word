@@ -1,5 +1,28 @@
 == Changelog ==
 
+= 1.6.2.2 =
+- Added: Caching friendly anti-spam protection (form tokens).
+- Added: Native integration with Elementor: add to the page and create new forms right inside its builder.
+- Added: Add a preview to the WPForms Gutenberg block.
+- Changed: Greatly improve WPForms Challenge experience.
+- Changed: Improve word counting when the Limit Length field option is used with Single Line Text/Paragraph Text fields.
+- Changed: Improve Number field input restrictions with various browsers.
+- Changed: Form field validation will now fail if input mask is enabled and user input does not complete required input mask elements.
+- Changed: Icon for the Multiple Choice field is now more representative.
+- Changed: Hide Delete button for a "Default Notification" in the Form Builder.
+- Changed: Improve Lite migrations for WordPress Multisite installations.
+- Changed: Update Constant Contact logos because of their rebranding.
+- Changed: Improve descriptions of various plugin options and add more context to them.
+- Fixed: Properly map fields in various addons when the first field is added in the Form Builder.
+- Fixed: Issue when editing Checkbox field entry values when dynamic choices were enabled and multiple values were saved.
+- Fixed: Refresh the list of form fields that are required to properly render marketing addons.
+- Fixed: "Invalid Form" error for logged out users upon submitting an AJAX form on some server configurations.
+- Fixed: Multiple Choice fields had issues in the builder with image choices with empty labels.
+- Fixed: Make bulk actions at the bottom of the Forms Overview work.
+- Fixed: "Single Line Text" and "Paragraph Text" calculate empty field word count incorrectly.
+- Fixed: Do not allow Action Scheduler to generate errors during the plugin uninstallation procedure.
+- Fixed: Input mask validation produces a JS error on jQuery 3.x.
+
 = 1.6.1 =
 - Added: Display a list of scheduled actions on WPForms > Tools > Scheduled Actions page.
 - Added: Multiple select option for Dropdown field (off by default).

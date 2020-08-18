@@ -51,6 +51,12 @@ if( isset( $_POST['submit'] ) ) {
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'wpemails'", $wpemails ) );
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'html_or_text'", $html_or_text ) );
 
+	// Advanced
+	$allow_editor 			= $_POST['allow_editor'];
+	$allow_author 			= $_POST['allow_author'];
+	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'allow_editor'", $allow_editor ) );
+	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'allow_author'", $allow_author ) );
+
 	// Intervals
 
 	// Set variables
@@ -428,6 +434,25 @@ $availableIntervals 		= cau_wp_get_schedules();
 				</div>
 
 			</div>
+		</div>
+
+		<div class="welcome-to-cau advanced-bg welcome-panel cau-dashboard-box">
+
+			<h2 class="title"><?php _e( 'Advanced settings', 'companion-auto-update' ); ?></h2>
+
+			<table class="form-table">
+				<tbody>
+					<tr>
+						<th scope="row"><label for="blogname"><?php _e( 'Allow access to:', 'companion-auto-update' ); ?></label></th>
+						<td>
+							<p><label for="allow_administrator"><input name="allow_administrator" type="checkbox" id="allow_administrator" disabled="" checked=""><?php _e( 'Administrator', '' ); ?></label></p>
+							<p><label for="allow_editor"><input name="allow_editor" type="checkbox" id="allow_editor" <?php if( cau_get_db_value( 'allow_editor' ) == 'on' ) { echo "CHECKED"; } ?>><?php _e( 'Editor', '' ); ?></label></p>
+							<p><label for="allow_author"><input name="allow_author" type="checkbox" id="allow_author" <?php if( cau_get_db_value( 'allow_author' ) == 'on' ) { echo "CHECKED"; } ?>><?php _e( 'Author', '' ); ?></label></p>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
 		</div>
 
 		<?php wp_nonce_field( 'cau_save_settings' ); ?>	

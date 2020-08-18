@@ -5,7 +5,7 @@ Tags: auto, automatic, background, update, updates, updating, automatic updates,
 Requires at least: 3.6.0
 Tested up to: 5.5
 Requires PHP: 5.1
-Stable tag: 3.5.5
+Stable tag: 3.6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,12 @@ Your feedback is what made this plugin what is and what it’ll become so keep t
 4. Keep track of updates with the update log
 
 == Changelog ==
+
+= 3.6 (August 12, 2020) =
+* Tweak: Added Theme and Core update method the log
+* Tweak: Few WordPress 5.5 improvements
+* New: Added an "after core update" hook [More info](https://codeermeneer.nl/documentation/codex-auto-updater/)
+* New: Select which userroles can access settings. (Defaults to only administrators)
 
 = 3.5.5 (August 5, 2020) =
 * Fix: Added better multisite support
