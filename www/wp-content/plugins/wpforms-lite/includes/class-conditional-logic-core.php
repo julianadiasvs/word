@@ -383,8 +383,10 @@ class WPForms_Conditional_Logic_Core {
 															$selected = false;
 														}
 
+														$field_label = isset( $form_field['label'] ) && ! wpforms_is_empty_string( trim( $form_field['label'] ) ) ? $form_field['label'] : sprintf( /* translators: %d - field ID. */ __( 'Field #%d', 'wpforms-lite' ), absint( $form_field['id'] ) );
+
 														$selected = selected( $selected, $form_field['id'], false );
-														printf( '<option value="%s" %s>%s</option>', absint( $form_field['id'] ), $selected, esc_html( $form_field['label'] ) );
+														printf( '<option value="%s" %s>%s</option>', absint( $form_field['id'] ), esc_attr( $selected ), esc_html( $field_label ) );
 													}
 												}
 
@@ -460,7 +462,7 @@ class WPForms_Conditional_Logic_Core {
 												} else {
 
 													printf(
-														'<select name="%s[conditionals][%s][%s][value]" class="wpforms-conditional-value" %d>',
+														'<select name="%1$s[conditionals][%2$s][%3$s][value]" class="wpforms-conditional-value" %4$d>',
 														$field_name,
 														$group_id,
 														$rule_id,
@@ -472,9 +474,19 @@ class WPForms_Conditional_Logic_Core {
 														if ( ! empty( $form_fields[ $rule['field'] ]['choices'] ) ) {
 
 															foreach ( $form_fields[ $rule['field'] ]['choices'] as $option_id => $option ) {
-																$value    = isset( $rule['value'] ) ? $rule['value'] : '';
-																$selected = selected( $option_id, $value, false );
-																printf( '<option value="%s" %s>%s</option>', $option_id, $selected, esc_html( $option['label'] ) );
+																$value = isset( $rule['value'] ) ? $rule['value'] : '';
+																$label = ! isset( $option['label'] ) || '' === trim( $option['label'] )
+																	? sprintf( /* translators: %d - choice number. */
+																		esc_html__( 'Choice %d', 'wpforms-lite' ),
+																		(int) $option_id
+																	)
+																	: $option['label'];
+																printf(
+																	'<option value="%1$s" %2$s>%3$s</option>',
+																	esc_attr( $option_id ),
+																	selected( $option_id, $value, false ),
+																	esc_html( trim( $label ) )
+																);
 															}
 														}
 
@@ -546,6 +558,7 @@ class WPForms_Conditional_Logic_Core {
 	 * Check if a form passes the conditional logic rules that are provided.
 	 *
 	 * @since 1.3.8
+	 * @since 1.6.1 Added multiple select support.
 	 *
 	 * @param array $fields       List of fields with data and settings.
 	 * @param array $form_data    Form data and settings.
@@ -646,7 +659,7 @@ class WPForms_Conditional_Logic_Core {
 							// it ourselves.
 							$provided_id = array();
 
-							if ( 'checkbox' === $fields[ $rule_field ]['type'] ) {
+							if ( in_array( $fields[ $rule_field ]['type'], array( 'checkbox', 'select' ), true ) ) {
 								$values = explode( "\n", $fields[ $rule_field ]['value'] );
 							} else {
 								$values = (array) $fields[ $rule_field ]['value'];
@@ -655,6 +668,12 @@ class WPForms_Conditional_Logic_Core {
 							foreach ( $form_data['fields'][ $rule_field ]['choices'] as $key => $choice ) {
 
 								$choice = array_map( 'wpforms_decode_string', $choice );
+
+								if ( in_array( $fields[ $rule_field ]['type'], [ 'radio', 'checkbox', 'select' ], true ) ) {
+									// Remove newlines from the choice (label or value) before comparing.
+									// Newlines can be pasted with a long text to the choice label (or value) in the form builder.
+									$choice = array_map( 'sanitize_text_field', $choice );
+								}
 
 								foreach ( $values as $value ) {
 									$value = wpforms_decode_string( $value );

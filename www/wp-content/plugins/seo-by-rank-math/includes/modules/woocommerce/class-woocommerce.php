@@ -40,16 +40,16 @@ class WooCommerce extends WC_Vars {
 		$this->remove_parent_slugs  = Helper::get_settings( 'general.wc_remove_category_parent_slugs' );
 
 		if ( is_admin() ) {
-			new Admin;
+			new Admin();
 		}
 
 		$this->integrations();
 
 		if ( $this->remove_product_base || $this->remove_category_base ) {
-			new Product_Redirection;
+			new Product_Redirection();
 		}
 
-		new Permalink_Watcher;
+		new Permalink_Watcher();
 		parent::__construct();
 	}
 
@@ -245,12 +245,20 @@ class WooCommerce extends WC_Vars {
 	 * @return bool|array
 	 */
 	public static function get_brands( $product_id ) {
+		$brand    = '';
 		$taxonomy = Helper::get_settings( 'general.product_brand' );
-		if ( ! $taxonomy || ! taxonomy_exists( $taxonomy ) ) {
-			return false;
+		if ( $taxonomy && taxonomy_exists( $taxonomy ) ) {
+			$brands = wp_get_post_terms(
+				$product_id,
+				$taxonomy,
+				[
+					'number' => 1,
+					'fields' => 'names',
+				]
+			);
+			$brand  = empty( $brands[0] ) || is_wp_error( $brands ) ? '' : $brands[0];
 		}
 
-		$brands = wp_get_post_terms( $product_id, $taxonomy );
-		return empty( $brands ) || is_wp_error( $brands ) ? false : $brands;
+		return apply_filters( 'rank_math/woocommerce/product_brand', $brand );
 	}
 }

@@ -1,19 +1,19 @@
-=== WordPress SEO Plugin - Rank Math ===
+=== Rank Math SEO - Best SEO Plugin for WordPress ===
 Contributors: rankmath
-Plugin link: https://s.rankmath.com/homepage
-Tags: seo, sitemap, google search console, schema, redirection
-Tested up to: 5.4.1
-Requires at least: 4.9.0
-Requires PHP: 5.6
-Stable tag: 1.0.44
+Plugin link: https://rankmath.com/?utm_source=LP&utm_campaign=WP
+Tags: seo, sitemap, google search console, schema, redirection, WordPress SEO
+Tested up to: 5.6.1
+Requires at least: 5.2
+Requires PHP: 7.0
+Stable tag: 1.0.57.1
 License: GPL-2.0+
 License URI: https://www.gnu.org/licenses/gpl-2.0.txt
 
-Rank Math is a revolutionary SEO plugin that combines the features of many SEO tools in a single package & helps you multiply your traffic.
+Rank Math SEO is a revolutionary WordPress SEO plugin that combines the features of many SEO tools in a single package & helps you multiply your traffic.
 
 == Description ==
 
-**SEO Plugin For WordPress**
+**Rank Math SEO - Best SEO Plugin for WordPress**
 ★★★★★<br>
 
 **SEO is the most consistent source of traffic for any website.** We created <a href="https://rankmath.com/wordpress/plugin/seo-suite/?utm_source=LP&utm_campaign=WP" target="_blank">**Rank Math, a WordPress SEO plugin**</a>, to help every website owner get access to the SEO tools they need to improve their SEO and attract more traffic to their website.
@@ -97,7 +97,7 @@ Even with significantly more features than other plugins, Rank Math loads amazin
 
 * **Super Fast SEO Plugin** — Even after packing so many features, Rank Math has a negligible load on your server, thus making it one of the fastest SEO plugins for WordPress.
 
-* **Automatic Keyword Suggestions from Google ** — Get keyword suggestions from Google as you start typing letters in the focus keyword field of Rank Math.
+* **Automatic Keyword Suggestions from Google** — Get keyword suggestions from Google as you start typing letters in the focus keyword field of Rank Math.
 
 * **New SEO Analyzer** — Rank Math's built-in SEO analysis will give you SEO recommendations that you'd normally spend hundreds of dollars to get.
 
@@ -108,6 +108,8 @@ Even with significantly more features than other plugins, Rank Math loads amazin
 * **Optimize UNLIMITED Keywords At Once** — You can optimize your post for up to 5 different keywords by default with the Rank Math plugin and can use a filter to optimize for unlimited keywords.
 
 * **Image SEO** - With Rank Math's perfect solution to add ALT & Title tags on the fly, to optimize images, showing inside the content, and that too for FREE, there is no reason to choose any other SEO solution that does not provide all the essential SEO features.
+
+* **[Web Stories SEO](https://rankmath.com/kb/google-web-stories/)** - Make any Story created with the Google's Web Stories plugin SEO-Ready. Automatically adds AMP friendly Schema markup and Meta tags.
 
 * **Translation Plugins Support** — Rank Math works flawlessly with the top translations plugins like WPML, TranslatePress, Weglot, Polylang, etc., making it a perfect companion.
 
@@ -473,27 +475,25 @@ Please drop us an email at support@rankmath.com and we would be more than happy 
 
 == Changelog ==
 
-= 1.0.44 [Jun 12, 2020] =
-* Added: [NEW!] Added [Social share buttons](https://i.rankmath.com/5YCVsq) in the Gutenberg publish flow, now you will see the share buttons after publishing the post
-* Added: Title attribute for the sidebar tabs for better usability
-* Added: Full compatibility with the WPML plugin [WPML String Translation Plugin is required]
-* Added: Some missing strings in the translation file
-* Improved: The variable [Product Schema](https://rankmath.com/kb/rich-snippets/#product) output by replacing `Offer` with `AggregateOffer`
-* Improved: Made the registration step simpler to understand as to why a [FREE account](https://rankmath.com/#signup) is needed and the benefits
-* Improved: The [new UI's](https://www.facebook.com/RankMath/videos/237502667553008/) checkbox styling was getting applied in the Classic Editor's sidebar
-* Improved: We've tinkered with the internal workings and polished some rough edges. The plugin is now **better & secure** than it was
-* Removed: The [usage tracking](https://rankmath.com/usage-tracking/) option is not needed as the data received was not stored on the servers or utilized
-* Removed: Unused JS files
-* Fixed: Option to set custom data in the [Twitter's social tab](https://rankmath.com/kb/meta-box-social-tab/#twitter-options) was not working in the Classic Editor
-* Fixed: [Open links in a new tab](https://rankmath.com/kb/how-to-setup/#open-external-links-new-tab-window) and [nofollow](https://rankmath.com/kb/how-to-setup/#nofollow-external-links) options were not working if the [Image SEO](https://rankmath.com/kb/general-settings/#add-missing-alt-attributes) module was deactivated
-* Fixed: The [strip category base](https://rankmath.com/kb/general-settings/#strip-category-base) option was not getting [imported from Yoast](https://rankmath.com/kb/how-to-setup/#step-1-import-data-from-other-plugins)
-* Fixed: The option to select multiple Employment Types in the [JobPosting Schema](https://rankmath.com/kb/rich-snippets/#job-posting) was not working in the Gutenberg
-* Fixed: [Sitemap](https://rankmath.com/kb/fix-sitemap-issues/) was not working when a custom permalink structure with `index.php` was used before the `%postname%` variable
-* Fixed: Content analysis not working on the taxonomy pages when quotes were used in the title
-* Fixed: A redirection conflict with BuddyPress when the [Redirect 404 to Homepage](https://rankmath.com/kb/general-settings/#fallback-behaviour) option was enabled in the [General Settings](https://rankmath.com/kb/general-settings/)
-* Fixed: The Gutenberg editor was incorrectly displaying the [Icon Overlay](https://rankmath.com/kb/meta-box-social-tab/#add-icon-overlay-to-thumbnails) in the [Social preview](https://rankmath.com/kb/meta-box-social-tab/#checking-the-facebook-preview) when the overlay option value was set to off. This was not affecting the frontend output
-* Fixed: [Redirections](https://rankmath.com/kb/setting-up-redirections/) were not working from the advanced tab of the category/term edit page
-* Fixed: The URL preview in the Classic Editor was incorrect for languages like Arabic but the output, for the search engines, was correct
-* Fixed: An issue with the Members plugin where the general settings were not accessible when creating a new role using that plugin
+= 1.0.57.1 [Feb 5, 2021] =
+* Fixed: FAQ Schema markup showing error if HTML tags are used in the answer area
+
+= 1.0.57 [Feb 3, 2021] =
+* **Improved: The overall [Schema](https://rankmath.com/blog/schema-markup/) output and generation to a great level after consulting top Schema consultants**
+* Added: Undo and Redo now works like a charm inside the [Schema Generator](https://www.youtube.com/watch?v=4DapQQd6ceE) popup
+* Added: Added an option to [send an email when an update](https://rankmath.com/kb/version-control/#update-notification-email) is available for the Rank Math SEO plugin
+* Added: A way to help the users to easily leave a review, with a dismissible notice
+* Improved: The overall speed and security of the plugin
+* Improved: Sitelinks search box [Schema](https://rankmath.com/kb/rich-snippets/) now prints the data only on the homepage as recommended by Google
+* Improved: [WooCommerce Product Schema](https://rankmath.com/blog/woocommerce-seo/) now prints `mainEntityofPage` property in the Schema markup
+* Improved: The [auto-update](https://rankmath.com/kb/version-control/#auto-update) will not be disabled when installing the latest version using the [Rollback feature](https://rankmath.com/kb/version-control/#a-how-to-rollback-rank-math-to-a-previous-version)
+* Improved: The [Bing Indexing API](https://rankmath.com/blog/bing-indexing-api/) notices won't be showing up several times anymore
+* Improved: The [primary category](https://rankmath.com/kb/titles-and-meta/#primary-taxonomy) UI was showing in the Classic Editor, even if the option was disabled
+* Improved: Styling in the [top admin bar](https://rankmath.com/kb/quick-actions/) is improved for the dropdown's options
+* Removed: `None` option from the product's availability dropdown
+* Fixed: `%term_description%` was not working in the preview area of the taxonomy pages (categories & tags). Nothing was impacted on the frontend to the search engines
+* Fixed: On multisite, the Rank Math [SEO tab in the Elementor plugin](https://rankmath.com/blog/elementor-seo/) was not showing unless the plugin was activated network-wide
+* Fixed: A PHP warning with the Bing Instant Indexing module
+* Fixed: Several small issues and improve the overall code of the plugin
 
 Full changelog can be found here - **[Rank Math SEO changelog](https://rankmath.com/changelog/?utm_source=LP&utm_campaign=WP)**

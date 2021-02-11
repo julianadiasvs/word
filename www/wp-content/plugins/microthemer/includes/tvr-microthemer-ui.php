@@ -5,15 +5,6 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
 	die('Please do not call this page directly.');
 }
 
-//$this->show_me = 'herehere: ' . $this->check_table_exists('wp_micro_revisions', true);
-
-/*if (method_exists('Elementor\Core\Responsive\Responsive', 'get_breakpoints')){
-	$this->show_me = '<pre>'.print_r(Elementor\Core\Responsive\Responsive::get_breakpoints(), true). '</pre>';
-}*/
-/*$this->show_me = '<pre>'.print_r($this->strip_preview_params('http://fonts.themeover.com/about/?elementor-preview=55&ver=1531395726'), true). '</pre>';*/
-//$this->show_me = 'result: ' . $this->is_time_prop('animation_duration');
-
-/*$item = &$this->get_or_update_item($this->preferences['my_props']['sug_values']['background_image']['recent'], array('trail' => array($key), 'action' => 'get', 'data' => array('cows')));*/
 /*global $media_queries_list_above, $media_queries_list;
 $this->show_me = '<pre>$media_queries_list: '.print_r($this->oxygen_mqs, true). '</pre>' .
                  '<pre>$media_queries_list_above: '.print_r($media_queries_list_above, true). '</pre>';*/
@@ -25,50 +16,6 @@ if ($debug_unlock){
 	$this->show_me.= 'buyer_email: ' . $this->preferences['buyer_email'] . '<br />';
 	$this->show_me.= 'retro_sub_check_done: ' . $this->preferences['retro_sub_check_done'] . '<br />';
 }
-
-/*$this->log(
-	esc_html__('The cur $this->preferences', 'microthemer'),
-	'<pre>' . $this->preferences['manual_recompile_all_css']. '</pre>',
-	'notice'
-);*/
-
-/*preg_match_all("/(?<!^)(\n)[^}]/", ".comment-content p {
-	font-family: Tahoma;
-	line-height: 1.8;
-	font-weight: 200;
-	min-width: 100%;
-	max-width: 50%;
-}", $matches);
-$this->show_me = 'Yooorr' . print_r($matches, true);*/
-
-//$this->show_me = $this->adjust_unix_timestamp_for_local(time());
-
-//$this->do_data_conversions_for_speed();
-
-/*$this->apply_save_package([[
-                'trail' => ['non_section', 'meta', 'animations'],
-                'action'=> 'replace',
-                'data'=> 'purple cow'
-            ]], $this->options);
-$this->show_me.= '<pre>hello there'.print_r($this->options['non_section']['meta'], true). '</pre>';*/
-//$inner_item = $this->checkObject($this->options, ['non_section', 'meta', 'last_viewed_selector']);
-//$this->show_me = '<pre>'.print_r($inner_item, true). '</pre>';
-
-// test root_rel
-//$this->root_rel_old($this->site_url.'/wp-content/uploads/2015/08/logo-arcobaleno96-tablet-ph.gif', false, true, true);
-//$this->root_rel($this->site_url.'/wp-content/uploads/2015/08/logo-arcobaleno96-tablet-ph.gif', false, true, true);
-
-//$this->show_me = 'eval? ' . $this->is_single_keyword(0);
-
-/*$item = &$this->get_or_update_item($this->options,
-array('trail' =>
-  array('general', 'this', 'cabbage'),
-  'action' => 'get')
-);
-$this->show_me = '$item ' . $item;*/
-/*$test =  array('general', 'this', 'cabbage');
-unset($test[1]);
-$this->show_me = print_r($test, true);*/
 
 // is edge mode active?
 if ($this->edge_mode['available'] and !empty($this->preferences['edge_mode'])){
@@ -115,6 +62,8 @@ $this->preferences['detach_preview'] ? $ui_class.= ' detach_preview' : false;
 !empty($this->preferences['server_scss']) ? $ui_class.= ' server_scss' : false;
 !empty($this->preferences['show_sampled_values']) ? $ui_class.= ' show_sampled_values' : false;
 !empty($this->preferences['show_sampled_variables']) ? $ui_class.= ' show_sampled_variables' : false;
+!empty($this->preferences['tape_measure_slider']) ? $ui_class.= ' tape_measure_slider' : false;
+
 
 // signal if 3rd party plugins are active
 $no_integrations_available = true;
@@ -193,6 +142,8 @@ if ($this->edge_mode['active']){
 		?>
 
         <!--<input type="text" id="tvr-width-input" class="property-input combobox" name="non_section[tvr_width_input]" value="" />-->
+
+        <span id="inputWidthCalc"></span>
 
 		<span id="ui-nonce"><?php echo wp_create_nonce('tvr_microthemer_ui_load_styles'); ?></span>
 		<span id="fonts-api" rel="<?php echo $this->thispluginurl.'includes/fonts-api.php'; ?>"></span>
@@ -936,6 +887,75 @@ if ($this->edge_mode['active']){
 			</div>
 
             <div id="style-components"></div>
+
+            <div id="mt-slider-set">
+
+                <span class="mtss-buttons">
+                    <span class="mtss-button mtss-decr-button"></span>
+                    <span class="mtss-button mtss-incr-button"></span>
+                </span>
+
+                <div class="mtss-slider-port drag-port">
+
+                    <div class="mtss-slider-containment drag-containment">
+                        <div id="mtss-dragbar" class="mtss-drag-content drag-content">
+                            <div class="mousedown-fix"></div>
+
+		                    <?php
+		                    /*for ($x = 0; $x < 360; $x+= 10) {
+			                    echo '<span class="mtss-block">'.$x.'</span>';
+		                    }*/
+		                    ?>
+                        </div>
+                    </div>
+
+                    <div class="mtss-marker">
+                        <div class="mtss-marker-top"></div>
+                        <div class="mtss-marker-bottom"></div>
+                    </div>
+
+                </div>
+
+                <span class="mtss-unit-menu">
+
+                    <span class="mtss-current-unit"></span>
+
+                    <!--<span class="mtss-px-equiv">
+                        (<span class="mtss-px-value">20</span><span class="mtss-px">px</span>)
+                    </span>-->
+
+                    <span class="mtss-numeric">
+                        <span class="mtss-numeric-value"></span>
+                        <span class="mtss-px-equiv">
+                            = <span class="mtss-px-value">20</span><span class="mtss-px">px</span>
+                        </span>
+                    </span>
+
+                    <div class="mtss-units">
+                        <?php
+                        $html = '';
+                        //$units = array_merge(array(''))
+                        foreach ($this->css_units as $unit_cat => $cat_units){
+                            $first_unit_key = array_keys($cat_units)[0];
+	                        $html.= '
+	                        <ul class="unit-cat unit-cat-'.$cat_units[$first_unit_key]['type'].'">
+	                            <li class="unit-cat-heading">'.$unit_cat.'</li>';
+                                foreach ($cat_units as $unit => $unit_data){
+                                    $html.= '<li class="mt-unit-item" data-unit="'.$unit.'"
+                                    title="'.$unit_data['desc'].'">'.$unit.'</li>';
+                                }
+	                        $html.= '
+                            </ul>';
+                        }
+                        echo $html;
+                        ?>
+                    </div>
+
+                </span>
+
+
+
+            </div>
 
 		</div>
 
@@ -2098,7 +2118,7 @@ if ($this->edge_mode['active']){
 // output current settings to file (before any save), also useful for output custom debug stuff
 if ($this->debug_current){
 	$debug_file = $this->micro_root_dir . $this->preferences['theme_in_focus'] . '/debug-current.txt';
-	$write_file = fopen($debug_file, 'w');
+	$write_file = @fopen($debug_file, 'w');
 	$data = '';
 	$data.= esc_html__('Custom debug output', 'microthemer') . "\n\n";
 	//$data.= $this->debug_custom;

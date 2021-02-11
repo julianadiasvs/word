@@ -6,6 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'RankMath\\' => array($baseDir . '/includes'),
+    'donatj\\UserAgent\\' => array($vendorDir . '/donatj/phpuseragentparser/src/UserAgent'),
     'MyThemeShop\\Helpers\\' => array($vendorDir . '/mythemeshop/wordpress-helpers/src'),
 );

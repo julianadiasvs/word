@@ -2,6 +2,7 @@
 
 namespace WPMailSMTP\Providers\SMTPcom;
 
+use WPMailSMTP\MailCatcherInterface;
 use WPMailSMTP\Providers\MailerAbstract;
 use WPMailSMTP\WP;
 
@@ -37,11 +38,11 @@ class Mailer extends MailerAbstract {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param \WPMailSMTP\MailCatcher $phpmailer
+	 * @param MailCatcherInterface $phpmailer The MailCatcher object.
 	 */
 	public function __construct( $phpmailer ) {
 
-		// We want to prefill everything from \WPMailSMTP\MailCatcher class, which extends \PHPMailer.
+		// We want to prefill everything from MailCatcher class, which extends PHPMailer.
 		parent::__construct( $phpmailer );
 
 		// Set mailer specific headers.
@@ -306,7 +307,7 @@ class Mailer extends MailerAbstract {
 			$filetype = str_replace( ';', '', trim( $attachment[4] ) );
 
 			$data[] = array(
-				'content'     => base64_encode( $file ),
+				'content'     => chunk_split( base64_encode( $file ) ), // phpcs:ignore
 				'type'        => $filetype,
 				'encoding'    => 'base64',
 				'filename'    => empty( $attachment[2] ) ? 'file-' . wp_hash( microtime() ) . '.' . $filetype : trim( $attachment[2] ),
@@ -388,6 +389,31 @@ class Mailer extends MailerAbstract {
 	public function set_return_path( $from_email ) {}
 
 	/**
+	 * We might need to do something after the email was sent to the API.
+	 * In this method we preprocess the response from the API.
+	 *
+	 * @since 2.5.0
+	 *
+	 * @param mixed $response Response data.
+	 */
+	protected function process_response( $response ) {
+
+		parent::process_response( $response );
+
+		if (
+			! is_wp_error( $response ) &&
+			! empty( $this->response['body']->data->message )
+		) {
+			preg_match( '/msg_id: (.*)/', $this->response['body']->data->message, $output );
+
+			if ( ! empty( $output[1] ) ) {
+				$this->phpmailer->addCustomHeader( 'X-Msg-ID', $output[1] );
+				$this->verify_sent_status = true;
+			}
+		}
+	}
+
+	/**
 	 * Get a SMTP.com-specific response with a helpful error.
 	 *
 	 * SMTP.com API error response (non 200 error code responses) is:
@@ -404,7 +430,7 @@ class Mailer extends MailerAbstract {
 	 *
 	 * @return string
 	 */
-	protected function get_response_error() {
+	public function get_response_error() {
 
 		$body = (array) wp_remote_retrieve_body( $this->response );
 
@@ -414,6 +440,8 @@ class Mailer extends MailerAbstract {
 			foreach ( (array) $body['data'] as $error_key => $error_message ) {
 				$error_text[] = $error_key . ' - ' . $error_message;
 			}
+		} elseif ( ! empty( $this->error_message ) ) {
+			$error_text[] = $this->error_message;
 		}
 
 		return implode( PHP_EOL, array_map( 'esc_textarea', $error_text ) );

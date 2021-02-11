@@ -108,7 +108,7 @@ class Watcher {
 				update_post_meta( $post_id, 'rank_math_permalink', $post->post_name );
 			}
 
-			$this->do_action( 'redirection/post_updated', $redirection_id );
+			$this->do_action( 'redirection/post_updated', $redirection_id, $post_id );
 			return;
 		}
 	}
@@ -153,7 +153,7 @@ class Watcher {
 			);
 			$this->add_notification( $message, true );
 
-			$this->do_action( 'redirection/term_updated', $redirection_id );
+			$this->do_action( 'redirection/term_updated', $redirection_id, $term_id );
 		}
 
 		return;
@@ -274,7 +274,7 @@ class Watcher {
 	 * @return string
 	 */
 	private function get_site_path() {
-		$path = parse_url( get_site_url(), PHP_URL_PATH );
+		$path = parse_url( get_home_url(), PHP_URL_PATH );
 		if ( $path ) {
 			return rtrim( $path, '/' ) . '/';
 		}
@@ -356,7 +356,7 @@ class Watcher {
 		/* translators: 1. url to new screen, 2. old trashed post permalink */
 		$message = sprintf( wp_kses_post( __( '<strong>SEO Notice:</strong> A previously published %1$s has been moved to trash. You may redirect it <code>%2$s</code> to <a href="%3$s">new url</a>.', 'rank-math' ) ), $type, $url, $admin_url );
 
-		$this->add_notification( $message );
+		$this->add_notification( $message, true );
 	}
 
 	/**
@@ -374,6 +374,7 @@ class Watcher {
 			$message,
 			[
 				'type'    => 'warning',
+				'id'      => 'auto_post_redirection',
 				'classes' => $is_dismissible ? 'is-dismissible' : '',
 			]
 		);

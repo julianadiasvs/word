@@ -102,35 +102,6 @@ if ( ! class_exists( 'Astra_Control_Settings_Group' ) && class_exists( 'WP_Custo
 		}
 
 		/**
-		 * An Underscore (JS) template for this control's content (but not its container).
-		 *
-		 * Class variables for this control class are available in the `data` JS object;
-		 * export custom variables by overriding {@see WP_Customize_Control::to_json()}.
-		 *
-		 * @see WP_Customize_Control::print_template()
-		 *
-		 * @access protected
-		 */
-		protected function content_template() {
-			?>
-
-		<div class="ast-toggle-desc-wrap">
-			<label class="customizer-text">
-				<# if ( data.label ) { #>
-					<span class="customize-control-title">{{{ data.label }}}</span>
-					<# } #>
-						<# if ( data.help ) { #>
-							<span class="ast-description">{{{ data.help }}}</span>
-							<# } #>
-								<span class="ast-adv-toggle-icon dashicons" data-control="{{ data.name }}"></span>
-			</label>
-		</div>
-		<div class="ast-field-settings-wrap">
-		</div>
-			<?php
-		}
-
-		/**
 		 * Render the control's content.
 		 *
 		 * @see WP_Customize_Control::render_content()

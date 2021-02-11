@@ -8,12 +8,15 @@
 
 use RankMath\Helper;
 use RankMath\KB;
+
+defined( 'ABSPATH' ) || exit;
+
 ?>
 <header>
 	<h1>
 		<?php
 		/* translators: sitename */
-		printf( esc_html__( 'Your Website: %s', 'rank-math' ), $this->get_site_display_name() );
+		printf( esc_html__( 'Your Website: %s', 'rank-math' ), esc_attr( $this->get_site_display_name() ) );
 		?>
 	</h1>
 	<p><?php esc_html_e( 'Let us know a few things about your site&hellip;', 'rank-math' ); ?></p>

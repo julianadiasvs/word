@@ -8,6 +8,8 @@
 
 use RankMath\Helper;
 
+defined( 'ABSPATH' ) || exit;
+
 if ( 'page' === get_option( 'show_on_front' ) ) {
 	$cmb->add_field(
 		[
@@ -39,13 +41,12 @@ $cmb->add_field(
 
 $cmb->add_field(
 	[
-		'id'              => 'homepage_description',
-		'type'            => 'textarea_small',
-		'name'            => esc_html__( 'Homepage Meta Description', 'rank-math' ),
-		'desc'            => esc_html__( 'Homepage meta description.', 'rank-math' ),
-		'classes'         => 'rank-math-supports-variables rank-math-description',
-		'sanitization_cb' => [ '\RankMath\CMB2', 'sanitize_textfield' ],
-		'attributes'      => [
+		'id'         => 'homepage_description',
+		'type'       => 'textarea_small',
+		'name'       => esc_html__( 'Homepage Meta Description', 'rank-math' ),
+		'desc'       => esc_html__( 'Homepage meta description.', 'rank-math' ),
+		'classes'    => 'rank-math-supports-variables rank-math-description',
+		'attributes' => [
 			'class'                  => 'cmb2_textarea wp-exclude-emoji',
 			'data-gramm_editor'      => 'false',
 			'rows'                   => 2,

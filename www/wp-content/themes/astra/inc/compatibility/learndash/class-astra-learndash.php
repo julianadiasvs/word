@@ -257,6 +257,7 @@ if ( ! class_exists( 'Astra_LearnDash' ) ) :
 				$active_ld_theme = LearnDash_Theme_Register::get_active_theme_key();
 			}
 
+			// @codingStandardsIgnoreStart WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound
 			/**
 			 * Register Sections & Panels
 			 */
@@ -271,6 +272,7 @@ if ( ! class_exists( 'Astra_LearnDash' ) ) :
 			if ( 'ld30' !== $active_ld_theme ) {
 				require ASTRA_THEME_DIR . 'inc/compatibility/learndash/customizer/sections/layout/class-astra-learndash-general-configs.php';
 			}
+			// @codingStandardsIgnoreEnd WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound
 		}
 
 		/**

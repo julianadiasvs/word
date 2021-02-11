@@ -1,4 +1,4 @@
-/* globals wpforms_builder_lite, wpforms_builder */
+/* global wpforms_builder_lite, wpforms_builder */
 /**
  * WPForms Form Builder Education function.
  *
@@ -24,7 +24,7 @@ var WPFormsBuilderEducation = window.WPFormsBuilderEducation || ( function( docu
 		 * @since 1.5.1
 		 */
 		init: function() {
-			$( document ).ready( app.ready );
+			$( app.ready );
 		},
 
 		/**

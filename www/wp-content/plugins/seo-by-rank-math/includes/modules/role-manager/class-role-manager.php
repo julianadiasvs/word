@@ -14,6 +14,8 @@ use RankMath\Helper;
 use RankMath\Module\Base;
 use MyThemeShop\Admin\Page;
 use MyThemeShop\Helpers\WordPress;
+use RankMath\Traits\Hooker;
+use MyThemeShop\Helpers\Param;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -21,6 +23,7 @@ defined( 'ABSPATH' ) || exit;
  * Role_Manager class.
  */
 class Role_Manager extends Base {
+	use Hooker;
 
 	/**
 	 * The Constructor.
@@ -32,17 +35,13 @@ class Role_Manager extends Base {
 			[
 				'id'        => 'role-manager',
 				'directory' => $directory,
-				'help'      => [
-					'title' => esc_html__( 'Role Manager', 'rank-math' ),
-					'view'  => $directory . '/views/help.php',
-				],
 			]
 		);
 		parent::__construct();
 
 		$this->action( 'cmb2_admin_init', 'register_form' );
 		add_filter( 'cmb2_override_option_get_rank-math-role-manager', [ '\RankMath\Helper', 'get_roles_capabilities' ] );
-		$this->action( 'admin_post_rank_math_save_capabilities', 'save_capabilities' );
+		$this->action( 'admin_post_rank_math_handle_capabilities', 'handle_form' );
 
 		if ( $this->page->is_current_page() ) {
 			add_action( 'admin_enqueue_scripts', [ 'CMB2_Hookup', 'enqueue_cmb_css' ], 25 );
@@ -50,12 +49,12 @@ class Role_Manager extends Base {
 
 		// Members plugin integration.
 		if ( \function_exists( 'members_plugin' ) ) {
-			new Members;
+			new Members();
 		}
 
 		// User Role Editor plugin integration.
 		if ( defined( 'URE_PLUGIN_URL' ) ) {
-			new User_Role_Editor;
+			new User_Role_Editor();
 		}
 	}
 
@@ -69,7 +68,7 @@ class Role_Manager extends Base {
 			'rank-math-role-manager',
 			esc_html__( 'Role Manager', 'rank-math' ),
 			[
-				'position'   => 11,
+				'position'   => 20,
 				'parent'     => 'rank-math',
 				'capability' => 'rank_math_role_manager',
 				'render'     => $this->directory . '/views/main.php',
@@ -80,6 +79,7 @@ class Role_Manager extends Base {
 						'rank-math-cmb2'         => '',
 						'rank-math-role-manager' => $uri . '/assets/css/role-manager.css',
 					],
+					'scripts' => [ 'rank-math-role-manager-script' => rank_math()->plugin_url() . 'assets/admin/js/role-manager.js' ],
 				],
 			]
 		);
@@ -119,14 +119,13 @@ class Role_Manager extends Base {
 	/**
 	 * Save capabilities form submit handler.
 	 */
-	public function save_capabilities() {
-
+	public function handle_form() {
 		// If no form submission, bail!
 		if ( empty( $_POST ) ) {
 			return false;
 		}
 
-		check_admin_referer( 'rank-math-save-capabilities', 'security' );
+		check_admin_referer( 'rank-math-handle-capabilities', 'security' );
 
 		if ( ! Helper::has_cap( 'role_manager' ) ) {
 			Helper::add_notification( esc_html__( 'You are not authorized to perform this action.', 'rank-math' ), [ 'type' => 'error' ] );
@@ -134,8 +133,12 @@ class Role_Manager extends Base {
 			exit;
 		}
 
-		$cmb = cmb2_get_metabox( 'rank-math-role-manager' );
-		Helper::set_capabilities( $cmb->get_sanitized_values( $_POST ) );
+		if ( Param::post( 'reset-capabilities' ) ){
+			Capability_Manager::get()->reset_capabilities();
+		} else {
+			$cmb = cmb2_get_metabox( 'rank-math-role-manager' );
+			Helper::set_capabilities( $cmb->get_sanitized_values( $_POST ) );
+		}
 
 		wp_safe_redirect( Helper::get_admin_url( 'role-manager' ) );
 		exit;

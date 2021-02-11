@@ -1,4 +1,4 @@
-/* globals wpforms_builder_lite, wpforms_builder */
+/* global wpforms_builder_lite, wpforms_builder */
 'use strict';
 
 ( function( $ ) {
@@ -13,7 +13,7 @@
 		init: function() {
 
 			// Document ready
-			$( document ).ready( function() {
+			$( function() {
 				WPFormsBuilderLite.ready();
 			} );
 
@@ -65,7 +65,7 @@
 					confirm: {
 						text: wpforms_builder.ok,
 						btnClass: 'btn-confirm',
-						keys: [ 'enter' ]
+						keys: [ 'enter' ],
 					}
 				}
 			} );

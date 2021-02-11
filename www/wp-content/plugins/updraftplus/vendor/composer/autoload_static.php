@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitaab3e972f7bd452d7b6aec134b9a00fb
+class ComposerStaticInita1538df04b39aa6fc6f63c8d74cb95ac
 {
     public static $files = array (
         'ce89ac35a6c330c55f4710717db9ff78' => __DIR__ . '/..' . '/kriswallsmith/assetic/src/functions.php',
@@ -13,6 +13,10 @@ class ComposerStaticInitaab3e972f7bd452d7b6aec134b9a00fb
     );
 
     public static $prefixLengthsPsr4 = array (
+        'm' => 
+        array (
+            'mikemccabe\\JsonPatch\\' => 21,
+        ),
         'S' => 
         array (
             'Symfony\\Component\\Process\\' => 26,
@@ -25,6 +29,10 @@ class ComposerStaticInitaab3e972f7bd452d7b6aec134b9a00fb
     );
 
     public static $prefixDirsPsr4 = array (
+        'mikemccabe\\JsonPatch\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mikemccabe/json-patch-php/src',
+        ),
         'Symfony\\Component\\Process\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/process',
@@ -52,7 +60,6 @@ class ComposerStaticInitaab3e972f7bd452d7b6aec134b9a00fb
             'OpenCloud' => 
             array (
                 0 => __DIR__ . '/..' . '/rackspace/php-opencloud/lib',
-                1 => __DIR__ . '/..' . '/rackspace/php-opencloud/tests',
             ),
         ),
         'N' => 
@@ -119,6 +126,7 @@ class ComposerStaticInitaab3e972f7bd452d7b6aec134b9a00fb
     );
 
     public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Psr\\Log\\AbstractLogger' => __DIR__ . '/..' . '/psr/log/Psr/Log/AbstractLogger.php',
         'Psr\\Log\\InvalidArgumentException' => __DIR__ . '/..' . '/psr/log/Psr/Log/InvalidArgumentException.php',
         'Psr\\Log\\LogLevel' => __DIR__ . '/..' . '/psr/log/Psr/Log/LogLevel.php',
@@ -146,10 +154,10 @@ class ComposerStaticInitaab3e972f7bd452d7b6aec134b9a00fb
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitaab3e972f7bd452d7b6aec134b9a00fb::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitaab3e972f7bd452d7b6aec134b9a00fb::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitaab3e972f7bd452d7b6aec134b9a00fb::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitaab3e972f7bd452d7b6aec134b9a00fb::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInita1538df04b39aa6fc6f63c8d74cb95ac::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInita1538df04b39aa6fc6f63c8d74cb95ac::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInita1538df04b39aa6fc6f63c8d74cb95ac::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInita1538df04b39aa6fc6f63c8d74cb95ac::$classMap;
 
         }, null, ClassLoader::class);
     }

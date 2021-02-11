@@ -1,4 +1,4 @@
-/* globals ajaxurl, wpforms_admin */
+/* global ajaxurl, wpforms_admin */
 
 /**
  * WPForms Admin Education module.
@@ -25,7 +25,7 @@ var WPFormsAdminEducation = window.WPFormsAdminEducation || ( function( document
 		 * @since 1.5.7
 		 */
 		init: function() {
-			$( document ).ready( app.ready );
+			$( app.ready );
 		},
 
 		/**

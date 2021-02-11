@@ -10,6 +10,9 @@
  */
 
 use RankMath\Helper;
+
+defined( 'ABSPATH' ) || exit;
+
 $analyzer = Helper::get_module( 'seo-analysis' )->admin->analyzer;
 ?>
 <div class="rank-math-seo-analysis-header <?php echo empty( $analyzer->results ) || count( $analyzer->results ) < 30 ? '' : ' hidden'; ?>">
@@ -34,7 +37,7 @@ $analyzer = Helper::get_module( 'seo-analysis' )->admin->analyzer;
 
 	<div class="progress-bar">
 		<div class="progress"></div>
-		<label><span>0%</span> <?php esc_html_e( 'Complete', 'rank-math' ); ?></label>
+		<div class="progress-text"><span>0%</span> <?php esc_html_e( 'Complete', 'rank-math' ); ?></div>
 	</div>
 
 </div>

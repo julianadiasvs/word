@@ -4,6 +4,9 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
 	die('Please do not call this page directly.');
 }
 
+// just use for image URL fields
+$disable_spellcheck = '';
+
 // save prop data in smaller var
 $prop_data = $this->propertyoptions[$property_group_name][$property];
 
@@ -51,7 +54,6 @@ if ($con == 'mq') {
 	if (!empty($this->options['non_section']['important'][$section_name][$css_selector])){
 		$sel_imp_array = $this->options['non_section']['important'][$section_name][$css_selector];
 	}
-
 }
 
 
@@ -75,6 +77,16 @@ if (!empty($prop_data['field-class']) ) {
 	$field_class = $prop_data['field-class'];
 }
 
+// input class
+$input_class = '';
+if (!empty($prop_data['input-class']) ) {
+	$input_class = $prop_data['input-class'];
+}
+
+$is_picker = !empty($prop_data['field-class']) && strpos($prop_data['field-class'], 'is-picker') !== false;
+$is_unitless_slider = isset($prop_data['sug_values']['unitless_slider']);
+$is_slider_field = (isset($prop_data['default_unit']) || $is_unitless_slider) && empty($prop_data['sug_values']['no_slider']);
+
 // if combobox - replaces all select menus, for better styling and user flexibility
 $combo_class = 'combobox'; // all should be comboboxes as some have suggested values
 $combo_arrow = '';
@@ -84,18 +96,39 @@ if (
 	$combo_class = 'combobox has-arrows';
 	$combo_arrow = '<span class="combo-arrow"></span>';
 } else {
-	// numerical field, try 3 dots
+	// numerical field
+	if (!$is_picker){
+
+		$field_class.= ' mt-numeric';
+
+		// has CSS unit
+		if ( $is_slider_field ){
+			$field_class.= ' mt-has-unit';
+			$input_class.= ' mt-slider';
+		}
+
+		// unitless slider
+		if ($is_unitless_slider){
+			$field_class.= ' mt-has-unitless-slider';
+			$input_class.= ' mt-unlitless-slider';
+		}
+
+	}
+
+	// 3 dots dropdown
 	$combo_class = 'combobox has-suggestions';
-	$combo_arrow = '
-<span class="mt-plus-minus">
-	<span class="mt-incr"></span>
-	<span class="mt-decr"></span>
-</span>
-<span class="combo-arrow combo-dots"></span>';
+	$combo_arrow = '<span class="combo-arrow combo-dots"></span>';
 }
 
+// have 'x' clear for input fields now that slider makes clear in select proplematic
+
+if (!$is_picker){
+	$combo_arrow.= '<span class="mt-clear-field"></span>'; // title="'.esc_attr__("Clear field", 'microthemer').'"
+}
+
+
 // determine if the user has applied a value for this field, adjust comp class accordingly
-$is_picker = !empty($prop_data['field-class']) && strpos($prop_data['field-class'], 'is-picker') !== false;
+
 $comp_class = 'comp-style cprop-' . str_replace('_', '-', $property);
 if (!empty($value) or $value === 0 or $value === '0') {
 	$man_class = ' manual-val';
@@ -121,11 +154,6 @@ else {
 	$autofill_rel = '';
 }
 
-// input class
-$input_class = '';
-if (!empty($prop_data['input-class']) ) {
-	$input_class = $prop_data['input-class'];
-}
 
 // track if the input has variable fields in a line e.g. grid-template-rows
 $variable_line = !empty($prop_data['variable_line']);
@@ -140,8 +168,9 @@ $option_icon = '<span class="o-icon-wrap"><span class="tvr-icon option-icon opti
 $extra_icon = '';
 
 // add image insert button for bg image
-if ($property == 'background_image' or $property == 'list_style_image') {
+if ($property == 'background_image' or $property == 'list_style_image' or $property == 'url_function') {
 	$extra_icon = ' <span class="tvr-icon tvr-image-upload"></span>';
+	$disable_spellcheck = 'spellcheck="false"';
 }
 
 // add an 'Add' button for add template area
@@ -415,12 +444,12 @@ if (!empty( $prop_data['tabs_before'] )){
 		: '';
 
 	$html.= '
-	<div class="query-tabs grid-tabs">';
+	<div class="query-tabs pg-tabs '.$property_group_name.'-tabs">';
 
 		foreach($prop_data['tabs_before'] as $tab_class => $tab_label) {
 			$html.= '
-			<span class="grid-tab mt-tab grid-tab-'.$tab_class.' quick-opts-wrap" rel="'.$tab_class.'">
-				 <span class="mt-tab-txt grid-tab-txt">' . $tab_label. '</span>
+			<span class="pg-tab '.$property_group_name.'-tab mt-tab '.$property_group_name.'-tab-'.$tab_class.' quick-opts-wrap" rel="'.$tab_class.'" data-pg="'.$property_group_name.'">
+				 <span class="mt-tab-txt pg-tab-text '.$property_group_name.'-tab-txt ">' . $tab_label. '</span>
                  <span class="quick-opts tvr-dots dots-above">
                     <div class="quick-opts-inner">'
 						. $this->icon_control(false,'disabled', false, 'pgtab', '', '', '', '', '', '', 'tvr_mcth', $tab_class)
@@ -431,6 +460,11 @@ if (!empty( $prop_data['tabs_before'] )){
                     </div>
                  </span>
             </span>';
+		}
+
+		// tabs label
+		if (!empty($prop_data['tabs_label'] )){
+			$html.= '<span class="property-text-label pg-tabs-label">'.$prop_data['tabs_label'].'</span>';
 		}
 
 	$html.= '
@@ -497,12 +531,38 @@ $field_wrap_html = '<div id="opts-'.$section_name.'-'.$css_selector.'-'.$propert
 
 		$html.= $option_icon; // . $text_label;
 
+		$comp_value_hint = '';
+
+		// explain why computed value not reported for transform functions
+		$isFunc = (isset($prop_data['css_func']) and
+		                    ($property_group_name === 'transform' or $property_group_name === 'filter' ));
+		if ($isFunc){
+
+			// removing '_function'
+			$prop_label = str_replace('-function', '', $prop_label);
+
+			if ($property_group_name === 'transform'){
+				//$comp_value_hint = ' title="Computed value not known"';
+				// format e.g. rotateX with capital last letter (removing _function)
+				$prop_label = str_replace('_function', '', $prop_label);
+				$prop_label = preg_replace_callback(
+					'/([xyz])$/',
+					function ($matches) {
+						return strtoupper ($matches[1]);
+					},
+					$prop_label
+				);
+			}
+
+
+		}
+
 		$html.= '
 		<span class="quick-opts">
 			<div class="quick-opts-inner">
 				<span class="option-label css-info link" rel="program-docs"
 				data-prop-group="'.$property_group_name.'" data-prop="'.$property.'">'.$prop_label.'</span>
-				<span class="option-value"></span>
+				<span class="option-value"'.$comp_value_hint.'></span>
 				<div class="comp-mixed-wrap">
 					<table class="comp-mixed-table">
 					<table class="comp-mixed-table">
@@ -537,8 +597,10 @@ $field_wrap_html = '<div id="opts-'.$section_name.'-'.$css_selector.'-'.$propert
 
 			// some fields take arrays as property values (e.g. transform) to set name accordinging
 			$name_suffix = '[value]';
+			$unit_name_suffix = '[unit]';
 			if ($array_values){
 				$name_suffix.= '[]';
+				$unit_name_suffix.= '[]';
 			}
 
 			// grid template prop should be flagged with class
@@ -551,7 +613,8 @@ $field_wrap_html = '<div id="opts-'.$section_name.'-'.$css_selector.'-'.$propert
 				$name_suffix.= '[1]'; // default to first child (unless item toggle is checked @todo)
 			}
 
-			$property_input = '<input type="text" autocomplete="off" rel="'.$property.'" data-autofill="'.$autofill_rel.'" 
+			$property_input = '<input type="text" 
+			autocomplete="off" rel="'.$property.'" data-autofill="'.$autofill_rel.'" '.$disable_spellcheck.'
 			data-appto="#style-components" 
 			class="property-input '.$combo_class.' '.$input_class . ' ' . $autofill_class  .'"
 			name="tvr_mcth'.$mq_stem.'['.$section_name.']['.$css_selector.'][styles]['.$property_group_name.']['. $property.']'.$name_suffix.'" value="'.$value.'" />';
@@ -562,7 +625,7 @@ $field_wrap_html = '<div id="opts-'.$section_name.'-'.$css_selector.'-'.$propert
 				$line_label = '<span class="grid-line-label toggle-optional-input" title="Enter line name">L</span>';
 				$line_input = '<input required type="text" autocomplete="off" rel="'.$property.'_extra" 
 			data-appto="#style-components" data-isExtra="1"
-			class="property-input vl-name-input mt-vl-input '.$combo_class.' '.$input_class . '"
+			class="property-input vl-name-input '.$combo_class.' '.$input_class . '"
 			name="tvr_mcth'.$mq_stem.'['.$section_name.']['.$css_selector.'][styles]['.$property_group_name.']['. $property.']'.$name_suffix.'" value="" />';
 				$pre_line = '';
 				$post_line = '';
@@ -610,6 +673,7 @@ $field_wrap_html = '<div id="opts-'.$section_name.'-'.$css_selector.'-'.$propert
 			</div>
 		</div><div class="add-variable-field add-icon tvr-icon" title="Add field">Add</div>' : '';
 
+		// important
 		$html.= $this->icon_control(false, 'important', $important_val, 'property', $section_name,
 			$css_selector, $key, $property_group_name, $this->subgroup, $property);
 

@@ -74,7 +74,6 @@ if ( ! class_exists( 'EWWW_Nextcellent' ) ) {
 		 * Optimizes a new image from the queue.
 		 *
 		 * @global object $ewww_image Contains more information about the image currently being processed.
-		 * @global object $nggdb
 		 *
 		 * @param int   $id The ID number of the image.
 		 * @param array $meta The image metadata.
@@ -87,9 +86,6 @@ if ( ! class_exists( 'EWWW_Nextcellent' ) ) {
 			$ewww_image->resize = 'full';
 			// Run the optimizer on the current image.
 			$fres = ewww_image_optimizer( $file_path, 2, false, false, true );
-			// Update the metadata for the optimized image.
-			global $nggdb;
-			$nggdb->update_image_meta( $id, array( 'ewww_image_optimizer' => $fres[1] ) );
 		}
 
 		/**
@@ -115,8 +111,6 @@ if ( ! class_exists( 'EWWW_Nextcellent' ) ) {
 				$ewww_image->resize = 'full';
 				// Run the optimizer on the current image.
 				$res = ewww_image_optimizer( ABSPATH . $file_path, 2, false, false, true );
-				// Update the metadata for the optimized image.
-				nggdb::update_image_meta( $image['id'], array( 'ewww_image_optimizer' => $res[1] ) );
 			}
 		}
 
@@ -256,9 +250,6 @@ if ( ! class_exists( 'EWWW_Nextcellent' ) ) {
 			$ewww_image->resize = 'full';
 			// Run the optimizer on the current image.
 			$fres = ewww_image_optimizer( $file_path, 2, false, false, true );
-			// Update the metadata for the optimized image.
-			global $nggdb;
-			$nggdb->update_image_meta( $id, array( 'ewww_image_optimizer' => $fres[1] ) );
 			// Get the filepath of the thumbnail image.
 			$thumb_path         = $meta->image->thumbPath;
 			$ewww_image         = new EWWW_Image( $id, 'nextcell', $thumb_path );
@@ -380,12 +371,12 @@ if ( ! class_exists( 'EWWW_Nextcellent' ) ) {
 						}
 					}
 				} elseif ( ewww_image_optimizer_image_is_pending( $id, 'nextc-async' ) ) {
-					esc_html_e( 'In Progress', 'ewww-image-optimizer' );
+					echo '<div>' . esc_html__( 'In Progress', 'ewww-image-optimizer' ) . '</div>';
 					// Otherwise, give the image size, and a link to optimize right now.
 				} else {
 					if ( current_user_can( apply_filters( 'ewww_image_optimizer_manual_permissions', '' ) ) ) {
 						printf(
-							'<a class="ewww-manual-optimize" data-id="%1$d" data-nonce="%2$s" href="' . esc_url( admin_url( 'admin.php?action=ewww_ngg_manual' ) ) . '&amp;ewww_manual_nonce=%2$s&amp;ewww_attachment_ID=%1$d">%3$s</a>',
+							'<div><a class="ewww-manual-optimize" data-id="%1$d" data-nonce="%2$s" href="' . esc_url( admin_url( 'admin.php?action=ewww_ngg_manual' ) ) . '&amp;ewww_manual_nonce=%2$s&amp;ewww_attachment_ID=%1$d">%3$s</a></div>',
 							(int) $id,
 							esc_attr( $ewww_manual_nonce ),
 							esc_html__( 'Optimize now!', 'ewww-image-optimizer' )
@@ -415,7 +406,7 @@ if ( ! class_exists( 'EWWW_Nextcellent' ) ) {
 				<h1><?php esc_html_e( 'Bulk Optimize', 'ewww-image-optimizer' ); ?></h1>
 				<?php
 				if ( ewww_image_optimizer_get_option( 'ewww_image_optimizer_cloud_key' ) ) {
-					ewww_image_optimizer_cloud_verify();
+					ewww_image_optimizer_cloud_verify( ewww_image_optimizer_get_option( 'ewww_image_optimizer_cloud_key' ) );
 					echo '<a id="ewww-bulk-credits-available" target="_blank" class="page-title-action" style="float:right;" href="https://ewww.io/my-account/">' . esc_html__( 'Image credits available:', 'ewww-image-optimizer' ) . ' ' . esc_html( ewww_image_optimizer_cloud_quota() ) . '</a>';
 				}
 				// Retrieve the value of the 'bulk resume' option and set the button text for the form to use.
@@ -617,8 +608,6 @@ if ( ! class_exists( 'EWWW_Nextcellent' ) ) {
 			} else {
 				$output['new_nonce'] = '';
 			}
-			// Need this file to work with metadata.
-			require_once( WP_CONTENT_DIR . '/plugins/nextcellent-gallery-nextgen-legacy/lib/meta.php' );
 			// Find out what time we started, in microseconds.
 			$started = microtime( true );
 			// Get the list of attachments remaining from the db.
@@ -627,7 +616,7 @@ if ( ! class_exists( 'EWWW_Nextcellent' ) ) {
 			list( $fres, $tres ) = $this->ewww_ngg_optimize( $id );
 			$ewww_status         = get_transient( 'ewww_image_optimizer_cloud_status' );
 			if ( ! empty( $ewww_status ) && preg_match( '/exceeded/', $ewww_status ) ) {
-				$output['error'] = esc_html__( 'License Exceeded', 'ewww-image-optimizer' );
+				$output['error'] = '<a href="https://ewww.io/buy-credits/" target="_blank">' . esc_html__( 'License Exceeded', 'ewww-image-optimizer' ) . '</a>';
 				ewwwio_ob_clean();
 				wp_die( wp_json_encode( $output ) );
 			}
@@ -643,7 +632,7 @@ if ( ! class_exists( 'EWWW_Nextcellent' ) ) {
 			// Output how much time we spent.
 			$elapsed = microtime( true ) - $started;
 			/* Translators: %s: localized number of seconds */
-			$output['results']  .= sprintf( esc_html( _n( 'Elapsed: %s second', 'Elapsed: %s seconds', $elapsed, 'ewww-image-optimizer' ) ) . '</p>', number_format_i18n( $elapsed ) );
+			$output['results']  .= sprintf( esc_html( _n( 'Elapsed: %s second', 'Elapsed: %s seconds', $elapsed, 'ewww-image-optimizer' ) ) . '</p>', number_format_i18n( $elapsed, 2 ) );
 			$output['completed'] = 1;
 			// Store the list back in the db.
 			update_option( 'ewww_image_optimizer_bulk_ngg_attachments', $attachments, false );

@@ -89,6 +89,11 @@ if ( ! class_exists( 'EIO_Base' ) ) {
 				$this->content_dir = WP_CONTENT_DIR . '/easyio/';
 				$this->version     = EASYIO_VERSION;
 				$this->prefix      = 'easyio_';
+			} elseif ( strpos( $child_class_path, 'plugins/swis' ) ) {
+				$this->content_url = content_url( 'swis/' );
+				$this->content_dir = WP_CONTENT_DIR . '/swis/';
+				$this->version     = SWIS_PLUGIN_VERSION;
+				$this->prefix      = 'swis_';
 			} else {
 				$this->content_url = content_url( 'ewww/' );
 			}
@@ -106,6 +111,7 @@ if ( ! class_exists( 'EIO_Base' ) ) {
 			global $eio_debug;
 			global $ewwwio_temp_debug;
 			global $easyio_temp_debug;
+			global $swis_temp_debug;
 			$debug_log = $this->content_dir . 'debug.log';
 			if ( ! is_dir( $this->content_dir ) && is_writable( WP_CONTENT_DIR ) ) {
 				wp_mkdir_p( $this->content_dir );
@@ -114,6 +120,7 @@ if ( ! class_exists( 'EIO_Base' ) ) {
 			if (
 				! empty( $eio_debug ) &&
 				empty( $easyio_temp_debug ) &&
+				empty( $swis_temp_debug ) &&
 				$debug_enabled &&
 				is_dir( $this->content_dir ) &&
 				is_writable( $this->content_dir )
@@ -147,7 +154,7 @@ if ( ! class_exists( 'EIO_Base' ) ) {
 		 * @param string $message Debug information to add to the log.
 		 */
 		function debug_message( $message ) {
-			if ( ! is_string( $message ) ) {
+			if ( ! is_string( $message ) && ! is_int( $message ) && ! is_float( $message ) ) {
 				return;
 			}
 			if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -156,7 +163,8 @@ if ( ! class_exists( 'EIO_Base' ) ) {
 			}
 			global $ewwwio_temp_debug;
 			global $easyio_temp_debug;
-			if ( $easyio_temp_debug || $ewwwio_temp_debug || $this->get_option( $this->prefix . 'debug' ) ) {
+			global $swis_temp_debug;
+			if ( $swis_temp_debug || $easyio_temp_debug || $ewwwio_temp_debug || $this->get_option( $this->prefix . 'debug' ) ) {
 				$memory_limit = $this->memory_limit();
 				if ( strlen( $message ) + 4000000 + memory_get_usage( true ) <= $memory_limit ) {
 					global $eio_debug;
@@ -182,13 +190,13 @@ if ( ! class_exists( 'EIO_Base' ) ) {
 			if ( function_exists( 'ini_get' ) ) {
 				$disabled = @ini_get( 'disable_functions' );
 				if ( $debug ) {
-					easyio_debug_message( "disable_functions: $disabled" );
+					$this->debug_message( "disable_functions: $disabled" );
 				}
 			}
 			if ( extension_loaded( 'suhosin' ) && function_exists( 'ini_get' ) ) {
 				$suhosin_disabled = @ini_get( 'suhosin.executor.func.blacklist' );
 				if ( $debug ) {
-					easyio_debug_message( "suhosin_blacklist: $suhosin_disabled" );
+					$this->debug_message( "suhosin_blacklist: $suhosin_disabled" );
 				}
 				if ( ! empty( $suhosin_disabled ) ) {
 					$suhosin_disabled = explode( ',', $suhosin_disabled );
@@ -257,6 +265,7 @@ if ( ! class_exists( 'EIO_Base' ) ) {
 			if (
 				! $single &&
 				is_multisite() &&
+				defined( strtoupper( $this->prefix ) . 'PLUGIN_FILE_REL' ) &&
 				is_plugin_active_for_network( constant( strtoupper( $this->prefix ) . 'PLUGIN_FILE_REL' ) ) &&
 				! get_site_option( $this->prefix . 'allow_multisite_override' )
 			) {
@@ -310,6 +319,40 @@ if ( ! class_exists( 'EIO_Base' ) ) {
 			}
 			return false;
 		}
+
+		/**
+		 * Make sure this is really and truly a "front-end request", excluding page builders and such.
+		 *
+		 * @return bool True for front-end requests, false for admin/builder requests.
+		 */
+		function is_frontend() {
+			if ( is_admin() ) {
+				return false;
+			}
+			$uri = add_query_arg( null, null );
+			if (
+				strpos( $uri, 'cornerstone=' ) !== false ||
+				strpos( $uri, 'cornerstone-endpoint' ) !== false ||
+				strpos( $uri, 'ct_builder=' ) !== false ||
+				did_action( 'cornerstone_boot_app' ) || did_action( 'cs_before_preview_frame' ) ||
+				'/print/' === substr( $uri, -7 ) ||
+				strpos( $uri, 'elementor-preview=' ) !== false ||
+				strpos( $uri, 'et_fb=' ) !== false ||
+				strpos( $uri, 'vc_editable=' ) !== false ||
+				strpos( $uri, 'tatsu=' ) !== false ||
+				( ! empty( $_POST['action'] ) && 'tatsu_get_concepts' === sanitize_text_field( wp_unslash( $_POST['action'] ) ) ) || // phpcs:ignore WordPress.Security.NonceVerification
+				strpos( $uri, 'wp-login.php' ) !== false ||
+				is_embed() ||
+				is_feed() ||
+				is_preview() ||
+				is_customize_preview() ||
+				( defined( 'REST_REQUEST' ) && REST_REQUEST )
+			) {
+				return false;
+			}
+			return true;
+		}
+
 		/**
 		 * Check if file exists, and that it is local rather than using a protocol like http:// or phar://
 		 *
@@ -383,7 +426,7 @@ if ( ! class_exists( 'EIO_Base' ) ) {
 				// Unlimited, set to 32GB.
 				$memory_limit = '32000M';
 			}
-			if ( strpos( $memory_limit, 'G' ) ) {
+			if ( stripos( $memory_limit, 'g' ) ) {
 				$memory_limit = intval( $memory_limit ) * 1024 * 1024 * 1024;
 			} else {
 				$memory_limit = intval( $memory_limit ) * 1024 * 1024;
@@ -424,7 +467,9 @@ if ( ! class_exists( 'EIO_Base' ) ) {
 		 */
 		function url_to_path_exists( $url, $extension = '' ) {
 			$this->debug_message( '<b>' . __METHOD__ . '()</b>' );
-			if ( 0 === strpos( $url, $this->relative_home_url ) ) {
+			if ( 0 === strpos( $url, WP_CONTENT_URL ) ) {
+				$path = str_replace( WP_CONTENT_URL, WP_CONTENT_DIR, $url );
+			} elseif ( 0 === strpos( $url, $this->relative_home_url ) ) {
 				$path = str_replace( $this->relative_home_url, ABSPATH, $url );
 			} elseif ( 0 === strpos( $url, $this->home_url ) ) {
 				$path = str_replace( $this->home_url, ABSPATH, $url );
@@ -436,10 +481,6 @@ if ( ! class_exists( 'EIO_Base' ) ) {
 			if ( $this->is_file( $path_parts[0] . $extension ) ) {
 				$this->debug_message( 'local file found' );
 				return $path_parts[0];
-			}
-			if ( $this->is_file( $path . $extension ) ) {
-				$this->debug_message( 'local file found' );
-				return $path;
 			}
 			return false;
 		}
@@ -475,8 +516,8 @@ if ( ! class_exists( 'EIO_Base' ) ) {
 				return $this->site_url;
 			}
 			$this->site_url = get_home_url();
-			if ( class_exists( 'Amazon_S3_And_CloudFront' ) ) {
-				global $as3cf;
+			global $as3cf;
+			if ( class_exists( 'Amazon_S3_And_CloudFront' ) && is_object( $as3cf ) ) {
 				$s3_scheme = $as3cf->get_url_scheme();
 				$s3_region = $as3cf->get_setting( 'region' );
 				$s3_bucket = $as3cf->get_setting( 'bucket' );
@@ -484,8 +525,10 @@ if ( ! class_exists( 'EIO_Base' ) ) {
 					$s3_region = '';
 				}
 				$s3_domain = '';
-				if ( ! empty( $s3_bucket ) && ! is_wp_error( $s3_bucket ) ) {
+				if ( ! empty( $s3_bucket ) && ! is_wp_error( $s3_bucket ) && method_exists( $as3cf, 'get_provider' ) ) {
 					$s3_domain = $as3cf->get_provider()->get_url_domain( $s3_bucket, $s3_region, null, array(), true );
+				} elseif ( ! empty( $s3_bucket ) && ! is_wp_error( $s3_bucket ) && method_exists( $as3cf, 'get_storage_provider' ) ) {
+					$s3_domain = $as3cf->get_storage_provider()->get_url_domain( $s3_bucket, $s3_region );
 				}
 				if ( ! empty( $s3_domain ) && $as3cf->get_setting( 'serve-from-s3' ) ) {
 					$this->s3_active = true;

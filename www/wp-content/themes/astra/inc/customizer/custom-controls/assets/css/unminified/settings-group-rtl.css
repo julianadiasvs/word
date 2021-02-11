@@ -208,3 +208,93 @@
 .ast-field-settings-modal .customize-control {
   margin-top: 10px;
 }
+
+/**
+ * Popover Tab Structure.
+ */
+.astra-popover-tabs {
+  position: relative;
+}
+
+.astra-popover-tabs .components-tab-panel__tabs {
+  display: flex;
+  padding: 15px;
+  border: none;
+}
+
+.astra-popover-tabs .components-tab-panel__tabs .components-tab-panel__tabs-item {
+  color: #555d66;
+  font-size: 13px;
+  font-weight: 400;
+  height: 35px;
+  transition: unset;
+  padding: 2px 4px;
+  text-decoration: none;
+  border-radius: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.astra-popover-tabs .components-tab-panel__tabs .components-tab-panel__tabs-item:active {
+  box-shadow: unset;
+}
+
+.astra-popover-tabs .components-tab-panel__tabs .components-tab-panel__tabs-item:focus {
+  box-shadow: unset;
+}
+
+.astra-popover-tabs [ID*="-image-view"] {
+  padding: 15px;
+  border: none;
+}
+
+.astra-popover-tabs .components-button {
+  align-items: center;
+  flex: 1 1 auto;
+  justify-content: center;
+  margin: 0 0;
+  padding: 0;
+  border: 1px solid #ccc;
+  transition: background-color 140ms linear;
+}
+
+.astra-popover-tabs .components-tab-panel__tabs-item:first-child {
+  border-radius: 0px 3px 3px 0px;
+}
+
+.astra-popover-tabs .components-tab-panel__tabs-item:last-child {
+  border-radius: 3px 0px 0px 3px;
+}
+
+.astra-popover-tabs .components-tab-panel__tabs-item:not(:first-child) {
+  border-right-width: 0;
+}
+
+.astra-popover-tabs .components-tab-panel__tabs-item.active-tab {
+  background-color: #0185BA;
+  color: #ffffff;
+}
+
+.astra-popover-tabs .components-tab-panel__tabs button.components-tab-panel__tabs-item.active-tab:not(.is-primary):not(.is-tertiary):not(.is-link):hover {
+  color: #fff;
+}
+
+.components-popover.astra-popover-color .components-popover__content {
+  min-width: 310px;
+  max-height: 60vh;
+  padding: 0;
+  -webkit-box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+}
+
+.ast-field-settings-modal .components-popover.astra-popover-color .components-popover__content {
+  min-width: 320px;
+  min-height: 325px;
+}
+
+.ast-field-settings-modal .background-wrapper .components-popover.astra-popover-color .components-popover__content {
+  min-height: 385px;
+}
+
+.ast-field-settings-modal .components-angle-picker-control .components-flex__block {
+  min-width: auto;
+}

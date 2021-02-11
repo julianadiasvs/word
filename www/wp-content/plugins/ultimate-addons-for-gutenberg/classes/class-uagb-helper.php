@@ -50,6 +50,14 @@ if ( ! class_exists( 'UAGB_Helper' ) ) {
 		public static $uag_flag = false;
 
 		/**
+		 * UAG FAQ Layout Flag
+		 *
+		 * @since 1.18.1
+		 * @var uag_faq_layout
+		 */
+		public static $uag_faq_layout = false;
+
+		/**
 		 * UAG File Generation Flag
 		 *
 		 * @since 1.14.0
@@ -129,6 +137,7 @@ if ( ! class_exists( 'UAGB_Helper' ) ) {
 			if ( ! isset( self::$instance ) ) {
 				self::$instance = new self();
 			}
+
 			return self::$instance;
 		}
 
@@ -197,7 +206,13 @@ if ( ! class_exists( 'UAGB_Helper' ) ) {
 
 				foreach ( $js_assets as $asset_handle => $val ) {
 					// Scripts.
-					wp_enqueue_script( $val );
+					if ( 'uagb-faq-js' === $val ) {
+						if ( self::$uag_faq_layout ) {
+							wp_enqueue_script( 'uagb-faq-js' );
+						}
+					} else {
+						wp_enqueue_script( $val );
+					}
 				}
 
 				foreach ( $css_assets as $asset_handle => $val ) {
@@ -412,6 +427,17 @@ if ( ! class_exists( 'UAGB_Helper' ) ) {
 			}
 
 			switch ( $name ) {
+				case 'uagb/review':
+					$css += UAGB_Block_Helper::get_review_css( $blockattr, $block_id );
+					UAGB_Block_JS::blocks_review_gfont( $blockattr );
+					break;
+
+				case 'uagb/inline-notice':
+					$css += UAGB_Block_Helper::get_inline_notice_css( $blockattr, $block_id );
+					UAGB_Block_JS::blocks_inline_notice_gfont( $blockattr );
+					$js .= UAGB_Block_JS::get_inline_notice_js( $blockattr, $block_id );
+					break;
+
 				case 'uagb/how-to':
 					$css += UAGB_Block_Helper::get_how_to_css( $blockattr, $block_id );
 					UAGB_Block_JS::blocks_how_to_gfont( $blockattr );
@@ -543,7 +569,25 @@ if ( ! class_exists( 'UAGB_Helper' ) ) {
 
 				case 'uagb/faq':
 					$css += UAGB_Block_Helper::get_faq_css( $blockattr, $block_id );
+					if ( ! isset( $blockattr['layout'] ) ) {
+						self::$uag_faq_layout = true;
+					}
 					UAGB_Block_JS::blocks_faq_gfont( $blockattr );
+					break;
+
+				case 'uagb/wp-search':
+					$css += UAGB_Block_Helper::get_wp_search_css( $blockattr, $block_id );
+					UAGB_Block_JS::blocks_wp_search_gfont( $blockattr );
+					break;
+
+				case 'uagb/taxonomy-list':
+					$css += UAGB_Block_Helper::get_taxonomy_list_css( $blockattr, $block_id );
+					UAGB_Block_JS::blocks_taxonomy_list_gfont( $blockattr );
+					break;
+
+				case 'uagb/lottie':
+					$css += UAGB_Block_Helper::get_lottie_css( $blockattr, $block_id );
+					$js  .= UAGB_Block_JS::get_lottie_js( $blockattr, $block_id );
 					break;
 
 				default:
@@ -901,6 +945,19 @@ if ( ! class_exists( 'UAGB_Helper' ) ) {
 		}
 
 		/**
+		 *  Check MIME Type
+		 *
+		 *  @since 1.20.0
+		 */
+		public static function get_mime_type() {
+
+			$allowed_types = get_allowed_mime_types();
+
+			return ( array_key_exists( 'json', $allowed_types ) ) ? true : false;
+
+		}
+
+		/**
 		 * Returns Query.
 		 *
 		 * @param array  $attributes The block attributes.
@@ -917,7 +974,12 @@ if ( ! class_exists( 'UAGB_Helper' ) ) {
 				'order'               => ( isset( $attributes['order'] ) ) ? $attributes['order'] : 'desc',
 				'orderby'             => ( isset( $attributes['orderBy'] ) ) ? $attributes['orderBy'] : 'date',
 				'ignore_sticky_posts' => 1,
+				'paged'               => 1,
 			);
+
+			if ( $attributes['excludeCurrentPost'] ) {
+				$query_args['post__not_in'] = array( get_the_ID() );
+			}
 
 			if ( isset( $attributes['categories'] ) && '' !== $attributes['categories'] ) {
 				$query_args['tax_query'][] = array(
@@ -928,7 +990,7 @@ if ( ! class_exists( 'UAGB_Helper' ) ) {
 				);
 			}
 
-			if ( isset( $attributes['postPagination'] ) && true === $attributes['postPagination'] ) {
+			if ( 'grid' === $block_type && isset( $attributes['postPagination'] ) && true === $attributes['postPagination'] ) {
 
 				if ( get_query_var( 'paged' ) ) {
 
@@ -945,6 +1007,12 @@ if ( ! class_exists( 'UAGB_Helper' ) ) {
 				}
 				$query_args['posts_per_page'] = $attributes['postsToShow'];
 				$query_args['paged']          = $paged;
+
+			}
+
+			if ( 'masonry' === $block_type && isset( $attributes['paginationType'] ) && 'none' !== $attributes['paginationType'] && isset( $attributes['paged'] ) ) {
+
+				$query_args['paged'] = $attributes['paged'];
 
 			}
 
@@ -1066,19 +1134,136 @@ if ( ! class_exists( 'UAGB_Helper' ) ) {
 					if ( ! empty( $terms ) ) {
 						foreach ( $terms as $t_index => $t_obj ) {
 							$related_tax[] = array(
-								'id'   => $t_obj->term_id,
-								'name' => $t_obj->name,
+								'id'    => $t_obj->term_id,
+								'name'  => $t_obj->name,
+								'child' => get_term_children( $t_obj->term_id, $tax_slug ),
 							);
 						}
-
 						$return_array[ $post_type ]['terms'][ $tax_slug ] = $related_tax;
 					}
 				}
 
 				$return_array[ $post_type ]['taxonomy'] = $data;
+
 			}
 
 			return apply_filters( 'uagb_post_loop_taxonomies', $return_array );
+		}
+
+		/**
+		 * Get all taxonomies list.
+		 *
+		 * @since 1.18.0
+		 * @access public
+		 */
+		public static function get_taxonomy_list() {
+
+			$post_types = self::get_post_types();
+
+			$return_array = array();
+
+			foreach ( $post_types as $key => $value ) {
+				$post_type = $value['value'];
+
+				$taxonomies = get_object_taxonomies( $post_type, 'objects' );
+				$data       = array();
+
+				$get_singular_name = get_post_type_object( $post_type );
+				foreach ( $taxonomies as $tax_slug => $tax ) {
+					if ( ! $tax->public || ! $tax->show_ui || ! $tax->show_in_rest ) {
+						continue;
+					}
+
+					$data[ $tax_slug ] = $tax;
+
+					$terms = get_terms( $tax_slug );
+
+					$related_tax_terms = array();
+
+					if ( ! empty( $terms ) ) {
+						foreach ( $terms as $t_index => $t_obj ) {
+							$related_tax_terms[] = array(
+								'id'            => $t_obj->term_id,
+								'name'          => $t_obj->name,
+								'count'         => $t_obj->count,
+								'link'          => get_term_link( $t_obj->term_id ),
+								'singular_name' => $get_singular_name->labels->singular_name,
+							);
+						}
+
+						$return_array[ $post_type ]['terms'][ $tax_slug ] = $related_tax_terms;
+					}
+
+					$newcategoriesList = get_terms(
+						$tax_slug,
+						array(
+							'hide_empty' => true,
+							'parent'     => 0,
+						)
+					);
+
+					$related_tax = array();
+
+					if ( ! empty( $newcategoriesList ) ) {
+						foreach ( $newcategoriesList as $t_index => $t_obj ) {
+							$child_arg     = array(
+								'hide_empty' => true,
+								'parent'     => $t_obj->term_id,
+							);
+							$child_cat     = get_terms( $tax_slug, $child_arg );
+							$child_cat_arr = $child_cat ? $child_cat : null;
+							$related_tax[] = array(
+								'id'            => $t_obj->term_id,
+								'name'          => $t_obj->name,
+								'count'         => $t_obj->count,
+								'link'          => get_term_link( $t_obj->term_id ),
+								'singular_name' => $get_singular_name->labels->singular_name,
+								'children'      => $child_cat_arr,
+							);
+
+						}
+
+						$return_array[ $post_type ]['without_empty_taxonomy'][ $tax_slug ] = $related_tax;
+
+					}
+
+					$newcategoriesList_empty_tax = get_terms(
+						$tax_slug,
+						array(
+							'hide_empty' => false,
+							'parent'     => 0,
+						)
+					);
+
+					$related_tax_empty_tax = array();
+
+					if ( ! empty( $newcategoriesList_empty_tax ) ) {
+						foreach ( $newcategoriesList_empty_tax as $t_index => $t_obj ) {
+							$child_arg_empty_tax     = array(
+								'hide_empty' => false,
+								'parent'     => $t_obj->term_id,
+							);
+							$child_cat_empty_tax     = get_terms( $tax_slug, $child_arg_empty_tax );
+							$child_cat_empty_tax_arr = $child_cat_empty_tax ? $child_cat_empty_tax : null;
+							$related_tax_empty_tax[] = array(
+								'id'            => $t_obj->term_id,
+								'name'          => $t_obj->name,
+								'count'         => $t_obj->count,
+								'link'          => get_term_link( $t_obj->term_id ),
+								'singular_name' => $get_singular_name->labels->singular_name,
+								'children'      => $child_cat_empty_tax_arr,
+							);
+						}
+
+						$return_array[ $post_type ]['with_empty_taxonomy'][ $tax_slug ] = $related_tax_empty_tax;
+
+					}
+				}
+				$return_array[ $post_type ]['taxonomy'] = $data;
+
+			}
+
+			return apply_filters( 'uagb_taxonomies_list', $return_array );
 		}
 
 		/**
@@ -1151,8 +1336,6 @@ if ( ! class_exists( 'UAGB_Helper' ) ) {
 				$wp_info['baseurl'] = str_ireplace( 'http://', 'https://', $wp_info['baseurl'] );
 			}
 
-			$wp_info = wp_upload_dir( null, false );
-
 			$dir_name = basename( UAGB_DIR );
 			if ( 'ultimate-addons-for-gutenberg' === $dir_name ) {
 				$dir_name = 'uag-plugin';
@@ -1174,6 +1357,35 @@ if ( ! class_exists( 'UAGB_Helper' ) ) {
 			}
 
 			return apply_filters( 'uag_get_upload_dir', $dir_info );
+		}
+
+		/**
+		 * Deletes the upload dir.
+		 *
+		 * @since 1.18.0
+		 * @return array
+		 */
+		public function delete_upload_dir() {
+
+			$wp_info = wp_upload_dir( null, false );
+
+			$dir_name = basename( UAGB_DIR );
+			if ( 'ultimate-addons-for-gutenberg' === $dir_name ) {
+				$dir_name = 'uag-plugin';
+			}
+
+			// Build the paths.
+			$dir_info = array(
+				'path' => trailingslashit( trailingslashit( $wp_info['basedir'] ) . $dir_name ),
+			);
+
+			// Check the upload dir if it doesn't exist or not.
+			if ( file_exists( $dir_info['path'] . 'index.html' ) ) {
+				// Remove the directory.
+				$wp_filesystem = self::get_instance()->get_filesystem();
+				return $wp_filesystem->rmdir( $dir_info['path'], true );
+			}
+			return false;
 		}
 
 		/**
@@ -1237,6 +1449,12 @@ if ( ! class_exists( 'UAGB_Helper' ) ) {
 		 * @return boolean true/false
 		 */
 		public static function create_file( $assets_info, $style_data, $timestamp, $type ) {
+
+			$post_id = get_the_ID();
+			if ( ! $post_id ) {
+				return false;
+			}
+
 			$file_system = self::get_instance()->get_filesystem();
 
 			// Create a new file.
@@ -1244,7 +1462,7 @@ if ( ! class_exists( 'UAGB_Helper' ) ) {
 
 			if ( $result ) {
 				// Update meta with current timestamp.
-				update_post_meta( get_the_ID(), 'uag_style_timestamp-' . $type, $timestamp );
+				update_post_meta( $post_id, 'uag_style_timestamp-' . $type, $timestamp );
 			}
 
 			return $result;
@@ -1259,7 +1477,12 @@ if ( ! class_exists( 'UAGB_Helper' ) ) {
 		 */
 		public static function file_write( $style_data, $type ) {
 
-			$post_timestamp = get_post_meta( get_the_ID(), 'uag_style_timestamp-' . $type, true );
+			$post_id = get_the_ID();
+			if ( ! $post_id ) {
+				return false;
+			}
+
+			$post_timestamp = get_post_meta( $post_id, 'uag_style_timestamp-' . $type, true );
 			$var            = ( 'css' === $type ) ? 'css' : 'js';
 			$date           = new DateTime();
 			$new_timestamp  = $date->getTimestamp();

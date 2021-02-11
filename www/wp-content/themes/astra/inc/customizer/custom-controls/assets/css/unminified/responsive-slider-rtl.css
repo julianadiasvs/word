@@ -1,6 +1,5 @@
 .customize-control-ast-responsive-slider .wrapper {
   position: relative;
-  height: 100%;
 }
 
 .customize-control-ast-responsive-slider .input-field-wrapper {
@@ -94,7 +93,7 @@
 .customize-control-ast-responsive-slider .ast-responsive-slider-reset {
   color: rgba(0, 0, 0, 0.2);
   position: absolute;
-  top: -28px;
+  top: -34px;
   left: 1.5em;
   display: inline-block;
   -webkit-transition: color 0.5s ease-in;

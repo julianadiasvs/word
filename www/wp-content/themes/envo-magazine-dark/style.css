@@ -1,0 +1,106 @@
+/*
+ Theme Name: Envo Magazine Dark
+ Theme URI: https://envothemes.com/free-envo-magazine-dark/
+ Description: Envo Magazine Dark is a fast, clean, and modern-looking responsive magazine WordPress theme. The theme is fully widgetized, so users can manage the content by using easy to use widgets. Envo Magazine Dark is suitable for dynamic news, newspapers, magazine, publishers, blogs, editors, online and gaming magazines, newsportals, and any creative website. It is SEO friendly, WPML, translation and RTL ready. DEMO: https://envothemes.com/envo-magazine-dark/
+ Author: EnvoThemes
+ Author URI: https://envothemes.com/
+ Template: envo-magazine
+ Version: 1.0.3
+ Requires PHP: 5.4
+ Tested up to: 5.6
+ License: GNU General Public License v3
+ License URI: http://www.gnu.org/licenses/gpl.html
+ Tags: one-column, two-columns, full-width-template, right-sidebar, custom-background, custom-menu, custom-header, editor-style, featured-images, translation-ready, custom-logo, threaded-comments, footer-widgets, rtl-language-support, theme-options, news, blog
+ Text Domain: envo-magazine-dark
+*/
+
+.site-header, body, .main-container, .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .navbar-nav li .dropdown-menu, .nav .open > a {
+    background-color: #222;
+}
+#site-navigation, #site-navigation.shrink, #searchsubmit, .menu-container, .navbar-nav a {
+    background-color: #000;
+}
+body, .news-item h2 a, .navbar-default .navbar-nav > li > a, .navbar-default .navbar-nav > li > a:hover, h1, h2, h3, h4, h5, h6, .author-meta a, .tags-links a, .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .dropdown-menu > li > a {
+    color: #fff;
+}
+a, a:active, a:hover, a:focus, #site-navigation, nav a, .navbar-default .navbar-nav > li > a:focus, .navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:focus, .navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus {
+    color: #f27300;
+}
+.comments-meta:before, .cat-links a:before, .widget-title h3:before, li.home-icon.front_page_on a, li.home-icon.front_page_on a:hover, .nav > li > a:before, li.home-icon.front_page_on:before, .nav > li.active > a:after, .current-page-parent:after, nav.navigation.pagination .current:before, .dropdown-menu > .active > a, .dropdown-menu > .active > a:hover, .dropdown-menu > .active > a:focus {
+    background-color: #f27300;
+}
+nav.navigation.pagination .current:before {
+    border-color: #f27300;
+}
+.section-title:after, .widget-title:after, .open-panel span {
+    background-color: #fff;
+}
+.site-branding-logo {
+    float: none;
+}
+.split-slider {
+    border-color: #222;
+} 
+.split-images .news-thumb img {
+    border: none;
+    padding: 0;
+}
+.posted-date:before, .cat-links a:before, .cat-links span:before, .tags-links span:before, .comments-meta:before, .widget-title h3:before {
+    -webkit-transform: skewX(0);
+    -ms-transform: skewX(0);
+    transform: skewX(0);
+}
+.posted-date:before {
+    background-color: #ffffff;
+}
+.cat-links span.space-right, .tags-links span.space-right {
+    color: #fff;
+}
+.posted-date, .cat-links a, .cat-links span, .tags-links span {
+    font-style: normal;
+    color: #000;
+    padding: 6px 15px;
+}
+.comments-meta {
+        font-style: normal;
+    top: 0;
+    left: -10px;
+}
+.recent-news-section .news-item img, .popular-news-section .news-item img, .news-thumb img, .prev-next-links img {
+    padding: 2px;
+    border: solid 1px #fff;
+}
+.widget-title h3 {
+    font-style: normal;
+        left: 0;
+}
+.section-title a:after {
+    left: 0px;
+    right: 0px;
+    bottom: 4px;
+    background-color: #fff;
+    -webkit-transform: skewX(0);
+    -ms-transform: skewX(0);
+    transform: skewX(0);
+}
+.section-title a {
+    padding: 5px 14px;
+    font-style: normal;
+    left: 0;
+    margin-top: 20px;
+    font-size: 12px;
+}
+nav.navigation.pagination .nav-links a:before, nav.navigation.pagination .current:before {
+    -webkit-transform: skewX(0);
+    -ms-transform: skewX(0);
+    transform: skewX(0);
+}
+article {
+    clear: none;
+}
+article.blog-block.col-md-6:nth-of-type(2n-1), article.blog-block.col-md-4:nth-of-type(3n-2) {
+    clear: left;
+}
+.single-entry-summary a, .comment-body a, .textwidget a, .post-excerpt a, .entry-content a, .taxonomy-description a {
+    text-decoration: underline;
+}

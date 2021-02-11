@@ -331,7 +331,9 @@ p.demo_store a,
 .woocommerce .below-header-section-1 .ast-site-header-cart .widget_shopping_cart,
 .header-main-layout-3 .main-header-bar-wrap .ast-site-header-cart .widget_shopping_cart,
 .ast-above-header-section-1 .ast-site-header-cart .widget_shopping_cart,
-.below-header-section-1 .ast-site-header-cart .widget_shopping_cart {
+.below-header-section-1 .ast-site-header-cart .widget_shopping_cart,
+.woocommerce .site-header-section-left .ast-site-header-cart .widget_shopping_cart,
+.site-header-section-left .ast-site-header-cart .widget_shopping_cart {
   right: auto;
   left: 0;
   transition: left 0s;
@@ -347,7 +349,11 @@ p.demo_store a,
 .ast-above-header-section-1 .ast-site-header-cart .widget_shopping_cart:before,
 .ast-above-header-section-1 .ast-site-header-cart .widget_shopping_cart:after,
 .below-header-section-1 .ast-site-header-cart .widget_shopping_cart:before,
-.below-header-section-1 .ast-site-header-cart .widget_shopping_cart:after {
+.below-header-section-1 .ast-site-header-cart .widget_shopping_cart:after,
+.woocommerce .site-header-section-left .ast-site-header-cart .widget_shopping_cart:before,
+.woocommerce .site-header-section-left .ast-site-header-cart .widget_shopping_cart:after,
+.site-header-section-left .ast-site-header-cart .widget_shopping_cart:before,
+.site-header-section-left .ast-site-header-cart .widget_shopping_cart:after {
   left: 15px;
   right: auto;
 }
@@ -357,7 +363,9 @@ p.demo_store a,
 .woocommerce .below-header-section-1 .ast-site-header-cart .widget_shopping_cart:before,
 .header-main-layout-3 .main-header-bar-wrap .ast-site-header-cart .widget_shopping_cart:before,
 .ast-above-header-section-1 .ast-site-header-cart .widget_shopping_cart:before,
-.below-header-section-1 .ast-site-header-cart .widget_shopping_cart:before {
+.below-header-section-1 .ast-site-header-cart .widget_shopping_cart:before,
+.woocommerce .site-header-section-left .ast-site-header-cart .widget_shopping_cart:before,
+.site-header-section-left .ast-site-header-cart .widget_shopping_cart:before {
   left: 11px;
   right: auto;
 }
@@ -4609,4 +4617,15 @@ button.pswp__button--zoom:hover {
  */
 .widget_product_categories .children {
   padding-left: 20px;
+}
+
+/**
+ * Firefox browser compatibility for WooCommerce.
+ *
+ * 1. Product Search widget button misalign issue.
+ */
+@supports (-moz-appearance: none) {
+  .sidebar-main .widget_product_search .search-field {
+    width: 60%;
+  }
 }

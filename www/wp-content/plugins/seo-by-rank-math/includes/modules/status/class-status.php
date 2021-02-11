@@ -48,13 +48,6 @@ class Status extends Base {
 	}
 
 	/**
-	 * Load the REST API endpoints.
-	 */
-	public function init_rest_api() {
-		\error_log( 'coming' );
-	}
-
-	/**
 	 * Register admin page.
 	 */
 	public function register_admin_page() {
@@ -64,7 +57,7 @@ class Status extends Base {
 			'rank-math-status',
 			esc_html__( 'Status & Tools', 'rank-math' ),
 			[
-				'position' => 12,
+				'position' => 70,
 				'parent'   => 'rank-math',
 				'classes'  => [ 'rank-math-page' ],
 				'render'   => $this->directory . '/views/main.php',
@@ -88,16 +81,16 @@ class Status extends Base {
 	public function display_nav() {
 		$default_tab = $this->do_filter( 'tools/default_tab', 'status' );
 		?>
-		<h2 class="nav-tab-wrapper">
+		<div class="rank-math-tab-nav" role="tablist" aria-orientation="horizontal">
 			<?php
 			foreach ( $this->get_views() as $id => $link ) :
 				if ( isset( $link['cap'] ) && ! current_user_can( $link['cap'] ) ) {
 					continue;
 				}
 				?>
-			<a class="nav-tab<?php echo Param::get( 'view', $default_tab ) === sanitize_html_class( $id ) ? ' nav-tab-active' : ''; ?>" href="<?php echo esc_url( Helper::get_admin_url( $link['url'], $link['args'] ) ); ?>" title="<?php echo esc_attr( $link['title'] ); ?>"><?php echo esc_html( $link['title'] ); ?></a>
+			<a class="rank-math-tab<?php echo Param::get( 'view', $default_tab ) === sanitize_html_class( $id ) ? ' is-active' : ''; ?>" href="<?php echo esc_url( Helper::get_admin_url( $link['url'], $link['args'] ) ); ?>" title="<?php echo esc_attr( $link['title'] ); ?>"><?php echo esc_html( $link['title'] ); ?></a>
 			<?php endforeach; ?>
-		</h2>
+		</div>
 		<?php
 	}
 
@@ -108,7 +101,7 @@ class Status extends Base {
 	 */
 	public function display_body( $view ) {
 		$hash = $this->get_views();
-		$hash = new $hash[ $view ]['class'];
+		$hash = new $hash[ $view ]['class']();
 		$hash->display();
 	}
 

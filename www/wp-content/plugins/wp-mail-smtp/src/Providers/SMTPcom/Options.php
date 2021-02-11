@@ -23,6 +23,7 @@ class Options extends OptionsAbstract {
 	 * Options constructor.
 	 *
 	 * @since 2.0.0
+	 * @since 2.3.0 Added supports parameter.
 	 */
 	public function __construct() {
 
@@ -38,7 +39,7 @@ class Options extends OptionsAbstract {
 
 		$description  = sprintf(
 			wp_kses( /* translators: %s - URL to smtp.com site. */
-				__( '<strong><a href="%s" target="_blank" rel="noopener noreferrer">SMTP.com</a> is a recommended transactional email service.</strong> With a 22 years of track record of reliable email delivery, SMTP.com is a premiere solution for WordPress developers and website owners. SMTP.com has been around for almost as long as email itself. Their super simple integration interface makes it easy to get started while a powerful API and robust documentation make it a preferred choice among developers. Start a 30-day free trial with 50,000 emails.', 'wp-mail-smtp' ),
+				__( '<strong><a href="%s" target="_blank" rel="noopener noreferrer">SMTP.com</a> is a recommended transactional email service.</strong> With a 22 year track record of reliable email delivery, SMTP.com is a premiere solution for WordPress developers and website owners. SMTP.com has been around for almost as long as email itself. Their super simple integration interface makes it easy to get started, while a powerful API and robust documentation make it a preferred choice among developers.<br><br>Start a 30-day free trial with 50,000 emails.', 'wp-mail-smtp' ),
 				$allowed_kses_html
 			),
 			'https://wpmailsmtp.com/go/smtp/'
@@ -61,13 +62,20 @@ class Options extends OptionsAbstract {
 		}
 
 		parent::__construct(
-			array(
+			[
 				'logo_url'    => wp_mail_smtp()->assets_url . '/images/providers/smtp-com.svg',
 				'slug'        => self::SLUG,
 				'title'       => esc_html__( 'SMTP.com', 'wp-mail-smtp' ),
 				'description' => $description,
 				'recommended' => true,
-			)
+				'supports'    => [
+					'from_email'       => true,
+					'from_name'        => true,
+					'return_path'      => false,
+					'from_email_force' => true,
+					'from_name_force'  => true,
+				],
+			]
 		);
 	}
 

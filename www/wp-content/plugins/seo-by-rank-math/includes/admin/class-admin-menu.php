@@ -58,7 +58,7 @@ class Admin_Menu implements Runner {
 			'rank-math',
 			esc_html__( 'Rank Math', 'rank-math' ),
 			[
-				'position'   => 80,
+				'position'   => 50,
 				'capability' => 'level_1',
 				'icon'       => 'data:image/svg+xml;base64,' . \base64_encode( '<svg viewBox="0 0 462.03 462.03" xmlns="http://www.w3.org/2000/svg" width="20"><g fill="#fff"><path d="m462 234.84-76.17 3.43 13.43 21-127 81.18-126-52.93-146.26 60.97 10.14 24.34 136.1-56.71 128.57 54 138.69-88.61 13.43 21z"/><path d="m54.1 312.78 92.18-38.41 4.49 1.89v-54.58h-96.67zm210.9-223.57v235.05l7.26 3 89.43-57.05v-181zm-105.44 190.79 96.67 40.62v-165.19h-96.67z"/></g></svg>' ),
 				'render'     => Admin_Helper::get_view( 'dashboard' ),
@@ -71,23 +71,6 @@ class Admin_Menu implements Runner {
 					],
 				],
 				'is_network' => is_network_admin() && Helper::is_plugin_active_for_network(),
-			]
-		);
-
-		// Help & Support.
-		new Page(
-			'rank-math-help',
-			esc_html__( 'Help &amp; Support', 'rank-math' ),
-			[
-				'position'   => 99,
-				'parent'     => 'rank-math',
-				'capability' => 'level_1',
-				'classes'    => [ 'rank-math-page' ],
-				'render'     => Admin_Helper::get_view( 'help-manager' ),
-				'assets'     => [
-					'styles'  => [ 'rank-math-common' => '' ],
-					'scripts' => [ 'rank-math-common' => '' ],
-				],
 			]
 		);
 	}
@@ -113,6 +96,8 @@ class Admin_Menu implements Runner {
 			return;
 		}
 
+		$submenu['rank-math'][] = [ esc_html__( 'Help &amp; Support', 'rank-math' ) . '<i class="dashicons dashicons-external" style="font-size:12px;vertical-align:-2px;height:10px;"></i>', 'level_1', 'https://rankmath.com/kb/wordpress/seo-suite/?utm_source=Plugin&utm_campaign=WP' ];
+
 		// Store ID of first_menu item so we can use it in the Admin menu item.
 		set_transient( 'rank_math_first_submenu_id', array_values( $submenu['rank-math'] )[0][2] );
 	}
@@ -122,6 +107,12 @@ class Admin_Menu implements Runner {
 	 */
 	public function icon_css() {
 		?>
+		<script type="text/javascript">
+			// Open RM KB menu link in the new tab.
+			jQuery( document ).ready( function( $ ) {
+				$( "ul#adminmenu a[href$='https://rankmath.com/kb/wordpress/seo-suite/?utm_source=Plugin&utm_campaign=WP']" ).attr( 'target', '_blank' );
+			} );
+		</script>
 		<style>
 			#wp-admin-bar-rank-math .rank-math-icon {
 				display: inline-block;
@@ -146,7 +137,7 @@ class Admin_Menu implements Runner {
 	 * Check for deactivation.
 	 */
 	private function maybe_deregister() {
-		if ( ! Helper::has_cap( 'general' ) ) {
+		if ( ! Helper::has_cap( 'general' ) || 'deregister' !== Param::post( 'registration-action' ) ) {
 			return;
 		}
 
@@ -155,8 +146,6 @@ class Admin_Menu implements Runner {
 			return;
 		}
 
-		if ( 'deregister' === Param::post( 'registration-action' ) ) {
-			Admin_Helper::deregister_user();
-		}
+		Admin_Helper::deregister_user();
 	}
 }

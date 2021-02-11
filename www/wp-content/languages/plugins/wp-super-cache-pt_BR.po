@@ -2,12 +2,12 @@
 # This file is distributed under the same license as the Plugins - WP Super Cache - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-04-13 09:08:01+0000\n"
+"PO-Revision-Date: 2020-10-03 14:02:28+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: GlotPress/2.4.0-alpha\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: GlotPress/3.0.0-alpha.2\n"
 "Language: pt_BR\n"
 "Project-Id-Version: Plugins - WP Super Cache - Stable (latest release)\n"
 
@@ -1948,3 +1948,7 @@ msgstr "Você pode definir diferentes URLs CDN para cada site em uma rede multi 
 #: ossdl-cdn.php:318
 msgid "<strong style=\"color: red\">WARNING:</strong> Test some static urls e.g., %s  to ensure your CDN service is fully working before saving changes."
 msgstr "<strong style=\"color: red\">ATENÇÃO:</strong> Teste alguns URLs estáticos, por exemplo, %s para garantir que seu serviço de CDN está em pleno funcionamento antes de salvar as alterações."
+
+#: ossdl-cdn.php:317
+msgid "Your website probably uses lots of static files. Image, Javascript and CSS files are usually static files that could just as easily be served from another site or CDN. Therefore, this plugin replaces any links in the <code>wp-content</code> and <code>wp-includes</code> directories (except for PHP files) on your site with the URL you provide below. That way you can either copy all the static content to a dedicated host or mirror the files to a CDN by <a href=\"https://www.google.com/search?q=cdn+origin+pull\" target=\"_blank\">origin pull</a>."
+msgstr "Seu site provavelmente usa muitos arquivos estáticos. Os arquivos de imagem, JavaScript e CSS geralmente são arquivos estáticos que podem ser facilmente servidos por outro site ou CDN. Portanto, este plugin substitui quaisquer links nos diretórios <code>wp-content</code> e <code>wp-includes</code> (exceto para arquivos PHP) em seu site pelo URL que você fornecer abaixo. Dessa forma, você pode copiar todo o conteúdo estático para um host dedicado ou espelhar os arquivos para um CDN através de <a href=\"https://knowledgelayer.softlayer.com/faq/how-does-origin-pull-work\" target=\"_blank\">origin pull</a>."

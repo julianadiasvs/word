@@ -121,6 +121,7 @@ class WPForms_Process {
 	 * Process the form entry.
 	 *
 	 * @since 1.0.0
+	 * @since 1.6.4 Added hCaptcha support.
 	 *
 	 * @param array $entry Form submission raw data ($_POST).
 	 */
@@ -130,7 +131,6 @@ class WPForms_Process {
 		$this->fields = array();
 		$form_id      = absint( $entry['id'] );
 		$form         = wpforms()->form->get( $form_id );
-		$honeypot     = false;
 
 		// Validate form is real and active (published).
 		if ( ! $form || 'publish' !== $form->post_status ) {
@@ -158,33 +158,83 @@ class WPForms_Process {
 			do_action( "wpforms_process_validate_{$field_type}", $field_id, $field_submit, $this->form_data );
 		}
 
-		// reCAPTCHA check.
-		$site_key   = wpforms_setting( 'recaptcha-site-key', '' );
-		$secret_key = wpforms_setting( 'recaptcha-secret-key', '' );
-		$type       = wpforms_setting( 'recaptcha-type', 'v2' );
+		// CAPTCHA check.
+		$captcha_settings = wpforms_get_captcha_settings();
 		if (
-			! empty( $site_key ) &&
-			! empty( $secret_key ) &&
+			! empty( $captcha_settings['provider'] ) &&
+			'none' !== $captcha_settings['provider'] &&
+			! empty( $captcha_settings['site_key'] ) &&
+			! empty( $captcha_settings['secret_key'] ) &&
 			isset( $this->form_data['settings']['recaptcha'] ) &&
 			'1' == $this->form_data['settings']['recaptcha'] &&
-			! isset( $_POST['__amp_form_verify'] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing -- No need to check reCAPTCHA until form is submitted.
+			! isset( $_POST['__amp_form_verify'] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing -- No need to check CAPTCHA until form is submitted.
 			&&
-			( 'v3' === $type || ! wpforms_is_amp() ) // AMP requires v3.
+			( ( 'recaptcha' === $captcha_settings['provider'] && 'v3' === $captcha_settings['recaptcha_type'] ) || ! wpforms_is_amp() ) // AMP requires Google reCAPTCHA v3.
 		) {
-			$error = wpforms_setting( 'recaptcha-fail-msg', esc_html__( 'Google reCAPTCHA verification failed, please try again later.', 'wpforms-lite' ) );
-			$token = ! empty( $_POST['g-recaptcha-response'] ) ? $_POST['g-recaptcha-response'] : false;
 
-			if ( 'v3' === $type ) {
-				$token = ! empty( $_POST['wpforms']['recaptcha'] ) ? $_POST['wpforms']['recaptcha'] : false;
+			if ( 'hcaptcha' === $captcha_settings['provider'] ) {
+				$verify_url_raw   = 'https://hcaptcha.com/siteverify';
+				$captcha_provider = esc_html__( 'hCaptcha', 'wpforms-lite' );
+				$post_key         = 'h-captcha-response';
+			} else {
+				$verify_url_raw   = 'https://www.google.com/recaptcha/api/siteverify';
+				$captcha_provider = esc_html__( 'Google reCAPTCHA', 'wpforms-lite' );
+				$post_key         = 'g-recaptcha-response';
 			}
 
-			$response = json_decode( wp_remote_retrieve_body( wp_remote_get( 'https://www.google.com/recaptcha/api/siteverify?secret=' . $secret_key . '&response=' . $token ) ) );
+			/* translators: %s - The CAPTCHA provider name. */
+			$error           = wpforms_setting( "{$captcha_settings['provider']}-fail-msg", sprintf( esc_html__( '%s verification failed, please try again later.', 'wpforms-lite' ), $captcha_provider ) );
+			$token           = ! empty( $_POST[ $post_key ] ) ? $_POST[ $post_key ] : false; // phpcs:ignore
+			$is_recaptcha_v3 = 'recaptcha' === $captcha_settings['provider'] && 'v3' === $captcha_settings['recaptcha_type'];
+
+			if ( $is_recaptcha_v3 ) {
+				$token = ! empty( $_POST['wpforms']['recaptcha'] ) ? $_POST['wpforms']['recaptcha'] : false; // phpcs:ignore
+			}
+
+			$verify_query_arg = [
+				'secret'   => $captcha_settings['secret_key'],
+				'response' => $token,
+				'remoteip' => wpforms_get_ip(),
+			];
+
+			/*
+			 * hCaptcha uses user IP to better detect bots and their attacks on a form.
+			 * Majority of our users have GDPR disabled.
+			 * So we remove this data from the request only when it's not needed:
+			 * 1) when GDPR is enabled AND globally disabled user details storage;
+			 * 2) when GDPR is enabled AND IP address processing is disabled on per form basis.
+			 */
+			if (
+				wpforms_setting( 'gdpr', false ) &&
+				(
+					wpforms_setting( 'gdpr-disable-details', false ) ||
+					! empty( $this->form_data['settings']['disable_ip'] )
+				)
+			) {
+				unset( $verify_query_arg['remoteip'] );
+			}
+
+			$verify_url = add_query_arg( $verify_query_arg, $verify_url_raw );
+
+			/**
+			 * Filter the CAPTCHA verify URL.
+			 *
+			 * @since 1.6.4
+			 *
+			 * @param string $verify_url       The full CAPTCHA verify URL.
+			 * @param string $verify_url_raw   The CAPTCHA verify URL without query.
+			 * @param string $verify_query_arg The query arguments for verify URL.
+			 */
+			$verify_url = apply_filters( 'wpforms_process_captcha_verify_url', $verify_url, $verify_url_raw, $verify_query_arg );
+
+			// API call.
+			$response = json_decode( wp_remote_retrieve_body( wp_remote_get( $verify_url ) ) );
 
 			if (
 				empty( $response->success ) ||
-				( 'v3' === $type && $response->score <= wpforms_setting( 'recaptcha-v3-threshold', '0.4' ) )
+				( $is_recaptcha_v3 && $response->score <= wpforms_setting( 'recaptcha-v3-threshold', '0.4' ) )
 			) {
-				if ( 'v3' === $type ) {
+				if ( $is_recaptcha_v3 ) {
 					if ( isset( $response->score ) ) {
 						$error .= ' (' . esc_html( $response->score ) . ')';
 					}
@@ -260,23 +310,39 @@ class WPForms_Process {
 			return;
 		}
 
-		// Validate honeypot early - before actual processing.
-		if (
-			! empty( $this->form_data['settings']['honeypot'] ) &&
-			'1' == $this->form_data['settings']['honeypot'] &&
-			! empty( $entry['hp'] )
-		) {
-			$honeypot = esc_html__( 'WPForms honeypot field triggered.', 'wpforms-lite' );
-		}
+		$honeypot = wpforms()->get( 'honeypot' )->validate( $this->form_data, $this->fields, $entry );
 
-		$honeypot = apply_filters( 'wpforms_process_honeypot', $honeypot, $this->fields, $entry, $this->form_data );
-
-		// If spam - return early.
+		// If we trigger the honey pot, we want to log the entry, disable the errors, and fail silently.
 		if ( $honeypot ) {
+
 			// Logs spam entry depending on log levels set.
 			wpforms_log(
 				'Spam Entry ' . uniqid(),
 				array( $honeypot, $entry ),
+				array(
+					'type'    => array( 'spam' ),
+					'form_id' => $this->form_data['id'],
+				)
+			);
+
+			// Fail silently.
+			return;
+		}
+
+		$antispam = wpforms()->get( 'token' )->validate( $this->form_data, $this->fields, $entry );
+
+		// If spam - return early.
+		// For antispam, we want to make sure that we have a value, we are not using AMP, and the value is an error string.
+		if ( $antispam && ! wpforms_is_amp() && is_string( $antispam ) ) {
+
+			if ( $antispam ) {
+				$this->errors[ $form_id ]['header'] = $antispam;
+			}
+
+			// Logs spam entry depending on log levels set.
+			wpforms_log(
+				esc_html__( 'Spam Entry ' ) . uniqid(),
+				array( $antispam, $entry ),
 				array(
 					'type'    => array( 'spam' ),
 					'form_id' => $this->form_data['id'],
@@ -416,6 +482,27 @@ class WPForms_Process {
 	}
 
 	/**
+	 * Check if the confirmation data are valid.
+	 *
+	 * @since 1.6.4
+	 *
+	 * @param array $data The confirmation data.
+	 *
+	 * @return bool
+	 */
+	protected function is_valid_confirmation( $data ) {
+
+		if ( empty( $data['type'] ) ) {
+			return false;
+		}
+
+		// Confirmation type: redirect, page or message.
+		$type = $data['type'];
+
+		return isset( $data[ $type ] ) && ! wpforms_is_empty_string( $data[ $type ] );
+	}
+
+	/**
 	 * Redirect user to a page or URL specified in the form confirmation settings.
 	 *
 	 * @since 1.0.0
@@ -474,6 +561,11 @@ class WPForms_Process {
 			if ( $default_confirmation_key === $confirmation_id ) {
 				break;
 			}
+
+			if ( ! $this->is_valid_confirmation( $confirmation ) ) {
+				continue;
+			}
+
 			$process_confirmation = apply_filters( 'wpforms_entry_confirmation_process', true, $this->fields, $form_data, $confirmation_id );
 			if ( $process_confirmation ) {
 				break;
@@ -711,6 +803,13 @@ class WPForms_Process {
 			wp_send_json_error();
 		}
 
+		if ( isset( $_POST['wpforms']['post_id'] ) ) { // phpcs:ignore
+			// We don't have a global $post when processing ajax requests.
+			// Therefore, it's needed to set a global $post manually for compatibility with functions used in smart tag processing.
+			global $post;
+			$post = WP_Post::get_instance( absint( $_POST['wpforms']['post_id'] ) ); // phpcs:ignore
+		}
+
 		add_filter( 'wp_redirect', array( $this, 'ajax_process_redirect' ), 999 );
 
 		do_action( 'wpforms_ajax_submit_before_processing', $form_id );
@@ -778,9 +877,7 @@ class WPForms_Process {
 		// Transform field ids to field names for jQuery Validate plugin.
 		foreach ( $field_errors as $key => $error ) {
 
-			$props = wpforms()->frontend->get_field_properties( $fields[ $key ], $form_data );
-			$name  = isset( $props['inputs']['primary']['attr']['name'] ) ? $props['inputs']['primary']['attr']['name'] : '';
-
+			$name = $this->ajax_error_field_name( $fields[ $key ], $form_data, $error );
 			if ( $name ) {
 				$field_errors[ $name ] = $error;
 			}
@@ -803,6 +900,24 @@ class WPForms_Process {
 		do_action( 'wpforms_ajax_submit_completed', $form_id, $response );
 
 		wp_send_json_error( $response );
+	}
+
+	/**
+	 * Get field name for ajax error message.
+	 *
+	 * @since 1.6.3
+	 *
+	 * @param array  $field     Field settings.
+	 * @param array  $form_data Form data and settings.
+	 * @param string $error     Error message.
+	 *
+	 * @return string
+	 */
+	private function ajax_error_field_name( $field, $form_data, $error ) {
+
+		$props = wpforms()->frontend->get_field_properties( $field, $form_data );
+
+		return apply_filters( 'wpforms_process_ajax_error_field_name', '', $field, $props, $error );
 	}
 
 	/**

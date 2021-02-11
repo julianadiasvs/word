@@ -45,6 +45,8 @@ $TvrLang = array(
 
 	'learn_more' => esc_html__('Learn more', 'microthemer'),
 	'slow_styles_tab' => esc_html__('Styles tab slows the browser: %1$s sec (avg)', 'microthemer'),
+
+
 	'drag_picker' => esc_html__('Drag to move color picker', 'microthemer'),
 	'parents' => esc_html__('Parents', 'microthemer'),
 	'parent' => esc_html__('Go to parent', 'microthemer'),
@@ -73,6 +75,10 @@ $TvrLang = array(
 	'untitled_folder' => esc_html__('Untitled folder', 'microthemer'),
 	'custom_code' => esc_html__('Full code editor', 'microthemer'),
 	'item' => esc_html__('item', 'microthemer'),
+	'too_much_css' => esc_html__('The current page loads too much CSS for Microthemer to routinely analyse on this tab.', 'microthemer'),
+	'force_styles_analysis' => esc_html__('Force one-time analysis', 'microthemer'),
+	'too_much_css_2' => esc_html__('Please use the "Computed" tab or browser dev tools instead.', 'microthemer'),
+	'sample_css_confirm' => esc_html__("It may take Microthemer several seconds to scan for CSS values (%d CSS rules detected). Your browser will be unresponsive during the scan, but the information collected may be useful. OK to proceed?"),
 
 	//'same_domain' => esc_html__('Domain name mismatch', 'microthemer'),
 	//'same_domain_long' => esc_html__('Microthemer can only load pages that start with your domian name', 'microthemer'),
@@ -143,13 +149,14 @@ $TvrLang = array(
 	'load_script_failed' => esc_html__('Script failed to load', 'microthemer'),
 	'load_script_failed_p' => esc_html__('The %s failed to load.', 'microthemer'),
 	'delete_folder_confirm' => esc_html__('Are you sure you want to delete your "%s" folder?', 'microthemer'),
+	'clear_folder_confirm' => esc_html__('Are you sure you want to clear your "%s" folder?', 'microthemer'),
 	'reset_settings_confirm' => esc_html__('Are you sure you want to reset all settings?', 'microthemer'),
 	'reset_empty_folders' => esc_html__('Resetting empty folders', 'microthemer'),
-	'clear_styles_confirm' => esc_html__('Are you sure you want to clear all styles?', 'microthemer'),
+	//'clear_styles_confirm' => esc_html__('Are you sure you want to clear all styles?', 'microthemer'),
 	'beaver_builder_confirm' => esc_html__('Beaver Builder is active. You will lose any unsaved Beaver Builder changes. Continue anyway?', 'microthemer'),
 	'page_reload_aborted' => esc_html__('Settings were saved. But you may need to reload the Microthemer interface to see the effects', 'microthemer'),
 	'halted' => esc_html__('halted', 'microthemer'),
-	'clear_styles' => esc_html__('Clearing styles', 'microthemer'),
+	//'clear_styles' => esc_html__('Clearing styles', 'microthemer'),
 	'value_cleared' => esc_html__('value cleared', 'microthemer'),
 	'previous_name' => esc_html__('Previous name', 'microthemer'),
 	'previous_code' => esc_html__('Previous code', 'microthemer'),

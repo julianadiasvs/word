@@ -4,8 +4,8 @@ Donate link: https://www.paypal.me/BrainstormForce
 Tags: gutenberg, blocks, gutenberg blocks, editor, block
 Requires at least: 4.7
 Requires PHP: 5.6
-Tested up to: 5.4
-Stable tag: 1.15.2
+Tested up to: 5.6
+Stable tag: 1.20.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -40,7 +40,7 @@ These Gutenberg starter sites give you -
 
 <strong>FREE And Popular Gutenberg Compatible Theme</strong>
 
-Over 900,000+ users are empowering their websites with Astra - 100% Gutenberg compatible theme! From beginners to industry experts, everyone is loving Astra for its performance and ease of use.
+Over 1+ million users are empowering their websites with Astra - 100% Gutenberg compatible theme! From beginners to industry experts, everyone is loving Astra for its performance and ease of use.
 
 Reasons why people love the Astra Theme
 
@@ -70,9 +70,14 @@ We also have an informative and detailed article that will help you to <a href="
 <strong>An Ultimate Gutenberg Blocks Library</strong>
 
 <ul>
-	<li><a href="https://www.ultimategutenberg.com/docs/how-to-schema/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme" target="_blank">How-to Schema </a>: This block allows you to design attractive How-to pages or articles that can describe the step-by-step procedure to achieve certain goals. The best thing is this block will automatically add How-to Schema to your page that can boost ranking in search results.</li>
- 	<li><a href="https://www.ultimategutenberg.com/docs/faq-schema-or-accordion/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme" target="_blank">FAQ Schema </a>: This block helps you answering user’s common queries in an easy and attractive way.  You also get a one-click option to apply FAQ Schema on the page. That helps to display content in a rich snippet that can pull more traffic to your website.</li>
- 	<li><a href="https://www.ultimategutenberg.com/blocks/advanced-heading/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme" target="_blank">Advanced Heading </a>: The Advanced Heading block lets you add a combination of a heading and a sub-heading with a separator in between. You can select the heading tag for the heading and manage other settings and customizations too.</li>
+	<li><a href="https://ultimategutenberg.com/lottie/" target="_blank">Lottie </a>: Add attractive animation to your page design. Get a total control with advanced options like animation speed,  animation trigger etc, You can reverse the animation, manage the size and do much more.</li>
+	<li><a href="https://www.ultimategutenberg.com/review-schema/" target="_blank">Review Schema </a>: Add a review for a book, movie, course, software application, or product with star ratings. Enable review schema support just with a click to get higher rankings for your page/post in search results.</li>
+	<li><a href="https://www.ultimategutenberg.com/blocks/taxonomy/" target="_blank">Taxonomy List </a>: With this block, you can easily display categories for post/pages or custom post types. Further, you can style it with a grid, list, or dropdown layout and set color, typography.</li>
+	<li><a href="https://www.ultimategutenberg.com/how-to-schema/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme" target="_blank">How-to Schema </a>: This block allows you to design attractive How-to pages or articles that can describe the step-by-step procedure to achieve certain goals. The best thing is this block will automatically add How-to Schema to your page that can boost ranking in search results.</li>
+ 	<li><a href="https://www.ultimategutenberg.com/faq/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme" target="_blank">FAQ Schema </a>: This block helps you answering user’s common queries in an easy and attractive way.  You also get a one-click option to apply FAQ Schema on the page. That helps to display content in a rich snippet that can pull more traffic to your website.</li>
+ 	<li><a href="https://www.ultimategutenberg.com/docs/wp-search/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme" target="_blank">WP - Search </a>: Search bars quickly bring information users are looking for and deliver a great user experience. You can display the WordPress search field anywhere on your page easily with the WP - Search block.</li>
+ 	<li><a href="https://www.ultimategutenberg.com/docs/inline-notice/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme" target="_blank">Inline Notice </a>: Sometimes while writing a procedure or steps to achieve some end results, you might need users to pay attention to a few important notes. Inline Notice block provides a nice ready-to-use box where you can quickly add text to highlight it.</li>
+	<li><a href="https://www.ultimategutenberg.com/blocks/advanced-heading/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme" target="_blank">Advanced Heading </a>: The Advanced Heading block lets you add a combination of a heading and a sub-heading with a separator in between. You can select the heading tag for the heading and manage other settings and customizations too.</li>
  	<li><a href="https://www.ultimategutenberg.com/blocks/advanced-columns/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme" target="_blank">Advanced Columns </a>: This Advanced Columns block gives you advanced options to insert a number of columns within a single row. You get various customization options to manage the look and feel of the entire block and individual columns on the page with advanced shape dividers, variable widths, etc.</li>
  	<li><a href="https://www.ultimategutenberg.com/blocks/blockquote/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme" target="_blank">Blockquote </a>: This Blockquote block lets you display quoted tweetable text in a trendy and designer format with lots of customization options.</li>
  	<li><a href="https://www.ultimategutenberg.com/blocks/call-to-action/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme" target="_blank">Call To Action </a>: The Call To Action block helps you to create attractive call-to-action with a trendy title, description and a catchy button that boosts conversions on your website.</li>
@@ -151,11 +156,123 @@ Absolutely no! The Ultimate Addons for Gutenberg is built with ease and performa
 
 When you use the Ultimate Addons for Gutenberg along with the free Astra theme, you get a huge library of ready-to-use starter sites that can be imported and used to build your own. Read an article about the <a href="https://www.ultimategutenberg.com/ready-websites-for-gutenberg/?utm_source=wp-repo&utm_medium=link&utm_campaign=readme" target="_blank" rel="">Starter Sites with Gutenberg</a> to know more.
 
+== Credits ==
+
+The awesome React FontIconPicker is developed by [Alessandro Benoit](http://codeb.it/) & [Swashata](https://github.com/swashata). Our external packages uses [Rating Star Component](https://github.com/n49/react-stars) that are distributed under the terms of the ISC. While [Slick](https://github.com/akiran/react-slick), [Lottie](https://github.com/chenqingspring/react-lottie) and [Striptags](https://github.com/ericnorris/striptags) is distributed under the terms of the MIT.
+
 == Screenshots ==
 
 1. /assets/screenshots/1.png
 
 == Changelog ==
+
+= 1.20.1 =
+* Fix: Content Timeline - Content not being saved issue.
+* Fix: Post Carousel - Posts layout breaks when equal height option is enabled.
+* Fix: Table of Content - Hyperlink not being scrolled to respective heading issue.
+* Fix: Price List - Block Editor Validation issue when image alignment set to middle.
+
+= 1.20.0 =
+* New: Lottie Block.
+* Improvement: Post Layout: Added EditMode to shuffle the Post elements i.e Post Title, Post Meta, Post Content, Featured Image, CTA Button etc.
+* Improvement: Better options for delete/edit/duplicate action of each content in Content timeline blocks.
+* Fix: FAQ Schema - Fixed Accessibility issue.
+* Fix: FAQ Schema - Fixed child block not inheriting question tag from the parent block when adding a new question.
+* Fix: FAQ-Schema - FAQ console error when accessing child by link hash value.
+* Fix: Gravity Form Styler - Multistep form styling issue.
+* Fix: Price List - CSS issue on mobile.
+* Fix: Price List - Fixed missing image padding option and columns not updating issue.
+* Fix: Post Layout - Child Posts not visible when parent category is selected in editor mode.
+* Fix: Testimonial - Fixed the JS console warning with Slick library.
+* Fix: Taxonomy List - Fixed the JS console warning in editor mode.
+* Fix: Table of content - Fixed the pipe symbol issue in heading.
+* Fix: Taxonomy List - Fixed issue with broken links.
+* Fix: Table of Content - IE11 compatibility issues.
+* Fix: Testimonial - Fixed carousel not being displayed on RTL websites.
+
+= 1.19.0 =
+* New: Review Schema Block.
+* Improvement: Better options for delete/edit/duplicate action of each item in Price list block.
+* Improvement: Ability to modify breakpoints for Dynamic CSS.
+* Improvement: Table of Content - Exclude specific headings from Table of Contents block.
+* Improvement: Table of Content - Fixed issue with scroll to heading when the heading has ellipsis dots in them.
+* Fix: Post Carousel - Fixed carousel not being displayed on RTL websites.
+* Fix: Info Box - Link to complete box target issue with "Open In Same Tab" fixed.
+* Fix: Info box - Title color not applying when title is as link.
+
+= 1.18.2 =
+* Fix: Post Timeline - Fixed the Icon issue and removed the unwanted filter for Post Timeline SVG connector.
+
+= 1.18.1 =
+* Improvement: FAQ Schema - Skipped loading of dependent JS file for Grid layout.
+* Improvement: FAQ Schema - Added keyboard accessibility of spacebar, enter and left-click.
+* Improvement: Inline Notice - New layout added for inline notice.
+* Improvement: Post Timeline - Added filter for post timeline connector SVG.
+* Improvement: Social Share - Added support to some more social platforms like Pocket, VK, Odnoklassniki, Skype, Telegram, WhatsApp, Xing, and Buffer.
+* Improvement: Twenty Seventeen Theme: Added compatibility to Twenty Seventeen Sections.
+* Improvement: Testimonial - Added class to Image for lazy load compatibility.
+* Improvement: Info Box - Added class to Image for lazy load compatibility.
+* Improvement: Table of Content - Alignment option added for table heading.
+* Fix: FAQ Schema - Toggle issue when we add multiple FAQ Blocks on the same page.
+* Fix: Social Share - Resolved the missing image issue in the Pinterest social platform.
+* Fix: Gravity Form Styler - Submit button text colour issue.
+
+= 1.18.0 =
+* New: Taxonomy List.
+* Improvement: FAQ Schema - Added responsive columns options for mobile and tablet.
+* Improvement: Google Map - Now user can show language-specific Google Map.
+* Improvement: How to Schema - More options to add total time.
+* Fix: Multiple file generation issue in some cases fixed.
+* Fix: Inline Notice - Dismissal of Notice issue.
+* Fix: How To Schema - Step gap issue.
+* Fix: How To Schema - Image deletion issue for steps.
+* Fix: FAQ Schema - Multiple FAQSchema on the same page not allowed issue.
+* Fix: Post Block - Infinite scroll is broken for anonymous user.
+* Fix: Unicode error in some cases issue fixed.
+
+= 1.17.0 =
+* Improvement: Compatibility with WordPress 5.5.
+* Fix: Multi Buttons - Alignment Full Width for buttons not working in editor mode.
+* Fix: Icon List - Icon List Font Size rendered as PX when configured as EM.
+* Fix: Icon List - Icon List Border turns to the oval issue.
+* Fix: Info Box - Fixed a Typography issue with CTA-Button.
+* Fix: Call To Action - Rectified the issue with Anchor that does not save.
+
+= 1.16.1 = 
+* Improvement: Post Masonry - Added Pagination option.
+* Improvement: Advanced Columns - New Gradient Palette is introduced to set background.
+* Improvement: Sections - New Gradient Palette is introduced to set background.
+* Improvement: FAQ Schema - Added heading options for question.
+* Improvement: Post Layouts - Added an option to exclude current post.
+* Improvement: Post Layouts - Option to Display Post Content Type as Excerpt/Full-Post.
+* Improvement: Inline Notice - Added heading options for Notice title.
+* Fix: Post Grid - Page Limit issue with less number of Posts.
+* Fix: FAQ Schema - Clicking on answer collapsed the FAQ.
+* Fix: Social Share - Fixed an issue with reusable block.
+* Fix: Multi Buttons - Full Width layout for buttons not working in editor mode.
+* Fix: Multi Buttons - Inherit from theme skipping the Font Family in few case scenarios.
+* Fix: Info Box - Fixed an issue with CSS selector.
+* Fix: Icon List - Icon Top Alignment issue.
+
+= 1.16.0 =
+* New: WP - Search Block.
+* New: Inline Notice Block.
+* New: Users can now share non-personal usage data to help us test and develop better products.
+* Improvement: FAQ Schema - Added new padding options for Question.
+* Improvement: Multi Buttons - Added new option to add icon.
+* Improvement: Multi Buttons - Added new option to inherit styling from the theme.
+* Improvement: Advanced Columns - Added ability to choose from given variations of columns.
+* Improvement: Post Layout - Added an option to show an empty post result message.
+* Improvement: Post Layout - Added new option to inherit styling from the theme.
+* Improvement: Post Layout - Added `post_class()` compatibility to Post Grid, Post Masonry, and Post Carousel using a [custom filter](https://www.ultimategutenberg.com/docs/filters-actions-for-post/#uagb_enable_post_class).
+* Improvement: Call to Action - Added new option to inherit styling from the theme for Button.
+* Improvement: Info Box - Added new option to inherit styling from the theme for Button.
+* Improvement: Added missing accessibility to all blocks.
+* Fix: Post Carousel - Incorrect Border Radius issue with respect to the theme.
+* Fix: Info Box - Fixed a minor issue with z-index and theme heading.
+* Fix: Gravity Form Styler: Show/Hide Not working in front-end.
+* Fix: Table Of Contents - Removed the dependency on data attributes for the header.
+* Fix: Better UX compatibility with Gutenberg plugin.
 
 = 1.15.2 =
 * Fix: Fixed compatibility to [CartFlows Templates](https://cartflows.com/templates/?utm_source=uag-repo&utm_medium=link&utm_campaign=readme).

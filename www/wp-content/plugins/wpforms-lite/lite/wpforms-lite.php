@@ -63,7 +63,9 @@ class WPForms_Lite {
 		$id = 1;
 
 		echo '<div class="wpforms-panel-content-section-title">';
-			esc_html_e( 'Notifications', 'wpforms-lite' );
+			echo '<span id="wpforms-builder-settings-notifications-title">';
+				esc_html_e( 'Notifications', 'wpforms-lite' );
+			echo '</span>';
 			echo '<button class="wpforms-builder-settings-block-add upgrade-modal" data-name="' . esc_attr__( 'Multiple notifications', 'wpforms-lite' ) . '">';
 				esc_html_e( 'Add New Notification', 'wpforms-lite' );
 			echo '</button>';
@@ -394,16 +396,15 @@ class WPForms_Lite {
 
 		$strings = array(
 			'disable_notifications' => sprintf(
-				wp_kses(
-					/* translators: %s - WPForms.com docs page URL. */
+				wp_kses( /* translators: %s - WPForms.com docs page URL. */
 					__( 'You\'ve just turned off notification emails for this form. Since entries are not stored in WPForms Lite, notification emails are recommended for collecting entry details. For setup steps, <a href="%s" target="_blank" rel="noopener noreferrer">please see our notification tutorial</a>.', 'wpforms-lite' ),
-					array(
-						'a'      => array(
-							'href'   => array(),
-							'target' => array(),
-							'rel'    => array(),
-						),
-					)
+					[
+						'a' => [
+							'href'   => [],
+							'target' => [],
+							'rel'    => [],
+						],
+					]
 				),
 				'https://wpforms.com/docs/setup-form-notification-wpforms/'
 			),
@@ -440,7 +441,7 @@ class WPForms_Lite {
 				printf(
 					wp_kses(
 						/* translators: %s - star icons. */
-						__( 'We know that you will truly love WPForms. It has over 5000+ five star ratings (%s) and is active on over 3 million websites.', 'wpforms-lite' ),
+						__( 'We know that you will truly love WPForms. It has over 7000+ five star ratings (%s) and is active on over 4 million websites.', 'wpforms-lite' ),
 						array(
 							'i' => array(
 								'class'       => array(),
@@ -489,7 +490,7 @@ class WPForms_Lite {
 			</p>
 		</div>
 		<script type="text/javascript">
-			jQuery( document ).ready( function ( $ ) {
+			jQuery( function ( $ ) {
 				$( document ).on( 'click', '.settings-lite-cta .dismiss', function ( event ) {
 					event.preventDefault();
 					$.post( ajaxurl, {
@@ -989,6 +990,11 @@ class WPForms_Lite {
 				'icon' => 'addon-icon-activecampaign.png',
 			),
 			array(
+				'name' => 'Authorize.Net',
+				'desc' => 'WPForms Authorize.Net addon allows you to connect your WordPress site with Authorize.Net to easily collect payments, donations, and online orders.',
+				'icon' => 'addon-icon-authorize-net.png',
+			),
+			array(
 				'name' => 'Aweber',
 				'desc' => 'WPForms AWeber addon allows you to create AWeber newsletter signup forms in WordPress, so you can grow your email list.',
 				'icon' => 'addon-icon-aweber.png',
@@ -1064,6 +1070,11 @@ class WPForms_Lite {
 				'icon' => 'addon-icon-post-submissions.png',
 			),
 			array(
+				'name' => 'Salesforce',
+				'desc' => 'WPForms Salesforce addon lets you add contacts to your Salesforce CRM account, so you can easily manage leads and relationships.',
+				'icon' => 'addon-icon-salesforce.png',
+			),
+			array(
 				'name' => 'Signatures',
 				'desc' => 'WPForms Signatures addon makes it easy for users to sign your forms. This WordPress signatures plugin will allow your users to sign contracts and other agreements with their mouse or touch screen.',
 				'icon' => 'addon-icon-signatures.png',
@@ -1082,6 +1093,11 @@ class WPForms_Lite {
 				'name' => 'User Registration',
 				'desc' => 'WPForms User Registration addon allows you to create custom WordPress user registration forms.',
 				'icon' => 'addon-icon-user-registration.png',
+			),
+			array(
+				'name' => 'Webhooks',
+				'desc' => 'The Webhooks addon allows you to send form entry data to secondary tools and external services. No code required, and no need for a third party connector.',
+				'icon' => 'addon-icon-webhooks.png',
 			),
 			array(
 				'name' => 'Zapier',
@@ -1106,17 +1122,16 @@ class WPForms_Lite {
 				</p>
 			</div>
 			<div class="wpforms-admin-content">
-				<div class="addons-container" id="wpforms-admin-addons-list">
+				<div id="wpforms-admin-addons-list">
 					<div class="list">
 						<?php foreach ( $addons as $addon ) : ?>
 						<div class="addon-container">
 							<div class="addon-item">
 								<div class="details wpforms-clear" style="">
-									<img src="<?php echo WPFORMS_PLUGIN_URL; ?>assets/images/<?php echo $addon['icon']; ?>">
+									<img src="<?php echo esc_url( WPFORMS_PLUGIN_URL . 'assets/images/' . $addon['icon'] ); ?>">
 									<h5 class="addon-name">
 										<?php
-										printf(
-											/* translators: %s - addon name. */
+										printf( /* translators: %s - addon name. */
 											esc_html__( '%s Addon', 'wpforms-lite' ),
 											$addon['name']
 										);

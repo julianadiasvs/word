@@ -121,10 +121,10 @@ class Education {
 		foreach ( $providers as $provider ) {
 
 			/* translators: %s - addon name. */
-			$modal_name = sprintf( \__( '%s addon', 'wpforms' ), $provider['name'] );
+			$modal_name = sprintf( \__( '%s addon', 'wpforms-lite' ), $provider['name'] );
 
 			/* translators: %s - addon name. */
-			$descr = sprintf( \__( 'Integrate %s with WPForms', 'wpforms' ), $provider['name'] );
+			$descr = sprintf( \__( 'Integrate %s with WPForms', 'wpforms-lite' ), $provider['name'] );
 
 			printf(
 				'<div id="wpforms-integration-%1$s" class="wpforms-settings-provider wpforms-clear focus-out education-modal" data-name="%2$s" data-action="upgrade" data-url="%3$s" data-license="%4$s">

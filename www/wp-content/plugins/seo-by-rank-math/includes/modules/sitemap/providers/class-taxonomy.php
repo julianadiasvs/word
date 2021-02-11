@@ -6,6 +6,9 @@
  * @package    RankMath
  * @subpackage RankMath\Sitemap
  * @author     Rank Math <support@rankmath.com>
+ *
+ * @copyright Copyright (C) 2008-2019, Yoast BV
+ * The following code is a derivative work of the code from the Yoast(https://github.com/Yoast/wordpress-seo/), which is licensed under GPL v3.
  */
 
 namespace RankMath\Sitemap\Providers;
@@ -180,7 +183,7 @@ class Taxonomy implements Provider {
 	}
 
 	/**
-	 * Filters the terms query to only include published posts
+	 * Filters the terms query to only include published posts.
 	 *
 	 * @param  string[] $selects Array of fields.
 	 * @return string[]
@@ -204,20 +207,20 @@ class Taxonomy implements Provider {
 	}
 
 	/**
-	 * Get the Image Parser
+	 * Get the Image Parser.
 	 *
 	 * @return Image_Parser
 	 */
 	protected function get_image_parser() {
 		if ( class_exists( 'RankMath\Sitemap\Image_Parser' ) && ! isset( self::$image_parser ) ) {
-			self::$image_parser = new Image_Parser;
+			self::$image_parser = new Image_Parser();
 		}
 
 		return self::$image_parser;
 	}
 
 	/**
-	 * Get terms for taxonomy
+	 * Get terms for taxonomy.
 	 *
 	 * @param  object $taxonomy     Taxonomy name.
 	 * @param  int    $max_entries  Entries per sitemap.
@@ -258,7 +261,7 @@ class Taxonomy implements Provider {
 	}
 
 	/**
-	 * Get term link
+	 * Get term link.
 	 *
 	 * @param  WP_Term $term Term object.
 	 * @return string

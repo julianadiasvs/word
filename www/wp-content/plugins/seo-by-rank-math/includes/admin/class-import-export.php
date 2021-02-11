@@ -14,7 +14,6 @@ use RankMath\Helper;
 use RankMath\Runner;
 use RankMath\Traits\Ajax;
 use RankMath\Traits\Hooker;
-use MyThemeShop\Admin\Page;
 use MyThemeShop\Helpers\Param;
 use MyThemeShop\Helpers\WordPress;
 use RankMath\Admin\Importers\Detector;
@@ -66,12 +65,55 @@ class Import_Export implements Runner {
 	}
 
 	/**
-	 * Display Import/Export tools.
+	 * Display Import/Export tools page.
 	 *
 	 * @return void
 	 */
 	public function display() {
-		include( $this->get_view( 'main' ) );
+		include $this->get_view( 'main' );
+	}
+
+	/**
+	 * Display panels for Import/Export tools.
+	 *
+	 * @return void
+	 */
+	public function show_panels() {
+		foreach ( (array) $this->get_panels() as $panel ) {
+			if ( ! isset( $panel['view'] ) || ! file_exists( $panel['view'] ) ) {
+				continue;
+			}
+
+			echo '<div class="' . ( isset( $panel['class'] ) ? esc_attr( $panel['class'] ) : '' ) . '">';
+			include $panel['view'];
+			echo '</div>';
+		}
+	}
+
+	/**
+	 * Get list of panels.
+	 *
+	 * @return array
+	 */
+	public function get_panels() {
+		$dir = dirname( __FILE__ ) . '/views/import-export/';
+
+		$panels = [
+			'import-export' => [
+				'view'  => $dir . 'import-export-panel.php',
+				'class' => 'import-export-settings',
+			],
+			'plugins'       => [
+				'view'  => $dir . 'plugins-panel.php',
+				'class' => 'import-plugins',
+			],
+			'backup'        => [
+				'view'  => $dir . 'backup-panel.php',
+				'class' => 'settings-backup',
+			],
+		];
+
+		return apply_filters( 'rank_math/admin/import_export_panels', $panels );
 	}
 
 	/**
@@ -87,12 +129,16 @@ class Import_Export implements Runner {
 	}
 
 	/**
-	 * Add JSON.
+	 * Enqueue files & add JSON.
 	 *
 	 * @return void
 	 */
 	public function enqueue() {
-		wp_enqueue_script( 'rank-math-import-export', rank_math()->plugin_url() . 'assets/admin/js/import-export.js' );
+		if ( ! $this->is_import_export_page() ) {
+			return;
+		}
+
+		wp_enqueue_script( 'rank-math-import-export', rank_math()->plugin_url() . 'assets/admin/js/import-export.js', [], rank_math()->version, true );
 		wp_enqueue_style( 'cmb2-styles' );
 		wp_enqueue_style( 'rank-math-common' );
 		wp_enqueue_style( 'rank-math-cmb2' );
@@ -101,6 +147,15 @@ class Import_Export implements Runner {
 		Helper::add_json( 'restoreConfirm', esc_html__( 'Are you sure you want to restore this backup? Your current configuration will be overwritten.', 'rank-math' ) );
 		Helper::add_json( 'deleteBackupConfirm', esc_html__( 'Are you sure you want to delete this backup?', 'rank-math' ) );
 		Helper::add_json( 'cleanPluginConfirm', esc_html__( 'Are you sure you want erase traces of plugin?', 'rank-math' ) );
+	}
+
+	/**
+	 * Check if we're on the Tools > Import & Export admin page.
+	 *
+	 * @return boolean
+	 */
+	private function is_import_export_page() {
+		return Param::get( 'page' ) === 'rank-math-status' && Param::get( 'view' ) === 'import_export';
 	}
 
 	/**
@@ -291,7 +346,7 @@ class Import_Export implements Runner {
 
 		\unlink( $file['file'] );
 
-		if ( $this->do_import_data( $settings ) ) {
+		if ( is_array( $settings ) && $this->do_import_data( $settings ) ) {
 			Helper::add_notification( esc_html__( 'Settings successfully imported. Your old configuration has been saved as a backup.', 'rank-math' ), [ 'type' => 'success' ] );
 			return;
 		}
@@ -305,7 +360,10 @@ class Import_Export implements Runner {
 	 * @return mixed
 	 */
 	private function has_valid_file() {
-		$file = wp_handle_upload( $_FILES['import-me'] );
+		$this->filter( 'upload_mimes', 'allow_txt_upload', 10, 2 );
+		$file = wp_handle_upload( $_FILES['import-me'], [ 'test_form' => false ] );
+		$this->remove_filter( 'upload_mimes', 'allow_txt_upload', 10 );
+
 		if ( is_wp_error( $file ) ) {
 			Helper::add_notification( esc_html__( 'Settings could not be imported:', 'rank-math' ) . ' ' . $file->get_error_message(), [ 'type' => 'error' ] );
 			return false;
@@ -322,6 +380,21 @@ class Import_Export implements Runner {
 		}
 
 		return $file;
+	}
+
+	/**
+	 * Allow txt & json file upload.
+	 *
+	 * @param array            $types    Mime types keyed by the file extension regex corresponding to those types.
+	 * @param int|WP_User|null $user User ID, User object or null if not provided (indicates current user).
+	 *
+	 * @return array
+	 */
+	public function allow_txt_upload( $types, $user ) {
+		$types['txt']  = 'text/plain';
+		$types['json'] = 'application/json';
+
+		return $types;
 	}
 
 	/**
@@ -484,7 +557,7 @@ class Import_Export implements Runner {
 	 * @return bool
 	 */
 	private function is_action_allowed( $perform ) {
-		$allowed = [ 'settings', 'postmeta', 'termmeta', 'usermeta', 'redirections', 'blocks', 'deactivate' ];
+		$allowed = [ 'settings', 'postmeta', 'termmeta', 'usermeta', 'redirections', 'blocks', 'deactivate', 'locations', 'news', 'video' ];
 		return $perform && in_array( $perform, $allowed, true );
 	}
 }

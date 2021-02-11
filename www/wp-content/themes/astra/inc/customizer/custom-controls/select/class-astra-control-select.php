@@ -49,35 +49,15 @@ class Astra_Control_Select extends WP_Customize_Control {
 		if ( isset( $this->default ) ) {
 			$this->json['default'] = $this->default;
 		}
-		$this->json['value'] = $this->value();
-		$this->json['label'] = esc_html( $this->label );
+		$this->json['value']   = $this->value();
+		$this->json['label']   = esc_html( $this->label );
+		$this->json['choices'] = $this->choices;
 	}
 
 	/**
-	 * An Underscore (JS) template for this control's content (but not its container).
+	 * Render the control's content.
 	 *
-	 * Class variables for this control class are available in the `data` JS object;
-	 * export custom variables by overriding {@see WP_Customize_Control::to_json()}.
-	 *
-	 * @see WP_Customize_Control::print_template()
-	 *
-	 * @access protected
+	 * @see WP_Customize_Control::render_content()
 	 */
-	protected function content_template() {
-		?>
-		<# if ( data.label ) { #>
-			<label>
-				<span class="customize-control-title">{{{ data.label }}}</span>
-			</label>
-		<# } #>
-		<div class="customize-control-content">
-			<select class="ast-select-input" data-name="{{data.name}}" data-value="{{data.value}}" >
-				<# _.each( data.choices, function( label, key ){  #>
-					<option <# if ( data.value == key ){ #> selected="selected" <# } #> value="{{ key }}">{{ label }}</option>
-				<# } ); #>
-			</select>
-		</div>
-
-		<?php
-	}
+	protected function render_content() {}
 }

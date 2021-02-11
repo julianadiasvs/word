@@ -52,11 +52,11 @@ if ( ! class_exists( 'EIO_Page_Parser' ) ) {
 			if ( $hyperlinks ) {
 				$this->debug_message( 'using figure+hyperlink(a) patterns with src required' );
 				$search_pattern   = '#(?:<figure[^>]*?\s+?class\s*=\s*["\'](?P<figure_class>[\w\s-]+?)["\'][^>]*?>\s*)?(?:<a[^>]*?\s+?href\s*=\s*["\'](?P<link_url>[^\s]+?)["\'][^>]*?>\s*)?(?P<img_tag><img[^>]*?\s+?src\s*=\s*("|\')(?P<img_url>(?!\4).+?)\4[^>]*?>){1}(?:\s*</a>)?#is';
-				$unquoted_pattern = '#(?:<figure[^>]*?\s+?class\s*=\s*(?P<figure_class>[\w-]+)[^>]*?>\s*)?(?:<a[^>]*?\s+?href\s*=\s*(?P<link_url>[^"\'][^\s>]+)[^>]*?>\s*)?(?P<img_tag><img[^>]*?\s+?src\s*=\s*(?P<img_url>[^"\'][^\s>]+)[^>]*?>){1}(?:\s*</a>)?#is';
+				$unquoted_pattern = '#(?:<figure[^>]*?\s+?class\s*=\s*(?P<figure_class>[\w-]+)[^>]*?>\s*)?(?:<a[^>]*?\s+?href\s*=\s*(?P<link_url>[^"\'\\\\][^\s>]+)[^>]*?>\s*)?(?P<img_tag><img[^>]*?\s+?src\s*=\s*(?P<img_url>[^"\'\\\\][^\s>]+)[^>]*?>){1}(?:\s*</a>)?#is';
 			} elseif ( $src_required ) {
 				$this->debug_message( 'using plain img pattern, src still required' );
 				$search_pattern   = '#(?P<img_tag><img[^>]*?\s+?src\s*=\s*("|\')(?P<img_url>(?!\2).+?)\2[^>]*?>)#is';
-				$unquoted_pattern = '#(?P<img_tag><img[^>]*?\s+?src\s*=\s*(?P<img_url>[^"\'][^\s>]+)[^>]*?>)#is';
+				$unquoted_pattern = '#(?P<img_tag><img[^>]*?\s+?src\s*=\s*(?P<img_url>[^"\'\\\\][^\s>]+)[^>]*?>)#is';
 			}
 			if ( preg_match_all( $search_pattern, $content, $images ) ) {
 				$this->debug_message( 'found ' . count( $images[0] ) . ' image elements with quoted pattern' );
@@ -163,7 +163,7 @@ if ( ! class_exists( 'EIO_Page_Parser' ) ) {
 			if ( ! ctype_alpha( $tag_name ) ) {
 				return array();
 			}
-			if ( preg_match_all( '#<' . $tag_name . '\s[^>]+?>#is', $content, $elements ) ) {
+			if ( preg_match_all( '#<' . $tag_name . '\s[^\\\\>]+?>#is', $content, $elements ) ) {
 				return $elements[0];
 			}
 			return array();
@@ -226,20 +226,19 @@ if ( ! class_exists( 'EIO_Page_Parser' ) ) {
 		 * @param string $img The full image element.
 		 * @return string The width found or an empty string.
 		 */
-		public function get_img_width( $img ) {
-			$width = $this->get_attribute( $img, 'width' );
-			// Then check for an inline max-width directive.
+		public function get_img_style_width( $img ) {
+			// Check for an inline max-width directive.
 			$style = $this->get_attribute( $img, 'style' );
 			if ( $style && preg_match( '#max-width:\s?(\d+)px#', $style, $max_width_string ) ) {
-				if ( $max_width_string[1] && ( ! $width || $max_width_string[1] < $width ) ) {
-					$width = $max_width_string[1];
+				if ( $max_width_string[1] && is_numeric( $max_width_string ) ) {
+					return (int) $max_width_string[1];
 				}
 			} elseif ( $style && preg_match( '#width:\s?(\d+)px#', $style, $width_string ) ) {
-				if ( $width_string[1] && ( ! $width || $width_string[1] < $width ) ) {
-					$width = $width_string[1];
+				if ( $width_string[1] && is_numeric( $width_string[1] ) ) {
+					return (int) $width_string[1];
 				}
 			}
-			return $width;
+			return false;
 		}
 
 		/**
@@ -248,20 +247,19 @@ if ( ! class_exists( 'EIO_Page_Parser' ) ) {
 		 * @param string $img The full image element.
 		 * @return string The height found or an empty string.
 		 */
-		public function get_img_height( $img ) {
-			$height = $this->get_attribute( $img, 'height' );
+		public function get_img_style_height( $img ) {
 			// Then check for an inline max-height directive.
 			$style = $this->get_attribute( $img, 'style' );
 			if ( $style && preg_match( '#max-height:\s?(\d+)px#', $style, $max_height_string ) ) {
-				if ( $max_height_string[1] && ( ! $height || $max_height_string[1] < $height ) ) {
-					$height = $max_height_string[1];
+				if ( $max_height_string[1] && is_numeric( $max_height_string[1] ) ) {
+					return (int) $max_height_string[1];
 				}
 			} elseif ( $style && preg_match( '#height:\s?(\d+)px#', $style, $height_string ) ) {
-				if ( $height_string[1] && ( ! $height || $height_string[1] < $height ) ) {
-					$height = $height_string[1];
+				if ( $height_string[1] && is_numeric( $height_string[1] ) ) {
+					return (int) $height_string[1];
 				}
 			}
-			return $height;
+			return false;
 		}
 
 		/**
@@ -334,11 +332,16 @@ if ( ! class_exists( 'EIO_Page_Parser' ) ) {
 			if ( $replace ) {
 				// Don't forget, back references cannot be used in character classes.
 				$new_element = preg_replace( '#\s' . $name . '\s*=\s*("|\')(?!\1).*?\1#is', " $name=$1$value$1", $element );
-				if ( strpos( $new_element, "$name=" ) ) {
+				if ( strpos( $new_element, "$name=" ) && $new_element !== $element ) {
 					$element = $new_element;
 					return;
 				}
-				$element = preg_replace( '#\s' . $name . '\s*=\s*[^"\'][^\s>]+#is', ' ', $element );
+				$new_element = preg_replace( '#\s' . $name . '\s*=\s*[^"\'][^\s>]+#is', ' ', $element );
+				if ( preg_match( '#\s' . $name . '\s*=\s*#', $new_element ) && $new_element === $element ) {
+					$this->debug_message( "$name replacement failed, still exists in $element" );
+					return;
+				}
+				$element = $new_element;
 			}
 			$closing = ' />';
 			if ( false === strpos( $element, '/>' ) ) {

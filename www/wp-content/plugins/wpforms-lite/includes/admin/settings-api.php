@@ -161,21 +161,17 @@ function wpforms_settings_license_callback( $args ) {
 	$output .= '<p class="type ' . $class . '">' .
 				sprintf(
 					/* translators: $s - license type. */
-					esc_html__( 'Your license key type is %s.', 'wpforms-lite' ),
-					'<strong>' . esc_html( $type ) . '</strong>'
+					esc_html__( 'Your license key level is %s.', 'wpforms-lite' ),
+					'<strong>' . esc_html( ucwords( $type ) ) . '</strong>'
 				) .
 				'</p>';
 	$output .= '<p class="desc ' . $class . '">' .
-				wp_kses(
-					__( 'If your license has been upgraded or is incorrect, <a href="#" id="wpforms-setting-license-key-refresh">click here to force a refresh</a>.', 'wpforms-lite' ),
-					array(
-						'a' => array(
-							'href' => array(),
-							'id'   => array(),
-						),
-					)
-				) .
-				'</p>';
+				sprintf( /* translators: %s - Refresh link. */
+					esc_html__( 'If your license has been upgraded or is incorrect, then please %1$sforce a refresh%2$s.', 'wpforms-lite' ),
+					'<a href="#" id="wpforms-setting-license-key-refresh">',
+					'</a>'
+				)
+				. '</p>';
 
 	return $output;
 }
@@ -345,8 +341,8 @@ function wpforms_settings_radio_callback( $args ) {
 	foreach ( $args['options'] as $option => $name ) {
 
 		$checked = checked( $value, $option, false );
-		$output .= '<label for="wpforms-setting-' . $id . '[' . $x . ']" class="option-' . sanitize_html_class( $option ) . '">';
 		$output .= '<input type="radio" id="wpforms-setting-' . $id . '[' . $x . ']" name="' . $id . '" value="' . esc_attr( $option ) . '" ' . $checked . '>';
+		$output .= '<label for="wpforms-setting-' . $id . '[' . $x . ']" class="option-' . sanitize_html_class( $option ) . '">';
 		$output .= esc_html( $name );
 		$output .= '</label>';
 		$x ++;

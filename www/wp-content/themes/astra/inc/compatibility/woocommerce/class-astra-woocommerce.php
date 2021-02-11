@@ -46,7 +46,7 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) :
 		 */
 		public function __construct() {
 
-			require_once ASTRA_THEME_DIR . 'inc/compatibility/woocommerce/woocommerce-common-functions.php';
+			require_once ASTRA_THEME_DIR . 'inc/compatibility/woocommerce/woocommerce-common-functions.php';// phpcs:ignore: WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound
 
 			add_filter( 'woocommerce_enqueue_styles', array( $this, 'woo_filter_style' ) );
 
@@ -101,6 +101,109 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) :
 			add_filter( 'woocommerce_get_stock_html', 'astra_woo_product_in_stock', 10, 2 );
 
 			add_filter( 'astra_schema_body', array( $this, 'remove_body_schema' ) );
+
+			// Header Cart Icon.
+			add_action( 'astra_woo_header_cart_icons_before', array( $this, 'header_cart_icon_markup' ) );
+
+			add_action( 'astra_cart_in_menu_class', array( $this, 'header_cart_icon_class' ), 99 );
+
+		}
+
+		/**
+		 * Header Cart Extra Icons markup
+		 *
+		 * @return void;
+		 */
+		public function header_cart_icon_markup() {
+
+			if ( ! Astra_Builder_Helper::$is_header_footer_builder_active && ! defined( 'ASTRA_EXT_VER' ) ) {
+				return;
+			}
+
+			$icon               = astra_get_option( 'woo-header-cart-icon' );
+			$cart_total_display = astra_get_option( 'woo-header-cart-total-display' );
+			$cart_count_display = apply_filters( 'astra_header_cart_count', true );
+			$cart_title_display = astra_get_option( 'woo-header-cart-title-display' );
+			$cart_title         = apply_filters( 'astra_header_cart_title', __( 'Cart', 'astra' ) );
+
+			$cart_title_markup = '<span class="ast-woo-header-cart-title">' . esc_html( $cart_title ) . '</span>';
+			$cart_total_markup = '';
+			if ( null !== WC()->cart ) {
+				$cart_total_markup = '<span class="ast-woo-header-cart-total">' . WC()->cart->get_cart_subtotal() . '</span>';
+			}
+
+			// Cart Title & Cart Cart total markup.
+			$cart_info_markup = sprintf(
+				'<span class="ast-woo-header-cart-info-wrap">
+						%1$s
+						%2$s
+						%3$s
+					</span>',
+				( $cart_title_display ) ? $cart_title_markup : '',
+				( $cart_total_display && $cart_title_display ) ? '/' : '',
+				( $cart_total_display ) ? $cart_total_markup : ''
+			);
+
+			$cart_contents_count = 0;
+			if ( null !== WC()->cart ) {
+				$cart_contents_count = WC()->cart->get_cart_contents_count();
+			}
+
+			// Cart Icon markup with total number of items.
+			$cart_icon = sprintf(
+				'<i class="astra-icon ast-icon-shopping-%1$s %2$s"	
+							%3$s
+						></i>',
+				( $icon ) ? $icon : '',
+				( $cart_count_display ) ? '' : 'no-cart-total',
+				( $cart_count_display ) ? 'data-cart-total="' . $cart_contents_count . '"' : ''
+			);
+
+			// Theme's default icon with cart title and cart total.
+			if ( 'default' == $icon || ! defined( 'ASTRA_EXT_VER' ) || ( defined( 'ASTRA_EXT_VER' ) && ! Astra_Ext_Extension::is_active( 'woocommerce' ) ) ) {
+				// Cart Total or Cart Title enable then only add markup.
+				if ( $cart_title_display || $cart_total_display ) {
+					echo $cart_info_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				}
+			} else {
+
+				// Remove Default cart icon added by theme.
+				add_filter( 'astra_woo_default_header_cart_icon', '__return_false' );
+
+				/* translators: 1: Cart Title Markup, 2: Cart Icon Markup */
+				printf(
+					'<div class="ast-addon-cart-wrap">
+							%1$s
+							%2$s
+					</div>',
+					( $cart_title_display || $cart_total_display ) ? $cart_info_markup : '', // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					( $cart_icon ) ? $cart_icon : '' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				);
+			}
+		}
+
+		/**
+		 * Header Cart Icon Class
+		 *
+		 * @param array $classes Default argument array.
+		 *
+		 * @return array;
+		 */
+		public function header_cart_icon_class( $classes ) {
+
+			if ( ! Astra_Builder_Helper::$is_header_footer_builder_active && ! defined( 'ASTRA_EXT_VER' ) ) {
+				return $classes;
+			}
+
+			$header_cart_icon_style = astra_get_option( 'woo-header-cart-icon-style' );
+
+			$classes[]                  = 'ast-menu-cart-' . $header_cart_icon_style;
+			$header_cart_icon_has_color = astra_get_option( 'woo-header-cart-icon-color' );
+			if ( ! empty( $header_cart_icon_has_color ) && ( 'none' !== $header_cart_icon_style ) ) {
+				$classes[] = 'ast-menu-cart-has-color';
+			}
+
+			return $classes;
 		}
 
 		/**
@@ -734,6 +837,11 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) :
 			$woo_shop_archive_width     = astra_get_option( 'shop-archive-width' );
 			$woo_shop_archive_max_width = astra_get_option( 'shop-archive-max-width' );
 
+			// global button border settings.
+			$global_custom_button_border_size = astra_get_option( 'theme-button-border-group-border-size' );
+			$btn_border_color                 = astra_get_option( 'theme-button-border-group-border-color' );
+			$btn_border_h_color               = astra_get_option( 'theme-button-border-group-border-h-color' );
+
 			$css_output = array(
 				'.woocommerce span.onsale, .wc-block-grid__product .wc-block-grid__product-onsale' => array(
 					'background-color' => $theme_color,
@@ -812,7 +920,7 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) :
 					'color' => esc_attr( $link_color ),
 				),
 
-				'.woocommerce a.remove:hover, .ast-woocommerce-cart-menu .main-header-menu .woocommerce-custom-menu-item li:hover > a.remove:hover' => array(
+				'.woocommerce a.remove:hover, .ast-woocommerce-cart-menu .main-header-menu .woocommerce-custom-menu-item .menu-item:hover > .menu-link.remove:hover' => array(
 					'color'            => esc_attr( $link_color ),
 					'border-color'     => esc_attr( $link_color ),
 					'background-color' => esc_attr( '#ffffff' ),
@@ -1236,6 +1344,30 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) :
 			/* Parse CSS from array()*/
 			$css_output .= astra_parse_css( $woo_product_css, astra_get_tablet_breakpoint( '', 1 ) );
 
+			/*
+			* global button settings not working for woocommerce button on shop and single page.
+			* check if the current user is existing user or new user.
+			* if new user load the CSS bty default if existing provide a filter
+			*/
+			if ( self::astra_global_btn_woo_comp() ) {
+
+				$woo_global_button_css = array(
+					'.woocommerce a.button , .woocommerce button.button.alt ,.woocommerce-page table.cart td.actions .button, .woocommerce-page #content table.cart td.actions .button , .woocommerce a.button.alt ,.woocommerce .woocommerce-message a.button , .ast-site-header-cart .widget_shopping_cart .buttons .button.checkout, .woocommerce button.button.alt.disabled , .wc-block-grid__products .wc-block-grid__product .wp-block-button__link ' => array(
+						'border'              => 'solid',
+						'border-top-width'    => ( isset( $global_custom_button_border_size['top'] ) && '' !== $global_custom_button_border_size['top'] ) ? astra_get_css_value( $global_custom_button_border_size['top'], 'px' ) : '0',
+						'border-right-width'  => ( isset( $global_custom_button_border_size['right'] ) && '' !== $global_custom_button_border_size['right'] ) ? astra_get_css_value( $global_custom_button_border_size['right'], 'px' ) : '0',
+						'border-left-width'   => ( isset( $global_custom_button_border_size['left'] ) && '' !== $global_custom_button_border_size['left'] ) ? astra_get_css_value( $global_custom_button_border_size['left'], 'px' ) : '0',
+						'border-bottom-width' => ( isset( $global_custom_button_border_size['bottom'] ) && '' !== $global_custom_button_border_size['bottom'] ) ? astra_get_css_value( $global_custom_button_border_size['bottom'], 'px' ) : '0',
+						'border-color'        => $btn_border_color ? $btn_border_color : $btn_bg_color,
+					),
+					'.woocommerce a.button:hover , .woocommerce button.button.alt:hover , .woocommerce-page table.cart td.actions .button:hover, .woocommerce-page #content table.cart td.actions .button:hover, .woocommerce a.button.alt:hover ,.woocommerce .woocommerce-message a.button:hover , .ast-site-header-cart .widget_shopping_cart .buttons .button.checkout:hover , .woocommerce button.button.alt.disabled:hover , .wc-block-grid__products .wc-block-grid__product .wp-block-button__link:hover' => array(
+						'border-color' => $btn_border_h_color ? $btn_border_h_color : $btn_bg_h_color,
+					),
+				);
+
+				$css_output .= astra_parse_css( $woo_global_button_css );
+			}
+
 			if ( $is_site_rtl ) {
 				$woo_product_lang_direction_css = array(
 					'.woocommerce.woocommerce-checkout form #customer_details.col2-set, .woocommerce-page.woocommerce-checkout form #customer_details.col2-set' => array(
@@ -1343,6 +1475,7 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) :
 		 */
 		public function customize_register( $wp_customize ) {
 
+			// @codingStandardsIgnoreStart WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound
 			/**
 			 * Register Sections & Panels
 			 */
@@ -1356,6 +1489,7 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) :
 			require ASTRA_THEME_DIR . 'inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-layout-configs.php';
 			require ASTRA_THEME_DIR . 'inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-single-layout-configs.php';
 			require ASTRA_THEME_DIR . 'inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-cart-layout-configs.php';
+			// @codingStandardsIgnoreEnd WPThemeReview.CoreFunctionality.FileInclude.FileIncludeFound
 
 		}
 
@@ -1396,6 +1530,9 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) :
 			$cart_menu_classes = apply_filters( 'astra_cart_in_menu_class', array( 'ast-menu-cart-with-border' ) );
 
 			ob_start();
+			if ( is_customize_preview() && Astra_Builder_Helper::$is_header_footer_builder_active ) { 
+				Astra_Builder_UI_Controller::render_customizer_edit_button();
+			}
 			?>
 			<div id="ast-site-header-cart" class="ast-site-header-cart <?php echo esc_attr( implode( ' ', $cart_menu_classes ) ); ?>">
 				<div class="ast-site-header-cart-li <?php echo esc_attr( $class ); ?>">
@@ -1443,7 +1580,7 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) :
 						if ( apply_filters( 'astra_woo_default_header_cart_icon', true ) ) {
 							?>
 							<div class="ast-cart-menu-wrap">
-								<span class="count"> 
+								<span class="count">
 									<?php
 									if ( apply_filters( 'astra_woo_header_cart_total', true ) && null != WC()->cart ) {
 										echo WC()->cart->get_cart_contents_count(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -1477,6 +1614,17 @@ if ( ! class_exists( 'Astra_Woocommerce' ) ) :
 			return $fragments;
 		}
 
+		/**
+		 * For existing users, do not load the wide/full width image CSS by default.
+		 *
+		 * @since 2.5.0
+		 * @return boolean false if it is an existing user , true if not.
+		 */
+		public static function astra_global_btn_woo_comp() {
+			$astra_settings                       = get_option( ASTRA_THEME_SETTINGS );
+			$astra_settings['global-btn-woo-css'] = isset( $astra_settings['global-btn-woo-css'] ) ? false : true;
+			return apply_filters( 'astra_global_btn_woo_comp', $astra_settings['global-btn-woo-css'] );
+		}
 	}
 
 endif;

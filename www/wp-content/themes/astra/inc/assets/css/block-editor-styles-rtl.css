@@ -344,6 +344,7 @@ html {
 
 .edit-post-visual-editor .ast-search-menu-icon {
   position: relative;
+  z-index: 3;
 }
 
 .edit-post-visual-editor .ast-header-break-point.ast-header-custom-item-outside .main-header-bar .ast-search-icon {
@@ -399,6 +400,7 @@ html {
   top: 7px;
   width: auto;
   z-index: 100000;
+  outline: thin dotted;
 }
 
 .logged-in .edit-post-visual-editor .site .skip-link {
@@ -716,13 +718,6 @@ h6 {
   color: #fff;
   border-color: #003f5e;
   box-shadow: inset 0 2px 5px -3px black;
-}
-
-#elementor-editor-button[disabled], #elementor-editor-button:disabled, #elementor-editor-button.button-primary-disabled, #elementor-editor-button.disabled {
-  color: #c7ced1 !important;
-  background: #005781 !important;
-  border-color: #005781 !important;
-  text-shadow: none !important;
 }
 
 #elementor-editor-button i {

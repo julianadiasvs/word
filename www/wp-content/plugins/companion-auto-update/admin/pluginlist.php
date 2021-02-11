@@ -157,7 +157,6 @@ if( isset( $_POST['reset'] ) ) {
 				<td class="column-name">
 					<p style="margin-bottom: 0px;"><strong>'. $name .'</strong></p>
 					<small class="description" style="opacity: 0.5; margin-bottom: 3px;">'.$actualSlug.'</small>
-					<p>'.cau_updatePluginInformation( $actualSlug, 'Auto', 'Version' ).'</p>
 				</td>
 
 				<td class="cau_hide_on_mobile column-status">

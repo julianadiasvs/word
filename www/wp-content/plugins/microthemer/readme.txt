@@ -1,26 +1,26 @@
-﻿=== Microthemer Lite ===
+﻿=== Microthemer Lite - Visual Editor to Customize CSS ===
 
 Contributors: bastywebb, joseluiscruz, ahrale
 Donate link: http://themeover.com/microthemer/
-Tags: css editor, responsive design, css grid, sass, scss, visual css style editor, style editor, css hero, yellow pencil, elementor, beaver builder, oxygen, divi, customize theme, css plugin, animation, transition, fonts, color, colors, google fonts
+Tags: css, customize, visual editor, google fonts, responsive
 Requires at least: 3.6
-Tested up to: 5.4
+Tested up to: 5.6
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-A CSS editor for responsively customizing the appearance of any WordPress theme or plugin, with or without writing code.
+A visual editor to customize the CSS styling of anything on your site - from google fonts to responsive layouts.
 
 == Description ==
 
-Microthemer is a light-weight yet powerful CSS editor for responsively customizing the appearance of any WordPress theme or plugin content (e.g. contact forms), down to the smallest detail. Microthemer caters for both coders and non-coders.
+A light-weight yet powerful visual editor to customize the CSS styling of any aspect of your site, from google fonts to responsive layouts. Microthemer caters for both coders and non-coders, and plays really well with page builders like Elementor, Beaver Builder, and Oxygen.
 
-= Main Features (for all users) =
+= Main Features (for both coders and non-coders) =
 
-1. **Style anything** on your web page, including headers, menus, sidebars footers, and plugin content.
-2. **Intuitive visual editing**.
-3. **Over 100 style options** at your disposal e.g. Google Web Fonts, background color, font-family, CSS3 gradients, drop shadow etc. Pro-only styles include animation, transition, and flexbox.
-4. **Design responsively** without the usual headaches. Preview your site at different screen sizes and apply *media queries styles* without writing code.
+1. **Customize the CSS styling of anything** on your page, including headers, menus, sidebars, footers, and plugin content (e.g. contact forms).
+2. **Intuitive visual editor**.
+3. **Over 100 CSS style options** at your disposal e.g. Google Fonts, padding, margin, backgrounds, gradients, shadows, CSS filters etc. Pro-only styles include animation, transition, transform, flexbox, CSS grid.
+4. **Responsive design** without the usual headaches. Preview your site at different screen sizes and apply *media queries styles* without writing code.
 5. **Export your designs** as a zip file. For sharing with friends, or transferring between domains.
 6. **In-program docs** so you can learn about CSS, or refresh your memory.
 7. **History feature**, so you can go back if you make a mistake.
@@ -36,9 +36,9 @@ Microthemer is a light-weight yet powerful CSS editor for responsively customizi
 17. **Great support** provided via <a title="Microthemer Support Forum" href="http://themeover.com/forum/" target="_blank">our dedicated Microthemer forum</a>.
 18. Free <a title="HTML, CSS Layout & Responsive Design - Using WordPress & Microthemer" href="https://themeover.com/html-css-responsive-design-wordpress-microthemer/" target="_blank">CSS, HTML, and responsive design tutorial</a>.
 19. Event-based animation (e.g. onClick, inView)
+20. Work with any CSS unit e.g. em, rem, %, vw etc.
 
-
-= Main Features for developers =
+= Main Features for coders only =
 
 1. **Full code editor** that lets you write code in the browser while looking at the page.
 2. **Hybrid GUI code editor** if you want to leverage the power of the GUI but prefer writing CSS properties and values by hand.
@@ -51,25 +51,28 @@ Microthemer is a light-weight yet powerful CSS editor for responsively customizi
 9. **Hide from clients** by uninstalling or deactivating, but still use the CSS Microthemer generates by copying and pasting a few lines of PHP code to your theme's functions.php file.
 
 = Free VS Premium version =
-This free version limits you styling 15 things, and doesn't include flexbox, transition, or animation features. To unlock the full program, you can purchase a <a href="http://themeover.com/microthemer/" target="_blank">Standard</a> ($45) or <a href="http://themeover.com/microthemer/" target="_blank">Developer</a> ($90) license.
+This free version limits you styling 15 things, and doesn't include flexbox, CSS grid, transition, transform, or animation features. To unlock the full program, you can <a href="http://themeover.com/microthemer/" target="_blank">purchase a license</a> (monthly, annual, or lifetime).
 
-= Getting started video  =
+= Getting started video (1:42)  =
 
-https://www.youtube.com/watch?v=NZFbc-KuMPk
+https://www.youtube.com/watch?v=0xD3ocavjVg
 
-= Using Microthemer with Beaver Builder  =
+= Customize Elementor CSS with Microthemer =
+
+https://www.youtube.com/watch?v=n6CQNt_oQrw
+
+= Customize Beaver Builder CSS with Microthemer  =
 
 https://www.youtube.com/watch?v=9uZgor8Pay8
 
-= Learn flexbox with Microthemer in 14 mins  =
+= Customize Oxygen CSS with Microthemer =
 
-https://www.youtube.com/watch?v=XoAt9R148NY
-
+https://www.youtube.com/watch?v=wLWeo5MpYPY
 
 == Installation ==
 
 1. Click the 'Plugins' menu option in WordPress.
-2. Search for 'Microthemer Lite'.
+2. Search for 'Microthemer'.
 3. Install and activate the plugin.
 4. Go to the 'Microthemer' menu option.
 5. Start customizing the appearance of your site.
@@ -81,7 +84,7 @@ https://www.youtube.com/watch?v=XoAt9R148NY
 Yes. Please post your question in <a title="Microthemer Support Forum" href="http://themeover.com/forum/" target="_blank">our Microthemer forum</a>.  
 
 = Where can I find documentation? =
-Microthemer has built-in documentation! Just click the help icon (top right of the interface) to load the tutorials and CSS Reference. You can also search and post questions in our forum from there without having to leave the Microthemer interface.
+Microthemer has built-in documentation! Just click the Help option (top right of the interface) to load the tutorials and CSS Reference. You can also search and post questions in our forum from there without having to leave the Microthemer interface.
 
 
 == Screenshots ==
@@ -97,6 +100,317 @@ Microthemer has built-in documentation! Just click the help icon (top right of t
 9. You can view the CSS code Microthemer generates for debugging or copying and pasting elsewhere. Some users like the fact you can deactivate Microthemer and still make the use of the styles (without having to copy and paste CSS).
 
 == Changelog ==
+
+= 6.3.6.1 (February 8th, 2021) =
+
+# Change
+* Non-English versions of Microthemer always load translated JavaScript data inline, rather than trying to write to a file initially.
+
+# Bugs fixed
+* Activating non-English versions of Microthemer could generate unwanted output.
+
+= 6.3.5.9 (January 31st, 2021) =
+
+# Bugs fixed
+
+* Under some circumstances, rapidly searching a dropdown menu could generate a JavaScript error: "Cannot read property 'value' of undefined".
+
+= 6.3.5.8 (January 23rd, 2021) =
+
+# Bugs fixed
+* PHP warning: Required parameter $sel_code follows optional parameter $con
+
+= 6.3.5.7 (January 22nd, 2021) =
+
+# Bugs fixed
+* Grid highlighting could also be misaligned if the body element had a non-static position value.
+
+= 6.3.5.6 (January 22nd, 2021) =
+
+# Bugs fixed
+* Issue with Microthemer interface not loading the frontend.
+* Microthemer's element highlighting could be misaligned if the body element had a non-static position value.
+
+= 6.3.5.4 (January 19th, 2021) =
+
+# Enhancement
+* Added a temporary 'Compatibility' tab to the preferences where you can choose to load an older version of jQuery. This was to address a number of reports from customers that are having issues with WordPress 5.6 and Microthemer 6.3.5.2, which stopped reverting jQuery by default.
+
+= 6.3.5.3 (January 15th, 2021) =
+
+# Bugs fixed
+* Tooltips had very low opacity.
+
+= 6.3.5.2 (January 11th, 2021) =
+
+# Bugs fixed
+* Removed deprecated jQuery functions that are not compatible with the native version of jQuery that ships with WordPress 5.6 and later.
+* Using the icons in the CSS property menus (e.g. clear/save) triggered focus on the current value.
+
+= 6.3.5.0 (January 2nd, 2021) =
+
+# Change
+* Updated the Sass compiler to the latest version.
+
+= 6.3.4.9 (December 17th, 2020) =
+
+# Bugs fixed
+* Intermittent error where 'WordPress Site loading' message lingers, and page could not be interacted with. This affected certain sites and certain browsers more than others, but was related to the WordPress 5.6 conflict.
+
+= 6.3.4.8 (December 9th, 2020) =
+
+# Bugs fixed
+* Compatibility issue with WordPress 5.6, which loads a new jQuery version.
+
+= 6.3.4.7 (December 4th, 2020) =
+
+# Change
+* Removed 'Clear all styles' option, which kept folders and selectors intact. This options was more relevant in the early days of Microthemer.
+
+# Bugs fixed
+* The width of nth-formula and property fields was not increasing to match the length of the value in the dock top view.
+* The blue dot appeared in the wrong place for color picker fields when options were docked left.
+* Switching to the grid controls when a dropdown menu was showing closed the menu but the value slider remained visible.
+* Using the function repeat(auto-fit, minmax(320px, 1fr)) had the last bracket removed when returning to edit the selector.
+* Using grid-area shorthand in the code editor did not always map to the UI fields correctly.
+* Microthemer was converting grid-template-rows/columns to shorthand (grid or grid-template) if all relevant properties were set, even if a repeat function was used, which is not valid.
+
+= 6.3.4.0 (November 24th, 2020) =
+
+# Bugs fixed
+* CSS grid highlight lines were misaligned in Firefox.
+
+= 6.3.3.9 (November 24th, 2020) =
+
+# Bugs fixed
+* CSS grid highlight lines were not displaying.
+* When importing raw CSS via Packs > Import > CSS stylesheet, Microthemer was converting non-pixel units to pixels.
+
+= 6.3.3.7 (November 2nd, 2020) =
+
+# Bugs fixed
+* A strangely large font-size could display in the code editor if the Monaco font was installed.
+* Oxygen integration - Microthemer was not responding to the left sidebar being hidden, which could result in the wrong responsive view size.
+* Oxygen integration - when launching O2 with the grid options active, a JS error displayed and selecting elements with MT was not possible.
+
+= 6.3.3.4 (October 27th, 2020) =
+
+# Bugs fixed
+* JS error when clearing border-color fields that were linked by chain icon: Cannot read property 'hasClass' of undefined
+
+= 6.3.3.3 (October 27th, 2020) =
+
+# Bugs fixed
+* Conflict with WP 5.6 beta - clicking the CSS property dropdown dots caused a JavaScript error.
+
+= 6.3.3.2 (October 26th, 2020) =
+
+# Enhancement
+* If the page loads more than 2500 style rules, the Styles tab can still be used for one-time analysis of CSS applying to an element.
+
+# Bugs fixed
+* With the options docked left, the grid template/auto column and row headings were not aligned correctly.
+* CSS variables and values could not be sampled if the page loads more than 2500 style rules. Now MT provides a confirm prompt in such circumstances.
+
+= 6.3.2.9 (October 19th, 2020) =
+
+# Enhancement
+* Sass editing mode now supports autocomplete.
+
+# Bugs fixed
+* Long selectors in the quick targeting suggestions could mis-align the options.
+* Possible JS error when creating a selector: Uncaught TypeError: Cannot read property 'val' of undefined.
+
+= 6.3.2.6 (October 14th, 2020) =
+
+# Enhancement
+* MT inactive code can now be run as a separate simple plugin, as an alternative to copying code to a child theme's functions.php file. This may be easier for beginners, and is necessary for Oxygen Builder users because Oxygen disables the theme.
+
+# Bugs fixed
+* MT inactive code could generate a deprecated warning on modern versions of PHP: Unparenthesized `a ? b : c ? d : e` is deprecated.
+
+= 6.3.2.4 (September 28th, 2020) =
+
+# Enhancement
+* Clicking the 'x' in CSS property fields give the input focus to make it easier to enter a new value.
+
+= 6.3.2.2 (September 28th, 2020) =
+
+# Enhancement
+* MT now checks for data formatting issues on each page load. It's unclear how these data formatting issues occur, but they will no longer present a problem for users while we're establishing the root cause.
+
+# Change
+* Disabled browser caching of Microthemer's HTML, which could happen when using the forward/back button, and perhaps in other instances. HTML caching could lead to a false positive 'Multiple browser tabs' warning.
+
+# Bugs fixed
+* In Firefox, the scroll buttons did not display if there were too many responsive tabs to fit in the available screen space.
+* Undefined JS error when trying to use the selectors menu.
+
+= 6.3.1.8 (September 23rd, 2020) =
+
+# Change
+* When exiting Microthemer, it warns if recent changes have not been saved. Previously, MT waited for changes to save before proceeding to the next page, but some browsers have stopped allowing that.
+
+# Bugs fixed
+* Changing a selector's code via the editor did not always save correctly.
+* Junk history items were added to the revisions table when editing a selector's code via the editor.
+
+= 6.3.1.5 (September 18th, 2020) =
+
+# Bugs fixed
+* Using the shorthand transform scale function was setting scaleY to "1", rather than the same as scaleX, if only one number was supplied.
+* Using the shorthand skew() and translate() functions were setting the Y axis to "1", by default, when the correct value is "0".
+
+= 6.3.1.3 (September 17th, 2020) =
+
+# Bugs fixed
+* Microthemer did not sync the responsive views with Elementor correctly when adjusting the size of the left panel or the navigator on the right.
+* The Elementor preview URL parameter (elementor-preview) in MT's recently viewed pages menu could cause the 60 second site loading message to display.
+
+= 6.3.1.0 (September 13th, 2020) =
+
+# Enhancement
+* Recently viewed pages can be cleared from the menu.
+
+# Bugs fixed
+* Recently visited pages in the Pages dropdown menu could have the wrong path on: a) multisite installs, b) if WordPress was installed in a sub-folder, c) if a proxy domain was being used e.g. //localhost:8080. Note, this update resets recent pages to ensure badly formatted paths do not linger on.
+
+= 6.3.0.8 (September 12th, 2020) =
+
+# Bugs fixed
+* Microthemer didn't always load the correct URL parameters for editing oxygen pages, which could result in only the inner content being editable, and under some circumstances Oxygen data loss.
+
+= 6.3.0.7 (September 12th, 2020) =
+
+# Bugs fixed
+* The previous update caused the slider menu to show on non-numeric dropdowns too.
+
+= 6.3.0.6 (September 11th, 2020) =
+
+# Enhancement
+* Microthemer shows the pixel equivalent for comparable units (e.g. em, rem, %, vmax) at the top right of the suggestions menu.
+
+# Bugs fixed
+* The slider controls could become misaligned if a user action changed the width of the suggestions menu (e.g. filtering the results, or clearing a long suggestion).
+* Clearing a single suggestion selected the value being cleared, and as a result added the suggestion back to the list. This issue was due to WordPress 5.5 removing the jQuery migration script. It's likely that also caused a range of other bugs in MT, so I am restoring the migration script for now.
+* Switching the CSS unit when no value was set in the field did not always work as expected.
+
+= 6.3.0.2 (September 9th 2020) =
+
+# Bugs fixed
+* Compatibility issue with Agency Base whereby the Agency Base stylesheet was unloaded when targeting elements if Oxygen was active inside MT and the Styles tab was open.
+
+= 6.3.0.1 (August 27th 2020) =
+
+# Bugs fixed
+* The animation play button was misaligned in Firefox.
+
+= 6.3.0.0 (August 27th 2020) =
+
+# Bugs fixed
+* The pre-update settings were not being saved to the history table when upgrading without deactivating MT first.
+* Design pack screenshots were not showing, and could cause a PHP warning.
+* Version bumped to 6.3 as I forgot to do this with version 6.2.4.8, which was a major release.
+
+= 6.2.4.9 (August 26th 2020) =
+
+# Bugs fixed
+* The CSS unit reverted to pixels when editing a field's value after using the CSS unit menu to set a new unit.
+
+= 6.2.4.8 (August 25th 2020) =
+
+# Enhancement
+* Transform and filter properties added.
+* Sliders added for numeric fields.
+* Better support for different CSS units.
+* Mousewheel value adjust for numeric CSS property fields
+* Keyboard up/down arrow adjust for numeric fields
+* Hold shift to increase increments (x10) when using plus/minus buttons, keyboard arrows, or mousewheel.
+* Press and hold feature for the plus/minus slider buttons.
+* Tidied up Microthemer's preferences page.
+* Mousewheel can be used to cycle through dropdown menu values without showing the menu.
+* When opening a dropdown menu, the current value gains focus. The up and down arrows can used to switch focus from that anchor point.
+* Added a confirm prompt for clearing the styles of all selectors in a folder.
+* Trying out numberless slider that drags right for increasing values, which may feel more intuitive. Enable this via preferences by setting 'Enable tape measure style sliders' to 'No'.
+
+# Change
+* Recently used values are not added to the dropdown menu while it is still showing. As this caused continuity issues, and may have been an unnecessary distraction.
+* MT auto-navigates to a copied selector, rather than keeping focus on the original selector.
+
+# Bugs fixed
+* When importing selector code with duplicate properties, but different property values, a data formatting issue could occur.
+* When importing style rules with duplicate properties AND values, Microthemer was not filtering the duplicates out.
+* Loading a old design pack from the earliest versions of Microthemer did not update to the current data structure correctly.
+* Invalid suggestions removed from grid auto columns/rows menu: repeat functions and none.
+* Dropdown menus weren't working on standalone preferences page.
+* Grid nth radio buttons could be cut off if scrollbars were needed.
+* The white-space property didn't have an icon.
+* Clicking the Item:1 number of the grid tabs didn't activate the tab.
+* Border-color didn't sync if a CSS variable was used (even with the chain on).
+* Left ruler did not show when docking all options left (until the sidebar was resized for the first time).
+* Downloading a design pack didn't work with WordPress 5.5 due to a jQuery version change. References to the deprecated .live() function were removed.
+* Clearing a copied selector could also clear the original selector if the inline code editor was showing.
+* Compatibility issue with Elementor - didn't activate properly inside MT.
+* Non-english translations of MT didn't show correct translation strings for CSS property names.
+* Clearing sampled CSS property values (single) didn't work.
+
+= 6.2.1.5 (August 5th 2020) =
+
+# Bugs fixed
+* The last fix (6.2.1.4) included some Portuguese text!
+
+= 6.2.1.4 (August 4th 2020) =
+
+# Bugs fixed
+* Translated versions of Microthemer had an issue with the custom code editor wiping out styles.
+
+= 6.2.1.3 (July 23rd 2020) =
+
+# Bugs fixed
+* Microthemer's fallback proxy connection for unsuccessful unlock attempts wasn't working properly.
+
+= 6.2.1.2 (July 23rd 2020) =
+
+# Bugs fixed
+* Previous fix didn't cater for media query settings.
+* The animation button was misaligned.
+* Importing raw CSS could miss styles added to media queries if the media query didn't already exist in Microthemer.
+
+= 6.2.0.9 (July 22nd 2020) =
+
+# Bugs fixed
+* Changing a selector's code via the selectors menu could result in the old code being appended to the new code if the selector had a non-GUI supported style.
+
+= 6.2.0.8 (July 21st 2020) =
+
+# Bugs fixed
+* Conflict with Agency tools where MT could change order its stylesheet loaded when O2 was active.
+* Importing CSS from stylesheet did not set the blue dots correctly to signal which selectors have styles.
+* The CSS stylesheet import review stats did not list non-GUI supported styles (e.g. CSS variables or border-image-slice).
+* Issue when importing CSS from a stylesheet when Sass support is enabled: Uncaught ReferenceError: value is not defined.
+* Issue clearing a whole folder when the code editor is docked left: Cannot read property 'find' of undefined.
+* Issue syncing width between editor and UI if display property was set to 'grid'.
+
+= 6.2.0.7 (July 9th 2020) =
+
+# Bugs fixed
+* Custom grid item rules could sync with the UI when they shouldn't.
+
+= 6.2.0.6 (July 2nd 2020) =
+
+# Enhancement
+* Microthemer auto-disabled the Styles tab if there are too many CSS rules to analyse.
+
+= 6.2.0.5 (June 22nd 2020) =
+
+# Bugs fixed
+* The white-space CSS property field went missing.
+
+= 6.2.0.4 (June 12th 2020) =
+
+# Bugs fixed
+* Notifications form other plugins could show on MT sub pages (e.g. Manage packs or Google fonts browser)
+* CSS conflict with Admin 2020 theme wasn't fully fixed in preview release.
 
 = 6.2.0.2 (June 9th 2020) =
 

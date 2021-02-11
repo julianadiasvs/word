@@ -6,6 +6,9 @@
  * @package    RankMath
  * @subpackage RankMath\Sitemap
  * @author     Rank Math <support@rankmath.com>
+ *
+ * @copyright Copyright (C) 2008-2019, Yoast BV
+ * The following code is a derivative work of the code from the Yoast(https://github.com/Yoast/wordpress-seo/), which is licensed under GPL v3.
  */
 
 namespace RankMath\Sitemap;
@@ -28,7 +31,7 @@ class Image_Parser {
 	use Hooker;
 
 	/**
-	 * Holds the home_url() value to speed up loops.
+	 * Holds the `home_url()` value to speed up loops.
 	 *
 	 * @var string
 	 */
@@ -128,7 +131,7 @@ class Image_Parser {
 	}
 
 	/**
-	 * Get term images
+	 * Get term images.
 	 *
 	 * @param object $term Term to get images from description for.
 	 *
@@ -211,7 +214,7 @@ class Image_Parser {
 	}
 
 	/**
-	 * Get images from custom fields
+	 * Get images from custom fields.
 	 */
 	private function get_custom_field_images() {
 		$customs = Helper::get_settings( 'sitemap.pt_' . $this->post->post_type . '_image_customfields' );
@@ -259,7 +262,7 @@ class Image_Parser {
 	}
 
 	/**
-	 * Get dom document.
+	 * Get DOM document.
 	 *
 	 * @param string $content Content to parse.
 	 *
@@ -306,7 +309,10 @@ class Image_Parser {
 		}
 
 		$src     = $this->get_absolute_url( $src );
-		$no_host = ! Str::contains( $this->host, $src ) || esc_url( $src ) !== $src;
+		$no_host = esc_url( $src ) !== $src;
+		if ( ! $this->do_filter( 'sitemap/include_external_image', false ) ) {
+			$no_host = ! Str::contains( $this->host, $src ) || esc_url( $src ) !== $src;
+		}
 
 		return $no_host ? false : $src;
 	}
@@ -421,7 +427,7 @@ class Image_Parser {
 	private function image_url( $post_id ) {
 		$src = $this->normalize_image_url( $post_id );
 
-		return false === $src ? '' : apply_filters( 'wp_get_attachment_url', $src, $post_id );
+		return false === $src ? '' : apply_filters( 'wp_get_attachment_url', $src, $post_id ); // phpcs:ignore
 	}
 
 	/**
@@ -491,7 +497,7 @@ class Image_Parser {
 	/**
 	 * Returns the attachments for a gallery.
 	 *
-	 * @param int   $id      The post id.
+	 * @param int   $id      The post ID.
 	 * @param array $gallery The gallery config.
 	 *
 	 * @return array The selected attachments.
@@ -506,9 +512,9 @@ class Image_Parser {
 	}
 
 	/**
-	 * Returns the attachments for the given id.
+	 * Returns the attachments for the given ID.
 	 *
-	 * @param int   $id      The post id.
+	 * @param int   $id      The post ID.
 	 * @param array $gallery The gallery config.
 	 *
 	 * @return array The selected attachments.
@@ -528,7 +534,7 @@ class Image_Parser {
 	}
 
 	/**
-	 * Returns an array with attachments for the post ids that will be included.
+	 * Returns an array with attachments for the post IDs that will be included.
 	 *
 	 * @param array $include Array with ids to include.
 	 *
@@ -576,7 +582,7 @@ class Image_Parser {
 
 		$args = wp_parse_args( $args, $default_args );
 
-		$get_attachments = new WP_Query;
+		$get_attachments = new WP_Query();
 		return $get_attachments->query( $args );
 	}
 }

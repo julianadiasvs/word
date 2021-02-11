@@ -38,6 +38,13 @@ class Sitepress {
 	 */
 	private $has_get_terms_args = false;
 
+	/**
+	 * Has home_url filter removed.
+	 *
+	 * @var boolean
+	 */
+	private $has_home_url = false;
+
 
 	/**
 	 * Main instance
@@ -50,7 +57,7 @@ class Sitepress {
 		static $instance;
 
 		if ( is_null( $instance ) && ! ( $instance instanceof Sitepress ) ) {
-			$instance = new Sitepress;
+			$instance = new Sitepress();
 		}
 
 		return $instance;
@@ -104,15 +111,30 @@ class Sitepress {
 	}
 
 	/**
-	 * Get Site URL.
+	 * Remove home_url filter.
 	 */
-	public function get_site_url() {
+	public function remove_home_url_filter() {
 		if ( ! $this->is_active() ) {
-			return site_url();
+			return;
 		}
 
-		$sitepress = $this->get_var();
-		return $sitepress->language_url();
+		global $wpml_url_filters;
+		$this->has_home_url = remove_filter( 'home_url', [ $wpml_url_filters, 'home_url_filter' ], -10 );
+	}
+
+	/**
+	 * Restore home_url filter.
+	 */
+	public function restore_home_url_filter() {
+		if ( ! $this->is_active() ) {
+			return;
+		}
+
+		if ( $this->has_home_url ) {
+			global $wpml_url_filters;
+			$this->has_home_url = false;
+			add_filter( 'home_url', [ $wpml_url_filters, 'home_url_filter' ], -10, 4 );
+		}
 	}
 
 	/**

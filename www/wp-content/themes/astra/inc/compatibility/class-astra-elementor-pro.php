@@ -5,18 +5,20 @@
  * @package Astra
  */
 
-namespace Elementor;
+namespace Elementor; // phpcs:ignore PHPCompatibility.Keywords.NewKeywords.t_namespaceFound
 
 // If plugin - 'Elementor' not exist then return.
 if ( ! class_exists( '\Elementor\Plugin' ) || ! class_exists( 'ElementorPro\Modules\ThemeBuilder\Module' ) ) {
 	return;
 }
 
-namespace ElementorPro\Modules\ThemeBuilder\ThemeSupport;
+namespace ElementorPro\Modules\ThemeBuilder\ThemeSupport; // phpcs:ignore PHPCompatibility.Keywords.NewKeywords.t_namespaceFound, PHPCompatibility.LanguageConstructs.NewLanguageConstructs.t_ns_separatorFound
 
+// @codingStandardsIgnoreStart PHPCompatibility.Keywords.NewKeywords.t_useFound
 use Elementor\TemplateLibrary\Source_Local;
 use ElementorPro\Modules\ThemeBuilder\Classes\Locations_Manager;
 use ElementorPro\Modules\ThemeBuilder\Module;
+// @codingStandardsIgnoreEnd PHPCompatibility.Keywords.NewKeywords.t_useFound
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -97,8 +99,8 @@ if ( ! class_exists( 'Astra_Elementor_Pro' ) ) :
 			$did_location = Module::instance()->get_locations_manager()->do_location( 'archive' );
 			if ( $did_location ) {
 				// Search and default.
-				remove_action( 'astra_template_parts_content', array( \Astra_Loop::get_instance(), 'template_parts_search' ) );
-				remove_action( 'astra_template_parts_content', array( \Astra_Loop::get_instance(), 'template_parts_default' ) );
+				remove_action( 'astra_template_parts_content', array( \Astra_Loop::get_instance(), 'template_parts_search' ) );// phpcs:ignore PHPCompatibility.LanguageConstructs.NewLanguageConstructs.t_ns_separatorFound
+				remove_action( 'astra_template_parts_content', array( \Astra_Loop::get_instance(), 'template_parts_default' ) );// phpcs:ignore PHPCompatibility.LanguageConstructs.NewLanguageConstructs.t_ns_separatorFound
 
 				// Remove pagination.
 				remove_action( 'astra_pagination', 'astra_number_pagination' );
@@ -111,10 +113,13 @@ if ( ! class_exists( 'Astra_Elementor_Pro' ) ) :
 			// IS Single?
 			$did_location = Module::instance()->get_locations_manager()->do_location( 'single' );
 			if ( $did_location ) {
+
+				// @codingStandardsIgnoreStart PHPCompatibility.LanguageConstructs.NewLanguageConstructs.t_ns_separatorFound
 				remove_action( 'astra_page_template_parts_content', array( \Astra_Loop::get_instance(), 'template_parts_page' ) );
 				remove_action( 'astra_template_parts_content', array( \Astra_Loop::get_instance(), 'template_parts_post' ) );
 				remove_action( 'astra_template_parts_content', array( \Astra_Loop::get_instance(), 'template_parts_comments' ), 15 );
 				remove_action( 'astra_page_template_parts_content', array( \Astra_Loop::get_instance(), 'template_parts_comments' ), 15 );
+				// @codingStandardsIgnoreEnd PHPCompatibility.LanguageConstructs.NewLanguageConstructs.t_ns_separatorFound
 			}
 		}
 
@@ -191,6 +196,8 @@ if ( ! class_exists( 'Astra_Elementor_Pro' ) ) :
 				$sidebar = 'default';
 			}
 
+			// @codingStandardsIgnoreStart PHPCompatibility.FunctionDeclarations.NewClosure.Found
+
 			if ( 'default' !== $sidebar ) {
 				add_filter(
 					'astra_page_layout',
@@ -260,6 +267,7 @@ if ( ! class_exists( 'Astra_Elementor_Pro' ) ) :
 					}
 				);
 			}
+			// @codingStandardsIgnoreEnd PHPCompatibility.FunctionDeclarations.NewClosure.Found
 		}
 
 		/**

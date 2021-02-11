@@ -6,6 +6,9 @@
  * @package    RankMath
  * @subpackage RankMath\Sitemap
  * @author     Rank Math <support@rankmath.com>
+ *
+ * @copyright Copyright (C) 2008-2019, Yoast BV
+ * The following code is a derivative work of the code from the Yoast(https://github.com/Yoast/wordpress-seo/), which is licensed under GPL v3.
  */
 
 namespace RankMath\Sitemap;
@@ -73,7 +76,7 @@ class Generator extends XML {
 		$this->stylesheet     = '<?xml-stylesheet type="text/xsl" href="' . $this->stylesheet . '"?>';
 		$this->charset        = get_bloginfo( 'charset' );
 		$this->output_charset = $this->charset;
-		$this->timezone       = new Timezone;
+		$this->timezone       = new Timezone();
 
 		if (
 			'UTF-8' !== $this->charset
@@ -92,14 +95,14 @@ class Generator extends XML {
 	 */
 	private function instantiate() {
 		// Initialize sitemap providers classes.
-		$this->providers = array(
-			new \RankMath\Sitemap\Providers\Post_Type,
-			new \RankMath\Sitemap\Providers\Taxonomy,
-		);
+		$this->providers = [
+			new \RankMath\Sitemap\Providers\Post_Type(),
+			new \RankMath\Sitemap\Providers\Taxonomy(),
+		];
 
 		// Author Provider.
 		if ( true === Helper::is_author_archive_indexable() ) {
-			$this->providers[] = new \RankMath\Sitemap\Providers\Author;
+			$this->providers[] = new \RankMath\Sitemap\Providers\Author();
 		}
 
 		$external_providers = $this->do_filter( 'sitemap/providers', [] );
@@ -164,7 +167,7 @@ class Generator extends XML {
 			}
 
 			$links = $provider->get_sitemap_links( $type, $this->max_entries, $page );
-			return empty( $links ) ? '' : $this->get_sitemap( $links, $type, $page );
+			return $this->get_sitemap( $links, $type, $page );
 		}
 
 		return $this->do_filter( "sitemap/{$type}/content", '' );
@@ -294,9 +297,7 @@ class Generator extends XML {
 		$output  = $this->newline( '<url>', 1 );
 		$output .= $this->newline( '<loc>' . $this->encode_url_rfc3986( htmlspecialchars( $url['loc'] ) ) . '</loc>', 2 );
 		$output .= empty( $date ) ? '' : $this->newline( '<lastmod>' . htmlspecialchars( $date ) . '</lastmod>', 2 );
-		if ( ! empty( $url['images'] ) ) {
-			$output .= $this->sitemap_images( $url );
-		}
+		$output .= $this->sitemap_images( $url );
 		$output .= $this->newline( '</url>', 1 );
 
 		/**
@@ -315,6 +316,10 @@ class Generator extends XML {
 	 * @return string
 	 */
 	public function sitemap_images( $url ) {
+		if ( empty( $url['images'] ) ) {
+			return '';
+		}
+
 		$output = '';
 		foreach ( $url['images'] as $img ) {
 
@@ -339,7 +344,7 @@ class Generator extends XML {
 	}
 
 	/**
-	 * Convret encoding if needed
+	 * Convret encoding if needed.
 	 *
 	 * @param string  $data   Data to be added.
 	 * @param string  $tag    Tag to create CDATA for.

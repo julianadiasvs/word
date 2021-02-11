@@ -42,38 +42,16 @@ class Astra_Control_Heading extends WP_Customize_Control {
 	 */
 	public function to_json() {
 		parent::to_json();
-		$this->json['label']       = esc_html( $this->label );
+		$this->json['label']       = $this->label;
 		$this->json['caption']     = $this->caption;
 		$this->json['description'] = $this->description;
 	}
 
 	/**
-	 * An Underscore (JS) template for this control's content (but not its container).
+	 * Render the control's content.
 	 *
-	 * Class variables for this control class are available in the `data` JS object;
-	 * export custom variables by overriding {@see WP_Customize_Control::to_json()}.
-	 *
-	 * @see WP_Customize_Control::print_template()
-	 *
-	 * @access protected
+	 * @see WP_Customize_Control::render_content()
 	 */
-	protected function content_template() {
-		?>
-
-		<# if ( data.caption ) { #>
-			<span class="customize-control-caption">{{{ data.caption }}}</span>
-		<# } #>
-		<div class="ast-heading-wrapper wp-ui-highlight">
-			<label class="customizer-text">
-				<# if ( data.label ) { #>
-					<span class="customize-control-title wp-ui-text-highlight">{{{ data.label }}}</span>
-				<# } #>
-				<# if ( data.description ) { #>
-					<span class="description customize-control-description">{{{ data.description }}}</span>
-				<# } #>
-			</label>
-		</div>
-		<?php
-	}
+	protected function render_content() {}
 }
 

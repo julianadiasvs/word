@@ -5,6 +5,18 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
 	die('Please do not call this page directly.');
 }
 
+// central store of language strings - in future, have this is sep file and store escaped translates files in DB table rows
+$this->lang = array(
+	'css_unit_types' => array(
+		'common' => esc_html__('Common', 'microthemer'),
+		'other' => esc_html__('Other', 'microthemer'),
+		'time' => esc_html__('Time', 'microthemer'),
+		'grid' => esc_html__('Grid', 'microthemer'),
+		'none' => esc_html__('No unit', 'microthemer'),
+		'angle' => esc_html__('Angle', 'microthemer'),
+	),
+);
+
 // save time for use with ensuring non-cached files
 $this->time = time();
 
@@ -49,93 +61,135 @@ foreach ($this->custom_code as $key => $arr){
 $this->custom_code_flat = $flat;
 
 // define possible CSS units
-$this->css_units = array(
+$unit_types = $this->lang['css_unit_types'];
+$this->css_units = array();
 
-	// Absolute CSS units
+$this->css_units[$unit_types['none']] = array(
+	'none' => array(
+		'type' => 'none',
+		'value' => '',
+		'desc' => esc_attr__('No unit', 'microthemer'),
+	),
+);
+
+$this->css_units[$unit_types['grid']] = array(
+	'fr' => array(
+		'type' => 'fraction',
+		'desc' => esc_attr__('A fraction of the available space', 'microthemer'),
+	),
+);
+
+$this->css_units[$unit_types['common']] = array(
 	'px'=> array(
-		'type' => 'absolute',
-		'desc' => esc_attr__('pixels; 1px is equal to 1/96th of 1in', 'microthemer')
-	),
-	'px (implicit)'=> array(
-		'type' => 'absolute',
-		'desc' => esc_attr__('Pixels are added by Microthemer behind the scenes when no unit is specified (this is the default).', 'microthemer')
-	),
-	'pt'=> array(
-		'type' => 'absolute',
-		'desc' => esc_attr__('points; 1pt is equal to 1/72nd of 1in', 'microthemer')
-	),
-	'pc'=> array(
-		'type' => 'absolute',
-		'desc' => esc_attr__('picas; 1pc is equal to 12pt', 'microthemer')
-	),
-	'cm'=> array(
-		'type' => 'absolute',
-		'desc' => esc_attr__('centimeters', 'microthemer')
-	),
-	'mm'=> array(
-		'type' => 'absolute',
-		'desc' => esc_attr__('millimeters', 'microthemer')
-	),
-	'in'=> array(
-		'type' => 'absolute',
-		'desc' => esc_attr__('inches', 'microthemer')
-	),
-	// Relative units
-	'%'=> array(
-		'type' => 'relative',
-		'desc' => esc_attr__('a percentage relative to another value, typically an enclosing element', 'microthemer')
+		'type' => 'common',
+		'desc' => esc_attr__('1px = 1/96th of 1in', 'microthemer')
 	),
 	'em'=> array(
-		'type' => 'relative',
-		'desc' => esc_attr__('relative to the font size of the element', 'microthemer')
+		'type' => 'common',
+		'desc' => esc_attr__('1em = the element\'s font-size', 'microthemer')
 	),
 	'rem'=> array(
-		'type' => 'relative',
-		'desc' => esc_attr__('relative to the font size of the root element', 'microthemer')
+		'type' => 'common',
+		'desc' => esc_attr__('1rem = the html element\'s font-size', 'microthemer')
+	),
+	'%'=> array(
+		'type' => 'common',
+		'desc' => esc_attr__('percentage of parent element\'s size', 'microthemer')
+	),
+
+);
+
+$this->css_units[$unit_types['other']] = array(
+
+	'ch'=> array(
+		'type' => 'other',
+		'desc' => esc_attr__('width of a "0" (approx 0.5em)', 'microthemer')
+	),
+	'cm'=> array(
+		'type' => 'other',
+		'desc' => esc_attr__('centimeters', 'microthemer')
 	),
 	'ex'=> array(
-		'type' => 'relative',
-		'desc' => esc_attr__('relative to the x-height of the element\'s font (i.e. the font\'s lowercase letter x).', 'microthemer')
+		'type' => 'other',
+		'desc' => esc_attr__('height of a lowercase "x" (approx 0.5em)', 'microthemer')
 	),
-	'ch'=> array(
-		'type' => 'relative',
-		'desc' => esc_attr__('width of the "0" (ZERO, U+0030) glyph in the element\'s font', 'microthemer')
+	'in'=> array(
+		'type' => 'other',
+		'desc' => esc_attr__('inches', 'microthemer')
 	),
-	// @link http://caniuse.com/#search=viewport
+	'mm'=> array(
+		'type' => 'other',
+		'desc' => esc_attr__('millimeters', 'microthemer')
+	),
+	'pt'=> array(
+		'type' => 'other',
+		'desc' => esc_attr__('point: 1pt = 1/72nd of 1in', 'microthemer')
+	),
+	'pc'=> array(
+		'type' => 'other',
+		'desc' => esc_attr__('pica: 1pc = 12pt', 'microthemer')
+	),
 	'vw' => array(
-		'type' => 'viewport relative',
-		'desc' => esc_attr__('&#37; of viewport\'s width', 'microthemer'),
+		'type' => 'other',
+		'desc' => esc_attr__('&#37; of viewport width', 'microthemer'),
 		'not_supported_in' => array('IE8')
 	),
 	'vh' => array(
-		'type' => 'viewport relative',
-		'desc' => esc_attr__('&#37; viewport\'s height', 'microthemer'),
+		'type' => 'other',
+		'desc' => esc_attr__('&#37; viewport height', 'microthemer'),
 		'not_supported_in' => array('IE8')
 	),
 	'vmin' => array(
-		'type' => 'viewport relative',
+		'type' => 'other',
 		'desc' => esc_attr__('&#37; of viewport\'s smaller dimension', 'microthemer'),
 		'not_supported_in' => array('IE8')
 		// NOTE: in IE9 it's called 'vm'
 	),
 	'vmax' => array(
-		'type' => 'viewport relative',
+		'type' => 'other',
 		'desc' => esc_attr__('&#37; of viewport\'s larger dimension', 'microthemer'),
 		'not_supported_in' => array('IE8', 'IE9', 'IE10', 'IE11')
 	),
-	'px to em'=> array(
-		'type' => 'auto-conversion',
-		'desc' => esc_attr__('Enter a number of pixels (with no unit) and Microthemer will automatically convert the value to an equivalent em value.', 'microthemer')
-	),
-	'px to rem'=> array(
-		'type' => 'auto-conversion',
-		'desc' => __('Enter a number of pixels (with no unit) and Microthemer will automatically convert the value to an equivalent rem value.', 'microthemer')
-	),
-	'px to %'=> array(
-		'type' => 'auto-conversion',
-		'desc' => esc_attr__('Enter a number of pixels (with no unit) and Microthemer will automatically convert the value to an equivalent percentage value.', 'microthemer')
-	)
+
+
+
 );
+
+$this->css_units[$unit_types['time']] = array(
+	's' => array(
+		'type' => 'time',
+		'desc' => esc_attr__('seconds', 'microthemer'),
+	),
+	'ms' => array(
+		'type' => 'time',
+		'desc' => esc_attr__('milliseconds', 'microthemer'),
+	),
+);
+
+$this->css_units[$unit_types['angle']] = array(
+	'deg' => array(
+		'type' => 'angle',
+		'desc' => esc_attr__('degree: circle = 360deg', 'microthemer'),
+	),
+	'grad' => array(
+		'type' => 'angle',
+		'desc' => esc_attr__('gradian: circle = 400grad', 'microthemer'),
+	),
+	'rad' => array(
+		'type' => 'angle',
+		'desc' => esc_attr__('radian: circle = 6.2832rad (approx)', 'microthemer'),
+	),
+	'turn' => array(
+		'type' => 'angle',
+		'desc' => esc_attr__('circle = 1turn, half circle = .5turn', 'microthemer'),
+	),
+);
+
+
+
+
+
+// to_autocomplete_arr
 
 // easy preview of common devices
 $this->mob_preview = array(
@@ -443,7 +497,7 @@ $this->default_m_queries = array(
 $this->min_and_max_mqs = array(
 	$this->unq_base.'1' => array(
 		"label" => __('< 1200', 'microthemer'),
-		"query" => "@media (min-width: 1199.98px)",
+		"query" => "@media (max-width: 1199.98px)",
 	),
 	$this->unq_base.'2' => array(
 		"label" => __('< 980', 'microthemer'),
@@ -516,7 +570,11 @@ $this->default_preferences = array(
 	"allow_scss" => 0, // if enabled by default, invalid css/scss will prevent stylesheet update.
 	"server_scss" => 0, // give user option to compile scss on the server
 	"specificity_preference" => 1, // 1 = high, 0 = low
+	"wp55_jquery_version" => 0,
+	"inlineJsProgData" => 0,
+	"tape_measure_slider" => 1,
 	"grid_focus" => 'gridtemplate',
+	"transform_focus" => 'transformscale',
 	"monitor_js_errors" => 1,
 	"generated_css_focus" => 0,
 	"gzip" => 0, // try having this off by default
@@ -652,6 +710,7 @@ $this->default_preferences_dont_reset = array(
 	"code_tabs" => $this->custom_code,
 	"initial_scale" => 0,
 	"abs_image_paths" => 0,
+	"units_added_to_suggestions" => 0,
 	// I think I store true/false ie settings in preferences so that frontend script
 	// doesn't need to pull out all the options from the DB in order to enqueue the stylesheets.
 	// This will have an overhaul soon anyway.
@@ -1005,13 +1064,13 @@ $this->menu = array(
 				'class' => 'display-revisions',
 				'dialog' => 1
 			),
-			'clear_styles' => array(
+			/*'clear_styles' => array(
 				'name' => esc_html__('Clear styles', 'microthemer'),
 				'title' => esc_attr__("Clear all styles, but leave folders and selectors intact",
 					'microthemer'),
 				'class' => 'clear-styles',
 
-			),
+			),*/
 			'ui_reset' => array(
 				'name' => esc_html__('Reset everything', 'microthemer'),
 				'title' => esc_attr__("Reset the interface to the default empty folders", 'microthemer'),

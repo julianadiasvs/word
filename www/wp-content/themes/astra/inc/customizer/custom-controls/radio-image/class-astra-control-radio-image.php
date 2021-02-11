@@ -57,7 +57,7 @@ class Astra_Control_Radio_Image extends WP_Customize_Control {
 	 */
 	public static function astra_add_radio_img_svg_css() {
 		?>
-		<style type="text/css">.ast-radio-img-svg svg * { fill: <?php echo self::$higlight_color; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> !important; stroke: <?php echo self::$higlight_color; ?> !important }</style> 
+		<style type="text/css">.ast-radio-img-svg svg * { fill: <?php echo self::$higlight_color; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> !important; stroke: <?php echo self::$higlight_color; ?> !important }</style>
 		<?php
 	}
 
@@ -98,7 +98,8 @@ class Astra_Control_Radio_Image extends WP_Customize_Control {
 		}
 
 		$this->json['link'] = $this->get_link();
-		$this->json['id']   = $this->id;
+
+		$this->json['id'] = $this->id;
 
 		$this->json['inputAttrs'] = '';
 		$this->json['labelStyle'] = '';
@@ -113,34 +114,9 @@ class Astra_Control_Radio_Image extends WP_Customize_Control {
 	}
 
 	/**
-	 * An Underscore (JS) template for this control's content (but not its container).
+	 * Render the control's content.
 	 *
-	 * Class variables for this control class are available in the `data` JS object;
-	 * export custom variables by overriding {@see WP_Customize_Control::to_json()}.
-	 *
-	 * @see WP_Customize_Control::print_template()
-	 *
-	 * @access protected
+	 * @see WP_Customize_Control::render_content()
 	 */
-	protected function content_template() {
-		?>
-		<label class="customizer-text">
-			<# if ( data.label ) { #>
-				<span class="customize-control-title">{{{ data.label }}}</span>
-			<# } #>
-			<# if ( data.description ) { #>
-				<span class="description customize-control-description">{{{ data.description }}}</span>
-			<# } #>
-		</label>
-		<div id="input_{{ data.id }}" class="image">
-			<# for ( key in data.choices ) { #>
-				<input {{{ data.inputAttrs }}} class="image-select" type="radio" value="{{ key }}" name="_customize-radio-{{ data.id }}" id="{{ data.id }}{{ key }}" {{{ data.link }}}<# if ( data.value === key ) { #> checked="checked"<# } #>>
-					<label for="{{ data.id }}{{ key }}" {{{ data.labelStyle }}} class="ast-radio-img-svg">
-						{{{ data.choices[ key ] }}}
-						<span class="image-clickable" title="{{ data.choices_titles[ key ] }}" ></span>
-					</label>
-			<# } #>
-		</div>
-		<?php
-	}
+	protected function render_content() {}
 }

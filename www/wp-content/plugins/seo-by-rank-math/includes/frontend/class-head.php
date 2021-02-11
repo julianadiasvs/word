@@ -22,6 +22,9 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Head class.
+ *
+ * @copyright Copyright (C) 2008-2019, Yoast BV
+ * The following code is a derivative work of the code from the Yoast(https://github.com/Yoast/wordpress-seo/), which is licensed under GPL v3.
  */
 class Head {
 
@@ -94,6 +97,7 @@ class Head {
 
 		foreach ( $tools as $id => $name ) {
 			$content = trim( Helper::get_settings( "general.{$id}" ) );
+			$content = $this->do_filter( 'webmaster/' . $id, $content );
 			if ( empty( $content ) ) {
 				continue;
 			}
@@ -178,9 +182,7 @@ class Head {
 		$generated = Paper::get()->get_description();
 
 		if ( Str::is_non_empty( $generated ) ) {
-			echo '<meta name="description" content="', $generated, '"/>', "\n";
-		} elseif ( Helper::has_cap( 'general' ) && is_singular() ) {
-			echo '<!-- ', \html_entity_decode( esc_html__( 'Admin only notice: this page has no meta description set. Please edit the page to add one, or setup a template in Rank Math -> Titles &amp; Metas.', 'rank-math' ) ), ' -->', "\n";
+			echo '<meta name="description" content="' . $generated . '"/>', "\n";
 		}
 	}
 
@@ -363,8 +365,10 @@ class Head {
 		}
 
 		if ( false === $closing ) {
-			if ( ! Helper::is_whitelabel() ) {
+			if ( ! Helper::is_whitelabel() && ! defined( 'RANK_MATH_PRO_FILE' ) ) {
 				echo "\n<!-- " . esc_html__( 'Search Engine Optimization by Rank Math - https://s.rankmath.com/home', 'rank-math' ) . " -->\n";
+			} elseif ( defined( 'RANK_MATH_PRO_FILE' ) ) {
+				echo "\n<!-- " . esc_html__( 'Search Engine Optimization by Rank Math PRO - https://s.rankmath.com/home', 'rank-math' ) . " -->\n";
 			}
 			return;
 		}

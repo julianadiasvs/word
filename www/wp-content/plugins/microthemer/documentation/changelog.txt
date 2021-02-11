@@ -1,38 +1,358 @@
 CHANGELOG
 
-= 6.2.0.2 (June 9th 2020) =
+= 6.3.6.1 (February 8th, 2021) =
+
+# Change
+* Non-English versions of Microthemer always load translated JavaScript data inline, rather than trying to write to a file initially.
+
+# Bugs fixed
+* Activating non-English versions of Microthemer could generate unwanted output.
+
+= 6.3.5.9 (January 31st, 2021) =
+
+# Bugs fixed
+* Under some circumstances, rapidly searching a dropdown menu could generate a JavaScript error: "Cannot read property 'value' of undefined".
+
+= 6.3.5.8 (January 23rd, 2021) =
+
+# Bugs fixed
+* PHP warning: Required parameter $sel_code follows optional parameter $con
+
+= 6.3.5.7 (January 22nd, 2021) =
+
+# Bugs fixed
+* Grid highlighting could also be misaligned if the body element had a non-static position value.
+
+= 6.3.5.6 (January 22nd, 2021) =
+
+# Bugs fixed
+* Issue with Microthemer interface not loading the frontend.
+* Microthemer's element highlighting could be misaligned if the body element had a non-static position value.
+
+= 6.3.5.4 (January 19th, 2021) =
+
+# Enhancement
+* Added a temporary 'Compatibility' tab to the preferences where you can choose to load an older version of jQuery. This was to address a number of reports from customers that are having issues with WordPress 5.6 and Microthemer 6.3.5.2, which stopped reverting jQuery by default.
+
+= 6.3.5.3 (January 15th, 2021) =
+
+# Bugs fixed
+* Tooltips had very low opacity.
+
+= 6.3.5.2 (January 11th, 2021) =
+
+# Bugs fixed
+* Removed deprecated jQuery functions that are not compatible with the native version of jQuery that ships with WordPress 5.6 and later.
+* Using the icons in the CSS property menus (e.g. clear/save) triggered focus on the current value.
+
+= 6.3.5.0 (January 2nd, 2021) =
+
+# Change
+* Updated the Sass compiler to the latest version.
+
+= 6.3.4.9 (December 17th, 2020) =
+
+# Bugs fixed
+* Intermittent error where 'WordPress Site loading' message lingers, and page could not be interacted with. This affected certain sites and certain browsers more than others, but was related to the WordPress 5.6 conflict.
+
+= 6.3.4.8 (December 9th, 2020) =
+
+# Bugs fixed
+* Compatibility issue with WordPress 5.6, which loads a new jQuery version.
+
+= 6.3.4.7 (December 4th, 2020) =
+
+# Change
+* Removed 'Clear all styles' option, which kept folders and selectors intact. This options was more relevant in the early days of Microthemer.
+
+# Bugs fixed
+* The width of nth-formula and property fields was not increasing to match the length of the value in the dock top view.
+* The blue dot appeared in the wrong place for color picker fields when options were docked left.
+* Switching to the grid controls when a dropdown menu was showing closed the menu but the value slider remained visible.
+* Using the function repeat(auto-fit, minmax(320px, 1fr)) had the last bracket removed when returning to edit the selector.
+* Using grid-area shorthand in the code editor did not always map to the UI fields correctly.
+* Microthemer was converting grid-template-rows/columns to shorthand (grid or grid-template) if all relevant properties were set, even if a repeat function was used, which is not valid.
+
+= 6.3.4.0 (November 24th, 2020) =
+
+# Bugs fixed
+* CSS grid highlight lines were misaligned in Firefox.
+
+= 6.3.3.9 (November 24th, 2020) =
+
+# Bugs fixed
+* CSS grid highlight lines were not displaying.
+* When importing raw CSS via Packs > Import > CSS stylesheet, Microthemer was converting non-pixel units to pixels.
+
+= 6.3.3.7 (November 2nd, 2020) =
+
+# Bugs fixed
+* A strangely large font-size could display in the code editor if the Monaco font was installed.
+* Oxygen integration - Microthemer was not responding to the left sidebar being hidden, which could result in the wrong responsive view size.
+* Oxygen integration - when launching O2 with the grid options active, a JS error displayed and selecting elements with MT was not possible.
+
+= 6.3.3.4 (October 27th, 2020) =
+
+# Bugs fixed
+* JS error when clearing border-color fields that were linked by chain icon: Cannot read property 'hasClass' of undefined
+
+= 6.3.3.3 (October 27th, 2020) =
+
+# Bugs fixed
+* Conflict with WP 5.6 beta - clicking the CSS property dropdown dots caused a JavaScript error.
+
+= 6.3.3.2 (October 26th, 2020) =
+
+# Enhancement
+* If the page loads more than 2500 style rules, the Styles tab can still be used for one-time analysis of CSS applying to an element.
+
+# Bugs fixed
+* With the options docked left, the grid template/auto column and row headings were not aligned correctly.
+* CSS variables and values could not be sampled if the page loads more than 2500 style rules. Now MT provides a confirm prompt in such circumstances.
+
+= 6.3.2.9 (October 19th, 2020) =
+
+# Enhancement
+* Sass editing mode now supports autocomplete.
+
+# Bugs fixed
+* Long selectors in the quick targeting suggestions could mis-align the options.
+* Possible JS error when creating a selector: Uncaught TypeError: Cannot read property 'val' of undefined.
+
+= 6.3.2.6 (October 14th, 2020) =
+
+# Enhancement
+* MT inactive code can now be run as a separate simple plugin, as an alternative to copying code to a child theme's functions.php file. This may be easier for beginners, and is necessary for Oxygen Builder users because Oxygen disables the theme.
+
+# Bugs fixed
+* MT inactive code could generate a deprecated warning on modern versions of PHP: Unparenthesized `a ? b : c ? d : e` is deprecated.
+
+= 6.3.2.4 (September 28th, 2020) =
+
+# Enhancement
+* Clicking the 'x' in CSS property fields give the input focus to make it easier to enter a new value.
+
+= 6.3.2.3 (September 28th, 2020) =
+
+# Bugs fixed
+* Adding transform code to additional selectors in the custom code area (i.e. not the first selector, which is synchronizable with the UI fields) caused the the transform code to be oddly formatted.
+
+= 6.3.2.2 (September 25th, 2020) =
+
+# Enhancement
+* MT now checks for data formatting issues on each page load. It's unclear how these data formatting issues occur, but they will no longer present a problem for users while we're establishing the root cause.
+
+# Change
+* Disabled browser caching of Microthemer's HTML, which could happen when using the forward/back button, and perhaps in other instances. HTML caching could lead to a false positive 'Multiple browser tabs' warning.
+
+# Bugs fixed
+* In Firefox, the scroll buttons did not display if there were too many responsive tabs to fit in the available screen space.
+* Undefined JS error when trying to use the selectors menu.
+
+= 6.3.1.8 (September 23rd, 2020) =
+
+# Change
+* When exiting Microthemer, it warns if recent changes have not been saved. Previously, MT waited for changes to save before proceeding to the next page, but some browsers have stopped allowing that.
+
+# Bugs fixed
+* Changing a selector's code via the editor did not always save correctly.
+* Junk history items were added to the revisions table when editing a selector's code via the editor.
+
+= 6.3.1.5 (September 18th, 2020) =
+
+# Bugs fixed
+* Using the shorthand transform scale function was setting scaleY to "1", rather than the same as scaleX, if only one number was supplied.
+* Using the shorthand skew() and translate() functions were setting the Y axis to "1", by default, when the correct value is "0".
+
+= 6.3.1.3 (September 17th, 2020) =
+
+# Bugs fixed
+* Microthemer did not sync the responsive views with Elementor correctly when adjusting the size of the left panel or the navigator on the right.
+* The Elementor preview URL parameter (elementor-preview) in MT's recently viewed pages menu could cause the 60 second site loading message to display.
+
+= 6.3.1.1 (September 14th, 2020) =
+
+# Bugs fixed
+* Elementor integration issue - some media query tabs were not adjusting the site preview correctly if Elementor was active inside MT (when they should have been syncing with Elementor device mode).
+
+= 6.3.1.0 (September 13th, 2020) =
+
+# Enhancement
+* Recently viewed pages can be cleared from the menu.
+
+# Bugs fixed
+* Recently visited pages in the Pages dropdown menu could have the wrong path on: a) multisite installs, b) if WordPress was installed in a sub-folder, c) if a proxy domain was being used e.g. //localhost:8080. Note, this update resets recent pages to ensure badly formatted paths do not linger on.
+
+= 6.3.0.8 (September 12th, 2020) =
+
+# Bugs fixed
+* Microthemer didn't always load the correct URL parameters for editing oxygen pages, which could result in only the inner content being editable, and under some circumstances Oxygen page data loss.
+
+= 6.3.0.7 (September 12th, 2020) =
+
+# Bugs fixed
+* The previous update caused the slider menu to show on non-numeric dropdowns too.
+
+= 6.3.0.6 (September 11th, 2020) =
+
+# Enhancement
+* Microthemer shows the pixel equivalent for comparable units (e.g. em, rem, %, vmax) at the top right of the suggestions menu.
+
+# Bugs fixed
+* The slider controls could become misaligned if a user action changed the width of the suggestions menu (e.g. filtering the results, or clearing a long suggestion).
+* Clearing a single suggestion selected the value being cleared, and as a result added the suggestion back to the list. This issue was due to WordPress 5.5 removing the jQuery migration script. It's likely that also caused a range of other bugs in MT, so I am restoring the migration script for now.
+* Switching the CSS unit when no value was set in the field did not always work as expected.
+
+= 6.3.0.2 (September 9th, 2020) =
+
+# Bugs fixed
+* Compatibility issue with Agency Base whereby the Agency Base stylesheet was unloaded when targeting elements if Oxygen was active inside MT and the Styles tab was open.
+
+= 6.3.0.1 (August 27th, 2020) =
+
+# Bugs fixed
+* The animation play button was misaligned in Firefox.
+
+= 6.3.0.0 (August 27th, 2020) =
+
+# Bugs fixed
+* The pre-update settings were not being saved to the history table when upgrading without deactivating MT first.
+* Design pack screenshots were not showing, and could cause a PHP warning.
+* Version bumped to 6.3 as I forgot to do this with version 6.2.4.8, which was a major release.
+
+= 6.2.4.9 (August 26th, 2020) =
+
+# Bugs fixed
+* The CSS unit reverted to pixels when editing a field's value after using the CSS unit menu to set a new unit.
+
+= 6.2.4.8 (August 25th, 2020) =
+
+# Enhancement
+* Transform and filter properties added.
+* Sliders added for numeric fields.
+* Better support for different CSS units.
+* Mousewheel value adjust for numeric CSS property fields
+* Keyboard up/down arrow adjust for numeric fields
+* Hold shift to increase increments (x10) when using plus/minus buttons, keyboard arrows, or mousewheel.
+* Press and hold feature for the plus/minus slider buttons.
+* Tidied up Microthemer's preferences page.
+* Mousewheel can be used to cycle through dropdown menu values without showing the menu.
+* When opening a dropdown menu, the current value gains focus. The up and down arrows can used to switch focus from that anchor point.
+* Added a confirm prompt for clearing the styles of all selectors in a folder.
+* Trying out numberless slider that drags right for increasing values, which may feel more intuitive. Enable this via preferences by setting 'Enable tape measure style sliders' to 'No'.
+
+# Change
+* Recently used values are not added to the dropdown menu while it is still showing. As this caused continuity issues, and may have been an unnecessary distraction.
+* MT auto-navigates to a copied selector, rather than keeping focus on the original selector.
+
+# Bugs fixed
+* When importing selector code with duplicate properties, but different property values, a data formatting issue could occur.
+* When importing style rules with duplicate properties AND values, Microthemer was not filtering the duplicates out.
+* Loading a old design pack from the earliest versions of Microthemer did not update to the current data structure correctly.
+* Invalid suggestions removed from grid auto columns/rows menu: repeat functions and none.
+* Dropdown menus weren't working on standalone preferences page.
+* Grid nth radio buttons could be cut off if scrollbars were needed.
+* The white-space property didn't have an icon.
+* Clicking the Item:1 number of the grid tabs didn't activate the tab.
+* Border-color didn't sync if a CSS variable was used (even with the chain on).
+* Left ruler did not show when docking all options left (until the sidebar was resized for the first time).
+* Downloading a design pack didn't work with WordPress 5.5 due to a jQuery version change. References to the deprecated .live() function were removed.
+* Clearing a copied selector could also clear the original selector if the inline code editor was showing.
+* Compatibility issue with Elementor - didn't activate properly inside MT.
+* Non-english translations of MT didn't show correct translation strings for CSS property names.
+* Clearing sampled CSS property values (single) didn't work.
+
+= 6.2.1.5 (August 5th, 2020) =
+
+# Bugs fixed
+* The last fix (6.2.1.4) included some Portuguese text!
+
+= 6.2.1.4 (August 4th, 2020) =
+
+# Bugs fixed
+* Translated versions of Microthemer had an issue with the custom code editor wiping out styles.
+
+= 6.2.1.3 (July 23rd, 2020) =
+
+# Bugs fixed
+* Microthemer's fallback proxy connection for unsuccessful unlock attempts wasn't working properly.
+
+= 6.2.1.2 (July 23rd, 2020) =
+
+# Bugs fixed
+* Previous fix didn't cater for media query settings.
+* The animation button was misaligned.
+* Importing raw CSS could miss styles added to media queries if the media query didn't already exist in Microthemer.
+
+= 6.2.0.9 (July 22nd, 2020) =
+
+# Bugs fixed
+* Changing a selector's code via the selectors menu could result in the old code being appended to the new code if the selector had a non-GUI supported style.
+
+= 6.2.0.8 (July 21st, 2020) =
+
+# Bugs fixed
+* Conflict with Agency tools where MT could change order its stylesheet loaded when O2 was active.
+* Importing CSS from stylesheet did not set the blue dots correctly to signal which selectors have styles.
+* The CSS stylesheet import review stats did not list non-GUI supported styles (e.g. CSS variables or border-image-slice).
+* Issue when importing CSS from a stylesheet when Sass support is enabled: Uncaught ReferenceError: value is not defined.
+* Issue clearing a whole folder when the code editor is docked left: Cannot read property 'find' of undefined.
+* Issue syncing width between editor and UI if display property was set to 'grid'.
+
+= 6.2.0.7 (July 9th, 2020) =
+
+# Bugs fixed
+* Custom grid item rules could sync with the UI when they shouldn't.
+
+= 6.2.0.6 (July 2nd, 2020) =
+
+# Enhancement
+* Microthemer auto-disabled the Styles tab if there are too many CSS rules to analyse.
+
+= 6.2.0.5 (June 22nd, 2020) =
+
+# Bugs fixed
+* The white-space CSS property field went missing.
+
+= 6.2.0.4 (June 12th, 2020) =
+
+# Bugs fixed
+* Notifications form other plugins could show on MT sub pages (e.g. Manage packs or Google fonts browser)
+* CSS conflict with Admin 2020 theme wasn't fully fixed in preview release.
+
+= 6.2.0.2 (June 9th, 2020) =
 
 # Bugs fixed
 * CSS conflict with Admin 2020 theme.
 * Possible JavaScript error when updating to 6.2: cannot read property 'property' of undefined.
 
-= 6.2.0.0 (June 5th 2020) =
+= 6.2.0.0 (June 5th, 2020) =
 
 # Bugs fixed
 * Setting the number of revisions MT stores to more than 300 (the maximum) reset to 50, rather than 300.
 
-= 6.1.6.6 (May 20th 2020) =
+= 6.1.6.6 (May 20th, 2020) =
 
 # Bugs fixed
 * MT grid settings data structure could be mis-formatted, resulting in a JavaScript error.
 
-= 6.1.6.5 (May 18th 2020) =
+= 6.1.6.5 (May 18th, 2020) =
 
 # Bugs fixed
 * Issue loading post or page drafts via the new Pages menu, and then editing with Oxygen.
 
-= 6.1.6.4 (May 15th 2020) =
+= 6.1.6.4 (May 15th, 2020) =
 
 # Bugs fixed
 * The number showing an element already has an MT selector was not showing due to z-index increase in 6.1.6.1 update.
 * Compatibility issue with Elementor Modern Events Calendar plugin. It uses dynamic ids that change on each page load. MT now ignores these dynamic ids when suggesting selectors.
 
-= 6.1.6.2 (May 15th 2020) =
+= 6.1.6.2 (May 15th, 2020) =
 
 # Bugs fixed
 * Microthemer was reloading the page when clicking links in targeting mode if the href property had an empty value.
 
-= 6.1.6.1 (May 13th 2020) =
+= 6.1.6.1 (May 13th, 2020) =
 
 # Enhancement
 * Custom JavaScript added with Microthemer can be set to load in the footer via the preferences.
@@ -40,24 +360,24 @@ CHANGELOG
 # Bugs fixed
 * Increased the z-index of Microthemer's targeting overlays to fix conflict with Oxygen Pro menu.
 
-= 6.1.5.9 (May 10th 2020) =
+= 6.1.5.9 (May 10th, 2020) =
 
 # Bugs fixed
 * CSS grid control area included style and script tags in the set of numbered child elements.
 
-= 6.1.5.8 (May 10th 2020) =
+= 6.1.5.8 (May 10th, 2020) =
 
 # Bugs fixed
 * The HTML pane in targeting mode didn't always load new HTML when expanding the advanced options.
 
-= 6.1.5.7 (May 8th 2020) =
+= 6.1.5.7 (May 8th, 2020) =
 
 # Bugs fixed
 * Deleting the final selector, and then re-adding it, returned the original CSS to the custom code editor.
 * Recent update to Oxygen template loading caused issues with saving shortcodes. It seems to be a quirk of Oxygen that the template admin screen must be visited before the template can be edited visually.
 * Improved compatibility with Oxygen 3.3 and it's new post locking system. There is still scope for improvement, but Oxygen may have to update things at their end.
 
-= 6.1.5.4 (May 4th 2020) =
+= 6.1.5.4 (May 4th, 2020) =
 
 # Enhancement
 * Microthemer auto-converts the frontend URL to HTTPS if the main MT interface is using HTTPS.
@@ -65,7 +385,7 @@ CHANGELOG
 # Bugs fixed
 * Loading Oxygen templates from the new 'Pages' menu didn't work under some circumstances.
 
-= 6.1.5.2 (April 30th 2020) =
+= 6.1.5.2 (April 30th, 2020) =
 
 # Enhancement
 * Sass variables supported in new Var color picker field.
@@ -74,17 +394,17 @@ CHANGELOG
 # Bugs fixed
 * Fixed issue with Beaver Builder integration: Uncaught ReferenceError: FLBuilder is not defined.
 
-= 6.1.4.9 (April 27th 2020) =
+= 6.1.4.9 (April 27th, 2020) =
 
 # Bugs fixed
 * Clicking to the left of the new Specificity toggle label triggered the toggle.
 
-= 6.1.4.8 (April 26th 2020) =
+= 6.1.4.8 (April 26th, 2020) =
 
 # Enhancement
 * Microthemer presents a confirm dialog when deleting a folder that contains one or more selectors.
 
-= 6.1.4.7 (April 25th 2020) =
+= 6.1.4.7 (April 25th, 2020) =
 
 # Enhancement
 * Microthemer prioritises user-defined Oxygen classes when generating selector suggestions.
@@ -98,33 +418,33 @@ CHANGELOG
 * MT was ignoring custom classes set in Oxygen if an underscore was used (if Oxygen was active).
 * An issue with interchangeability between the code editor and grid item selectors.
 
-= 6.1.4.1 (April 22nd 2020) =
+= 6.1.4.1 (April 22nd, 2020) =
 
 # Enhancement
 * Microthemer's selector suggestions can be sorted by high or low specificity. This just changes the order of the suggestions in the dropdown menus. It's useful for finding broader class-based selectors more easily.
 
-= 6.1.4.0 (April 21st 2020) =
+= 6.1.4.0 (April 21st, 2020) =
 
 # Bugs fixes
 * Issue with setting a custom preview size for the 'All Devices' tab (for mobile first design) when loading Oxygen inside Microthemer.
 * The CSS grid boundary handle could show even when all previously created selectors have been deleted.
 
-= 6.1.3.8 (April 17th 2020) =
+= 6.1.3.8 (April 17th, 2020) =
 
 # Enhancement
 * MT explains why a new folder is created once a folder reaches the maximum number of selectors (40).
 
-= 6.1.3.7 (April 16th 2020) =
+= 6.1.3.7 (April 16th, 2020) =
 
 # Bugs fixed
 * Uncaught TypeError: Cannot read property 'hasOwnProperty' of undefined (line 1432).
 
-= 6.1.3.6 (April 15th 2020) =
+= 6.1.3.6 (April 15th, 2020) =
 
 # Bugs fixed
 * Some PHP warnings in pre-released version.
 
-= 6.1.3.5 (April 9th 2020) =
+= 6.1.3.5 (April 9th, 2020) =
 
 # Change
 * Another tweak to the selector algorithm.
@@ -135,12 +455,12 @@ CHANGELOG
 * JS error 'Cannot read property pageYOffset' when using grid control if page builder was midway through loading.
 * MT was generating invalid selectors for WooCommerce content when Oxygen was activate.
 
-= 6.1.3.0 (April 6th 2020) =
+= 6.1.3.0 (April 6th, 2020) =
 
 # Enhancement
 * New 'All' tab added to grid properties. This is very useful for overriding flexbox or float layouts and resetting grid item positions on mobile.
 
-= 6.1.2.9 (April 2nd 2020) =
+= 6.1.2.9 (April 2nd, 2020) =
 
 # Change
 * Tweaked the selector algorithm to favour selectors with a nearby parent context. And to favour parents with ids over classes.
@@ -148,7 +468,7 @@ CHANGELOG
 # Bugs fixed
 * Microthemer only samples CSS variables defined in the global scope using 'html', '':root', or 'body' selectors.
 
-= 6.1.2.7 (April 2nd 2020) =
+= 6.1.2.7 (April 2nd, 2020) =
 
 # Change
 * Recent pages menu has been moved from the 'View' menu to a new 'Page' menu, and has been enhanced.
@@ -168,17 +488,17 @@ CHANGELOG
 * False positive code editor warnings when using CSS variables.
 * Using variables with the Google fonts fields didn't work.
 
-= 6.1.1.6 (March 18th 2020) =
+= 6.1.1.6 (March 18th, 2020) =
 
 # Enhancement
 * Keyboard shortcut for activating/deactivating Elementor, Beaver Builder, or Oxygen: Ctrl+Alt+B
 
-= 6.1.1.5 (March 10th 2020) =
+= 6.1.1.5 (March 10th, 2020) =
 
 # Bugs fixed
 * Missing build file in previous update caused a JS error: Uncaught TypeError: n is not a constructor
 
-= 6.1.1.4 (March 9th 2020) =
+= 6.1.1.4 (March 9th, 2020) =
 
 # Bugs fixed
 * Issue adding grid template area: Uncaught TypeError: rows[l].join is not a function.
@@ -186,17 +506,17 @@ CHANGELOG
 * Using opacity and e.g. filter: blur(3px) on the same selector caused MT to remove the filter property when writing CSS to the stylesheet.
 * False positive validation warning when using variables with shorthand properties like box-shadow.
 
-= 6.1.1.0 (March 2nd 2020) =
+= 6.1.1.0 (March 2nd, 2020) =
 
 # Enhancement
 * Microthemer adapts rulers and responsive preview width the full-screen mode enabled via "Editor Enhancer for Oxygen".
 
-= 6.1.0.9 beta (Feb 27th 2020) =
+= 6.1.0.9 beta (Feb 27th, 2020) =
 
 # Bugs fixed
 PHP Notice: Undefined variable: add_styles in tvr-microthemer.php.
 
-= 6.1.0.8 beta (Feb 25th 2020) =
+= 6.1.0.8 beta (Feb 25th, 2020) =
 
 # Enhancement
 * The styles tab is slightly faster when Oxygen is active.
@@ -207,7 +527,7 @@ PHP Notice: Undefined variable: add_styles in tvr-microthemer.php.
 * JS error 'Cannot read property 'width' of undefined' when using the 'Areas' CSS grid tab with grid highlighting enabled.
 * Fixed issue with misaligned grid highlight with Oxygen columns.
 
-= 6.1.0.3 beta (Feb 21st 2020) =
+= 6.1.0.3 beta (Feb 21st, 2020) =
 
 # Bugs fixed
 * Persistent issue with Firefox where Microthemer targeting panels could be misaligned.
@@ -215,7 +535,7 @@ PHP Notice: Undefined variable: add_styles in tvr-microthemer.php.
 * Issue with Oxygen resize handles showing throw when targeting with MT.
 * Un-editable Oxygen content sometimes when enabling Oxygen via MT View menu control.
 
-= 6.0.9.9 beta (Feb 19th 2020) =
+= 6.0.9.9 beta (Feb 19th, 2020) =
 
 # Enhancement
 * MT responsive tabs can be manually assigned to sync with page builder mobile views.
@@ -229,7 +549,7 @@ PHP Notice: Undefined variable: add_styles in tvr-microthemer.php.
 * Existing selectors not (always) returnable via numbers.
 * Double-click Oxygen text element should not trigger MT targeting mode.
 
-= 6.0.9.1 beta (Feb 16th 2020) =
+= 6.0.9.1 beta (Feb 16th, 2020) =
 
 # Change
 * MT uses Elementor preview size on the 'Elementor tablet' and 'Elementor mobile' responsive tabs even when Elementor is not active inside Microthemer (as opposed to defaulting the the max-width value of the media query).
@@ -246,27 +566,27 @@ PHP Notice: Undefined variable: add_styles in tvr-microthemer.php.
 # Bugs fixed
 * Elementor device view was not always syncing with MT correctly.
 
-= 6.0.8.6 (Feb 27th 2020) =
+= 6.0.8.6 (Feb 27th, 2020) =
 
 # Bugs fixed
 * Margin and padding quad values were not correctly mapping to MT's UI fields.
 
-= 6.0.8.5 (Feb 25th 2020) =
+= 6.0.8.5 (Feb 25th, 2020) =
 
 # Bugs fixed
 * Issue with manual !important settings being removed when restoring a revision.
 
-= 6.0.8.4 (Feb 24th 2020) =
+= 6.0.8.4 (Feb 24th, 2020) =
 
 # Bugs fixed
 * Issue with event-based animations when used across different device tabs at the same time.
 
-= 6.0.8.3 (Feb 20th 2020) =
+= 6.0.8.3 (Feb 20th, 2020) =
 
 # Bugs fixed
 * Several stock animate.css animations didn't set opacity on last frame so animation-fill-mode: forwards wasn't working as expected.
 
-= 6.0.8.2 (Feb 11th 2020) =
+= 6.0.8.2 (Feb 11th, 2020) =
 
 # Enhancement
 * All Microthemer keyboard shortcuts listed in table at Help > Getting started tips > scroll down.
@@ -274,7 +594,7 @@ PHP Notice: Undefined variable: add_styles in tvr-microthemer.php.
 # Bugs fixed
 * Code editor was throwing false positive warning on CSS variable definitions.
 
-= 6.0.8.0 (Feb 5th 2020) =
+= 6.0.8.0 (Feb 5th, 2020) =
 
 # Bugs fixed
 * Possible errors when performing actions in MT when frontend had not fully loaded: 's.get_current_url is not a function' and 's.get_style_nodes is not a function'.
@@ -283,12 +603,12 @@ PHP Notice: Undefined variable: add_styles in tvr-microthemer.php.
 # Change
 * 'U' icon for 'jumping' to a UI property from the code editor changes to a 'J', due to keyboard shortcut being changed to Ctrl+Alt+J. This was only recently changed from G to U, but Ctrl+Alt+U wasn't suitable as it prints a special u character with an accent.
 
-= 6.0.7.7 (Feb 5th 2020) =
+= 6.0.7.7 (Feb 5th, 2020) =
 
 # Bugs fixed
 * Error importing arbitrary CSS into Microthemer via Packs > Import > CSS Stylesheet.
 
-= 6.0.7.6 (Jan 30th 2020) =
+= 6.0.7.6 (Jan 30th, 2020) =
 
 # Change
 * 'G' icon for switching to a UI property from the code editor changes to a 'U', and keyboard shortcut changed to Ctrl+Alt+U, as Ctrl+Alt+U is reserved for viewing the generated CSS code.
@@ -296,12 +616,12 @@ PHP Notice: Undefined variable: add_styles in tvr-microthemer.php.
 # Bugs fixed
 * The selector label and folder fields in targeting mode are redundant in the View > Full code editor view. And so they are now hidden.
 
-= 6.0.7.4 (Jan 30th 2020) =
+= 6.0.7.4 (Jan 30th, 2020) =
 
 # Enhancement
 * MT JavaScript error checking can be turned off via Preferences.
 
-= 6.0.7.3 (Jan 23rd 2020) =
+= 6.0.7.3 (Jan 23rd, 2020) =
 
 # Change
 * Label for unlock field clarifies unlock code can be used as well as email.
@@ -311,7 +631,7 @@ PHP Notice: Undefined variable: add_styles in tvr-microthemer.php.
 * Microthemer was stripping pixel units from calc() functions when restoring a previous save point.
 * With style options docked left, grid control was not expanding with width of sidebar.
 
-= 6.0.6.9 (Jan 20th 2020) =
+= 6.0.6.9 (Jan 20th, 2020) =
 
 # Change
 * The pre-upgrade backup Microthemer creates is stored in the revisions table as
@@ -325,13 +645,13 @@ PHP Notice: Undefined variable: add_styles in tvr-microthemer.php.
 * Browser fallbacks e.g. 'width:10px; width: 2vw;' not being stripped from Microthemer's CSS editor.
 * Computed styles were not updating in response to changes in the viewport in Chrome. This could sometimes results in artificial horizontal scrollbars in mobile views.
 
-= 6.0.6.2 (Jan 16th 2020) =
+= 6.0.6.2 (Jan 16th, 2020) =
 
 # Bugs fixed
 * Moving the current selector to another folder caused the style fields to disappear.
 * The transition event value field was not displaying when returning to the transition group, even when the event value was set to :hover or :focus.
 
-= 6.0.6.0 (Jan 11th 2020) =
+= 6.0.6.0 (Jan 11th, 2020) =
 
 # Bugs fixed
 * PHP warning: Deprecated: Unparenthesized a ? b : c ? d : e is deprecated.
@@ -340,7 +660,7 @@ PHP Notice: Undefined variable: add_styles in tvr-microthemer.php.
 * Fixed issue when upgrading from a very old version of MT to the 6.x range.
 * Fixed issue with previously entered style values in suggestions dropdown not being remembered.
 
-= 6.0.5.6 (Jan 9th 2020) =
+= 6.0.5.6 (Jan 9th, 2020) =
 
 # Change
 * Targeting suggestion dropdown menus are more obviously dropdown menus. And match the formatting of the styling dropdown menus.
@@ -356,7 +676,7 @@ PHP Notice: Undefined variable: add_styles in tvr-microthemer.php.
 * The code editor was throwing a false positive warning when CSS functions like calc() or var() were used.
 * Some issues with the code editor scroll position not resuming correctly.
 
-= 6.0.4.7 (Jan 6th 2020) =
+= 6.0.4.7 (Jan 6th, 2020) =
 
 # Enhancement
 * Elementor navigator can be docked right inside MT for mobile and tablet while preserving the correct preview width.
@@ -369,17 +689,17 @@ PHP Notice: Undefined variable: add_styles in tvr-microthemer.php.
 * Grid highlight status was not remembered between MT interface reloads.
 * Deleting a selector entirely via the editor, including the brackets etc, defaulted back to the previous state of the selector (e.g. with original declarations) rather than an empty selector with no declarations.
 
-= 6.0.4.0 (Dec 31st 2019) =
+= 6.0.4.0 (Dec 31st, 2019) =
 
 # Enhancement
 * New option for loading Microthemer CSS after Oxygen: Preferences > Integrations. This is enabled by default on new MT installs if Oxygen is already installed and activated.
 
-= 6.0.3.9 (Dec 20th 2019) =
+= 6.0.3.9 (Dec 20th, 2019) =
 
 # Bugs fixed
 * Error uploading design pack: 'the link you followed has expired'
 
-= 6.0.3.8 (Dec 19th 2019) =
+= 6.0.3.8 (Dec 19th, 2019) =
 
 # Enhancement
 * Grid highlight option added to grid properties.
@@ -396,7 +716,7 @@ PHP Notice: Undefined variable: add_styles in tvr-microthemer.php.
 * Intermittent error with dropdown menus: 'this.source is not a function'.
 * WP toolbar shortcut to MT wasn't loading the page or post relevant to the edit page/post screen from which it was clicked. Draft posts and pages can now be edited with MT more easily with this fix.
 
-= 6.0.3.1 (Dec 12th 2019) =
+= 6.0.3.1 (Dec 12th, 2019) =
 
 # Change
 * Preview doesn't default to full width when using the MT icon to hide the Microthemer toolbar.
@@ -406,12 +726,12 @@ PHP Notice: Undefined variable: add_styles in tvr-microthemer.php.
 * Elementor mobile control wasn't resizing the preview correctly if Elementor specific media queries were not active in Microthemer.
 * Grid item radio labels could display strangely with double-digit numbers.
 
-= 6.0.2.7 (Dec 5th 2019) =
+= 6.0.2.7 (Dec 5th, 2019) =
 
 # Bugs fixed
 * Stock animations were not working on the frontend since the 6.x beta release.
 
-= 6.0.2.6 (Dec 4th 2019) =
+= 6.0.2.6 (Dec 4th, 2019) =
 
 # Enhancement
 * Added option to use absolute background image paths. This is useful when working with WP sites installed in a sub-directory.

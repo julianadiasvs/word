@@ -3,8 +3,9 @@ Contributors: chriscct7, smub
 Donate link: http://www.wpbeginner.com/wpbeginner-needs-your-help/
 Tags: WordPress analytics, google analytics, google analytics dashboard, google analytics widget, WooCommerce stats, analytics dashboard, universal google analytics, statistics, tracking, stats, google, google analytics by yoast, ga, monster insights, monsterinsights, universal analytics, web stats, ecommerce, ecommerce tracking
 Requires at least: 3.8.0
-Tested up to: 5.4
-Stable tag: 7.10.4
+Tested up to: 5.6
+Stable tag: 7.15.1
+Requires PHP: 5.2
 License: GPL v3
 
 The best Google Analytics plugin for WordPress. See how visitors find and use your website, so you can keep them coming back.
@@ -258,7 +259,13 @@ If you like this plugin, then consider checking out our other projects:
 
 * <a href="http://optinmonster.com/" rel="friend" title="OptinMonster">OptinMonster</a> - Get More Email Subscribers
 * <a href="https://wpforms.com/" rel="friend" title="WPForms">WPForms</a> - Best WordPress Contact Form Plugin
-* <a href="https://www.seedprod.com/" rel="friend">SeedProd</a> - Most popular coming soon & maintenance mode plugin for WordPress
+* <a href="https://aioseo.com/" rel="friend" title="AIOSEO">AIOSEO</a> - The original WordPress SEO plugin to help you rank higher in search results (trusted by over 2 million sites)
+* <a href="https://www.seedprod.com/" rel="friend" title="SeedProd">SeedProd</a> - Most popular coming soon & maintenance mode plugin for WordPress
+* <a href="https://wpmailsmtp.com/" rel="friend" title="WP Mail SMTP">WP Mail SMTP</a> - Improve email deliverability for your contact form with the most popular SMTP plugin for WordPress
+* <a href="https://rafflepress.com/" rel="friend" title="RafflePress">RafflePress</a> - Best WordPress giveaway and contest plugin to grow traffic and social followers
+* <a href="https://smashballoon.com/" rel="friend" title="Smash Balloon">Smash Balloon</a> - #1 social feeds plugin for WordPress - display social media content in WordPress without code
+* <a href="https://pushengage.com/" rel="friend" title="PushEngage">PushEngage</a> - Connect with visitors after they leave your website with the leading web push notification plugin
+* <a href="https://trustpulse.com/" rel="friend" title="TrustPulse">TrustPulse</a> - Add real-time social proof notifications to boost your store conversions by up to 15%
 
 This plugin would not be possible without the help and support of <a href="http://www.wpbeginner.com/" rel="friend" title="WPBeginner">WPBeginner</a>, the largest WordPress resource site. You can learn from our <a href="http://www.wpbeginner.com/category/wp-tutorials/" rel="friend" title="WordPress Tutorials">free WordPress Tutorials</a> like <a href="http://www.wpbeginner.com/how-to-install-wordpress/" rel="friend" title="How to Install WordPress - Step by Step">how to install WordPress</a>, <a href="http://www.wpbeginner.com/wordpress-hosting/" rel="friend" title="How to choose the best WordPress hosting">choose the best WordPress hosting</a>, <a href="http://www.wpbeginner.com/glossary/" rel="friend" title="WordPress Glossary Terms for Beginners">WordPress glossary</a>, and more.
 
@@ -273,10 +280,63 @@ You can also learn about other <a href="http://www.wpbeginner.com/category/plugi
 4. Want more features? <a href="https://www.monsterinsights.com/?utm_source=wprepo&utm_medium=link&utm_campaign=liteversion">Purchase MonsterInsights Pro</a>!
 
 == Changelog ==
-= 7.10.4: January 29, 2019 =
+= 7.15.1: January 27, 2021 =
+- Fix: Our cross-domain option for the gtag.js tracking code was causing an issue.
+
+= 7.15.0: January 21, 2021 =
+- New: Upgrade to the Global Site Tag (gtag.js) tracking code without having to worry about your existing events or integrations using analytics.js code. In this version you can manually opt-in to the gtag.js tracking code that will be the standard in a future release.
+- Fix: Improved compatibility for older PHP versions with our Popular Posts feature.
+
+= 7.14.0: December 16, 2020 =
+- New: See how your site did in 2020 with our upcoming, limited-time only, Year in Review report and how you can improve next year.
+- Tweak: We updated our campaign URL builder tool to encode parameters better.
+- Tweak: We improved the way our contextual insights work so they use resources more efficiently when loading report data.
+- Tweak: Selecting the no styling option in Popular Posts no longer loads any of the inline styles customized in the settings.
+- Tweak: We removed a JavaScript dependency from the Popular Posts widget settings screen.
+- Tweak: We limited the number of dismissed notifications stored.
+- Fix: Popular posts images now include a value for the alt parameter.
+- Fix: We added an extra check to prevent an infinite recursion error in the Popular Posts widget when just one post was selected.
+
+= 7.13.3: December 10, 2020 =
+- Fix: We adjusted our code to prevent a notice showing up on WordPress 5.6 in the post edit screen.
+
+= 7.13.2: November 24, 2020 =
+- Tweak: We tweaked some of the contextual insights to improve performance.
+- Fix: Improve support for automatic insert for inline popular posts on sites using multi-byte languages.
+
+= 7.13.0: November 5, 2020 =
+- New: Popular Posts - promote your top content across your website using automatic placement, sidebar widgets and Gutenberg Blocks. Choose themes and update styles directly visually in your WordPress admin.
+- New: Contextual Insights - Ever wondered how to use the analytics data you’re tracking? With our new Contextual Insights feature we’ll show you suggestions specific to your data directly in the MonsterInsights dashboard.
+- Tweak: Our Headline Analyzer options are now only visible for WordPress versions that support it.
+- Tweak: We added more exceptions to our duplicate tracker checks to avoid false positives.
+- Tweak: Our dashboard widget is now better integrated with the WP 5.5 changes.
+- Tweak: Reports with empty values are now properly displayed instead of staying hidden.
+
+= 7.12.3: September 28, 2020 =
+- Fix: We adjusted a check in our notifications class that would throw an error.
+- Fix: We added an extra check to prevent our WP 5.5 auto-updates compatibility code from throwing a notice in some cases.
+
+= 7.12.2: August 10, 2020 =
+- Tweak: We removed a dependency in our Headline Analyzer to improve compatibility with multiple site builders.
+
+= 7.12.0: August 6, 2020 =
+- New: We’ve added a Headline Analyzer tool directly in the Gutenberg Editor that enables you to write irresistible SEO headlines that drive traffic, shares, and rank better in search results.
+- Tweak: We made some adjustments for improved compatibility with the upcoming WordPress 5.5 release.
+- Tweak: We improved formatting for large numbers across all reports so they are easier to read.
+- Tweak: We further improved the automatic tracking code output checker to avoid false positives.
+- Fixed: We fixed a bug that prevented loading custom translations from the plugin folder.
+
+= 7.11.0: June 30, 2020 =
+- New: We’ve added a new integration with PrettyLinks, allowing you to easily combine the power of our UTM builder in our Tools section with the pretty urls provided by PrettyLinks.
+- Tweak: We’ve refined the installation and setup process for MonsterInsights users who use MonsterInsights as a network activated plugin. New mutlisite users will find a new install wizard, updated settings panel, and further bugfixes and refinements to make the multisite experience as polished as possible.
+- Tweak: We’ve enhanced MonsterInsights’s automatic tracking code output checker to handle all of the most common coming soon plugins to ensure no false positives are detected.
+- Tweak: For users using our PHP constant to disable tracking on staging and other non-production sites, we’ve fixed a bug that caused the “tracking not working” error message to show.
+- Fixed: We fixed a bug that for some users caused the enhanced link attribution code to not output properly.
+
+= 7.10.4: January 29, 2020 =
 - Tweak: In rare cases, we had users who have installed badly coded plugins and themes which were not properly detecting admin side only scripts and styles when stripping version numbers. This causes problems when the browser cache should be cleared but is not because the query param is stripped, and results in users who get Javascript errors from mismatched dependencies. This release attempts to solve that problem for most affected users.
 
-= 7.10.3: January 9, 2019 =
+= 7.10.3: January 9, 2020 =
 - New: The limited time (available until end of day Jan. 13) Year in Review report is now available in the admin, which shows how your site performed last year and offers suggestions for 2020.
 - New: Integration with PrettyLinks for hosted files so viewing of files directly accessed can now be tracked.
 

@@ -10,12 +10,11 @@
 
 namespace RankMath\SEO_Analysis;
 
-use RankMath\Helper;
 use RankMath\Traits\Ajax;
 use RankMath\Traits\Hooker;
-use MyThemeShop\Helpers\Str;
 use RankMath\Helpers\Security;
 use MyThemeShop\Helpers\Param;
+use RankMath\Helper;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -201,13 +200,13 @@ class SEO_Analyzer {
 		foreach ( $this->sort_results_by_category() as $category => $results ) :
 			$label = $this->get_category_label( $category );
 			?>
-			<div class="rank-math-result-table rank-math-result-category-<?php echo $category; ?>">
+			<div class="rank-math-result-table rank-math-result-category-<?php echo esc_attr( $category ); ?>">
 				<div class="category-title">
-					<?php echo $label; ?>
+					<?php echo $label; // phpcs:ignore ?>
 				</div>
 				<?php foreach ( $results as $result ) : ?>
 				<div class="table-row">
-					<?php echo $result; ?>
+					<?php echo $result; // phpcs:ignore ?>
 				</div>
 				<?php endforeach; ?>
 			</div>
@@ -275,9 +274,8 @@ class SEO_Analyzer {
 		delete_option( 'rank_math_seo_analysis_results' );
 
 		if ( ! $this->run_api_tests() ) {
-			error_log( $this->api_error );
 			/* translators: API error */
-			echo '<div class="notice notice-error is-dismissible notice-seo-analysis-error rank-math-notice"><p>' . sprintf( __( '<strong>API Error:</strong> %s', 'rank-math' ), $this->api_error ) . '</p></div>';
+			echo '<div class="notice notice-error is-dismissible notice-seo-analysis-error rank-math-notice"><p>' . sprintf( __( '<strong>API Error:</strong> %s', 'rank-math' ), $this->api_error  ) . '</p></div>'; // phpcs:ignore
 			$success = false;
 			die;
 		}
@@ -294,18 +292,51 @@ class SEO_Analyzer {
 	}
 
 	/**
+	 * Get page score.
+	 *
+	 * @param  string $url Url to get score for.
+	 *
+	 * @return int
+	 */
+	public function get_page_score( $url ) {
+		$this->analyse_url     = $url;
+		$this->analyse_subpage = true;
+		if ( ! $this->run_api_tests() ) {
+			error_log( $this->api_error ); // phpcs:ignore
+			return 0;
+		}
+
+		$this->build_results();
+
+		if ( empty( $this->results ) ) {
+			return 0;
+		}
+
+		$total = 0;
+		foreach ( $this->results as $id => $result ) {
+			if (
+				$result->is_hidden() ||
+				'ok' !== $result->get_status() ||
+				false === $this->can_count_result( $result )
+			) {
+				continue;
+			}
+
+			$total = $total + $result->get_score();
+		}
+
+		return $total;
+	}
+
+	/**
 	 * Enable auto update ajax handler.
 	 */
 	public function enable_auto_update() {
 		check_ajax_referer( 'rank-math-ajax-nonce', 'security' );
 		$this->has_cap_ajax( 'general' );
 
-		$settings                       = get_option( 'rank-math-options-general', array() );
-		$settings['enable_auto_update'] = '1';
-		rank_math()->settings->set( 'general', 'enable_auto_update', true );
-		update_option( 'rank-math-options-general', $settings );
-
 		$this->enable_auto_update_in_stored_data();
+		Helper::toggle_auto_update_setting( 'on' );
 
 		echo '1';
 		die;
@@ -379,18 +410,21 @@ class SEO_Analyzer {
 
 		$request = wp_remote_get( $api_url, [ 'timeout' => 30 ] );
 		if ( is_wp_error( $request ) ) {
-			$this->api_error = strip_tags( $request->get_error_message() );
+			$this->api_error = wp_strip_all_tags( $request->get_error_message() );
+			return false;
+		}
+
+		$status = absint( wp_remote_retrieve_response_code( $request ) );
+		if ( 200 !== $status ) {
+			// Translators: placeholder is a HTTP error code.
+			$this->api_error = sprintf( __( 'HTTP %d error.', 'rank-math' ), $status );
 			return false;
 		}
 
 		$response = wp_remote_retrieve_body( $request );
 		$response = json_decode( $response, true );
 		if ( ! is_array( $response ) ) {
-			return false;
-		}
-
-		if ( 200 !== absint( wp_remote_retrieve_response_code( $request ) ) ) {
-			$this->api_error = join( ', ', $response['errors'] );
+			$this->api_error = __( 'Unexpected API response.', 'rank-math' );
 			return false;
 		}
 

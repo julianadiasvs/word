@@ -6,6 +6,8 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    '958baf679ab014f6517c26661e8969b7' => $vendorDir . '/cmb2/cmb2/init.php',
-    'c137015539481e56a35f44f2d09649d5' => $baseDir . '/includes/template-tags.php',
+    'da5f6548f070d3d306f90eee42dd5de6' => $vendorDir . '/donatj/phpuseragentparser/src/UserAgentParser.php',
+    'bcb90d312f16e4ff52a76c5aa3f98ae0' => $vendorDir . '/cmb2/cmb2/init.php',
+    '65bb6728e4ea5a6bfba27700e81f7a00' => $baseDir . '/includes/template-tags.php',
+    '49628becc29116377284b725833a0b5a' => $vendorDir . '/woocommerce/action-scheduler/action-scheduler.php',
 );

@@ -61,8 +61,12 @@ class EIO_Picture_Webp extends EIO_Page_Parser {
 
 		// Make sure gallery block images crop properly.
 		add_action( 'wp_head', array( $this, 'gallery_block_css' ) );
-		// Start an output buffer before any output starts.
-		add_filter( 'ewww_image_optimizer_filter_page_output', array( $this, 'filter_page_output' ), 10 );
+		// Hook onto the output buffer function.
+		if ( function_exists( 'swis' ) && swis()->settings->get_option( 'lazy_load' ) ) {
+			add_filter( 'swis_filter_page_output', array( $this, 'filter_page_output' ) );
+		} else {
+			add_filter( 'ewww_image_optimizer_filter_page_output', array( $this, 'filter_page_output' ), 10 );
+		}
 
 		$this->home_url = trailingslashit( get_site_url() );
 		ewwwio_debug_message( "home url: $this->home_url" );
@@ -88,20 +92,58 @@ class EIO_Picture_Webp extends EIO_Page_Parser {
 			if ( is_wp_error( $s3_region ) ) {
 				$s3_region = '';
 			}
-			$s3_domain = $as3cf->get_provider()->get_url_domain( $s3_bucket, $s3_region, null, array(), true );
-			ewwwio_debug_message( "found S3 domain of $s3_domain with bucket $s3_bucket and region $s3_region" );
+			if ( ! empty( $s3_bucket ) && ! is_wp_error( $s3_bucket ) && method_exists( $as3cf, 'get_provider' ) ) {
+				$s3_domain = $as3cf->get_provider()->get_url_domain( $s3_bucket, $s3_region, null, array(), true );
+			} elseif ( ! empty( $s3_bucket ) && ! is_wp_error( $s3_bucket ) && method_exists( $as3cf, 'get_storage_provider' ) ) {
+				$s3_domain = $as3cf->get_storage_provider()->get_url_domain( $s3_bucket, $s3_region );
+			}
 			if ( ! empty( $s3_domain ) && $as3cf->get_setting( 'serve-from-s3' ) ) {
+				$this->debug_message( "found S3 domain of $s3_domain with bucket $s3_bucket and region $s3_region" );
 				$this->webp_paths[] = $s3_scheme . '://' . $s3_domain . '/';
-				$this->s3_active    = $s3_domain;
+				if ( $as3cf->get_setting( 'enable-delivery-domain' ) && $as3cf->get_setting( 'delivery-domain' ) ) {
+					$delivery_domain    = $as3cf->get_setting( 'delivery-domain' );
+					$this->webp_paths[] = $s3_scheme . '://' . $delivery_domain . '/';
+					$this->debug_message( "found WOM delivery domain of $delivery_domain" );
+				}
+				$this->s3_active = $s3_domain;
 				if ( $as3cf->get_setting( 'enable-object-prefix' ) ) {
 					$this->s3_object_prefix = $as3cf->get_setting( 'object-prefix' );
-					ewwwio_debug_message( $as3cf->get_setting( 'object-prefix' ) );
+					$this->debug_message( $as3cf->get_setting( 'object-prefix' ) );
+				} else {
+					$this->debug_message( 'no WOM prefix' );
 				}
 				if ( $as3cf->get_setting( 'object-versioning' ) ) {
 					$this->s3_object_version = true;
-					ewwwio_debug_message( 'object versioning enabled' );
+					$this->debug_message( 'object versioning enabled' );
 				}
 			}
+		}
+
+		if (
+			class_exists( 'S3_Uploads' ) &&
+			function_exists( 's3_uploads_enabled' ) && s3_uploads_enabled() &&
+			method_exists( 'S3_Uploads', 'get_instance' ) && method_exists( 'S3_Uploads', 'get_s3_url' )
+		) {
+			$s3_uploads_instance = \S3_Uploads::get_instance();
+			$s3_uploads_url      = $s3_uploads_instance->get_s3_url();
+			$this->webp_paths[]  = $s3_uploads_url;
+			$this->debug_message( "found S3 URL from S3_Uploads: $s3_uploads_url" );
+		}
+
+		if ( class_exists( 'wpCloud\StatelessMedia\EWWW' ) && function_exists( 'ud_get_stateless_media' ) ) {
+			$sm = ud_get_stateless_media();
+			if ( method_exists( $sm, 'get' ) && method_exists( $sm, 'get_gs_host' ) ) {
+				$sm_mode = $sm->get( 'sm.mode' );
+				if ( 'disabled' !== $sm_mode ) {
+					$sm_host = $sm->get_gs_host();
+					$this->debug_message( $sm_host );
+					$this->webp_paths[] = $sm_host;
+				}
+			}
+		}
+
+		if ( function_exists( 'swis' ) && swis()->settings->get_option( 'cdn_domain' ) ) {
+			$this->webp_paths[] = swis()->settings->get_option( 'cdn_domain' );
 		}
 
 		foreach ( $this->webp_paths as $webp_path ) {
@@ -113,6 +155,15 @@ class EIO_Picture_Webp extends EIO_Page_Parser {
 		ewwwio_debug_message( 'checking any images matching these patterns for webp: ' . implode( ',', $this->webp_paths ) );
 		ewwwio_debug_message( 'rewriting any images matching these domains to webp: ' . implode( ',', $this->webp_domains ) );
 		$this->validate_user_exclusions();
+	}
+
+	/**
+	 * Grant read-only access to allowed WebP domains.
+	 *
+	 * @return array A list of WebP domains.
+	 */
+	function get_webp_domains() {
+		return $this->webp_domains;
 	}
 
 	/**
@@ -179,8 +230,10 @@ class EIO_Picture_Webp extends EIO_Page_Parser {
 			strpos( $uri, 'et_fb=' ) !== false ||
 			strpos( $uri, 'tatsu=' ) !== false ||
 			( ! empty( $_POST['action'] ) && 'tatsu_get_concepts' === sanitize_text_field( wp_unslash( $_POST['action'] ) ) ) || // phpcs:ignore WordPress.Security.NonceVerification
+			is_embed() ||
 			is_feed() ||
 			is_preview() ||
+			is_customize_preview() ||
 			( defined( 'REST_REQUEST' ) && REST_REQUEST ) ||
 			preg_match( '/^<\?xml/', $buffer ) ||
 			strpos( $buffer, 'amp-boilerplate' ) ||
@@ -451,7 +504,7 @@ class EIO_Picture_Webp extends EIO_Page_Parser {
 		if ( ! is_null( $image_path ) && $image_path ) {
 			$extension = strtolower( pathinfo( $image_path, PATHINFO_EXTENSION ) );
 		}
-		if ( $extension && 'gif' === $extension ) {
+		if ( $extension && 'gif' === $extension && ! ewww_image_optimizer_get_option( 'ewww_image_optimizer_force_gif2webp' ) ) {
 			return false;
 		}
 		if ( $extension && 'svg' === $extension ) {

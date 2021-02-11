@@ -43,6 +43,7 @@ body {
 	line-height: 18px;
 	color: #444;
 	margin: 1px;
+	height: auto;
 }
 #wpforms-builder input[type=radio],
 #wpforms-builder input[type=checkbox] {
@@ -100,6 +101,11 @@ body {
 
 #wpforms-builder #wpforms-builder-form .wpforms-hidden {
 	display: none;
+}
+
+/* In some cases we need to override inline style display value */
+#wpforms-builder #wpforms-builder-form .wpforms-hidden-strict {
+	display: none !important;
 }
 
 #wpforms-builder .wpforms-one-half {
@@ -745,7 +751,8 @@ body {
 	border-bottom: 1px solid #d3d3d3;
 }
 
-#wpforms-builder .wpforms-panel-content-section-title button {
+#wpforms-builder .wpforms-panel-content-section-title button,
+#wpforms-builder .wpforms-panel-content-section-title .button {
 	background-color: #0e6cad;
 	color: #fff;
 	border: none;

@@ -1,13 +1,19 @@
 lazysizesWebP('alpha', lazySizes.init);
 function shouldAutoScale(target){
+	if (eio_lazy_vars.skip_autoscale == 1) {
+		console.log('autoscale disabled globally');
+		return false;
+	}
 	if (target.hasAttributes()) {
 		var attrs = target.attributes
 		var regNoScale = /skip-autoscale/;
 		for (var i = attrs.length - 1; i >= 0; i--) {
 			if (regNoScale.test(attrs[i].name)) {
+				console.log('autoscale disabled by attr');
 				return false;
 			}
 			if (regNoScale.test(attrs[i].value)) {
+				console.log('autoscale disabled by attr value');
 				return false;
 			}
 		}
@@ -103,7 +109,15 @@ function constrainSrc(url,objectWidth,objectHeight,objectType){
 	return url;
 }
 document.addEventListener('lazybeforesizes', function(e){
-	console.log(e);
+	console.log('auto-sizing to: ' + e.detail.width);
+	if (e.target._lazysizesWidth === undefined) {
+		return;
+	}
+	console.log('previous width was ' + e.target._lazysizesWidth);
+	if (e.detail.width < e.target._lazysizesWidth) {
+		console.log('no way! ' + e.detail.width + ' is smaller than ' + e.target._lazysizesWidth);
+		e.detail.width = e.target._lazysizesWidth;
+	}
 });
 document.addEventListener('lazybeforeunveil', function(e){
         var target = e.target;
@@ -134,9 +148,11 @@ document.addEventListener('lazybeforeunveil', function(e){
 				}
 				if (!shouldAutoScale(target)||!shouldAutoScale(target.parentNode)){
 					var newSrc = false;
-				} else if ( window.lazySizes.hC(target,'et_pb_jt_filterable_grid_item_image')) {
+				} else if ( window.lazySizes.hC(target,'et_pb_jt_filterable_grid_item_image') || window.lazySizes.hC(target,'ss-foreground-image') ) {
+					console.log('img that needs a hard crop');
 					var newSrc = constrainSrc(src,targetWidth,targetHeight,'img-crop');
 				} else {
+					console.log('plain old img, constraining');
 					var newSrc = constrainSrc(src,targetWidth,targetHeight,'img');
 				}
 				if (newSrc && src != newSrc){

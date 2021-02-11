@@ -79,53 +79,6 @@ if ( ! class_exists( 'Astra_Control_Border' ) && class_exists( 'WP_Customize_Con
 		}
 
 		/**
-		 * An Underscore (JS) template for this control's content (but not its container).
-		 *
-		 * Class variables for this control class are available in the `data` JS object;
-		 * export custom variables by overriding {@see WP_Customize_Control::to_json()}.
-		 *
-		 * @see WP_Customize_Control::print_template()
-		 *
-		 * @access protected
-		 */
-		protected function content_template() {
-
-			$item_link_desc = __( 'Link Values Together', 'astra' );
-			?>
-			<label class='ast-border' for="" >
-
-			<# if ( data.label ) { #>
-				<span class="customize-control-title">{{{ data.label }}}</span>
-			<# } #>
-			<# if ( data.description ) { #>
-				<span class="description customize-control-description">{{{ data.description }}}</span>
-			<# } #>
-
-			<div class="ast-border-outer-wrapper">
-				<div class="input-wrapper ast-border-wrapper">
-
-					<ul class="ast-border-wrapper desktop active"><# 
-						if ( data.linked_choices ) { #>
-						<li class="ast-border-input-item-link">
-								<span class="dashicons dashicons-admin-links ast-border-connected wp-ui-highlight" data-element-connect="{{ data.id }}" title="<?php echo esc_html( $item_link_desc ); ?>"></span>
-								<span class="dashicons dashicons-editor-unlink ast-border-disconnected" data-element-connect="{{ data.id }}" title="<?php echo esc_html( $item_link_desc ); ?>"></span>
-							</li><#
-						}
-						_.each( data.choices, function( choiceLabel, choiceID ) {
-						#><li {{{ data.inputAttrs }}} class='ast-border-input-item'>
-							<input type='number' class='ast-border-input ast-border-desktop' data-id= '{{ choiceID }}' data-name="{{ data.name }}" value='{{ data.value[ choiceID ] }}'>
-							<span class="ast-border-title">{{{ data.choices[ choiceID ] }}}</span>
-						</li><#
-						}); #>
-					</ul>
-				</div>
-			</div>
-			</label>
-
-			<?php
-		}
-
-		/**
 		 * Render the control's content.
 		 *
 		 * @see WP_Customize_Control::render_content()

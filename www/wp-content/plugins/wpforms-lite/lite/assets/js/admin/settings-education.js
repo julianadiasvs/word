@@ -1,4 +1,4 @@
-/* globals wpforms_admin */
+/* global wpforms_admin */
 /**
  * WPForms Settings Education function.
  *
@@ -24,7 +24,7 @@ var WPFormsSettingsEducation = window.WPFormsSettingsEducation || ( function( do
 		 * @since 1.5.5
 		 */
 		init: function() {
-			$( document ).ready( app.ready );
+			$( app.ready );
 		},
 
 		/**

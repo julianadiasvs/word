@@ -68,7 +68,11 @@ if ( ! class_exists( 'Astra_Customizer_Sanitizes' ) ) {
 		 */
 		public static function sanitize_number( $val, $setting ) {
 
-			$input_attrs = $setting->manager->get_control( $setting->id )->input_attrs;
+			$input_attrs = array();
+
+			if ( isset( $setting->manager->get_control( $setting->id )->input_attrs ) ) {
+				$input_attrs = $setting->manager->get_control( $setting->id )->input_attrs;
+			}
 
 			if ( isset( $input_attrs ) ) {
 
@@ -174,26 +178,11 @@ if ( ! class_exists( 'Astra_Customizer_Sanitizes' ) ) {
 			);
 
 			if ( isset( $val['desktop'] ) ) {
-				$spacing['desktop'] = array_map(
-					function ( $value ) {
-							return ( is_numeric( $value ) && $value >= 0 ) ? $value : '';
-					},
-					$val['desktop']
-				);
+				$spacing['desktop'] = array_map( 'self::check_numberic_values', $val['desktop'] );
 
-				$spacing['tablet'] = array_map(
-					function ( $value ) {
-							return ( is_numeric( $value ) && $value >= 0 ) ? $value : '';
-					},
-					$val['tablet']
-				);
+				$spacing['tablet'] = array_map( 'self::check_numberic_values', $val['tablet'] );
 
-				$spacing['mobile'] = array_map(
-					function ( $value ) {
-							return ( is_numeric( $value ) && $value >= 0 ) ? $value : '';
-					},
-					$val['mobile']
-				);
+				$spacing['mobile'] = array_map( 'self::check_numberic_values', $val['mobile'] );
 
 				if ( isset( $val['desktop-unit'] ) ) {
 					$spacing['desktop-unit'] = $val['desktop-unit'];
@@ -216,6 +205,18 @@ if ( ! class_exists( 'Astra_Customizer_Sanitizes' ) ) {
 				return $val;
 			}
 
+		}
+
+		/**
+		 * Check numeric values.
+		 *
+		 * @param  int|string $value Value of variable.
+		 * @return string|int Return empty if $value is not integer.
+		 * 
+		 * @since 2.5.4
+		 */
+		public static function check_numberic_values( $value ) {
+			return ( is_numeric( $value ) ) ? $value : '';
 		}
 
 		/**
@@ -533,6 +534,8 @@ if ( ! class_exists( 'Astra_Customizer_Sanitizes' ) ) {
 				'background-position'   => 'center center',
 				'background-size'       => 'auto',
 				'background-attachment' => 'scroll',
+				'background-media'      => '',
+				'background-type'       => '',
 			);
 
 			if ( is_array( $bg_obj ) ) {
@@ -614,6 +617,8 @@ if ( ! class_exists( 'Astra_Customizer_Sanitizes' ) ) {
 					'background-position'   => 'center center',
 					'background-size'       => 'auto',
 					'background-attachment' => 'scroll',
+					'background-media'      => '',
+					'background-type'       => '',
 				),
 				'tablet'  => array(
 					'background-color'      => '',
@@ -622,6 +627,8 @@ if ( ! class_exists( 'Astra_Customizer_Sanitizes' ) ) {
 					'background-position'   => 'center center',
 					'background-size'       => 'auto',
 					'background-attachment' => 'scroll',
+					'background-media'      => '',
+					'background-type'       => '',
 				),
 				'mobile'  => array(
 					'background-color'      => '',
@@ -630,6 +637,8 @@ if ( ! class_exists( 'Astra_Customizer_Sanitizes' ) ) {
 					'background-position'   => 'center center',
 					'background-size'       => 'auto',
 					'background-attachment' => 'scroll',
+					'background-media'      => '',
+					'background-type'       => '',
 				),
 			);
 
@@ -640,6 +649,8 @@ if ( ! class_exists( 'Astra_Customizer_Sanitizes' ) ) {
 				foreach ( $bg as $key => $value ) {
 					if ( 'background-image' === $key ) {
 						$out_bg_obj[ $device ] [ $key ] = esc_url_raw( $value );
+					} if ( 'background-media' === $key ) {
+						$out_bg_obj[ $device ] [ $key ] = floatval( $value );
 					} else {
 						$out_bg_obj[ $device ] [ $key ] = esc_attr( $value );
 					}

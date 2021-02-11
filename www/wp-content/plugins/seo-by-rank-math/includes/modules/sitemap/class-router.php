@@ -6,6 +6,9 @@
  * @package    RankMath
  * @subpackage RankMath\Sitemap
  * @author     Rank Math <support@rankmath.com>
+ *
+ * @copyright Copyright (C) 2008-2019, Yoast BV
+ * The following code is a derivative work of the code from the Yoast(https://github.com/Yoast/wordpress-seo/), which is licensed under GPL v3.
  */
 
 namespace RankMath\Sitemap;
@@ -50,7 +53,7 @@ class Router {
 	}
 
 	/**
-	 * Serves sitemap when needed using correct sitemap module
+	 * Serves sitemap when needed using correct sitemap module.
 	 *
 	 * @param WP_Query $query The WP_Query instance (passed by reference).
 	 */
@@ -76,7 +79,7 @@ class Router {
 	}
 
 	/**
-	 * Check the current request URI, if we can determine it's probably an XML sitemap, kill loading the widgets
+	 * Check the current request URI, if we can determine it's probably an XML sitemap, kill loading the widgets.
 	 */
 	public function reduce_query_load() {
 		if ( ! isset( $_SERVER['REQUEST_URI'] ) ) {
@@ -90,7 +93,7 @@ class Router {
 	}
 
 	/**
-	 * Redirects sitemap.xml to sitemap_index.xml.
+	 * Redirects `sitemap.xml` to `sitemap_index.xml`.
 	 */
 	public function template_redirect() {
 		if ( ! $this->needs_sitemap_index_redirect() ) {

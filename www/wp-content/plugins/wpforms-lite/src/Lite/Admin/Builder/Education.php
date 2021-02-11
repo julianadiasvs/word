@@ -29,7 +29,9 @@ class Education {
 		if ( wp_doing_ajax() ) {
 			add_action( 'wp_ajax_wpforms_dyk_dismiss', array( $this, 'dyk_ajax_dismiss' ) );
 
-			add_action( 'wp_ajax_wpforms_update_field_recaptcha', array( $this, 'recaptcha_field_callback' ) );
+			add_action( 'wp_ajax_wpforms_update_field_captcha', array( $this, 'captcha_field_callback' ) );
+
+			add_action( 'wpforms_field_options_after_advanced-options', array( $this, 'field_conditional_logic' ), 10, 2 );
 		}
 
 		// Only proceed for the form builder.
@@ -191,6 +193,7 @@ class Education {
 	 * Display fields.
 	 *
 	 * @since 1.5.1
+	 * @since 1.6.4 Added hCaptcha support.
 	 *
 	 * @param array $fields Form fields.
 	 *
@@ -198,14 +201,25 @@ class Education {
 	 */
 	public function fields( $fields ) {
 
-		// Add reCAPTCHA field to Standard group.
-		$fields['standard']['fields'][] = array(
-			'icon'  => 'fa-google',
-			'name'  => esc_html__( 'reCAPTCHA', 'wpforms-lite' ),
-			'type'  => 'recaptcha',
-			'order' => 180,
-			'class' => 'not-draggable',
-		);
+		// Add CAPTCHA field to Standard group.
+		$captcha_settings = wpforms_get_captcha_settings();
+		if ( ! empty( $captcha_settings['provider'] ) ) {
+			if ( ! empty( $captcha_settings['site_key'] ) || ! empty( $captcha_settings['secret_key'] ) ) {
+				$captcha_name = 'hcaptcha' === $captcha_settings['provider'] ? esc_html__( 'hCaptcha', 'wpforms-lite' ) : esc_html__( 'reCAPTCHA', 'wpforms-lite' );
+				$captcha_icon = 'hcaptcha' === $captcha_settings['provider'] ? 'fa-question-circle-o' : 'fa-google';
+			} else {
+				$captcha_name = esc_html__( 'CAPTCHA', 'wpforms-lite' );
+				$captcha_icon = 'fa-question-circle-o';
+			}
+
+			$fields['standard']['fields'][] = array(
+				'icon'  => $captcha_icon,
+				'name'  => $captcha_name,
+				'type'  => 'captcha_' . $captcha_settings['provider'],
+				'order' => 180,
+				'class' => 'not-draggable',
+			);
+		}
 
 		$fields['fancy']['fields'] = array(
 			array(
@@ -287,7 +301,7 @@ class Education {
 			),
 			array(
 				'icon'  => 'fa-question-circle',
-				'name'  => esc_html__( 'Captcha', 'wpforms-lite' ),
+				'name'  => esc_html__( 'Custom Captcha', 'wpforms-lite' ),
 				'type'  => 'captcha',
 				'order' => '12',
 				'class' => 'upgrade-modal',
@@ -392,7 +406,7 @@ class Education {
 	 */
 	public function settings( $form, $slug ) {
 
-		if ( 'settings' !== $slug ) {
+		if ( empty( $form ) || 'settings' !== $slug ) {
 			return;
 		}
 
@@ -439,12 +453,19 @@ class Education {
 				'plugin_slug' => 'wpforms-post-submissions',
 				'license'     => 'pro',
 			),
+			array(
+				'name'        => esc_html__( 'Webhooks', 'wpforms-lite' ),
+				'slug'        => 'webhooks',
+				'plugin'      => 'wpforms-webhooks/wpforms-webhooks.php',
+				'plugin_slug' => 'wpforms-webhooks',
+				'license'     => 'elite',
+			),
 		);
 
 		foreach ( $settings as $setting ) {
 
 			/* translators: %s - addon name. */
-			$modal_name = sprintf( esc_html__( '%s addon', 'wpforms' ), $setting['name'] );
+			$modal_name = sprintf( esc_html__( '%s addon', 'wpforms-lite' ), $setting['name'] );
 			printf(
 				'<a href="#" class="wpforms-panel-sidebar-section wpforms-panel-sidebar-section-%s upgrade-modal" data-name="%s" data-license="%s">',
 				esc_attr( $setting['slug'] ),
@@ -491,6 +512,12 @@ class Education {
 				'img'     => 'addon-icon-stripe.png',
 				'license' => 'pro',
 			),
+			array(
+				'name'    => esc_html__( 'Authorize.Net', 'wpforms-lite' ),
+				'slug'    => 'authorize_net',
+				'img'     => 'addon-icon-authorize-net.png',
+				'license' => 'elite',
+			),
 		);
 
 		foreach ( $payments as $payment ) {
@@ -528,91 +555,89 @@ class Education {
 	}
 
 	/**
-	 * Targeting on `reCAPTCHA` field button in the builder.
+	 * Targeting on hCaptcha/reCAPTCHA field button in the builder.
 	 *
 	 * TODO: Lite and Pro Education duplicate this code.
 	 *
-	 * @since 1.5.7
+	 * @since 1.6.4
 	 */
-	public function recaptcha_field_callback() {
+	public function captcha_field_callback() {
 
 		// Run a security check.
 		check_ajax_referer( 'wpforms-builder', 'nonce' );
 
 		// Check for permissions.
 		if ( ! wpforms_current_user_can() ) {
-			die( esc_html__( 'You do not have permission.', 'wpforms-lite' ) );
+			wp_send_json_error( esc_html__( 'You do not have permission.', 'wpforms-lite' ) );
 		}
 
 		// Check for form ID.
 		if ( ! isset( $_POST['id'] ) || empty( $_POST['id'] ) ) {
-			die( esc_html__( 'No form ID found.', 'wpforms-lite' ) );
+			wp_send_json_error( esc_html__( 'No form ID found.', 'wpforms-lite' ) );
 		}
 
 		// Get an actual form data.
 		$form_id   = absint( $_POST['id'] );
 		$form_data = wpforms()->form->get( $form_id, array( 'content_only' => true ) );
 
-		if ( empty( $form_data ) ) {
+		// Check that CAPTCHA is configured in the settings.
+		$captcha_settings = wpforms_get_captcha_settings();
+		$captcha_name     = $this->get_captcha_name( $captcha_settings );
+
+		if ( empty( $form_data ) || empty( $captcha_name ) ) {
 			wp_send_json_error( esc_html__( 'Something wrong. Please, try again later.', 'wpforms-lite' ) );
 		}
 
-		// Check that recaptcha is configured in the settings.
-		$site_key       = wpforms_setting( 'recaptcha-site-key' );
-		$secret_key     = wpforms_setting( 'recaptcha-secret-key' );
-		$recaptcha_name = $this->get_recaptcha_name();
-
-		if ( empty( $recaptcha_name ) ) {
-			wp_send_json_error( esc_html__( 'Something wrong. Please, try again later.', 'wpforms-lite' ) );
-		}
-
-		// Prepare a result array.
-		$data = array(
-			'current' => false,
-			'cases'   => array(
-				'not_configured'         => array(
+		// Prepare result array.
+		$data = [
+			'current'  => false,
+			'cases'    => [
+				'not_configured'         => [
 					'title'   => esc_html__( 'Heads up!', 'wpforms-lite' ),
 					'content' => sprintf(
-						wp_kses( /* translators: %1$s - reCaptcha settings page URL; %2$s - WPForms.com doc URL. */
-							__( 'Google reCAPTCHA isn\'t configured yet. Please complete the setup in your <a href="%1$s" target="_blank">WPForms Settings</a>, and check out our <a href="%2$s" target="_blank" rel="noopener noreferrer">step by step tutorial</a> for full details.', 'wpforms-lite' ),
-							array(
-								'a' => array(
+						wp_kses( /* translators: %1$s - CAPTCHA settings page URL; %2$s - WPForms.com doc URL; %3$s - CAPTCHA name. */
+							__( 'The %3$s settings have not been configured yet. Please complete the setup in your <a href="%1$s" target="_blank">WPForms Settings</a>, and check out our <a href="%2$s" target="_blank" rel="noopener noreferrer">step by step tutorial</a> for full details.', 'wpforms-lite' ),
+							[
+								'a' => [
 									'href'   => true,
 									'rel'    => true,
 									'target' => true,
-								),
-							)
+								],
+							]
 						),
-						esc_url( admin_url( 'admin.php?page=wpforms-settings&view=recaptcha' ) ),
-						'https://wpforms.com/docs/setup-captcha-wpforms/'
+						esc_url( admin_url( 'admin.php?page=wpforms-settings&view=captcha' ) ),
+						'https://wpforms.com/docs/setup-captcha-wpforms/',
+						$captcha_name
 					),
-				),
-				'configured_not_enabled' => array(
+				],
+				'configured_not_enabled' => [
 					'title'   => false,
-					/* translators: %s - reCAPTCHA type. */
-					'content' => sprintf( esc_html__( '%s has been enabled for this form. Don\'t forget to save your form!', 'wpforms-lite' ), $recaptcha_name ),
-				),
-				'configured_enabled'     => array(
+					/* translators: %s - CAPTCHA name. */
+					'content' => sprintf( esc_html__( '%s has been enabled for this form. Don\'t forget to save your form!', 'wpforms-lite' ), $captcha_name ),
+				],
+				'configured_enabled'     => [
 					'title'   => false,
-					'content' => esc_html__( 'Are you sure you want to disable Google reCAPTCHA for this form?', 'wpforms-lite' ),
+					/* translators: %s - CAPTCHA name. */
+					'content' => sprintf( esc_html__( 'Are you sure you want to disable %s for this form?', 'wpforms-lite' ), $captcha_name ),
 					'cancel'  => true,
-				),
-			),
-		);
+				],
+			],
+			'provider' => $captcha_settings['provider'],
+		];
 
-		if ( ! $site_key || ! $secret_key ) {
+		if ( empty( $captcha_settings['site_key'] ) || empty( $captcha_settings['secret_key'] ) ) {
 
-			// If reCAPTCHA is not configured in the WPForms plugin settings.
+			// If CAPTCHA is not configured in the WPForms plugin settings.
 			$data['current'] = 'not_configured';
 
 		} elseif ( ! isset( $form_data['settings']['recaptcha'] ) || '1' !== $form_data['settings']['recaptcha'] ) {
 
-			// If reCAPTCHA is configured in WPForms plugin settings, but wasn't set in form settings.
+			// If CAPTCHA is configured in WPForms plugin settings, but wasn't set in form settings.
 			$data['current'] = 'configured_not_enabled';
 
 		} else {
 
-			// If reCAPTCHA is configured in WPForms plugin and form settings.
+			// If CAPTCHA is configured in WPForms plugin and form settings.
 			$data['current'] = 'configured_enabled';
 		}
 
@@ -620,33 +645,35 @@ class Education {
 	}
 
 	/**
-	 * Retrive a reCAPTCHA type name.
+	 * Retrieve the CAPTCHA name.
 	 *
-	 * @since 1.5.8
+	 * @since 1.6.4
+	 *
+	 * @param array $settings The CAPTCHA settings.
 	 *
 	 * @return string
 	 */
-	public function get_recaptcha_name() {
+	protected function get_captcha_name( $settings ) {
 
-		$recaptcha_type = wpforms_setting( 'recaptcha-type', 'v2' );
-
-		// Get a recaptcha name.
-		switch ( $recaptcha_type ) {
-			case 'v2':
-				$recaptcha_name = esc_html__( 'Google Checkbox v2 reCAPTCHA', 'wpforms-lite' );
-				break;
-			case 'invisible':
-				$recaptcha_name = esc_html__( 'Google Invisible v2 reCAPTCHA', 'wpforms-lite' );
-				break;
-			case 'v3':
-				$recaptcha_name = esc_html__( 'Google v3 reCAPTCHA', 'wpforms-lite' );
-				break;
-			default:
-				$recaptcha_name = '';
-				break;
+		if ( empty( $settings['provider'] ) ) {
+			return '';
 		}
 
-		return $recaptcha_name;
+		if ( empty( $settings['site_key'] ) && empty( $settings['secret_key'] ) ) {
+			return esc_html__( 'CAPTCHA', 'wpforms-lite' );
+		}
+
+		if ( 'hcaptcha' === $settings['provider'] ) {
+			return esc_html__( 'hCaptcha', 'wpforms-lite' );
+		}
+
+		$recaptcha_names = [
+			'v2'        => esc_html__( 'Google Checkbox v2 reCAPTCHA', 'wpforms-lite' ),
+			'invisible' => esc_html__( 'Google Invisible v2 reCAPTCHA', 'wpforms-lite' ),
+			'v3'        => esc_html__( 'Google v3 reCAPTCHA', 'wpforms-lite' ),
+		];
+
+		return isset( $recaptcha_names[ $settings['recaptcha_type'] ] ) ? $recaptcha_names[ $settings['recaptcha_type'] ] : '';
 	}
 
 	/**
@@ -698,10 +725,10 @@ class Education {
 		}
 
 		$translations = array(
-			'upgrade_to_pro' => __( 'Upgrade to Pro.', 'wpforms' ),
-			'dismiss_title'  => __( 'Dismiss this message.', 'wpforms' ),
-			'did_you_know'   => __( 'Did You Know?', 'wpforms' ),
-			'learn_more'     => __( 'Learn More', 'wpforms' ),
+			'upgrade_to_pro' => __( 'Upgrade to Pro.', 'wpforms-lite' ),
+			'dismiss_title'  => __( 'Dismiss this message.', 'wpforms-lite' ),
+			'did_you_know'   => __( 'Did You Know?', 'wpforms-lite' ),
+			'learn_more'     => __( 'Learn More', 'wpforms-lite' ),
 		);
 
 		$learn_more = ( ! empty( $settings['more'] ) ) ? '<a href="' . esc_url( $settings['more'] ) . '" class="learn-more">' . esc_html( $translations['learn_more'] ) . '</a>' : '';

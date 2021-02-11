@@ -6,6 +6,9 @@
  * @package    RankMath
  * @subpackage RankMath\OpenGraph
  * @author     Rank Math <support@rankmath.com>
+ *
+ * @copyright Copyright (C) 2008-2019, Yoast BV
+ * The following code is a derivative work of the code from the Yoast(https://github.com/Yoast/wordpress-seo/), which is licensed under GPL v3.
  */
 
 namespace RankMath\OpenGraph;
@@ -60,11 +63,6 @@ class OpenGraph {
 	public function output_tags() {
 		wp_reset_query();
 
-		if ( is_singular() && ! is_front_page() ) {
-			$this->schema = Post::get_meta( 'rich_snippet' );
-			$this->schema = $this->schema ? $this->schema : false;
-		}
-
 		/**
 		 * Hook to add all OpenGraph metadata
 		 *
@@ -113,7 +111,7 @@ class OpenGraph {
 	}
 
 	/**
-	 * Get description
+	 * Get description.
 	 *
 	 * @return bool|string
 	 */

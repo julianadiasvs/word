@@ -8,6 +8,8 @@
 
 use RankMath\Helper;
 
+defined( 'ABSPATH' ) || exit;
+
 $dep = [ [ 'disable_date_archives', 'off' ] ];
 
 $cmb->add_field(
@@ -17,10 +19,10 @@ $cmb->add_field(
 		'name'    => esc_html__( 'Date Archives', 'rank-math' ),
 		'desc'    => esc_html__( 'Enable or disable the date archive (_e.g: domain.com/2019/06/_). If this option is disabled, the date archives will be redirected to the homepage.', 'rank-math' ),
 		'options' => [
-			'off' => esc_html__( 'Enabled', 'rank-math' ),
 			'on'  => esc_html__( 'Disabled', 'rank-math' ),
+			'off' => esc_html__( 'Enabled', 'rank-math' ),
 		],
-		'default' => 'off',
+		'default' => 'on',
 	]
 );
 
@@ -40,14 +42,13 @@ $cmb->add_field(
 
 $cmb->add_field(
 	[
-		'id'              => 'date_archive_description',
-		'type'            => 'textarea_small',
-		'name'            => esc_html__( 'Date Archive Description', 'rank-math' ),
-		'desc'            => esc_html__( 'Date archive description.', 'rank-math' ),
-		'classes'         => 'rank-math-supports-variables rank-math-description rank-math-advanced-option',
-		'dep'             => $dep,
-		'sanitization_cb' => [ '\RankMath\CMB2', 'sanitize_textfield' ],
-		'attributes'      => [
+		'id'         => 'date_archive_description',
+		'type'       => 'textarea_small',
+		'name'       => esc_html__( 'Date Archive Description', 'rank-math' ),
+		'desc'       => esc_html__( 'Date archive description.', 'rank-math' ),
+		'classes'    => 'rank-math-supports-variables rank-math-description rank-math-advanced-option',
+		'dep'        => $dep,
+		'attributes' => [
 			'class'                  => 'cmb2-textarea-small wp-exclude-emoji',
 			'data-gramm_editor'      => 'false',
 			'rows'                   => 2,

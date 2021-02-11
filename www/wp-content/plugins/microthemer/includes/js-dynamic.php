@@ -10,6 +10,12 @@ $data = '';
 $dev_mode = TVR_DEV_MODE ? 'true' : 'false';
 $data.= 'TVR_DEV_MODE = ' . $dev_mode . ';' . "\n\n";
 
+// program data needs to be added dynamically if non-english and server doesn't allow writing JS files
+// upon activation
+if ( !empty($this->preferences['inlineJsProgData']) ){
+	$data.= $this->write_mt_version_specific_js(false, true);
+}
+
 // add the design pack directories to the TvrMT.data.prog.combo object already defined in the static version JS file
 $directories = array();
 foreach ($this->file_structure as $dir => $array) {
@@ -88,7 +94,8 @@ $data.= 'TvrMT.data.dyn.site_pages = ' . json_encode($this->get_site_pages()) . 
 // dynamic menus: enq_js, mqs, custom code, animation, preset
 
 $data.= 'TvrMT.data.dyn.ui_config = ' . json_encode(array(
-	'mt_nonlog_nonce' => wp_create_nonce('mt_nonlog_check') // note this won't work with browser sync enabled
+	'mt_nonlog_nonce' => wp_create_nonce('mt_nonlog_check'), // note this won't work with browser sync enabled
+	'mt_builder_redirect_nonce' => wp_create_nonce('mt_builder_redirect_check') // note this won't work with browser sync enabled
 )) . ';' . "\n\n";
 
 

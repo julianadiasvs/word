@@ -13,6 +13,68 @@ $colorvars_sug_config = array(
 $height_percentage_tip = esc_html__('Tip: setting height, min-height, or max-height as a percentage won\'t work unless the parent element has an explicit value for height.', 'microthemer');
 $border_radius_unconvertable = esc_html__('There is no direct equivalent between pixels and percent values for border radius.', 'microthemer');
 
+$padding_lengths = array(
+	'0',
+	'4',
+	'6',
+	'8',
+	'12',
+	'16',
+	'24',
+	'32',
+	'48',
+	'64',
+);
+$margin_lengths = array_merge($padding_lengths, array(
+	'auto',
+	'-8',
+	'-16'
+));
+
+// brightness
+$brightness = array();
+for ($x = 0; $x < 2.1; $x+=.25) {
+	$brightness[] = round($x, 2);
+}
+
+// grayscale
+$opacity = array();
+for ($x = 0; $x < 1.05; $x+=.1) {
+	$opacity[] = round($x, 1);
+}
+
+$grayscale = $opacity;
+$invert = $opacity;
+
+
+// decimals for transform functions
+$decimals = array();
+for ($x = 0; $x <= 2; $x+=0.25) {
+	$decimals[] = round($x, 2);
+}
+
+// degrees for transform functions
+$degrees = array(-45, 45);
+for ($x = -270; $x < 360; $x+=90) {
+	$degrees[] = round($x, 0);
+}
+
+$perspective = array(
+	'0',
+	'50',
+	'100',
+	'200',
+	'300',
+	'400',
+	'500'
+);
+
+// example lengths
+$translate = array_merge($perspective, array(
+	'-100',
+	'-50%',
+));
+
 $position_lengths = array(
 	'auto',
 	'0',
@@ -23,6 +85,7 @@ $position_lengths = array(
 
 $z_index = array(
 	'-1',
+	'0',
 	'1',
 	'2',
 	'3',
@@ -30,6 +93,18 @@ $z_index = array(
 	'10',
 	'9999',
 	'auto',
+);
+
+$background_position_values = array(
+	'left top',
+	'left center',
+	'left bottom',
+	'right top',
+	'right center',
+	'right bottom',
+	'center top',
+	'center center',
+	'center bottom'
 );
 
 $display_ref_values = array(
@@ -55,6 +130,42 @@ $display_ref_values = array(
 	"none" => "The element doesn't appear on the page at all. This is different from setting the visibility property to 'hidden' whereby the hidden element still takes up space on the page (it's just invisible)."
 );
 
+
+// special time units
+$time_units = array(
+	'type' => 'time',
+	'exclusive' => 1, // no other units are valid
+	'units' => array('s', 'ms')
+);
+
+// special grid units
+$fraction_units = array(
+	'type' => 'fraction',
+	'units' => array('fr'),
+);
+
+// special angle units
+$angle_units = array(
+	'type' => 'angle',
+	'exclusive' => 1,
+	'units' => array('deg', 'grad', 'rad', 'turn')
+);
+
+// when only percent or no unit is OK
+$percent_none = array(
+	'type' => 'percent_none',
+	'exclusive' => 1,
+	'units' => array('', '%')
+);
+
+// when unit is optional (just line-height I think)
+$unitless_too = array(
+	'type' => 'unitless_too',
+	'units' => array('')
+);
+
+
+// the property options
 $propertyOptions = array();
 
 // Custom code
@@ -252,15 +363,8 @@ $propertyOptions['font']['font_size'] = array(
 		'32',
 		'48',
 		'64',
-		/*'0.833rem',
-		'1rem',
-		'1.2rem',
-		'1.414rem',
-		'1.728rem',
-		'2rem',
-		'2.827rem',*/
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'sug_values' => array(
 		'this' => 1
 	),
@@ -322,6 +426,8 @@ $propertyOptions['font']['line_height'] = array(
 		'2',
 		'normal'
 	),
+	'default_unit' => '', // empty by default, but user can set
+	'special_units' => $unitless_too,
 	'sug_values' => array(
 		'this' => 1
 	),
@@ -426,6 +532,7 @@ $propertyOptions['font']['font_style'] = array(
 	'short_label' => esc_html_x('Font Style', 'noun: Font Style', 'microthemer'),
 	'label' => esc_attr__('Font Style', 'microthemer'),
 	'field-class' => 'icon-size-0a',
+	'input-class' => 'size-2a',
 	'type' => 'combobox',
 	'select_options' => array(
 		"normal",
@@ -508,7 +615,7 @@ $propertyOptions['font']['text_decoration'] = array(
 	'short_label' => esc_html__('Text Decoration', 'microthemer'),
 	'label' => esc_attr__('Text Decoration', 'microthemer'),
 	'field-class' => 'icon-size-0a grid-large',
-	'input-class' => 'size-5',
+	'input-class' => 'size-5a',
 	'type' => 'combobox',
 	'select_options' => array(
 		"underline",
@@ -592,14 +699,17 @@ $propertyOptions['text']['text_indent'] = array(
 			'prop' => 'width'
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => array(
+		"0",
 		"32",
 		"48",
 		"64",
+		"-999"
 	),
 	'sug_values' => array(
-		'this' => 1
+		'this' => 1,
+		'min' => ''
 	),
 	'icon' => '23, 4',
 	// ref
@@ -673,9 +783,10 @@ $propertyOptions['text']['word_spacing'] = array(
 		'8'
 	),
 	'label' => esc_attr__('Word Spacing', 'microthemer'),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'sug_values' => array(
-		'this' => 1
+		'this' => 1,
+		'min' => ''
 	),
 	'icon' => '22, 4',
 	// ref
@@ -697,11 +808,11 @@ $propertyOptions['text']['letter_spacing'] = array(
 	'animatable' => 1,
 	'short_label' => esc_html__('Letter Spacing', 'microthemer'),
 	'label' => esc_attr__('Letter Spacing', 'microthemer'),
-	'input-class' => 'size-0b',
+	'input-class' => 'size-2',
 	'auto' => array(
 		'%' => false
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => array(
 		'normal',
 		'1',
@@ -710,7 +821,8 @@ $propertyOptions['text']['letter_spacing'] = array(
 		'4',
 	),
 	'sug_values' => array(
-		'this' => 1
+		'this' => 1,
+		'min' => ''
 	),
 	'icon' => '24',
 	// ref
@@ -785,6 +897,44 @@ $propertyOptions['text']['word_wrap'] = array(
 		array(
 			'url' => 'http://www.impressivewebs.com/word-wrap-css3/',
 			'title' => 'Word-Wrap: A CSS3 Property That Works in Every Browser',
+		),
+	)
+);
+
+$propertyOptions['text']['white_space'] = array(
+	'short_label' => esc_html__('White Space', 'microthemer'),
+	'label' => esc_attr__('White Space', 'microthemer'),
+	'input-class' => 'size-3a',
+	'type' => 'combobox',
+	'select_options' => array(
+		'',
+		"normal",
+		"nowrap",
+		"pre",
+		"pre-line",
+		"pre-wrap"
+	),
+	'icon' => '43, 14',
+	// ref
+	'ref_desc' => "<p>The white-space property determines how white spaces characters like spaces, tabs, and returns are handled. It also controls how text should wrap.<p>",
+	'ref_values' => array(
+		"normal" => "Multiple whitespace characters will be treated as one, text will wrap when necessary (default).",
+		"nowrap" => "Multiple whitespace characters will be treated as one, text will never wrap to the next line until a br tag is used.",
+		"pre" => "Whitespace characters are honoured. Text only wraps on line breaks - acts like the pre tag in HTML",
+		"pre-line" => "Multiple whitespace characters will be treated as one, text will wrap when necessaryand on line breaks",
+		"pre-wrap" => "Whitespace characters are honoured, text will wrap when necessary, and on line breaks"
+	),
+	'ref_links' => array(
+		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
+		'css_tricks' => 'https://css-tricks.com/almanac/properties/w/whitespace/',
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/white-space',
+		'quackit' => 'http://www.quackit.com/css/properties/css_white-space.cfm',
+		'w3s' => 'http://www.w3schools.com/cssref/pr_text_white-space.asp',
+	),
+	'tutorials' => array(
+		array(
+			'url' => 'https://perishablepress.com/wrapping-content/',
+			'title' => 'Wrapping Long URLs and Text Content with CSS',
 		),
 	)
 );
@@ -1046,7 +1196,7 @@ $propertyOptions['list']['list_style_position'] = array(
 	'short_label' => esc_html__('List Style Position', 'microthemer'),
 	'label' => esc_attr__('List Style Position', 'microthemer'),
 	'field-class' => 'icon-size-2 grid-large',
-	'input-class' => 'size-2',
+	'input-class' => 'size-3',
 	'type' => 'combobox',
 	'select_options' => array(
 		"inside",
@@ -1102,12 +1252,14 @@ $propertyOptions['shadow']['text_shadow_x'] = array(
 	'auto' => array(
 		'%' => false
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $text_shadow_lengths,
 	'sug_values' => array(
 		'this' => 1,
-		 'root_cat' => 'text_shadow'
+		 'root_cat' => 'text_shadow',
+		'min' => ''
 	),
+	'unit_rel' => 1,
 	'hide imp' => 1,
 	'icon' => '39',
 	// ref
@@ -1147,12 +1299,14 @@ $propertyOptions['shadow']['text_shadow_y'] = array(
 	'auto' => array(
 		'%' => false
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $text_shadow_lengths,
 	'sug_values' => array(
 		'this' => 1,
-		'root_cat' => 'text_shadow'
+		'root_cat' => 'text_shadow',
+		'min' => ''
 	),
+	'unit_rel' => 1,
 	'hide imp' => 1,
 	'icon' => '40',
 	// ref
@@ -1178,12 +1332,13 @@ $propertyOptions['shadow']['text_shadow_blur'] = array(
 	'auto' => array(
 		'%' => false
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $shadow_blur,
 	'sug_values' => array(
 		'this' => 1,
 		'root_cat' => 'text_shadow'
 	),
+	'unit_rel' => 1,
 	'hide imp' => 1,
 	'icon' => '42',
 	// ref
@@ -1238,12 +1393,14 @@ $propertyOptions['shadow']['box_shadow_x'] = array(
 	'auto' => array(
 		'%' => false
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $box_shadow_lengths,
 	'sug_values' => array(
 		'this' => 1,
-		'root_cat' => 'box_shadow'
+		'root_cat' => 'box_shadow',
+		'min' => ''
 	),
+	'unit_rel' => 1,
 	'field-class' => 'icon-size-2',
 	'input-class' => 'size-0b',
 	'hide imp' => 1,
@@ -1298,12 +1455,14 @@ $propertyOptions['shadow']['box_shadow_y'] = array(
 	'auto' => array(
 		'%' => false
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $box_shadow_lengths,
 	'sug_values' => array(
 		'this' => 1,
-		'root_cat' => 'box_shadow'
+		'root_cat' => 'box_shadow',
+		'min' => ''
 	),
+	'unit_rel' => 1,
 	'input-class' => 'size-0b',
 	'hide imp' => 1,
 	'icon' => '35',
@@ -1328,12 +1487,13 @@ $propertyOptions['shadow']['box_shadow_blur'] = array(
 	'auto' => array(
 		'%' => false
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $shadow_blur,
 	'sug_values' => array(
 		'this' => 1,
 		'root_cat' => 'box_shadow'
 	),
+	'unit_rel' => 1,
 	'field-class' => 'icon-size-2',
 	'input-class' => 'size-0b',
 	'hide imp' => 1,
@@ -1360,12 +1520,14 @@ $propertyOptions['shadow']['box_shadow_spread'] = array(
 	'auto' => array(
 		'%' => false
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $box_shadow_lengths,
 	'sug_values' => array(
 		'this' => 1,
-		'root_cat' => 'box_shadow'
+		'root_cat' => 'box_shadow',
+		'min' => ''
 	),
+	'unit_rel' => 1,
 	'input-class' => 'size-0b',
 	'icon' => '31,4',
 	'hide imp' => 1,
@@ -1422,6 +1584,7 @@ $propertyOptions['shadow']['box_shadow_inset'] = array(
 	'type' => 'combobox',
 	// ref
 	'select_options' => array(
+		" ",
 		"inset"
 	),
 	'icon' => '30, 4',
@@ -1520,7 +1683,6 @@ $propertyOptions['background']['background_image'] = array(
 	'input-class' => 'bg-image-select size-very-big',
 	'sug_values' => array(
 		'this' => 1,
-
 	),
 	'potential_gradient' => 1,
 	/*'select_options' => array(
@@ -1555,29 +1717,20 @@ $propertyOptions['background']['background_position'] = array(
 	'label' => esc_attr__('Background Position', 'microthemer'),
 	//'type' => 'combobox',
 	'field-class' => 'grid-large',
-	'input-class' => 'bg-position-select size-6',
+	'input-class' => 'bg-position-select size-6a',
 	'auto' => array(
 		'%' => array(
 			'node' => 'element',
 			'prop' => array('width', 'height')
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'sug_values' => array(
 		'this' => 1,
+		//'no_slider' => 1 // until we have posX/posY
 		//'forceSug' => 1
 	),
-	'select_options' => array(
-		'left top',
-		'left center',
-		'left bottom',
-		'right top',
-		'right center',
-		'right bottom',
-		'center top',
-		'center center',
-		'center bottom'
-	),
+	'select_options' => $background_position_values,
 	'icon' => '3, 14',
 	// ref
 	'ref_desc' => "<p>The background-position property sets the starting position of a background image.</p>
@@ -1688,9 +1841,10 @@ $propertyOptions['background']['background_size'] = array(
 			'prop' => array('width', 'height')
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'sug_values' => array(
 		'this' => 1,
+		//'no_slider' => 1
 		//'forceSug' => 1
 	),
 	'select_options' => array(
@@ -1934,7 +2088,10 @@ $propertyOptions['gradient']['gradient_b_pos'] = array(
 	'auto' => array(
 		'%' => 'Pass, this one is tricky.'
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
+	'sug_values' => array(
+		'this' => 1, // just quick fix for making menu wide enough for slider
+	),
 	'hide imp' => 1,
 	'icon' => '40, 14',
 	// ref
@@ -1957,7 +2114,6 @@ $propertyOptions['gradient']['gradient_c'] = array(
 	'field-class' => 'is-picker',
 	'input-class' => 'color mt-color-picker',
 	'icon' => '25',
-	'last_in_sub' => 1,
 	'important_carrier' => 1,
 	// ref
 	'ref_desc' => "<p>One of the color stops in the linear gradient. The color you specify here will gradually blend into the color you specify for Gradient B if you specify one. If you don't specify a color for Gradient B, Gradient C will blend into Gradient A.</p>",
@@ -1967,6 +2123,329 @@ $propertyOptions['gradient']['gradient_c'] = array(
 	'tutorials' => $propertyOptions['gradient']['gradient_angle']['tutorials'],
 	'group_tutorials' => 1
 );
+
+// Filters
+// ------------------------------------------------------------
+
+$blur = $padding_lengths;
+
+$filter_tutorials = array(
+	array(
+		'url' => 'https://css-tricks.com/almanac/properties/f/filter/',
+		'title' => 'CSS Tricks: Filters',
+	),
+	array(
+		'url' => 'https://www.html5rocks.com/en/tutorials/filters/understanding-css/',
+		'title' => 'Understanding CSS Filter Effects',
+	),
+	array(
+		'url' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/filter',
+		'title' => 'Mozilla: Filters',
+	),
+	array(
+		'url' => 'https://www.w3schools.com/cssref/css3_pr_filter.asp',
+		'title' => 'W3Schools: Filters',
+	),
+	array(
+		'url' => 'https://caniuse.com/#feat=css-filters',
+		'title' => 'Can I use: CSS Filter Effects',
+	),
+);
+
+// blur
+$propertyOptions['filter']['blur_function'] = array(
+	'short_label' => esc_html__('Blur', 'microthemer'),
+	'label' => esc_attr__('Blur', 'microthemer'),
+	'pg_label' => esc_attr__('Filter', 'microthemer'),
+	'sub_label' => esc_html__('Filter', 'microthemer'),
+	'last_in_sub' => 1,
+	'css_func' => 0,
+	'default_unit' => 'px',
+	'sub_slug' => 'filter',
+	'field-class' => '',
+	'input-class' => 'size-0',
+	'sug_values' => array(
+		'this' => 1,
+	),
+	'select_options' => $blur,
+	'icon' => '14, 4, B',
+	// ref
+	'ref_desc' => "<p>The blur() CSS function applies a Gaussian blur to the input image</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/filter-function/blur',
+		'quackit' => 'https://qhmit.com/css/functions/css_blur_function.cfm',
+	),
+	'tutorials' => $filter_tutorials,
+	'group_tutorials' => 1
+);
+
+// brightness
+$propertyOptions['filter']['brightness_function'] = array(
+	'short_label' => esc_html__('Brightness', 'microthemer'),
+	'label' => esc_html__('Brightness', 'microthemer'),
+	'css_func' => 1,
+	'field-class' => '',
+	'input-class' => 'size-0b',
+	'default_unit' => '',
+	'special_units' => $percent_none,
+	'sug_values' => array(
+		'this' => 1,
+		//'unitless_slider' => 1
+	),
+	'select_options' => $brightness,
+	'icon' => '15, 4, B',
+	// ref
+	'ref_desc' => "<p>The brightness() CSS function applies a linear multiplier to the input image, making it appear brighter or darker.</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/filter-function/brightness',
+		'quackit' => 'https://qhmit.com/css/functions/css_brightness_function.cfm',
+	),
+	'tutorials' => $filter_tutorials,
+	'group_tutorials' => 1
+);
+
+// contrast
+$propertyOptions['filter']['contrast_function'] = array(
+	'short_label' => esc_html__('Contrast', 'microthemer'),
+	'label' => esc_html__('Contrast', 'microthemer'),
+	'css_func' => 1,
+	'field-class' => '',
+	'input-class' => 'size-0b',
+	'default_unit' => '',
+	'special_units' => $percent_none,
+	'sug_values' => array(
+		'this' => 1,
+		//'unitless_slider' => 1
+	),
+	'select_options' => $brightness,
+	'icon' => '16, 4, B',
+	// ref
+	'ref_desc' => "<p>The contrast() CSS function adjusts the contrast of the input image.</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/filter-function/contrast',
+		'quackit' => 'https://qhmit.com/css/functions/css_contrast_function.cfm',
+	),
+	'tutorials' => $filter_tutorials,
+	'group_tutorials' => 1
+);
+
+// drop_shadow
+$propertyOptions['filter']['drop_shadow_function'] = array(
+	'short_label' => esc_html__('Drop shadow', 'microthemer'),
+	'label' => esc_html__('Drop shadow', 'microthemer'),
+	'css_func' => '0 0',
+	'field-class' => 'icon-size-4',
+	'input-class' => 'size-big',
+	'default_unit' => 'px',
+	'sug_values' => array(
+		'this' => 1,
+		'no_slider' => 1
+	),
+	'select_options' => array(
+		'0 0 4px rgba(0,0,0,.3)',
+		'0 0 20px rgba(0,0,0,.3)',
+		'30px 30px 30px rgba(0,0,0,.3)'
+	),
+	'icon' => '37, 11',
+	// ref
+	'ref_desc' => "<p>Unlike the box-shadow property, which creates a rectangular shadow behind an element's entire box, the drop-shadow() filter function creates a shadow that conforms to the shape (alpha channel) of the image itself</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/filter-function/drop-shadow',
+		'quackit' => 'https://qhmit.com/css/functions/css_drop-shadow_function.cfm',
+	),
+	'tutorials' => $filter_tutorials,
+	'group_tutorials' => 1
+);
+
+// grayscale
+$propertyOptions['filter']['grayscale_function'] = array(
+	'short_label' => esc_html__('Grayscale', 'microthemer'),
+	'label' => esc_html__('Grayscale', 'microthemer'),
+	'css_func' => 0,
+	'field-class' => '',
+	'input-class' => 'size-0b',
+	'default_unit' => '',
+	'special_units' => $percent_none,
+	'sug_values' => array(
+		'this' => 1,
+		'max' => array(
+			'' => 1,
+			'%' => 100
+		)
+	),
+	'select_options' => $grayscale,
+	'icon' => '17, 4, B',
+	// ref
+	'ref_desc' => "<p>The grayscale() CSS function adjusts the grayscale of the input image.</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/filter-function/grayscale',
+		'quackit' => 'https://qhmit.com/css/functions/css_grayscale_function.cfm',
+	),
+	'tutorials' => $filter_tutorials,
+	'group_tutorials' => 1
+);
+
+// hue-rotate
+$propertyOptions['filter']['hue_rotate_function'] = array(
+	'short_label' => esc_html__('Hue Rotate', 'microthemer'),
+	'label' => esc_html__('Hue Rotate', 'microthemer'),
+	'css_func' => '0deg',
+	'field-class' => '',
+	'input-class' => 'size-1',
+	'default_unit' => 'deg',
+	'special_units' => $angle_units,
+	'sug_values' => array(
+		'this' => 1,
+		'min' => ''
+	),
+	'select_options' => $degrees,
+	'icon' => '18, 4, B',
+	// ref
+	'ref_desc' => "<p>Applies a hue rotation on the image. The value defines the number of degrees around the color circle the image samples will be adjusted. 0deg is default, and represents the original image.</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/filter-function/hue-rotate',
+		'quackit' => 'https://qhmit.com/css/functions/css_hue-rotate_function.cfm',
+	),
+	'tutorials' => $filter_tutorials,
+	'group_tutorials' => 1
+);
+
+// invert
+$propertyOptions['filter']['invert_function'] = array(
+	'short_label' => esc_html__('Invert', 'microthemer'),
+	'label' => esc_html__('Invert', 'microthemer'),
+	'css_func' => 0,
+	'field-class' => '',
+	'input-class' => 'size-0b',
+	'default_unit' => '',
+	'special_units' => $percent_none,
+	'sug_values' => array(
+		'this' => 1,
+		'max' => array(
+			'' => 1,
+			'%' => 100
+		)
+	),
+	'select_options' => $invert,
+	'icon' => '19, 4, B',
+	// ref
+	'ref_desc' => "<p>The invert() CSS function inverts the color samples in the input image</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/filter-function/invert',
+		'quackit' => 'https://qhmit.com/css/functions/css_invert_function.cfm',
+	),
+	'tutorials' => $filter_tutorials,
+	'group_tutorials' => 1
+);
+
+// opacity
+$propertyOptions['filter']['opacity_function'] = array(
+	'short_label' => esc_html__('Opacity', 'microthemer'),
+	'label' => esc_html__('Opacity', 'microthemer'),
+	'css_func' => 1,
+	'field-class' => '',
+	'input-class' => 'size-0b',
+	'default_unit' => '',
+	'special_units' => $percent_none,
+	'sug_values' => array(
+		'this' => 1,
+		'max' => array(
+			'' => 1,
+			'%' => 100
+		)
+	),
+	'select_options' => $opacity,
+	'icon' => '20, 4, B',
+	// ref
+	'ref_desc' => "<p>The opacity() CSS function applies transparency to the samples in the input image.</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/filter-function/opacity',
+		'quackit' => 'https://qhmit.com/css/functions/css_opacity_function.cfm',
+	),
+	'tutorials' => $filter_tutorials,
+	'group_tutorials' => 1
+);
+
+// saturate
+$propertyOptions['filter']['saturate_function'] = array(
+	'short_label' => esc_html__('Saturate', 'microthemer'),
+	'label' => esc_html__('Saturate', 'microthemer'),
+	'css_func' => 1,
+	'field-class' => '',
+	'input-class' => 'size-0b',
+	'default_unit' => '',
+	'special_units' => $percent_none,
+	'sug_values' => array(
+		'this' => 1,
+	),
+	'select_options' => $brightness,
+	'icon' => '21, 4, B',
+	// ref
+	'ref_desc' => "<p>The saturate() CSS function super-saturates or desaturates the input image.</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/filter-function/saturate',
+		'quackit' => 'https://qhmit.com/css/functions/css_saturate_function.cfm',
+	),
+	'tutorials' => $filter_tutorials,
+	'group_tutorials' => 1
+);
+
+// sepia
+$propertyOptions['filter']['sepia_function'] = array(
+	'short_label' => esc_html__('Sepia', 'microthemer'),
+	'label' => esc_html__('Sepia', 'microthemer'),
+	'css_func' => 0,
+	'field-class' => '',
+	'input-class' => 'size-0b',
+	'default_unit' => '',
+	'special_units' => $percent_none,
+	'sug_values' => array(
+		'this' => 1,
+		'max' => array(
+			'' => 1,
+			'%' => 100
+		)
+	),
+	'select_options' => $opacity,
+	'icon' => '16, 8, B',
+	// ref
+	'ref_desc' => "<p>The sepia() CSS function converts the input image to sepia, giving it a warmer, more yellow/brown appearance.</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/filter-function/sepia',
+		'quackit' => 'https://qhmit.com/css/functions/css_sepia_function.cfm',
+	),
+	'tutorials' => $filter_tutorials,
+	'group_tutorials' => 1
+);
+
+// url
+$propertyOptions['filter']['url_function'] = array(
+	'short_label' => esc_html__('Url', 'microthemer'),
+	'label' => esc_html__('Url', 'microthemer'),
+	'css_func' => 'none',
+	'type' => 'combobox',
+	'field-class' => '',
+	'input-class' => 'size-very-big bg-image-select',
+	'sug_values' => array(
+		'this' => 1,
+	),
+	'select_options' => array(
+		'#mySVGFilter',
+		//'url(../plugins/microthemer/images/mt-logo.gif)',
+		'/wp-content/plugins/microthemer/images/mt-logo.gif#mySVGFilter',
+	),
+	'icon' => '39, 14',
+	// ref
+	'ref_desc' => "<p>The url() CSS function adjusts the url of the input image.</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/filter-function/url',
+		'quackit' => 'https://qhmit.com/css/functions/css_url_function.cfm',
+	),
+	'tutorials' => $filter_tutorials,
+	'group_tutorials' => 1
+);
+
+
 
 // dimensions
 // ------------------------------------------------------------
@@ -2003,7 +2482,7 @@ $propertyOptions['dimensions']['width'] = array(
 		)
 	),
 	'input-class' => 'size-1',
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => array_merge($percent_sizes, array('auto')),
 	'sug_values' => array(
 		'this' => 1,
@@ -2049,7 +2528,7 @@ $propertyOptions['dimensions']['min_width'] = array(
 			'prop' => 'width'
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => array(
 		'0',
 		'50%',
@@ -2088,7 +2567,7 @@ $propertyOptions['dimensions']['max_width'] = array(
 			'prop' => 'width'
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => array(
 		'none',
 		'0',
@@ -2132,7 +2611,7 @@ $propertyOptions['dimensions']['height'] = array(
 			'tip' => $height_percentage_tip
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => array(
 		'auto',
 		'100%'
@@ -2174,7 +2653,7 @@ $propertyOptions['dimensions']['min_height'] = array(
 			'tip' => $height_percentage_tip
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => array(
 		'0',
 		'100%'
@@ -2214,7 +2693,7 @@ $propertyOptions['dimensions']['max_height'] = array(
 			'tip' => $height_percentage_tip
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => array(
 		'none',
 		'0',
@@ -2289,42 +2768,7 @@ $propertyOptions['dimensions']['box_sizing'] = array(
 
 // padding
 // ------------------------------------------------------------
-$padding_lengths = array(
-	'0',
-	'4',
-	'6',
-	'8',
-	'12',
-	'16',
-	'24',
-	'32',
-	'48',
-	'64',
-	/*'.25rem',
-	'.5rem',
-	'.75rem',
-	'1rem',
-	'1.5rem',
-	'2rem',
-	'3rem',
-	'4rem',
-	'5rem'*/
-);
-$margin_lengths = array_merge($padding_lengths, array(
-	'auto',
-	'0',
-	'-8',
-	'-16'
-	/*'.5rem',
-	'1rem',
-	'1.5rem',
-	'2rem',
-	'3rem',
-	'4rem',
-	'5rem',
-	'-1rem',
-	'-.5rem',*/
-));
+
 $propertyOptions['padding_margin']['padding_top'] = array(
 	'sh' => array('padding', 0),
 	'animatable' => 1,
@@ -2334,18 +2778,18 @@ $propertyOptions['padding_margin']['padding_top'] = array(
 	'sub_label' => esc_html__('Padding', 'microthemer'),
 	'sub_slug' => 'padding',
 	'field-class' => 'quad-top',
-	'input-class' => 'size-0',
+	'input-class' => 'size-2',
 	'auto' => array(
 		'%' => array(
 			'node' => 'parent',
-			'prop' => 'width'
+			'prop' => 'height'
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $padding_lengths,
 	'sug_values' => array(
 		'this' => 1,
-		'root_cat' => 'spacing' // I considered padding_margin here, but there will be lots of P&M values
+		'root_cat' => 'spacing', // I considered padding_margin here, but there will be lots of P&M values
 	),
 	'rel' => 'padding',
 	'icon' => '3',
@@ -2384,14 +2828,14 @@ $propertyOptions['padding_margin']['padding_right'] = array(
 	'short_label' => esc_html__('Padding Right', 'microthemer'),
 	'label' => esc_attr__('Padding Right', 'microthemer'),
 	'field-class' => 'quad-right',
-	'input-class' => 'size-0',
+	'input-class' => 'size-2',
 	'auto' => array(
 		'%' => array(
 			'node' => 'parent',
 			'prop' => 'width'
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $padding_lengths,
 	'sug_values' => array(
 		'this' => 1,
@@ -2421,14 +2865,14 @@ $propertyOptions['padding_margin']['padding_bottom'] = array(
 	'short_label' => esc_html__('Padding Bottom', 'microthemer'),
 	'label' => esc_attr__('Padding Bottom', 'microthemer'),
 	'field-class' => 'quad-bottom',
-	'input-class' => 'size-0',
+	'input-class' => 'size-2',
 	'auto' => array(
 		'%' => array(
 			'node' => 'parent',
-			'prop' => 'width'
+			'prop' => 'height'
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $padding_lengths,
 	'sug_values' => array(
 		'this' => 1,
@@ -2458,7 +2902,7 @@ $propertyOptions['padding_margin']['padding_left'] = array(
 	'short_label' => esc_html__('Padding Left', 'microthemer'),
 	'label' => esc_attr__('Padding Left', 'microthemer'),
 	'field-class' => 'quad-left',
-	'input-class' => 'size-0',
+	'input-class' => 'size-2',
 	'last_in_sub' => 1,
 	'auto' => array(
 		'%' => array(
@@ -2466,7 +2910,7 @@ $propertyOptions['padding_margin']['padding_left'] = array(
 			'prop' => 'width'
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $padding_lengths,
 	'sug_values' => array(
 		'this' => 1,
@@ -2502,18 +2946,19 @@ $propertyOptions['padding_margin']['margin_top'] = array(
 	'sub_label' => esc_html__('Margin', 'microthemer'),
 	'sub_slug' => 'margin',
 	'field-class' => 'quad-top',
-	'input-class' => 'size-0',
+	'input-class' => 'size-2',
 	'auto' => array(
 		'%' => array(
 			'node' => 'parent',
-			'prop' => 'width'
+			'prop' => 'height'
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $margin_lengths,
 	'sug_values' => array(
 		'this' => 1,
-		'root_cat' => 'spacing'
+		'root_cat' => 'spacing',
+		'min' => ''
 	),
 	'rel' => 'margin',
 	'icon' => '7',
@@ -2540,18 +2985,19 @@ $propertyOptions['padding_margin']['margin_right'] = array(
 	'short_label' => esc_html__('Margin Right', 'microthemer'),
 	'label' => esc_attr__('Margin Right', 'microthemer'),
 	'field-class' => 'icon-size-2 quad-right',
-	'input-class' => 'size-0',
+	'input-class' => 'size-2',
 	'auto' => array(
 		'%' => array(
 			'node' => 'parent',
 			'prop' => 'width'
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $margin_lengths,
 	'sug_values' => array(
 		'this' => 1,
-		'root_cat' => 'spacing'
+		'root_cat' => 'spacing',
+		'min' => ''
 	),
 	'rel' => 'margin',
 	'icon' => '6',
@@ -2577,19 +3023,20 @@ $propertyOptions['padding_margin']['margin_bottom'] = array(
 	'short_label' => esc_html__('Margin Bottom', 'microthemer'),
 	'label' => esc_attr__('Margin Bottom', 'microthemer'),
 	'field-class' => 'quad-bottom',
-	'input-class' => 'size-0',
+	'input-class' => 'size-2',
 	'auto' => array(
 		'%' => array(
 			'node' => 'parent',
-			'prop' => 'width'
+			'prop' => 'height'
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'rel' => 'margin',
 	'select_options' => $margin_lengths,
 	'sug_values' => array(
 		'this' => 1,
-		'root_cat' => 'spacing'
+		'root_cat' => 'spacing',
+		'min' => ''
 	),
 	'icon' => '8',
 	// ref
@@ -2614,7 +3061,7 @@ $propertyOptions['padding_margin']['margin_left'] = array(
 	'short_label' => esc_html__('Margin Left', 'microthemer'),
 	'label' => esc_attr__('Margin Left', 'microthemer'),
 	'field-class' => 'icon-size-3 last quad-left',
-	'input-class' => 'size-0',
+	'input-class' => 'size-2',
 	'last_in_sub' => 1,
 	'auto' => array(
 		'%' => array(
@@ -2622,11 +3069,12 @@ $propertyOptions['padding_margin']['margin_left'] = array(
 			'prop' => 'width'
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $margin_lengths,
 	'sug_values' => array(
 		'this' => 1,
-		'root_cat' => 'spacing'
+		'root_cat' => 'spacing',
+		'min' => ''
 	),
 	'rel' => 'margin',
 	'icon' => '5',
@@ -2833,7 +3281,7 @@ $propertyOptions['border']['border_top_width'] = array(
 	'auto' => array(
 		'%' => false
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $border_width_lengths,
 	'sug_values' => array(
 		'this' => 1,
@@ -2870,7 +3318,7 @@ $propertyOptions['border']['border_right_width'] = array(
 	'auto' => array(
 		'%' => false
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $border_width_lengths,
 	'sug_values' => array(
 		'this' => 1,
@@ -2907,7 +3355,7 @@ $propertyOptions['border']['border_bottom_width'] = array(
 	'auto' => array(
 		'%' => false
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $border_width_lengths,
 	'sug_values' => array(
 		'this' => 1,
@@ -2944,7 +3392,7 @@ $propertyOptions['border']['border_left_width'] = array(
 	'auto' => array(
 		'%' => false
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $border_width_lengths,
 	'sug_values' => array(
 		'this' => 1,
@@ -3147,10 +3595,10 @@ $propertyOptions['border']['border_top_left_radius'] = array(
 	'label' => esc_attr__('Top Left Border Radius', 'microthemer'),
 	'sub_label' => esc_html__('Border Radius', 'microthemer'),
 	'sub_slug' => 'border_radius',
-	'auto' => array(
+	/*'auto' => array(
 		'%' => $border_radius_unconvertable
-	),
-	'default_unit' => 1,
+	),*/
+	'default_unit' => 'px',
 	'select_options' => $border_radius_lengths,
 	'sug_values' => array(
 		'this' => 1,
@@ -3196,7 +3644,7 @@ $propertyOptions['border']['border_top_right_radius'] = array(
 	'auto' => array(
 		'%' => $border_radius_unconvertable
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $border_radius_lengths,
 	'sug_values' => array(
 		'this' => 1,
@@ -3227,7 +3675,7 @@ $propertyOptions['border']['border_bottom_right_radius'] = array(
 	'auto' => array(
 		'%' => $border_radius_unconvertable
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $border_radius_lengths,
 	'sug_values' => array(
 		'this' => 1,
@@ -3259,7 +3707,7 @@ $propertyOptions['border']['border_bottom_left_radius'] = array(
 	'auto' => array(
 		'%' => $border_radius_unconvertable
 	),
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $border_radius_lengths,
 	'sug_values' => array(
 		'this' => 1,
@@ -3417,7 +3865,7 @@ $propertyOptions['flexbox']['flex_wrap'] = array(
 	'sh' => array('flex-flow', 1, array('initial' => 'nowrap')),
 	'short_label' => esc_html__('Flex Wrap', 'microthemer'),
 	'label' => esc_attr__('Flex Wrap', 'microthemer'),
-	'input-class' => 'size-5a last',
+	'input-class' => 'size-6 last',
 	'type' => 'combobox',
 	'select_options' => array(
 		'nowrap',
@@ -3499,8 +3947,8 @@ $propertyOptions['flexbox']['justify_content'] = array(
 $propertyOptions['flexbox']['align_items'] = array(
 	'short_label' => esc_html__('Align Items', 'microthemer'),
 	'label' => esc_attr__('Align Items', 'microthemer'),
-	'input-class' => 'size-3',
-	'field-class' => 'icon-size-2',
+	'input-class' => 'size-3a',
+	'field-class' => 'icon-size-3',
 	'type' => 'combobox',
 	'select_options' => array(
 		'stretch',
@@ -3609,6 +4057,8 @@ $propertyOptions['flexbox']['flex_grow'] = array(
 	'select_options' => $flex_grow_shrink_order,
 	'sug_values' => array(
 		'this' => 1,
+		'unitless_slider' => 1,
+		'increment' => .1
 	),
 	'prefixes' => array(
 		'property' => array(
@@ -3642,6 +4092,8 @@ $propertyOptions['flexbox']['flex_shrink'] = array(
 	'select_options' => $flex_grow_shrink_order,
 	'sug_values' => array(
 		'this' => 1,
+		'unitless_slider' => 1,
+		'increment' => .1
 	),
 	'prefixes' => array(
 		'property' => array(
@@ -3672,7 +4124,7 @@ $propertyOptions['flexbox']['flex_basis'] = array(
 	'label' => esc_attr_x('Flex Basis', 'noun', 'microthemer'),
 	'field-class' => 'icon-size-2',
 	//'input-class' => 'size-0b',
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'icon' => '9, 1, B',
 	//'type' => 'combobox',
 	'select_options' => $flex_basis,
@@ -3753,6 +4205,9 @@ $propertyOptions['flexbox']['order'] = array(
 	'select_options' => $flex_grow_shrink_order,
 	'sug_values' => array(
 		'this' => 1,
+		'unitless_slider' => 1,
+		'min' => '',
+		'increment' => 1
 	),
 	// ref
 	'ref_desc' => "<p>Specifies the order of a flexible item relative to other flexible items in the container. The order property is only effective for flexible items inside a container that has the 'display' property set to 'flex' or 'inline-flex'. The default value for this property is 0, which means the natural order of flexible items in the HTML code will be honoured.</p>",
@@ -3775,12 +4230,19 @@ $propertyOptions['flexbox']['order'] = array(
 $grid_special = array(
 	'minmax(100px, 1fr)',
 	'fit-content(50%)',
-	'repeat(2, 1fr)',
 	'min-content',
 	'max-content',
-	'repeat(auto-fit, minmax(320px, 1fr))'
 );
-$grid_sizes = array_merge($grid_special, array('none', 'auto', '1fr', '2fr',  '100', '200',  '25%', '50%'));
+
+// sizes that are valid for both auto and template
+$grid_sizes = array_merge($grid_special, array('auto', '1fr', '2fr',  '100px', '200px',  '25%', '50%'));
+
+// add in options that are only valid for grid-template
+$grid_template_sizes = array_merge($grid_sizes, array(
+	'none',
+	'repeat(2, 1fr)',
+	'repeat(auto-fit, minmax(320px, 1fr))'
+));
 
 $line_names = array(
 	'[head-start]',
@@ -3899,7 +4361,10 @@ $grid_order = array(
 	'select_options' => $flex_grow_shrink_order,
 	'sug_values' => array(
 		'this' => 1,
-		'root_cat' => 'order'
+		'root_cat' => 'order',
+		'unitless_slider' => 1,
+		'min' => '',
+		'increment' => 1
 	),
 	// ref
 	'ref_desc' => "<p>Specifies the order of a grid item relative to other items. The default value for this property is 0, which means '-1' must be used to place an item first.</p>",
@@ -3923,7 +4388,10 @@ $grid_z_index = array(
 	'select_options' => $z_index,
 	'sug_values' => array(
 		'this' => 1,
-		'root_cat' => 'z_index'
+		'root_cat' => 'z_index',
+		'unitless_slider' => 1,
+		'min' => '',
+		'increment' => 1
 	),
 	//'prefixes' => $flex_display_prefixes,
 	'icon' => '10, 1, B',
@@ -4032,13 +4500,20 @@ $propertyOptions['grid']['column_gap'] = array(
 	'label' => esc_attr_x('Grid column gap', 'noun', 'microthemer'),
 	'field-class' => 'perma-show',
 	'input-class' => 'size-4',
-	//'type' => 'combobox',
-	'default_unit' => 1,
+	'auto' => array(
+		'%' => array(
+			'node' => 'parent',
+			'prop' => 'width'
+		)
+	),
+	'default_unit' => 'px',
 	'select_options' => $gap_sizes,
 	'sug_values' => array(
 		'this' => 1,
 		'root_cat' => 'spacing'
 	),
+	'unit_rel' => 1,
+	'unit_sub_label' => esc_html__('Gap', 'microthemer'),
 	'prefixes' => array(
 		'property' => array(
 			'grid-column-gap',
@@ -4065,13 +4540,19 @@ $propertyOptions['grid']['row_gap'] = array(
 	'label' => esc_attr_x('Grid row gap', 'noun', 'microthemer'),
 	'field-class' => 'perma-show',
 	'input-class' => 'size-4',
-	//'type' => 'combobox',
-	'default_unit' => 1,
+	'auto' => array(
+		'%' => array(
+			'node' => 'parent',
+			'prop' => 'height'
+		)
+	),
+	'default_unit' => 'px',
 	'select_options' => $gap_sizes,
 	'sug_values' => array(
 		'this' => 1,
 		'root_cat' => 'spacing'
 	),
+	'unit_rel' => 1,
 	'prefixes' => array(
 		'property' => array(
 			'grid-row-gap',
@@ -4105,13 +4586,25 @@ $propertyOptions['grid']['grid_template_columns'] = array(
 	'array_values' => 1,
 	'tab_control' => 'gridtemplate',
 	'field-class' => 'gridcolumns icon-size-2',
-	//'type' => 'combobox',
-	'default_unit' => 1,
-	'select_options' => $grid_sizes,
+	'auto' => array(
+		'%' => array(
+			'node' => 'element',
+			'prop' => 'width',
+			'plus' => array(
+				'border-left-width',
+				'border-right-width'
+			)
+		)
+	),
+	'default_unit' => 'px',
+	'special_units' => $fraction_units,
+	'select_options' => $grid_template_sizes,
 	'select_options_extra' => $line_names,
 	'sug_values' => array(
 		'this' => 1,
 	),
+	'unit_rel' => 1,
+	'unit_sub_label' => esc_html__('Template columns', 'microthemer'),
 	'sug_values_extra' => $line_sug_config,
 	'rel' => 'grid_template_columns',
 	//'prefixes' => $flex_display_prefixes,
@@ -4142,12 +4635,25 @@ $propertyOptions['grid']['grid_template_rows'] = array(
 	'array_values' => 1,
 	'tab_control' => 'gridtemplate icon-size-2',
 	'field-class' => 'gridrows',
-	'default_unit' => 1,
-	'select_options' => $grid_sizes,
+	'auto' => array(
+		'%' => array(
+			'node' => 'element',
+			'prop' => 'height',
+			'plus' => array(
+				'border-top-width',
+				'border-bottom-width'
+			)
+		)
+	),
+	'default_unit' => 'px',
+	'special_units' => $fraction_units,
+	'select_options' => $grid_template_sizes,
 	'select_options_extra' => $line_names,
 	'sug_values' => array(
 		'this' => 1,
 	),
+	'unit_sub_label' => esc_html__('Template rows', 'microthemer'),
+	'unit_rel' => 1,
 	'sug_values_extra' => $line_sug_config,
 	'rel' => 'grid_template_rows',
 	//'prefixes' => $flex_display_prefixes,
@@ -4178,12 +4684,15 @@ $propertyOptions['grid']['grid_auto_columns'] = array(
 	'array_values' => 1,
 	'tab_control' => 'gridauto',
 	'field-class' => 'gridcolumns icon-size-2',
-	//'input-class' => 'size-4',
-	'default_unit' => 1,
+	'input-class' => 'size-4',
+	'default_unit' => 'px',
+	'special_units' => $fraction_units,
 	'select_options' => $grid_sizes,
 	'sug_values' => array(
 		'this' => 1,
 	),
+	'unit_rel' => 1,
+	'unit_sub_label' => esc_html__('Auto columns', 'microthemer'),
 	'rel' => 'grid_auto_columns',
 	//'prefixes' => $flex_display_prefixes,
 	'icon' => '6, 8, B',
@@ -4212,12 +4721,15 @@ $propertyOptions['grid']['grid_auto_rows'] = array(
 	'array_values' => 1,
 	'tab_control' => 'gridauto',
 	'field-class' => 'gridrows icon-size-2',
-	//'input-class' => 'size-4',
-	'default_unit' => 1,
+	'input-class' => 'size-4',
+	'default_unit' => 'px',
+	'special_units' => $fraction_units,
 	'select_options' => $grid_sizes,
 	'sug_values' => array(
 		'this' => 1,
 	),
+	'unit_rel' => 1,
+	'unit_sub_label' => esc_html__('Auto rows', 'microthemer'),
 	'rel' => 'grid_auto_rows',
 	//'prefixes' => $flex_display_prefixes,
 	'icon' => '7, 8, B',
@@ -4413,14 +4925,15 @@ $width_height_reset = array(
 // grid_width
 $propertyOptions['grid']['width_gridall'] = array(
 	'short_label' => $propertyOptions['dimensions']['width']['short_label'],
-	'label' => esc_html__('Width (all grid items)',  'microthemer'),
+	'label' => esc_html__('Width (all items)',  'microthemer'),
 	'sub_label' => esc_html__('Size', 'microthemer'),
 	'sub_slug' => 'allitemssize',
 	'tab_control' => 'allgriditems',
-	'type' => 'combobox',
+	//'type' => 'combobox',
 	'auto' => $propertyOptions['dimensions']['width']['auto'],
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $width_height_reset,
+	'sug_values' => $propertyOptions['dimensions']['width']['sug_values'],
 	'icon' => '9',
 	// ref
 	'ref_desc' => "<p>Set the width property of all grid items. Setting a value of '100%' or 'auto' makes grid items fill the full width of the grid tracks you define using grid-template-columns. This is useful when converting existing flexbox or float layouts to grid.</p>",
@@ -4432,12 +4945,13 @@ $propertyOptions['grid']['width_gridall'] = array(
 // grid_height
 $propertyOptions['grid']['height_gridall'] = array(
 	'short_label' => $propertyOptions['dimensions']['height']['short_label'],
-	'label' => esc_html__('height (all grid items)', 'microthemer'),
+	'label' => esc_html__('height (all items)', 'microthemer'),
 	'tab_control' => 'allgriditems',
-	'type' => 'combobox',
+	//'type' => 'combobox',
 	'auto' => $propertyOptions['dimensions']['height']['auto'],
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $width_height_reset,
+	'sug_values' => $propertyOptions['dimensions']['height']['sug_values'],
 	'icon' => '10',
 	// ref
 	'ref_desc' => "<p>Set the height property of all grid items. Setting a value of '100%' or 'auto' makes grid items fill the full height of the grid tracks you define using grid-template-rows.</p>",
@@ -4449,18 +4963,15 @@ $propertyOptions['grid']['height_gridall'] = array(
 // grid padding - note there is no other padding property so no _grid suffix (otherwise we get issues)
 $propertyOptions['grid']['padding'] = array(
 	'short_label' => $propertyOptions['padding_margin']['padding_top']['sub_label'],
-	'label' => esc_html__('Padding (all grid items)',  'microthemer'),
+	'label' => esc_html__('Padding (all items)',  'microthemer'),
 	'sub_label' => esc_html__('Spacing', 'microthemer'),
 	'sub_slug' => 'allitemsspacing',
 	'tab_control' => 'allgriditems',
 	//'type' => 'combobox',
 	'auto' => $propertyOptions['padding_margin']['padding_top']['auto'],
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $padding_lengths,
-	'sug_values' => array(
-		'this' => 1,
-		'root_cat' => 'spacing'
-	),
+	'sug_values' => $propertyOptions['padding_margin']['padding_top']['sug_values'],
 	'icon' => $propertyOptions['padding_margin']['padding_top']['icon'],
 	// ref
 	'ref_desc' => "<p>Set the padding shorthand property for all grid items.</p>",
@@ -4472,16 +4983,13 @@ $propertyOptions['grid']['padding'] = array(
 // grid margin - note there is no other margin property so no _grid suffix (otherwise we get issues)
 $propertyOptions['grid']['margin'] = array(
 	'short_label' => $propertyOptions['padding_margin']['margin_top']['sub_label'],
-	'label' => esc_html__('Margin (all grid items)',  'microthemer'),
+	'label' => esc_html__('Margin (all items)',  'microthemer'),
 	'tab_control' => 'allgriditems',
 	//'type' => 'combobox',
 	'auto' => $propertyOptions['padding_margin']['margin_top']['auto'],
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'select_options' => $margin_lengths,
-	'sug_values' => array(
-		'this' => 1,
-		'root_cat' => 'spacing'
-	),
+	'sug_values' => $propertyOptions['padding_margin']['margin_top']['sug_values'],
 	'icon' => $propertyOptions['padding_margin']['margin_top']['icon'],
 	// ref
 	'ref_desc' => "<p>Set the margin shorthand property for all grid items. Setting this to zero may sometimes be necessary when converting float layouts to grid, as float layouts typically create column and row gaps using margin.</p>",
@@ -4492,7 +5000,7 @@ $propertyOptions['grid']['margin'] = array(
 
 $propertyOptions['grid']['grid_area_gridall'] = array(
 	'short_label' => $grid_area['short_label'],
-	'label' => esc_html__('Grid area (all grid items)',  'microthemer'),
+	'label' => esc_html__('Grid area (all items)',  'microthemer'),
 	'sub_label' => $grid_area['sub_label'],
 	'sub_slug' => 'allitemsarea',
 	'tab_control' => 'allgriditems',
@@ -4508,11 +5016,11 @@ $propertyOptions['grid']['grid_area_gridall'] = array(
 
 $propertyOptions['grid']['order_gridall'] = array(
 	'short_label' => $grid_order['short_label'],
-	'label' => esc_html__('Order (all grid items)',  'microthemer'),
+	'label' => esc_html__('Order (all items)',  'microthemer'),
 	'sub_label' => $grid_order['sub_label'],
 	'sub_slug' => 'allitemsother',
 	'tab_control' => 'allgriditems',
-	//'type' => 'combobox',
+	'type' => 'combobox',
 	'select_options' => array('0'),
 	'icon' => $grid_order['icon'],
 	// ref
@@ -4524,9 +5032,9 @@ $propertyOptions['grid']['order_gridall'] = array(
 
 $propertyOptions['grid']['z_index_gridall'] =  array(
 	'short_label' => $grid_z_index['short_label'],
-	'label' => esc_html__('Z-index (all grid items)',  'microthemer'),
+	'label' => esc_html__('Z-index (all items)',  'microthemer'),
 	'tab_control' => 'allgriditems',
-	//'type' => 'combobox',
+	'type' => 'combobox',
 	'select_options' => array('auto'),
 	'icon' => $grid_z_index['icon'],
 	// ref
@@ -4614,7 +5122,7 @@ $propertyOptions['grid']['grid_row_start'] = array(
 		'gridareas' => esc_html__('Areas', 'microthemer'),
 		'allgriditems' => esc_html__('All', 'microthemer'),
 		'griditems' => esc_html__('Item', 'microthemer')
-		    . '<span class="mt-tab-txt grid-tab-txt grid-item-num"></span>',
+		    . '<span class="mt-tab-txt grid-tab-txt pg-tab-txt grid-item-num"></span>',
 
 	),
 	'select_options' => $grid_lines,
@@ -4733,7 +5241,7 @@ $propertyOptions['position']['position'] = array(
 	'pg_label' => esc_attr__('Position', 'microthemer'),
 	'sub_label' => esc_html__('Position', 'microthemer'),
 	'sub_slug' => 'position',
-	'new_pg_cat' => esc_attr__('Misc', 'microthemer'), // for delimiting property group categories
+	'new_pg_cat' => esc_attr__('Position', 'microthemer'), // for delimiting property group categories
 	'input-class' => 'size-3',
 	'type' => 'combobox',
 	'select_options' => array(
@@ -4792,10 +5300,17 @@ $propertyOptions['position']['top'] = array(
 	'short_label' => esc_html__('Top', 'microthemer'),
 	'label' => esc_attr__('Top (Position)', 'microthemer'),
 	'field-class' => 'quad-top',
-	'default_unit' => 1,
+	'auto' => array(
+		'%' => array(
+			'node' => 'parent',
+			'prop' => 'height'
+		)
+	),
+	'default_unit' => 'px',
 	'select_options' => $position_lengths,
 	'sug_values' => array(
 		'this' => 1,
+		'min' => ''
 	),
 	'icon' => '11',
 	// ref
@@ -4820,10 +5335,17 @@ $propertyOptions['position']['bottom'] = array(
 	'short_label' => esc_html__('Bottom', 'microthemer'),
 	'label' => esc_attr__('Bottom (Position)', 'microthemer'),
 	'field-class' => 'quad-bottom',
-	'default_unit' => 1,
+	'auto' => array(
+		'%' => array(
+			'node' => 'parent',
+			'prop' => 'height'
+		)
+	),
+	'default_unit' => 'px',
 	'select_options' => $position_lengths,
 	'sug_values' => array(
 		'this' => 1,
+		'min' => ''
 	),
 	'icon' => '12',
 	// ref
@@ -4847,13 +5369,19 @@ $propertyOptions['position']['left'] = array(
 	'animatable' => 1,
 	'short_label' => esc_html__('Left', 'microthemer'),
 	'label' => esc_attr__('Left (Position)', 'microthemer'),
-	'field-class' => 'quad-left',
-	'default_unit' => 1,
+	'field-class' => 'quad-left icon-size-2',
+	'auto' => array(
+		'%' => array(
+			'node' => 'parent',
+			'prop' => 'width'
+		)
+	),
+	'default_unit' => 'px',
 	'select_options' => $position_lengths,
 	'sug_values' => array(
 		'this' => 1,
+		'min' => ''
 	),
-	'field-class' => 'icon-size-2', // fix alignment in the sprite then remove this fix
 	'icon' => '13',
 	// ref
 	'ref_desc' => "<p>For absolutely positioned elements, the left property sets the left edge of an element to a unit to the
@@ -4877,14 +5405,20 @@ $propertyOptions['position']['right'] = array(
 	'animatable' => 1,
 	'short_label' => esc_html__('Right', 'microthemer'),
 	'label' => esc_attr__('Right (Position)', 'microthemer'),
-	'field-class' => 'quad-right',
-	'default_unit' => 1,
+	'field-class' => 'quad-right last',
+	'auto' => array(
+		'%' => array(
+			'node' => 'parent',
+			'prop' => 'width'
+		)
+	),
+	'default_unit' => 'px',
 	'select_options' => $position_lengths,
 	'sug_values' => array(
 		'this' => 1,
+		'min' => ''
 	),
 	'icon' => '14',
-	'field-class' => 'last',
 	// ref
 	'ref_desc' => "<p>For absolutely positioned elements, the right property sets the right edge of an element to a unit to the left or right of the right edge of its containing element. For relatively positioned elements, the right property sets the right edge of an element to a unit to the left or right of its normal position. Negative values are allowed.</p>
 	<p><b>Note</b>: the way an element moves on screen when you apply a positive 'right' value may seem counterintuitive. It moves left on the screen when given a positive value because the browser increases the distance between the right of the element and some reference point. If in doubt, just look at the direction of the icon. The icon depicts the direction the element will move on the page as you increase the value for 'right'.</p>",
@@ -4910,6 +5444,9 @@ $propertyOptions['position']['z_index'] = array(
 	'select_options' => $z_index,
 	'sug_values' => array(
 		'this' => 1,
+		'unitless_slider' => 1,
+		'min' => '',
+		'increment' => 1
 	),
 	// ref
 	'ref_desc' => "<p>The z-index property specifies the stack order of an element. An element with greater stack order is always in front of an element with a lower stack order. Note: z-index only works on positioned elements (position:absolute, position:relative, or position:fixed) and grid items.</p>",
@@ -5031,6 +5568,603 @@ $propertyOptions['position']['clear'] = array(
 );
 
 
+// Transform
+// ------------------------------------------------------------
+
+$transform_tutorials = array(
+	array(
+		'url' => 'https://css-tricks.com/almanac/properties/t/transform/',
+		'title' => 'CSS Tricks: Transform',
+	),
+	array(
+		'url' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transforms/Using_CSS_transforms',
+		'title' => 'Mozilla: Transform',
+	),
+	array(
+		'url' => 'https://3dtransforms.desandro.com/',
+		'title' => '3D Transforms',
+	)
+);
+
+// transform origin
+$propertyOptions['transform']['transform_origin'] = array(
+	'short_label' => esc_html__('Transform Origin', 'microthemer'),
+	'label' => esc_attr__('Transform Origin', 'microthemer'),
+	'pg_label' => esc_attr__('Transform', 'microthemer'),
+	'sub_label' => esc_html__('General', 'microthemer'),
+	'tab_control' => 'transformmisc',
+	'sub_slug' => 'generaltransform',
+	'field-class' => 'perma-show icon-size-2',
+	'input-class' => 'size-7',
+	'type' => 'combobox',
+	'sug_values' => array(
+		'this' => 1,
+	),
+	'select_options' => array_merge($background_position_values, array(
+		'top left 10%',
+		'right bottom 20px'
+	)),
+	'prefixes' => array(
+		'property' => array(
+			'-webkit-transform-origin',
+		)
+	),
+	'icon' => '18, 12, B',
+	// ref
+	'ref_desc' => "<p>The transformation origin is the point around which a transformation is applied. For example, the transformation origin of the rotate() function is the center of rotation.</p>",
+	'ref_links' => array(
+		'can_i_use' => 'https://caniuse.com/#search=transform-origin',
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform-origin',
+		'quackit' => 'https://qhmit.com/css/css3/properties/css_transform-origin.cfm',
+		'w3s' => 'https://www.w3schools.com/cssref/css3_pr_transform-origin.asp',
+	),
+	'tutorials' => $transform_tutorials,
+	'group_tutorials' => 1
+);
+
+// transform style
+$propertyOptions['transform']['transform_style'] = array(
+	'short_label' => esc_html__('Transform Style', 'microthemer'),
+	'label' => esc_html__('Transform Style', 'microthemer'),
+	'tab_control' => 'transformmisc',
+	'field-class' => 'perma-show',
+	'input-class' => 'size-5',
+	'type' => 'combobox',
+	'select_options' => array(
+		'flat',
+		'preserve-3d'
+	),
+	'icon' => '19, 12, B',
+	// ref
+	'ref_desc' => "<p>The transform-style CSS property sets whether children of an element are positioned in the 3D space or are flattened in the plane of the element</p>",
+	'ref_links' => array(
+		'can_i_use' => 'https://caniuse.com/#search=transform-style',
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform-style',
+		'quackit' => 'https://qhmit.com/css/css3/properties/css_transform-style.cfm',
+		'w3s' => 'https://www.w3schools.com/cssref/css3_pr_transform-style.asp',
+	),
+	'tutorials' => $transform_tutorials,
+	'group_tutorials' => 1
+);
+
+// backface visibility
+$propertyOptions['transform']['backface_visibility'] = array(
+	'short_label' => esc_html__('Backface Visibility', 'microthemer'),
+	'label' => esc_html__('Backface Visibility', 'microthemer'),
+	'tab_control' => 'transformmisc',
+	'field-class' => 'perma-show icon-size-2',
+	'input-class' => 'size-2',
+	'type' => 'combobox',
+	'select_options' => array(
+		'visible',
+		'hidden'
+	),
+	'prefixes' => array(
+		'property' => array(
+			'-webkit-backface-visibility',
+		)
+	),
+	'icon' => '20, 12, B',
+	// ref
+	'ref_desc' => "<p>The backface-visibility CSS property sets whether the back face of an element is visible when turned towards the user.</p>",
+	'ref_links' => array(
+		'can_i_use' => 'https://caniuse.com/#search=backface-visibility',
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/backface-visibility',
+		'quackit' => 'https://qhmit.com/css/css3/properties/css_backface-visibility.cfm',
+		'w3s' => 'https://www.w3schools.com/cssref/css3_pr_backface-visibility.asp',
+	),
+	'tutorials' => $transform_tutorials,
+	'group_tutorials' => 1
+);
+
+// perspective origin
+$propertyOptions['transform']['perspective_origin'] = array(
+	'short_label' => esc_html__('Perspective Origin', 'microthemer'),
+	'label' => esc_attr__('Perspective Origin', 'microthemer'),
+	//'sub_label' => esc_html__('Perspective', 'microthemer'),
+	'tab_control' => 'transformmisc',
+	//'sub_slug' => 'perspective',
+	'field-class' => 'icon-size-2',
+	'input-class' => 'size-7',
+	'type' => 'combobox',
+	'sug_values' => array(
+		'this' => 1,
+	),
+	'select_options' => $background_position_values,
+	'prefixes' => array(
+		'property' => array(
+			'-webkit-perspective-origin',
+		)
+	),
+	'icon' => '21, 12, B',
+	// ref
+	'ref_desc' => "<p>The perspective-origin CSS property determines the position at which the viewer is looking.</p>",
+	'ref_links' => array(
+		'can_i_use' => 'https://caniuse.com/#search=perspective-origin',
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/perspective-origin',
+		'quackit' => 'https://qhmit.com/css/css3/properties/css_perspective-origin.cfm',
+		'w3s' => 'https://www.w3schools.com/cssref/css3_pr_perspective-origin.asp',
+	),
+	'tutorials' => $transform_tutorials,
+	'group_tutorials' => 1
+);
+
+// perspective
+$propertyOptions['transform']['perspective'] = array(
+	'short_label' => esc_html_x('Perspective (property)', 'microthemer'),
+	'label' => esc_attr_x('Perspective (property)', 'microthemer'),
+	'default_unit' => 'px',
+	'field-class' => 'icon-size-2',
+	'tab_control' => 'transformmisc',
+	'select_options' => $perspective,
+	'sug_values' => array(
+		'this' => 1,
+	),
+	'unit_rel' => 1,
+	'unit_sub_label' => esc_html__('Perspective', 'microthemer'),
+	'icon' => '1, 12, B',
+	// ref
+	'ref_desc' => "<p>The perspective CSS <i>property</i> determines the distance between the z=0 plane and the user. Unlike the perspective <i>function</i>, the perspective property only acts on child elements, rather than the element it is set on. To apply a shared perspective to both parent and child elements, it is best to use the perspective function and set <i>transform-style</i> to <i>preserve-3d</i>.</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/perspective',
+		'quackit' => 'https://qhmit.com/css/css3/properties/css_perspective.cfm',
+		'w3s' => 'https://www.w3schools.com/cssref/css3_pr_perspective.asp',
+	),
+	'tutorials' => $transform_tutorials,
+	'group_tutorials' => 1
+);
+
+// perspective _function
+$propertyOptions['transform']['perspective_function'] = array(
+	'short_label' => esc_html_x('Perspective (function)', 'microthemer'),
+	'label' => esc_attr_x('Perspective (function)', 'microthemer'),
+	'css_func' => 0,
+	'default_unit' => 'px',
+	'field-class' => 'css-func-prop icon-size-2',
+	'tab_control' => 'transformmisc',
+	'select_options' => $perspective,
+	'sug_values' => array(
+		'this' => 1,
+	),
+	'unit_rel' => 1,
+	'icon' => '1, 15, B',
+	// ref
+	'ref_desc' => "<p>The perspective CSS <i>function</i> determines the distance between the z=0 plane and the user. Unlike the perspective <i>property</i> (which <i>only</i> applies to children), it acts on the element itself. To extend to perspective to child elements, set <i>transform-style</i> to <i>preserve-3d</i>.</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/perspective',
+		'quackit' => 'https://qhmit.com/css/functions/css_perspective_function.cfm',
+	),
+	'tutorials' => $transform_tutorials,
+	'group_tutorials' => 1
+);
+
+/*// transform box - still marked as experimental
+$propertyOptions['transform']['transform_box'] = array(
+	'short_label' => esc_html__('Transform Box', 'microthemer'),
+	'label' => esc_html__('Transform Box', 'microthemer'),
+   'tab_control' => 'transformmisc',
+	'field-class' => 'perma-show',
+	'input-class' => 'size-3',
+	'type' => 'combobox',
+	'select_options' => array(
+		'content-box',
+		'border-box',
+		'fill-box',
+		'stroke-box',
+		'view-box',
+	),
+	'icon' => '1, 4, B',
+	// ref
+	'ref_desc' => "<p>The transform-box CSS property defines the layout box to which the transform and transform-origin properties relate.</p>",
+	'ref_links' => array(
+		'can_i_use' => 'https://caniuse.com/#search=transform-box',
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform-box',
+	),
+	'tutorials' => $transform_tutorials,
+	'group_tutorials' => 1
+);*/
+
+/* TRANSLATE */
+
+// translateX
+$propertyOptions['transform']['translatex_function'] = array(
+	'sh' => array(
+		array('translate3d', 0, array('initial' => '0')),
+		array('translate', 0, array('initial' => '0')),
+
+	),
+	'short_label' => esc_html_x('translateX', 'microthemer'),
+	'label' => esc_attr_x('translateX', 'microthemer'),
+	'sub_label' => esc_html__('Translate', 'microthemer'),
+	'sub_slug' => 'translate',
+	'tab_control' => 'transformtranslate',
+	'css_func' => 0,
+	'field-class' => 'css-func-prop icon-size-2',
+	'auto' => array(
+		'%' => array(
+			'node' => 'element',
+			'prop' => 'width'
+		)
+	),
+	'default_unit' => 'px',
+	'select_options' => $translate,
+	'sug_values' => array(
+		'this' => 1,
+		'min' => ''
+	),
+	'unit_rel' => 1,
+	'unit_sub_label' => esc_html__('Translate', 'microthemer'),
+	'icon' => '15, 12, B',
+	// ref
+	'ref_desc' => "<p>The translateX() CSS function repositions an element horizontally on the 2D plane.</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/translatex',
+		'quackit' => 'https://qhmit.com/css/functions/css_translatex_function.cfm',
+		'w3s' => 'https://www.w3schools.com/css/css3_2dtransforms.asp',
+	),
+	'tutorials' => $transform_tutorials,
+	'group_tutorials' => 1
+);
+
+// translateY
+$propertyOptions['transform']['translatey_function'] = array(
+	'sh' => array(
+		array('translate3d', 1, array('initial' => '0')),
+		array('translate', 1, array('initial' => '0')),
+
+	),
+	'short_label' => esc_html_x('translateY', 'microthemer'),
+	'label' => esc_attr_x('translateY', 'microthemer'),
+	'tab_control' => 'transformtranslate',
+	'css_func' => 0,
+	'field-class' => 'css-func-prop icon-size-2',
+	'auto' => array(
+		'%' => array(
+			'node' => 'element',
+			'prop' => 'height'
+		)
+	),
+	'default_unit' => 'px',
+	'select_options' => $translate,
+	'sug_values' => array(
+		'this' => 1,
+		'min' => ''
+	),
+	'unit_rel' => 1,
+	'icon' => '16, 12, B',
+	// ref
+	'ref_desc' => "<p>The translateY() CSS function repositions an element vertically on the 2D plane.</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/translatey',
+		'quackit' => 'https://qhmit.com/css/functions/css_translatey_function.cfm',
+		'w3s' => 'https://www.w3schools.com/css/css3_2dtransforms.asp',
+	),
+	'tutorials' => $translate,
+	'group_tutorials' => 1
+);
+
+// translateZ
+$propertyOptions['transform']['translatez_function'] = array(
+	'sh' => array(
+		array('translate3d', 2, array('initial' => '1')),
+	),
+	'short_label' => esc_html_x('translateZ', 'microthemer'),
+	'label' => esc_attr_x('translateZ', 'microthemer'),
+	'tab_control' => 'transformtranslate',
+	'css_func' => 0,
+	'field-class' => 'css-func-prop icon-size-2',
+	'auto' => array(
+		'%' => false
+	),
+	'default_unit' => 'px',
+	'select_options' => $translate,
+	'sug_values' => array(
+		'this' => 1,
+		'min' => ''
+	),
+	'unit_rel' => 1,
+	'icon' => '17, 12, B',
+	// ref
+	'ref_desc' => "<p>The translateZ() CSS function repositions an element along the z-axis in 3D space, i.e., closer to or farther away from the viewer</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/translatez',
+		'quackit' => 'https://qhmit.com/css/functions/css_translatez_function.cfm',
+		'w3s' => 'https://www.w3schools.com/css/css3_2dtransforms.asp',
+	),
+	'tutorials' => $transform_tutorials,
+	'group_tutorials' => 1
+);
+
+
+/* SCALE */
+
+// scaleX
+$propertyOptions['transform']['scalex_function'] = array(
+	'sh' => array(
+		array('scale3d', 0, array('initial' => '1')),
+		array('scale', 0, array('initial' => '1')),
+
+	),
+	'short_label' => esc_html_x('scaleX', 'microthemer'),
+	'label' => esc_attr_x('scaleX', 'microthemer'),
+	'sub_label' => esc_html__('Scale', 'microthemer'),
+	'sub_slug' => 'scale',
+	'tab_control' => 'transformscale',
+	'css_func' => 1,
+	'field-class' => 'css-func-prop icon-size-2',
+	'tabs_label' => esc_html__('Transform options', 'microthemer'),
+	'tabs_before' => array(
+		'transformmisc' => esc_html__('General', 'microthemer'),
+		'transformtranslate' => esc_html__('Translate', 'microthemer'),
+		'transformrotate' => esc_html__('Rotate', 'microthemer'),
+		'transformskew' => esc_html__('Skew', 'microthemer'),
+		'transformscale' => esc_html__('Scale', 'microthemer'),
+		//'transformperspective' => esc_html__('Perspective', 'microthemer'),
+	),
+	'select_options' => $decimals,
+	'sug_values' => array(
+		'this' => 1,
+		'unitless_slider' => 1
+	),
+	'rel' => 'scale',
+	'icon' => '11, 12, B',
+	// ref
+	'ref_desc' => "<p>The scaleX() CSS function defines a transformation that resizes an element along the x-axis (horizontally).</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/scalex',
+		'quackit' => 'https://qhmit.com/css/functions/css_scalex_function.cfm',
+		'w3s' => 'https://www.w3schools.com/css/css3_2dtransforms.asp',
+	),
+	'tutorials' => $transform_tutorials,
+	'group_tutorials' => 1
+);
+
+// scaleY
+$propertyOptions['transform']['scaley_function'] = array(
+	'sh' => array(
+		array('scale3d', 1, array('initial' => '1')),
+		array('scale', 1, array('initial' => '1')),
+
+	),
+	'short_label' => esc_html_x('scaleY', 'microthemer'),
+	'label' => esc_attr_x('scaleY', 'microthemer'),
+	'tab_control' => 'transformscale',
+	'css_func' => 1,
+	'field-class' => 'css-func-prop icon-size-2',
+	'select_options' => $decimals,
+	'sug_values' => array(
+		'this' => 1,
+		'unitless_slider' => 1
+	),
+	'rel' => 'scale',
+	'icon' => '12, 12, B',
+	// ref
+	'ref_desc' => "<p>The scaleY() CSS function defines a transformation that resizes an element along the y-axis (vertically).</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/scaley',
+		'quackit' => 'https://qhmit.com/css/functions/css_scaley_function.cfm',
+		'w3s' => 'https://www.w3schools.com/css/css3_2dtransforms.asp',
+	),
+	'tutorials' => $transform_tutorials,
+	'group_tutorials' => 1
+);
+
+// scaleZ
+$propertyOptions['transform']['scalez_function'] = array(
+	'sh' => array(
+		array('scale3d', 2, array('initial' => '1')),
+	),
+	'short_label' => esc_html_x('scaleZ', 'microthemer'),
+	'label' => esc_attr_x('scaleZ', 'microthemer'),
+	'tab_control' => 'transformscale',
+	'css_func' => 1,
+	'field-class' => 'css-func-prop icon-size-2',
+	'select_options' => $decimals,
+	'sug_values' => array(
+		'this' => 1,
+		'unitless_slider' => 1
+	),
+	'rel' => 'scale',
+	'icon' => '13, 12, B',
+	// ref
+	'ref_desc' => "<p>The scaleZ() CSS function defines a transformation that resizes an element along the z-axis..</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/scalez',
+		'quackit' => 'https://qhmit.com/css/functions/css_scalez_function.cfm',
+		'w3s' => 'https://www.w3schools.com/css/css3_2dtransforms.asp',
+	),
+	'tutorials' => $transform_tutorials,
+	'group_tutorials' => 1
+);
+
+
+/* ROTATE */
+
+// rotateX
+$propertyOptions['transform']['rotatex_function'] = array(
+	/*'sh' => array(
+		//array('rotate', 0, array('initial' => '1')), // same as rotateZ oddly
+		//array('rotate3d', 0, array('initial' => '0')), // not easily interchangeable with rotateX, Y, Z and requires 4 value)
+	),*/
+	'short_label' => esc_html_x('rotateX', 'microthemer'),
+	'label' => esc_attr_x('rotateX', 'microthemer'),
+	'sub_label' => esc_html__('rotate', 'microthemer'),
+	'sub_slug' => 'rotate',
+	'tab_control' => 'transformrotate',
+	'css_func' => '0deg',
+	'field-class' => 'css-func-prop icon-size-2',
+	'select_options' => $degrees,
+	'default_unit' => 'deg',
+	'special_units' => $angle_units,
+	'sug_values' => array(
+		'this' => 1,
+		'min' => '',
+		//'increment' => .1
+	),
+	'icon' => '7, 12, B',
+	// ref
+	'ref_desc' => "<p>The rotateX() CSS function defines a transformation that rotates an element around the abscissa (horizontal axis) without deforming it.</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/rotatex',
+		'quackit' => 'https://qhmit.com/css/functions/css_rotatex_function.cfm',
+		'w3s' => 'https://www.w3schools.com/css/css3_2dtransforms.asp',
+	),
+	'tutorials' => $transform_tutorials,
+	'group_tutorials' => 1
+);
+
+// rotateY
+$propertyOptions['transform']['rotatey_function'] = array(
+	/*'sh' => array(
+		//array('rotate', 0, array('initial' => '1')), // same as rotateZ oddly
+		//array('rotate3d', 1, array('initial' => '0')), // not easily interchangeable with rotateX, Y, Z and requires 4 value)
+	),*/
+	'short_label' => esc_html_x('rotateY', 'microthemer'),
+	'label' => esc_attr_x('rotateY', 'microthemer'),
+	'tab_control' => 'transformrotate',
+	'css_func' => '0deg',
+	'field-class' => 'css-func-prop icon-size-2',
+	'select_options' => $degrees,
+	'default_unit' => 'deg',
+	'special_units' => $angle_units,
+	'sug_values' => array(
+		'this' => 1,
+		'min' => '',
+		//'increment' => .1
+	),
+	'icon' => '8, 12, B',
+	// ref
+	'ref_desc' => "<p>The rotateY() CSS function defines a transformation that rotates an element around the ordinate (vertical axis) without deforming it.</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/rotatey',
+		'quackit' => 'https://qhmit.com/css/functions/css_rotatey_function.cfm',
+		'w3s' => 'https://www.w3schools.com/css/css3_2dtransforms.asp',
+	),
+	'tutorials' => $transform_tutorials,
+	'group_tutorials' => 1
+);
+
+// rotateZ
+$propertyOptions['transform']['rotatez_function'] = array(
+	/*'sh' => array(
+		//array('rotate', 0, array('initial' => '1')), // same as rotateZ oddly
+		//array('rotate3d', 2, array('initial' => '0')), // not easily interchangeable with rotateX, Y, Z and requires 4 value)
+	),*/
+	'short_label' => esc_html_x('rotateZ', 'microthemer'),
+	'label' => esc_attr_x('rotateZ', 'microthemer'),
+	'tab_control' => 'transformrotate',
+	'css_func' => '0deg',
+	'field-class' => 'css-func-prop icon-size-2',
+	'select_options' => $degrees,
+	'default_unit' => 'deg',
+	'special_units' => $angle_units,
+	'sug_values' => array(
+		'this' => 1,
+		'min' => ''
+	),
+	'icon' => '9, 12, B',
+	// ref
+	'ref_desc' => "<p>The rotateZ() CSS function defines a transformation that rotates an element around the z-axis without deforming it.</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/rotatez',
+		'quackit' => 'https://qhmit.com/css/functions/css_rotatez_function.cfm',
+		'w3s' => 'https://www.w3schools.com/css/css3_2dtransforms.asp',
+	),
+	'tutorials' => $transform_tutorials,
+	'group_tutorials' => 1
+);
+
+
+/* SKEW */
+
+// skewX
+$propertyOptions['transform']['skewx_function'] = array(
+	'sh' => array(
+		array('skew', 0, array('initial' => '1')),
+	),
+	'short_label' => esc_html_x('skewX', 'microthemer'),
+	'label' => esc_attr_x('skewX', 'microthemer'),
+	'sub_label' => esc_html__('skew', 'microthemer'),
+	'sub_slug' => 'skew',
+	'tab_control' => 'transformskew',
+	'css_func' => '0deg',
+	'field-class' => 'css-func-prop icon-size-2',
+	'select_options' => $degrees,
+	'default_unit' => 'deg',
+	'special_units' => $angle_units,
+	'sug_values' => array(
+		'this' => 1,
+		'min' => ''
+	),
+	'icon' => '3, 12, B',
+	// ref
+	'ref_desc' => "<p>The skewX() CSS function defines a transformation that skews an element in the horizontal direction on the 2D plane.</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/skewx',
+		'quackit' => 'https://qhmit.com/css/functions/css_skewx_function.cfm',
+		'w3s' => 'https://www.w3schools.com/css/css3_2dtransforms.asp',
+	),
+	'tutorials' => $transform_tutorials,
+	'group_tutorials' => 1
+);
+
+// skewY
+$propertyOptions['transform']['skewy_function'] = array(
+	'sh' => array(
+		array('skew', 1, array('initial' => '1')),
+	),
+	'short_label' => esc_html_x('skewY', 'microthemer'),
+	'label' => esc_attr_x('skewY', 'microthemer'),
+	'tab_control' => 'transformskew',
+	'css_func' => '0deg',
+	'field-class' => 'css-func-prop icon-size-2',
+	'select_options' => $degrees,
+	'default_unit' => 'deg',
+	'special_units' => $angle_units,
+	'sug_values' => array(
+		'this' => 1,
+		'min' => ''
+	),
+	'icon' => '4, 12, B',
+	// ref
+	'ref_desc' => "<p>The skewY() CSS function defines a transformation that skews an element in the vertical direction on the 2D plane.</p>",
+	'ref_links' => array(
+		'mozilla' => 'https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/skewy',
+		'quackit' => 'https://qhmit.com/css/functions/css_skewy_function.cfm',
+		'w3s' => 'https://www.w3schools.com/css/css3_2dtransforms.asp',
+	),
+	'tutorials' => $transform_tutorials,
+	'group_tutorials' => 1
+);
+
+
+
+
+
+
+
+
+
 // Animation
 // ------------------------------------------------------------
 
@@ -5048,6 +6182,7 @@ $propertyOptions['animation']['animation_name'] = array(
 	'short_label' => esc_html__('Name', 'microthemer'),
 	'label' => esc_attr__('Animation Name', 'microthemer'),
 	'pg_label' => esc_attr__('Animation', 'microthemer'),
+	'new_pg_cat' => esc_attr__('Animate', 'microthemer'), // for delimiting property group categories
 	// play button, trigger, add row icons
 	'pg_controls' => array(
 		'items' => array(
@@ -5071,7 +6206,7 @@ $propertyOptions['animation']['animation_name'] = array(
 	'sub_slug' => 'animation',
 	//'new_pg_cat' => esc_attr__('Animate', 'microthemer'),
 	'field-class' => 'has-category-combo',
-	'input-class' => 'size-3',
+	'input-class' => 'size-8a',
 	'type' => 'combobox',
 	'sug_values' => array(
 		'this' => 1,
@@ -5124,19 +6259,18 @@ $propertyOptions['animation']['animation_duration'] = array(
 	'input-class' => 'size-0b animation_duration',
 	//'type' => 'combobox',
 	'select_options' => array(
-		'0s',
-		'0.25s',
-		'0.5s',
-		'0.75s',
-		'1s',
-		'2s',
-		'3s',
-		'4s',
-		'5s',
+		'0',
+		'0.25',
+		'0.5',
+		'0.75',
+		'1',
+		'2',
+		'3',
+		'4',
+		'5',
 	),
 	'sug_values' => array(
 		'this' => 1,
-		//'forceSug' => 1
 		'root_cat' => 'time'
 	),
 	'prefixes' => array(
@@ -5144,7 +6278,8 @@ $propertyOptions['animation']['animation_duration'] = array(
 			'-webkit-animation-duration',
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 's',
+	'special_units' => $time_units,
 	'icon' => '2, 4, B',
 	// ref
 	'ref_desc' => "<p>The time taken for an animation to complete one cycle.</p>",
@@ -5168,7 +6303,7 @@ $propertyOptions['animation']['animation_timing_function'] = array(
 	)),
 	'short_label' => esc_html__('Timing Function', 'microthemer'),
 	'label' => esc_attr__('Animation Timing Function', 'microthemer'),
-	//'input-class' => 'size-1',
+	'input-class' => 'size-2',
 	'sug_values' => array(
 		'this' => 1,
 		//'forceSug' => 1
@@ -5242,19 +6377,19 @@ $propertyOptions['animation']['animation_delay'] = array(
 	'input-class' => 'size-0b',
 	//'type' => 'combobox',
 	'select_options' => array(
-		'0s',
-		'.25s',
-		'.5s',
-		'.75s',
-		'1s',
-		'2s',
-		'3s',
-		'-1s',
+		'0',
+		'.25',
+		'.5',
+		'.75',
+		'1',
+		'2',
+		'3',
+		'-1',
 	),
 	'sug_values' => array(
 		'this' => 1,
-		//'forceSug' => 1
-		'root_cat' => 'time'
+		'root_cat' => 'time',
+		'min' => ''
 	),
 
 	'prefixes' => array(
@@ -5262,7 +6397,8 @@ $propertyOptions['animation']['animation_delay'] = array(
 			'-webkit-animation-delay',
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 's',
+	'special_units' => $time_units,
 	'icon' => '4, 4, B',
 	// ref
 	'ref_desc' => "<p>The delay before an animation should start. Negative values are allowed. Negative values cause the animation to start part way through its cycle, rather than from the start.</p>",
@@ -5287,7 +6423,7 @@ $propertyOptions['animation']['animation_iteration_count'] = array(
 	)),
 	'short_label' => esc_html__('Iteration Count', 'microthemer'),
 	'label' => esc_attr__('Animation Iteration Count', 'microthemer'),
-	'input-class' => 'size-0b',
+	'input-class' => 'size-2',
 	//'type' => 'combobox',
 	'select_options' => array(
 		'1',
@@ -5297,6 +6433,8 @@ $propertyOptions['animation']['animation_iteration_count'] = array(
 	),
 	'sug_values' => array(
 		'this' => 1,
+		'unitless_slider' => 1,
+		'increment' => .1
 	),
 	'prefixes' => array(
 		'property' => array(
@@ -5326,7 +6464,7 @@ $propertyOptions['animation']['animation_direction'] = array(
 	)),
 	'short_label' => esc_html__('Direction', 'microthemer'),
 	'label' => esc_attr__('Animation Direction', 'microthemer'),
-	//'input-class' => 'size-1',
+	'input-class' => 'size-4',
 	'type' => 'combobox',
 	'select_options' => array(
 		'normal',
@@ -5365,7 +6503,7 @@ $propertyOptions['animation']['animation_fill_mode'] = array(
 	)),
 	'short_label' => esc_html__('Fill Mode', 'microthemer'),
 	'label' => esc_attr__('Animation Fill Mode', 'microthemer'),
-	'input-class' => 'size-1',
+	'input-class' => 'size-4a',
 	'type' => 'combobox',
 	'select_options' => array(
 		'none',
@@ -5404,7 +6542,7 @@ $propertyOptions['animation']['animation_play_state'] = array(
 	)),
 	'short_label' => esc_html__('Play State', 'microthemer'),
 	'label' => esc_attr__('Animation Play State', 'microthemer'),
-	//'input-class' => 'size-1',
+	'input-class' => 'size-2',
 	'type' => 'combobox',
 	'select_options' => array(
 		'paused',
@@ -5435,7 +6573,7 @@ $propertyOptions['animation']['animation_play_state'] = array(
 $propertyOptions['animation']['event'] = array(
 	'short_label' => esc_html__('Event', 'microthemer'),
 	'label' => esc_attr__('Animation Event', 'microthemer'),
-	'input-class' => 'size-3 mt-event-input',
+	'input-class' => 'size-6 mt-event-input',
 	'type' => 'combobox',
 	'icon' => '9, 4, B',
 	// ref
@@ -5495,24 +6633,11 @@ $propertyOptions['transition']['transition_property'] = array(
 	'short_label' => esc_html__('Property', 'microthemer'),
 	'label' => esc_attr__('Transition Property', 'microthemer'),
 	'pg_label' => esc_attr__('Transition', 'microthemer'),
-
-	/*// play button, trigger, add row icons
-	'pg_controls' => array(
-		'items' => array(
-			'play' => array(
-				'type' => 'icon',
-				'wrapper' => 'anim-play-wrap',
-				'class' => 'play-icon play-trans control-icon',
-				'title'  => esc_attr__('Play transition', 'microthemer')
-			)
-		)
-	),*/
-
 	'sub_label' => esc_html__('Transition', 'microthemer'),
 	'sub_slug' => 'transition',
 	//'new_pg_cat' => esc_attr__('Animate', 'microthemer'),
 	'field-class' => 'has-category-combo',
-	'input-class' => 'size-3',
+	'input-class' => 'size-big',
 	'type' => 'combobox',
 	'sug_values' => array(
 		'this' => 1,
@@ -5579,7 +6704,8 @@ $propertyOptions['transition']['transition_duration'] = array(
 			'-webkit-transition-duration',
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 's',
+	'special_units' => $time_units,
 	'icon' => '2, 4, B',
 	// ref
 	'ref_desc' => "<p>The time taken for the transition to complete one cycle.</p>",
@@ -5603,7 +6729,7 @@ $propertyOptions['transition']['transition_timing_function'] = array(
 	)),
 	'short_label' => esc_html__('Timing Function', 'microthemer'),
 	'label' => esc_attr__('Transition Timing Function', 'microthemer'),
-	//'input-class' => 'size-1',
+	'input-class' => 'size-6',
 	'sug_values' => array(
 		'this' => 1,
 		//'forceSug' => 1
@@ -5653,15 +6779,16 @@ $propertyOptions['transition']['transition_delay'] = array(
 	'select_options' => $propertyOptions['animation']['animation_delay']['select_options'],
 	'sug_values' => array(
 		'this' => 1,
-		//'forceSug' => 1
-		'root_cat' => 'time'
+		'root_cat' => 'time',
+		'min' => ''
 	),
 	'prefixes' => array(
 		'property' => array(
 			'-webkit-transition-delay',
 		)
 	),
-	'default_unit' => 1,
+	'default_unit' => 's',
+	'special_units' => $time_units,
 	'icon' => '4, 4, B',
 	// ref
 	'ref_desc' => "<p>The delay before a transition should start. Negative values are allowed. Negative values cause the transition to start part way through its cycle, rather than from the start.</p>",
@@ -5682,7 +6809,7 @@ $propertyOptions['transition']['transition_delay'] = array(
 $propertyOptions['transition']['event'] = array(
 	'short_label' => esc_html__('Event', 'microthemer'),
 	'label' => esc_attr__('Transition Event', 'microthemer'),
-	'input-class' => 'size-3 mt-event-input',
+	'input-class' => 'size-6 mt-event-input',
 	'type' => 'combobox',
 	'icon' => '9, 4, B',
 	// ref
@@ -5703,10 +6830,11 @@ $propertyOptions['transition']['event_value'] = array(
 	'label' => esc_attr__('Transition Event Value', 'microthemer'),
 	'field-class' => 'event-value-field',
 	'input-class' => 'size-big mt-event-value-input mt-variable-input',
-	'default_unit' => 1,
+	'default_unit' => 'px',
 	'icon' => '11, 4, B',
 	'sug_values' => array(
 		'this' => 1,
+		'no_slider' => 1
 	),
 	// ref
 	'ref_desc' => "<p>Custom Microthemer option. If you have selected a transition event, you must enter a new value for the transition property. This new value will be applied when the transition event occurs.</p>",
@@ -5739,6 +6867,7 @@ $propertyOptions['behaviour']['display'] = array(
 	'label' => esc_attr_x('Display', 'noun', 'microthemer'),
 	'pg_label' => esc_attr__('Behaviour', 'microthemer'),
 	'sub_label' => esc_html__('Behaviour', 'microthemer'),
+	'new_pg_cat' => esc_attr__('Misc', 'microthemer'), // for delimiting property group categories
 	'sub_slug' => 'behaviour',
 	'input-class' => 'size-9a',
 	'type' => 'combobox',
@@ -5928,7 +7057,7 @@ $propertyOptions['behaviour']['cursor'] = array(
 	'short_label' => esc_html__('Cursor', 'microthemer'),
 	'label' => esc_attr__('Cursor', 'microthemer'),
 	'field-class' => 'icon-size-0a',
-	'input-class' => 'size-3',
+	'input-class' => 'size-4',
 	'type' => 'combobox',
 	'select_options' => array(
 		'auto',
@@ -5993,11 +7122,11 @@ $propertyOptions['behaviour']['opacity'] = array(
 	'field-class' => 'icon-size-2',
 	'input-class' => 'size-0b',
 	'icon' => '4, 14',
-	'select_options' => array(
-		'0', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1'
-	),
+	'select_options' => $opacity,
 	'sug_values' => array(
 		'this' => 1,
+		'unitless_slider' => 1,
+		'max' => 1
 	),
 	// ref
 	'ref_desc' => "<p>The opacity property sets the opacity level for an element. You can enter any numeric value between 0 and 1 (e.g. 0.25 or 0.9)</p>",
@@ -6039,7 +7168,7 @@ $propertyOptions['behaviour']['content'] = array(
 		'close-quote',
 		'no-open-quote',
 		'no-close-quote',
-		'url(../plugins/microthemer/images/mt-logo.gif)',
+		'url(/wp-content/plugins/microthemer/images/mt-logo.gif)',
 		'counter(counterVar)',
 		'none'
 	),
@@ -6106,7 +7235,7 @@ $propertyOptions['behaviour']['content'] = array(
 );*/
 
 
-$extraOptionsReference['CSS3_PIE']['CSS3_PIE'] = array(
+/*$extraOptionsReference['CSS3_PIE']['CSS3_PIE'] = array(
 	'short_label' => 'CSS3 PIE',
 	'label' => 'CSS3 PIE (Progressive Internet Explorer)',
 	'field-class' => '',
@@ -6127,7 +7256,7 @@ $extraOptionsReference['CSS3_PIE']['CSS3_PIE'] = array(
 		<br />
 		<p><b>Donate to PIE:</b> PIE is Free for everyone. Please consider <a href='http://css3pie.com/' target='_blank'>donating to the PIE project</a> if it has helped you.</p>",
 	'ref_values' => '',
-);
+);*/
 
 
 // log moved groups/properties

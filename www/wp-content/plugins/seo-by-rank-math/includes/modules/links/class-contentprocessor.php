@@ -8,6 +8,9 @@
  * @package    RankMath
  * @subpackage RankMath\Links
  * @author     Rank Math <support@rankmath.com>
+ *
+ * @copyright Copyright (C) 2008-2019, Yoast BV
+ * The following code is a derivative work of the code from the Yoast(https://github.com/Yoast/wordpress-seo/), which is licensed under GPL v3.
  */
 
 namespace RankMath\Links;
@@ -40,7 +43,7 @@ class ContentProcessor {
 	 * The Constructor
 	 */
 	public function __construct() {
-		$this->storage    = new Storage;
+		$this->storage    = new Storage();
 		$this->classifier = new Classifier( home_url() );
 	}
 

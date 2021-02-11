@@ -58,7 +58,10 @@ if ($end > $total_packs) {
 				<li>
 					<div class="pack">
 						<?php
-						if (!empty($array['screenshot']) and file_exists($this->micro_root_dir . $pack.'/' . $array['screenshot'])) {
+						if (
+						    !empty($array['screenshot'])
+                            and file_exists($this->micro_root_dir . $pack.'/' . $array['screenshot'])
+                        ) {
 							$screenshot = $this->micro_root_url . $pack.'/' . $array['screenshot'];
 						} else {
 							$screenshot = $this->thispluginurl . 'images/screenshot-placeholder-small.gif';

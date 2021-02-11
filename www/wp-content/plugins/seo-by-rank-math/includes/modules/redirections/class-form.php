@@ -15,6 +15,8 @@ use RankMath\Traits\Hooker;
 use MyThemeShop\Helpers\Param;
 use RankMath\Monitor\DB as Monitor_DB;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Form class.
  *
@@ -237,6 +239,7 @@ class Form {
 			exit;
 		}
 
+		$this->do_action( 'redirection/saved', $redirection );
 		wp_safe_redirect( Helper::get_admin_url( 'redirections' ) );
 		exit;
 	}

@@ -10,6 +10,7 @@
 
 namespace RankMath\Redirections;
 
+use RankMath\KB;
 use RankMath\Helper;
 use RankMath\Module\Base;
 use RankMath\Traits\Ajax;
@@ -21,6 +22,8 @@ use MyThemeShop\Helpers\Str;
 use MyThemeShop\Helpers\Param;
 use MyThemeShop\Helpers\WordPress;
 use MyThemeShop\Helpers\Conditional;
+
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Admin class.
@@ -41,10 +44,6 @@ class Admin extends Base {
 				'id'             => 'redirect',
 				'directory'      => $directory,
 				'table'          => 'RankMath\Redirections\Table',
-				'help'           => [
-					'title' => esc_html__( 'Redirections', 'rank-math' ),
-					'view'  => $directory . '/views/help.php',
-				],
 				'screen_options' => [
 					'id'      => 'rank_math_redirections_per_page',
 					'default' => 100,
@@ -62,12 +61,15 @@ class Admin extends Base {
 		}
 
 		if ( $this->page->is_current_page() || 'rank_math_save_redirections' === Param::post( 'action' ) ) {
-			$this->form = new Form;
+			$this->form = new Form();
 			$this->form->hooks();
+
+			$this->import_export = new Import_Export();
+			$this->import_export->hooks();
 		}
 
 		if ( $this->page->is_current_page() ) {
-			new Export;
+			new Export();
 			$this->action( 'init', 'init' );
 			add_action( 'admin_enqueue_scripts', [ 'CMB2_Hookup', 'enqueue_cmb_css' ] );
 			Helper::add_json( 'maintenanceMode', esc_html__( 'Maintenance Code', 'rank-math' ) );
@@ -82,7 +84,7 @@ class Admin extends Base {
 	 */
 	private function load_metabox() {
 		if ( Admin_Helper::is_post_edit() || Admin_Helper::is_term_edit() ) {
-			new Metabox;
+			new Metabox();
 		}
 	}
 
@@ -113,7 +115,7 @@ class Admin extends Base {
 			'rank-math-redirections',
 			esc_html__( 'Redirections', 'rank-math' ),
 			[
-				'position'   => 12,
+				'position'   => 40,
 				'parent'     => 'rank-math',
 				'capability' => 'rank_math_redirections',
 				'render'     => $dir . 'main.php',
@@ -190,12 +192,26 @@ class Admin extends Base {
 	public function dashboard_widget() {
 		$data = DB::get_stats();
 		?>
-		<br />
-		<h3><?php esc_html_e( 'Redirections Stats', 'rank-math' ); ?></h3>
-		<ul>
-			<li><span><?php esc_html_e( 'Redirections Count', 'rank-math' ); ?></span><?php echo Str::human_number( $data->total ); ?></li>
-			<li><span><?php esc_html_e( 'Redirections Hits', 'rank-math' ); ?></span><?php echo Str::human_number( $data->hits ); ?></li>
-		</ul>
+		<h3>
+			<?php esc_html_e( 'Redirections', 'rank-math' ); ?>
+			<a href="<?php echo esc_url( Helper::get_admin_url( 'redirections' ) ); ?>" class="rank-math-view-report" title="<?php esc_html_e( 'View Report', 'rank-math' ); ?>"><i class="dashicons dashicons-ellipsis"></i></a>
+		</h3>
+		<div class="rank-math-dashabord-block">
+			<div>
+				<h4>
+					<?php esc_html_e( 'Redirection Count', 'rank-math' ); ?>
+					<span class="rank-math-tooltip"><em class="dashicons-before dashicons-editor-help"></em><span><?php esc_html_e( 'Total number of Redirections created in the Rank Math.', 'rank-math' ); ?></span></span>
+				</h4>
+				<strong class="text-large"><?php echo esc_html( Str::human_number( $data->total ) ); ?></strong>
+			</div>
+			<div>
+				<h4>
+					<?php esc_html_e( 'Redirection Hits', 'rank-math' ); ?>
+					<span class="rank-math-tooltip"><em class="dashicons-before dashicons-editor-help"></em><span><?php esc_html_e( 'Total number of hits received by all the Redirections.', 'rank-math' ); ?></span></span>
+				</h4>
+				<strong class="text-large"><?php echo esc_html( Str::human_number( $data->hits ) ); ?></strong>
+			</div>
+		</div>
 		<?php
 	}
 
@@ -220,7 +236,7 @@ class Admin extends Base {
 
 		$ids = (array) wp_parse_id_list( $_REQUEST['redirection'] );
 		if ( empty( $ids ) ) {
-			Helper::add_notification( 'No valid id found.' );
+			Helper::add_notification( __( 'No valid ID found.', 'rank-math' ) );
 			return;
 		}
 
@@ -229,8 +245,6 @@ class Admin extends Base {
 			Helper::add_notification( $notice, [ 'type' => 'success' ] );
 			return;
 		}
-
-		Helper::add_notification( esc_html__( 'No valid action found.', 'rank-math' ) );
 	}
 
 	/**
@@ -251,7 +265,7 @@ class Admin extends Base {
 		$action = str_replace( 'rank_math_redirection_', '', $action );
 
 		if ( ! $id ) {
-			$this->error( esc_html__( 'No valid id found.', 'rank-math' ) );
+			$this->error( esc_html__( 'No valid ID found.', 'rank-math' ) );
 		}
 
 		$notice = $this->perform_action( $action, $id );
@@ -299,5 +313,44 @@ class Admin extends Base {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Output page title actions.
+	 *
+	 * @param bool $is_editing User is editing a redirection.
+	 * @return void
+	 */
+	public function page_title_actions( $is_editing ) {
+		$actions = [
+			'add' => [
+				'class' => 'page-title-action rank-math-add-new-redirection' . ( $is_editing ? '-refresh' : '' ),
+				'href'  => Helper::get_admin_url( 'redirections', 'new=1' ),
+				'label' => __( 'Add New', 'rank-math' ),
+			],
+			'import_export' => [
+				'class' => 'page-title-action',
+				'href'  => Helper::get_admin_url( 'redirections', 'importexport=1' ),
+				'label' => __( 'Export Options', 'rank-math' ),
+			],
+			'learn_more' => [
+				'class' => 'page-title-action',
+				'href'  => KB::get( 'redirections' ),
+				'label' => __( 'Learn More', 'rank-math' ),
+			],
+			'settings' => [
+				'class' => 'page-title-action',
+				'href'  => Helper::get_admin_url( 'options-general#setting-panel-redirections' ),
+				'label' => __( 'Settings', 'rank-math' ),
+			],
+		];
+
+		$actions = $this->do_filter( 'redirections/page_title_actions', $actions, $is_editing );
+
+		foreach ( $actions as $action_name => $action ) {
+			?>
+				<a class="<?php echo esc_attr( $action['class'] ); ?> rank-math-redirections-<?php echo esc_attr( $action_name ); ?>" href="<?php echo esc_attr( $action['href'] ); ?>"><?php echo esc_attr( $action['label'] ); ?></a>
+			<?php
+		}
 	}
 }

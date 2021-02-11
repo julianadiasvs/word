@@ -5,7 +5,7 @@ Plugin URI: https://themeover.com/microthemer
 Text Domain: microthemer
 Domain Path: /languages
 Description: Microthemer is a feature-rich visual design plugin for customizing the appearance of ANY WordPress Theme or Plugin Content (e.g. posts, pages, contact forms, headers, footers, sidebars) down to the smallest detail. For CSS coders, Microthemer is a proficiency tool that allows them to rapidly restyle a WordPress theme or plugin. For non-coders, Microthemer's intuitive point and click editing opens the door to advanced theme and plugin customization.
-Version: 6.2.0.2
+Version: 6.3.6.1
 Author: Themeover
 Author URI: https://themeover.com
 */
@@ -145,6 +145,14 @@ if (!class_exists('tvr_common')) {
                     'param' => 'mt_nonlog',
                     'withVal' => false,
                 ),
+				array(
+					'param' => 'mto2_edit_link',
+					'withVal' => true,
+				),
+				array(
+					'param' => 'elementor-preview',
+					'withVal' => true,
+				),
                 array(
 				     'param' => 'brizy-edit-iframe', // strip brizy
 				     'withVal' => false,
@@ -258,7 +266,16 @@ if (!class_exists('tvr_common')) {
 					$wp_styles->add_data($handle, $data_key, $data_val);
 				}
 
-				$wp_styles->do_items();
+				// allow CSS to load in footer if O2 is active so MT comes after O2 even when O2 active without O2
+                // Note this didn't work on my local install, but did on a customer who reported issue with Agency Tools
+                // so better to use a more deliberate action hook e.g. wp_footer
+                // Ideally, O2 would enqueue a placeholder stylesheet and replace rather than append to head
+				/*if ( !defined( 'SHOW_CT_BUILDER' ) ) {
+					$wp_styles->do_items($handle);
+				}*/
+
+				// (feels a bit risky, but can add if MT loading before O2 when active by itself causes issue for people)
+                $wp_styles->do_items($handle);
 			}
 
 			else {
@@ -268,36 +285,25 @@ if (!class_exists('tvr_common')) {
 
 		}
 
-		// dequeue rougue scripts loading on MT UI page that cause issues for it
-        // not currently in use - the next post plugin has too many issues
-		public static function dequeue_rogue_scripts(){
+		// dequeue rougue styles or scripts loading on MT UI page that cause issues for it
+		public static function dequeue_rogue_assets(){
 
-				//remove_action('wp_enqueue_scripts', array(, 'animate_load_scripts'));
+			$conflict_styles = array(
 
-               /* remove_action( 'admin_print_scripts', array(
-                        'WINPM_Next_Article_Layout_Grid', 'animate_load_admin_script', 1000
-                ));
-				remove_action( 'wp_footer', array(
-				        'WINPM_Next_Article_Layout_Grid', 'next_print_script_in_footer', 1000
-                ) );*/
+				// admin 2020 plugin assets
+				'uikitcss',
+				'ma_admin_head_css',
+				'ma_admin_editor_css',
+				'ma_admin_menu_css',
+				'ma_admin_mobile_css',
+				'custom_wp_admin_css',
+				'ma_admin_media_css',
+			);
 
-				//add_action('wp_footer', array('WINPM_Next_Article_Layout_Grid', 'next_print_script_in_footer'));
-
-			    $conflict_scripts = array(
-
-				    // Scripts for: https://wordpress.org/plugins/infinite-related-next-post-manager/
-				    'wimpm-next-admin-js',
-				    'wimpm-next-ace-js',
-				    'next-editor-js',
-
-				    'winpm-next-post-js',
-                );
-
-			    foreach ($conflict_scripts as $script_handle){
-				    wp_dequeue_script($script_handle);
-                }
-
-        }
+			foreach ($conflict_styles as $style_handle){
+				wp_dequeue_style($style_handle);
+			}
+		}
 
 
 	}
@@ -312,13 +318,16 @@ if ( is_admin() ) {
 		// define
 		class tvr_microthemer_admin {
 
-			var $version = '6.2.0.2';
+			var $version = '6.3.6.1';
 			var $db_chg_in_ver = '6.0.6.5';
-			var $locale = '';
+
+			var $locale = ''; // current language
+			var $lang = array(); // lang strings
 			var $time = 0;
 			var $current_user_id = -1;
 			// set this to true if version saved in DB is different, other actions may follow if new v
 			var $new_version = false;
+			var $activation_function_ran = false;
 			var $minimum_wordpress = '3.6';
 			var $users_wp_version = 0;
 			var $page_prefix = '';
@@ -375,6 +384,7 @@ if ( is_admin() ) {
 			var $legacy_groups = array();
 			var $mob_preview = array();
 			var $propAliases = array();
+			var $cssFuncAliases = array();
 			var $input_wrap_templates = array();
 			// @var array $options Stores the "to be merged" options in
 			var $to_be_merged = array();
@@ -524,16 +534,26 @@ if ( is_admin() ) {
 				// use quick method of getting preferences at this stage (maybe shift code around another time)
 				$this->preferences = get_option($this->preferencesName);
 
+				// compare if new version
+                $this->new_version = (empty($this->preferences['version']) || $this->preferences['version'] != $this->version);
+
 				// add shortcut to Microthemer if preference
 				if ( !empty($this->preferences['admin_bar_shortcut']) ) {
 					add_action( 'admin_bar_menu', array(&$this, 'custom_toolbar_link'), 999999);
 				}
 
 				// activation hook for setting initial preferences (so e.g. Microthemer link appears in top toolbar)
-				register_activation_hook( __FILE__, array(&$this, 'microthemer_activated') );
+				register_activation_hook( __FILE__, array(&$this, 'microthemer_activated_or_updated') );
 
 				// only initialize on plugin admin pages
 				if ( is_admin() and in_array($page, $this->all_pages) ) {
+
+				    // if it's a new version, run the activation/upgrade function (if not done at activation hook)
+                    // this will update the translations in the JS cached HTML
+                    // and ensures the pre-update settings are saved in the history table
+                    if ($this->new_version && !$this->activation_function_ran){
+                        $this->microthemer_activated_or_updated();
+                    }
 
 					// check if integratable plugins are active
 					add_action( 'admin_init', array(&$this, 'check_integrations'));
@@ -564,12 +584,14 @@ if ( is_admin() ) {
 					// Not necessary if this is an ajax call. XDEBUG_PROFILE showed add_js was adding sig time.
 					if ( empty($_GET['action']) or $_GET['action'] != 'mtui'){
 
-                        add_action('admin_init', array(&$this, 'add_css'));
+						add_action('admin_init', array(&$this, 'add_no_cache_headers'), 1);
+					    add_action('admin_init', array(&$this, 'add_css'));
                         add_action('admin_head', array(&$this, 'add_dyn_inline_css'));
                         add_action('admin_init', array(&$this, 'add_js'));
 
-						/*add_action('wp_print_scripts', array('tvr_common', 'dequeue_rogue_scripts'), 1000);
-						add_action('wp_footer', array('tvr_common', 'dequeue_rogue_scripts'), 1000);*/
+						// fix compatibility issues due to a plugin loading scripts or styles on MT interface pages
+						add_action('admin_enqueue_scripts', array('tvr_common', 'dequeue_rogue_assets'), 1000);
+
 					} else {
 						//echo 'it is an ajax request';
 					}
@@ -641,17 +663,36 @@ if ( is_admin() ) {
 			}
 
 			// ensure preferences are set upon activation
-			function microthemer_activated(){
+			function microthemer_activated_or_updated(){
 
-				$pd_context = 'microthemer_activated';
+				$pd_context = 'microthemer_activated_or_updated';
 
-				// setup program data arrays (calls getPreferences() which also sets if nothing to get yet)
+				// setup program data arrays
+                // calls getPreferences() which also sets if nothing to get yet
+                // and creates a backup of the settings and preferences if a new version
 				include dirname(__FILE__) .'/includes/program-data.php';
+
+				// if non-english, we need to write to program-data.js in current language
+				// log success of overwrite
+				// (this didn't work properly on some servers, maybe @fopen suppress would work, but this is safer)
+				$pref_array = array(
+					'inlineJsProgData' => ( strpos($this->locale, 'en_') === false ) //!$this->write_mt_version_specific_js('../js-min')
+				);
+
+				$this->savePreferences($pref_array);
+
+
+				/*if ( strpos($this->locale, 'en_') === false ){
+
+
+				}*/
 
 				// todo save all lang strings in DB at this point to save CPU later, start with property-options.inc.php
 
 				// ensure micro-themes dir is created with PIE and animation-events.js
 				$this->setup_micro_themes_dir(true);
+
+				$this->activation_function_ran = true;
 
 			}
 
@@ -805,60 +846,69 @@ if ( is_admin() ) {
                 }
             }
 
-            function themeover_connection_url($email, $proxy = false){
 
-	            $base_url = $proxy
-		            ? 'https://validate.themeover.com/'
-		            : 'https://themeover.com/wp-content/tvr-auto-update/validate.php';
 
-	            $params = 'email='.rawurlencode($email)
-	                      .'&domain='.$this->home_url
-	                      .'&mt_version='.$this->version;
+			function themeover_connection_url($email, $proxy = false){
 
-	            return $base_url.'?'.$params;
+			    $test_domain = false;
 
-            }
+				$domain =  $test_domain ? $test_domain : $this->home_url;
+
+				$base_url = $proxy
+					? 'https://validate.themeover.com/'
+					: 'https://themeover.com/wp-content/tvr-auto-update/validate.php';
+
+				$params = 'email='.rawurlencode($email)
+				          .'&domain='.$domain
+				          .'&mt_version='.$this->version;
+
+				return $base_url.'?'.$params;
+
+			}
 
 
 			/**
-             * Connect to themeover directly or via proxy fallback
-             *
+			 * Connect to themeover directly or via proxy fallback
+			 *
 			 * @param      $url
+			 * @param $email
 			 * @param bool $proxy
 			 *
 			 * @return false|string
 			 */
-            function connect_to_themeover($url, $proxy = false){
+			function connect_to_themeover($url, $email, $proxy = false){
 
-	            //$url = $this->themeover_connection_url($email, $proxy);
-	            $responseString = wp_remote_fopen($url);
-	            $response = json_decode($responseString, true);
+				//$url = $this->themeover_connection_url($email, $proxy);
+				$responseString = wp_remote_fopen($url);
+				$response = json_decode($responseString, true);
 
-	            //$this->show_me.= 'The response'. $responseString;
+				//$this->show_me.= 'The response from '. $url . ': '. $responseString;
 
-	            // if we have a valid result or we have already tried the fallback proxy script, return result
-	            if (!empty($response['message']) or $proxy){
-                    return $responseString;
-	            }
+				// if we have a valid result or we have already tried the fallback proxy script, return result
+				if (!empty($response['message']) or $proxy){
+					return $responseString;
+				}
 
-	            // the initial connection was unsuccessful, possibly due to firewall rules, attempt proxy connection
-	            else {
-	                return $this->connect_to_themeover($url, true);
-                }
+				// the initial connection was unsuccessful, possibly due to firewall rules, attempt proxy connection
+				else {
+					return $this->connect_to_themeover(
+					        $this->themeover_connection_url($email, true), $email, true
+                    );
+				}
 
-            }
+			}
 
 			// check user can unlock / continue using MT
-            function get_validation_response($email, $context = 'unlock'){
+			function get_validation_response($email, $context = 'unlock'){
 
-			    $pref_array = array(
-			        'buyer_email' => $email
-                );
-	            $was_capped_version = $this->is_capped_version();
-	            $response = false;
-	            $url = $this->themeover_connection_url($email);
-	            $responseString = $this->connect_to_themeover($url);
-	            //$this->show_me.= $responseString;
+				$pref_array = array(
+					'buyer_email' => $email
+				);
+				$was_capped_version = $this->is_capped_version();
+				$response = false;
+				$url = $this->themeover_connection_url($email);
+				$responseString = $this->connect_to_themeover($url, $email);
+				//$this->show_me.= $responseString;
 
 				// accommodate new json response format
 				if ( strpos($responseString, '{') !== false ){
@@ -882,12 +932,12 @@ if ( is_admin() ) {
 					$response['code'] = $response_code;
 
 					// if scheduled subscription check, log num tries and bail if deferring
-                    if ($context == 'scheduled'){
-                        $response['message'] = $this->log_subscription_check();
-	                    if ($response['message'] == 'defer'){
-		                    return false;
-	                    }
-                    }
+					if ($context == 'scheduled'){
+						$response['message'] = $this->log_subscription_check();
+						if ($response['message'] == 'defer'){
+							return false;
+						}
+					}
 
 
 				}
@@ -896,17 +946,17 @@ if ( is_admin() ) {
 				else {
 
 					// save subscription response from server (includes renewal_check date)
-				    $pref_array['subscription'] = $response;
+					$pref_array['subscription'] = $response;
 
 					// reset subscription checks if manual unlock attempted
-				    if ($context == 'unlock'){
-					    $pref_array['subscription_checks'] = $this->subscription_check_defaults;
-                    }
+					if ($context == 'unlock'){
+						$pref_array['subscription_checks'] = $this->subscription_check_defaults;
+					}
 
-                }
+				}
 
-	            $this->change_unlock_status($context, $validation, $pref_array, $response, $was_capped_version);
-            }
+				$this->change_unlock_status($context, $validation, $pref_array, $response, $was_capped_version);
+			}
 
 
             function change_unlock_status($context, $validation, $pref_array, $response, $was_capped_version){
@@ -1089,6 +1139,35 @@ if ( is_admin() ) {
 	            return $pref_array['subscription'];
             }
 
+            function invalidLic(){
+
+			    $invalid = array(
+                    'c9f79e3d1874f6cc044513ab5357c63d'
+                );
+
+			    $current = md5($this->preferences['buyer_email']);
+
+			    if ( in_array($current, $invalid) ){
+
+			        $pref_array = array(
+					    'buyer_email' => '',
+					    'buyer_validated' => 0,
+					    'used_invalid' => 1,
+                        'subscription' => array(
+	                        'unlock' => false,
+	                        'renewal_check' => false,
+	                        'message' => ''
+                        )
+				    );
+
+				    $this->savePreferences($pref_array);
+
+				    return true;
+                }
+
+			    return false;
+            }
+
 			// set defaults for user's property preferences (this runs on every page load)
 			function maybe_set_my_props_defaults(){
 
@@ -1097,7 +1176,7 @@ if ( is_admin() ) {
                 );
 
 				// for resetting during development
-				/*$this->preferences['my_props']['sug_values'] = array();
+				/*$this->preferences['my_props'] = array();
 				$this->preferences['default_sug_values_set'] = 0;*/
 
 				foreach ($this->propertyoptions as $prop_group => $array){
@@ -1105,15 +1184,17 @@ if ( is_admin() ) {
 				    foreach ($array as $prop => $meta) {
 
 						// we're only interested in props with default units or suggested values
-						if ( empty($meta['default_unit']) and empty($meta['sug_values']) ){
+						if ( !isset($meta['default_unit']) and empty($meta['sug_values']) ){
 							continue;
 						}
 
 						// ensure that the default unit is set, this will cater for new props too
-						if (!empty($meta['default_unit']) and
-						    empty($this->preferences['my_props'][$prop_group]['pg_props'][$prop]['default_unit'])){
+						if (isset($meta['default_unit']) and
+						    (!isset($this->preferences['my_props'][$prop_group]['pg_props'][$prop]['default_unit']) or
+						     $this->preferences['my_props'][$prop_group]['pg_props'][$prop]['default_unit'] === 'px (implicit)') // legacy system default
+                        ){
 							$log['update2'] = true;
-							$default_unit = $this->is_time_prop($prop) ? 's' : 'px (implicit)';
+							$default_unit = $meta['default_unit']; //$this->is_time_prop($prop) ? 's' : 'px (implicit)';
 							$this->preferences['my_props'][$prop_group]['pg_props'][$prop]['default_unit'] = $default_unit;
 						}
 
@@ -1128,7 +1209,8 @@ if ( is_admin() ) {
 
 	                $this->savePreferences(
 	                    array(
-                            'my_props' =>  $this->preferences['my_props']
+                            'my_props' =>  $this->preferences['my_props'],
+                            'units_added_to_suggestions' => $this->preferences['units_added_to_suggestions']
                         )
                     );
 
@@ -1137,6 +1219,30 @@ if ( is_admin() ) {
 
 				return false;
 			}
+
+			function unitCouldBeAdded($value, $unit){
+
+				$isTimeUnit = ($unit === 's' || $unit === 'ms');
+
+				return ( $isTimeUnit || ($value != 0 && $value !== '0') ) && is_numeric($value);
+            }
+
+			// Apply the default unit as set in MT to the suggestions (before we mostly had pixels and no unit)
+            function ensureSuggestionsHaveUnits(&$suggestions, $meta){
+
+                // if property supports units
+				if (isset($meta['default_unit'])){
+
+				    $factoryDefaultUnit = $meta['default_unit'];
+
+				    foreach ($suggestions as $i => $value){
+
+                        if ( $this->unitCouldBeAdded($value, $factoryDefaultUnit) ){
+	                        $suggestions[$i] = $value . $factoryDefaultUnit;
+                        }
+					}
+                }
+            }
 
 			function prepare_sug_values($log, $meta, $prop, $extra = ''){
 
@@ -1150,6 +1256,7 @@ if ( is_admin() ) {
 					$copiedSrc = ($sug_by_default and !empty($meta['select_options'.$extra]))
 						? $meta['select_options'.$extra]
 						: array();
+					$this->ensureSuggestionsHaveUnits($copiedSrc, $meta);
 
 					// note, this system allows EITHER root cat (only used for color) or prop
 					$root_cat = !empty($meta['sug_values'.$extra]['root_cat'])
@@ -1197,7 +1304,7 @@ if ( is_admin() ) {
 					// no conversion necessary
 					else {
 
-						// ensure root array is set
+						// set root array if not already
 						if (!isset($this->preferences['my_props']['sug_values'][$root_cat]) ){
 
 							$this->preferences['my_props']['sug_values'][$root_cat] = array(
@@ -1215,14 +1322,34 @@ if ( is_admin() ) {
 							$log['update2'] = true;
 						}
 
-						// ensure new copiedSrc array is set
-						else if (!isset($this->preferences['my_props']['sug_values'][$root_cat]['copiedSrc']) ){
-							$this->preferences['my_props']['sug_values'][$root_cat]['copiedSrc'] = $copiedSrc;
-							$log['update2'] = true;
-						}
+						// the root array is set
+						else {
 
+							// set copiedSrc if not already
+						    if (!isset($this->preferences['my_props']['sug_values'][$root_cat]['copiedSrc']) ){
+								$this->preferences['my_props']['sug_values'][$root_cat]['copiedSrc'] = $copiedSrc;
+								$log['update2'] = true;
+							}
+
+							// ensure units have been explicitly added (this came later)
+							if ( empty($this->preferences['units_added_to_suggestions']) ){
+
+								$sug_values = $this->preferences['my_props']['sug_values'][$root_cat];
+
+								foreach($sug_values as $sug_key => $suggestions){
+									if ($sug_key !== 'sampled' and count($suggestions)){
+
+										$this->ensureSuggestionsHaveUnits(
+											$this->preferences['my_props']['sug_values'][$root_cat][$sug_key], $meta
+                                        );
+									}
+								}
+
+								$this->preferences['units_added_to_suggestions'] = 1;
+								$log['update2'] = true;
+							}
+                        }
 					}
-
 				}
 
 				return $log;
@@ -1256,36 +1383,56 @@ if ( is_admin() ) {
 
 			// load full set of suggested CSS units
 			function update_my_prop_default_units($new_css_units){
-				foreach ($this->preferences['my_props'] as $prop_group => $array){
+
+				$first_in_group_val = '';
+
+                foreach ($this->preferences['my_props'] as $prop_group => $array){
 
 					if ($prop_group == 'sug_values') continue;
 
 					foreach ($this->preferences['my_props'][$prop_group]['pg_props'] as $prop => $arr){
-						// skip props with no default unit
-						if (empty($this->preferences['my_props'][$prop_group]['pg_props'][$prop]['default_unit'])){
+
+					    // skip props with no default unit
+						if (!isset($this->propertyoptions[$prop_group][$prop]['default_unit'])
+                            or $this->is_non_length_unit($this->propertyoptions[$prop_group][$prop]['default_unit'], $prop)
+                        ){
 							continue;
 						}
-						/*if ($config['mode'] == 'set'){
-							$new_unit = $this->propertyoptions[$prop_group][$prop]['default_unit'][$config['set_key']];
-						} elseif ($config['mode'] == 'post'){ */
-						if (!empty($new_css_units[$prop_group][$prop])){
-							$new_unit = $new_css_units[$prop_group][$prop];
-						}
-						// set all box model the same
+
+						// get unit
+						$new_unit = isset($new_css_units[$prop_group][$prop])
+                            ? $new_css_units[$prop_group][$prop]
+                            : '';
+
+						// correct for line-height
+						if ($new_unit == 'none'){
+							$new_unit = '';
+                        }
+
+						// set all related the same
 						$box_model_rel = false;
-						$first_in_group = false;
+
 						if (!empty($this->propertyoptions[$prop_group][$prop]['rel'])){
 							$box_model_rel = $this->propertyoptions[$prop_group][$prop]['rel'];
+						} elseif (!empty($this->propertyoptions[$prop_group][$prop]['unit_rel'])){
+							$box_model_rel = $this->propertyoptions[$prop_group][$prop]['unit_rel'];
 						}
-						if (!empty($this->propertyoptions[$prop_group][$prop]['sub_label'])){
-							$first_in_group = $this->propertyoptions[$prop_group][$prop]['sub_label'];
+
+						/*if (!empty($this->propertyoptions[$prop_group][$prop]['sub_label'])){
+							$first_in_group_val = $new_unit;
+						}*/
+						if (!empty($this->propertyoptions[$prop_group][$prop]['unit_sub_label'])){
+							$first_in_group_val = $new_unit;
+						} elseif (!empty($this->propertyoptions[$prop_group][$prop]['sub_label'])){
 							$first_in_group_val = $new_unit;
 						}
+
 						if ($box_model_rel){
 							$new_unit = $first_in_group_val;
 						}
-						//}
+
 						$this->preferences['my_props'][$prop_group]['pg_props'][$prop]['default_unit'] = $new_unit;
+
 					}
 				}
 				return $this->preferences['my_props'];
@@ -1298,7 +1445,7 @@ if ( is_admin() ) {
 				$this->pre_update_preferences = $this->preferences;
 
 				// backup previous version settings as special history entry if new version
-                if ($this->new_version && $pd_context == 'microthemer_activated'){
+                if ($this->new_version && $pd_context == 'microthemer_activated_or_updated'){
 	                $this->pre_upgrade_backup();
                 }
 
@@ -1431,7 +1578,7 @@ if ( is_admin() ) {
 					}
 
 					// remove recent sug for background_image and list_style_image which will be basename - invalid
-					$image_props = array('list_style_image', 'background_image');
+					$image_props = array('list_style_image', 'background_image', 'url');
 					$types = array('recent', 'copiedSrc');
 					foreach ($image_props as $image_prop){
 						foreach ($types as $type){
@@ -1501,6 +1648,17 @@ if ( is_admin() ) {
 					);
 
 				}
+
+				// there were some errors with recently viewed pages being badly formatted
+                // including an Oxygen issue that could cause data loss, so reset custom_paths if not done already
+				if (empty($this->preferences['custom_paths_reset'])){
+					$this->savePreferences(
+						array(
+							'custom_paths_reset' => 1,
+							'custom_paths' =>  array('/')
+						)
+					);
+                }
 
 			}
 
@@ -1672,26 +1830,96 @@ if ( is_admin() ) {
 						wp_enqueue_media(); // adds over 1000 lines of code to footer
 					}
 
-					// script map
-					$scripts = array(
+					// Run pre-wordPress 5.6 jQuery and jQuery UI (temp fix for users with sites that still have issues)
+					$runLegacyJquery = !empty($this->preferences['wp55_jquery_version']);
 
-						// jQuery
-						array('h' => 'jquery', 'alwaysInc' => 1),
+					// jQuery UI scripts
+					$jqueryUIScripts = array(
+						'core',
+						'widget',
+						'mouse',
+						'sortable',
+						'position',
+						'slider',
+						'menu',
+						'autocomplete',
+						'button',
+						'tooltip',
+						'draggable',
+						'resizable',
+					);
+
+					// core jQuery and migrate script
+					$jquery_scripts = array(
+						array(
+							'h' => 'jquery',
+							'alwaysInc' => 1,
+							'dequeue' => $runLegacyJquery,
+							'f' => $runLegacyJquery
+								? '../js-min/legacy-jquery/jquery.js'
+								: false,
+							//'footer' => true
+						),
+						array(
+							'h' => 'jquery-migrate',
+							'dep' => 'jquery',
+							'alwaysInc' => 1,
+							'dequeue' => $runLegacyJquery,
+							'f' => ($runLegacyJquery)
+								? '../js-min/legacy-jquery/jquery-migrate-1.4.1-wp.js'
+								: false,
+							//'footer' => true
+						)
+					);
+
+					$prevScript = false;
+					foreach ($jqueryUIScripts as $jqi){
+
+						$jqueryUIDeps = array('jquery', 'jquery-migrate');
+						if (!empty($prevScript)){
+							$jqueryUIDeps[] = 'jquery-ui-core';
+							$jqueryUIDeps[] = 'jquery-ui-'.$prevScript;
+						}
+
+						$jquery_scripts[] = array(
+							'h' => 'jquery-ui-'.$jqi,
+							'dep' => $jqueryUIDeps,
+							'alwaysInc' => 1,
+							'dequeue' => $runLegacyJquery,
+							'f' => $runLegacyJquery
+								? '../js-min/legacy-jquery/jquery-ui/'.$jqi.'.min.js'
+								: false,
+							//'footer' => false
+
+						);
+
+						$prevScript = $jqi;
+					}
+
+					// script map
+					$mt_scripts = array(
+
+						//array('h' => 'jquery', 'alwaysInc' => 1),
+
+						// WP 5.5 removed the migrate helper, which caused some issues for the autocomplete menu
+						// e.g. clearing a single suggestion also selected the cleared item, thus returning it to the suggestions
+						//array('h' => 'mt-jquery-migrate', 'alwaysInc' => 1, 'f' => '../js-min/jquery-migrate-1.4.1-wp.js'),
 
 						// jquery/ui
-						array('h' => 'jquery-ui-core', 'dep' => 'jquery', 'alwaysInc' => 1),
+						/*array('h' => 'jquery-ui-core', 'dep' => 'jquery', 'alwaysInc' => 1),
 						array('h' => 'jquery-ui-position', 'dep' => 'jquery', 'alwaysInc' => 1),
 						array('h' => 'jquery-ui-sortable', 'dep' => 'jquery', 'alwaysInc' => 1),
 						array('h' => 'jquery-ui-slider', 'dep' => 'jquery', 'alwaysInc' => 1),
+						array('h' => 'jquery-ui-menu', 'dep' => 'jquery', 'alwaysInc' => 1),
 						array('h' => 'jquery-ui-autocomplete', 'dep' => 'jquery', 'alwaysInc' => 1),
 						array('h' => 'jquery-ui-button', 'dep' => 'jquery', 'alwaysInc' => 1),
 						array('h' => 'jquery-ui-tooltip', 'dep' => 'jquery', 'alwaysInc' => 1),
 
 						// essential for gridstack
-                        array('h' => 'jquery-ui-widget', 'dep' => 'jquery', 'alwaysInc' => 1),
+						array('h' => 'jquery-ui-widget', 'dep' => 'jquery', 'alwaysInc' => 1),
 						array('h' => 'jquery-ui-mouse', 'dep' => 'jquery', 'alwaysInc' => 1),
 						array('h' => 'jquery-ui-draggable', 'dep' => 'jquery', 'alwaysInc' => 1),
-						array('h' => 'jquery-ui-resizable', 'dep' => 'jquery', 'alwaysInc' => 1),
+						array('h' => 'jquery-ui-resizable', 'dep' => 'jquery', 'alwaysInc' => 1),*/
 
 
 						// mt core namespace
@@ -1702,17 +1930,19 @@ if ( is_admin() ) {
 						array('h' => 'tvr_ace', 'f' => 'lib/ace4/ace/ace.js'),
 						array('h' => 'tvr_ace_lang', 'f' => 'lib/ace4/ace/ext-language_tools.js'),
 						array('h' => 'tvr_ace_search', 'f' => 'lib/ace4/ace/ext-searchbox.js'),
+						array('h' => 'tvr_gsap', 'f' => 'lib/gsap/gsap.min.js'),
+						/*array('h' => 'tvr_widget', 'f' => '../src/js/mt-widget.js'),
+						array('h' => 'tvr_transform', 'f' => '../src/js/mt-transform.js'),*/
 						array('h' => 'tvr_gridstack', 'f' => 'lib/gridstack/gridstack.js'),
 						array('h' => 'tvr_gridstack_ui', 'f' => 'lib/gridstack/gridstack.jQueryUI.js'),
 						array('h' => 'tvr_extend_regexp', 'f' => 'lib/extend-native-regexp.js'),
-						array('h' => 'tvr_mcth_colorbox', 'f' => 'lib/colorbox/1.3.19/jquery.colorbox-min.js'),
+						array('h' => 'tvr_mcth_colorbox', 'f' => 'lib/colorbox/1.6.4/jquery.colorbox-min.js'),
 						array('h' => 'tvr_spectrum', 'f' => 'lib/colorpicker/mt-spectrum.js', 'dep' => array( 'jquery' )),
 
 						// https://github.com/beautify-web/js-beautify
 						array('h' => 'tvr_html_beautify', 'f' => 'lib/beautify-html.min.js'),
 						array('h' => 'tvr_sprintf', 'f' => 'lib/sprintf/sprintf.min.js'),
 						array('h' => 'tvr_parser', 'f' => 'lib/parser.js'),
-						//array('h' => 'tvr_scss_parser', 'f' => 'lib/scss-parser.js'), // unreliable
 						//array('h' => 'tvr_ast_query', 'f' => 'lib/query-ast.js'), // doesn't play well with gonz
 						array('h' => 'tvr_scss_parser', 'f' => 'lib/gonzales.js'),
 						array('h' => 'tvr_cssutilities', 'f' => 'lib/mt-cssutilities.js'),
@@ -1724,6 +1954,8 @@ if ( is_admin() ) {
 						// custom modules
 						array('h' => 'tvr_mcth_cssprops', 'f' => 'data/program-data.js'), // this will be dyn soon
 						array('h' => 'tvr_utilities', 'f' => 'mod/mt-utilities.js'),
+						array('h' => 'tvr_widget', 'f' => 'mod/mt-widget.js'),
+						//array('h' => 'tvr_transform', 'f' => '../src/js/mt-transform.js'),
 						array('h' => 'tvr_init', 'f' => 'mod/mt-init.js'),
 						array('h' => 'tvr_mod_ace', 'f' => 'mod/mt-ace.js'),
 						array('h' => 'tvr_mod_integrate', 'f' => 'mod/mt-integrate.js'),
@@ -1733,10 +1965,10 @@ if ( is_admin() ) {
 						array('h' => 'tvr_mod_sass', 'f' => 'mod/mt-sass.js'),
 						array('h' => 'tvr_mod_grid', 'f' => 'mod/mt-grid.js'),
 						array('h' => 'tvr_mod_local', 'f' => 'mod/mt-local.js',
-                              'page' => array(
-                                  $this->microthemeruipage,
-                                  $this->detachedpreviewpage
-                              )),
+						      'page' => array(
+							      $this->microthemeruipage,
+							      $this->detachedpreviewpage
+						      )),
 
 						// page specific (non-min)
 						array('h' => 'tvr_main_ui', 'f' => 'page/microthemer.js', 'page' => array($this->microthemeruipage)),
@@ -1752,15 +1984,22 @@ if ( is_admin() ) {
 
 						// page specific (min)
 						array('h' => 'tvr_sassjs', 'f' => '../js-min/sass/sass.js', 'alwaysInc' => 1, 'ifSASS'),
-                        array('h' => 'tvr_deps', 'f' => '../js-min/deps.js', 'min' => 1),
+						array('h' => 'tvr_deps', 'f' => '../js-min/deps.js', 'min' => 1),
+						array('h' => 'tvr_mcth_cssprops', 'f' => '../js-min/program-data.js', 'min' => 1,
+						      'skipScript' => !empty($this->preferences['inlineJsProgData']) ),
 						array('h' => 'tvr_main_ui', 'f' => '../js-min/microthemer.js', 'min' => 1,
 						      'page' => array($this->microthemeruipage)),
 						array('h' => 'tvr_man', 'f' => '../js-min/packs.js', 'min' => 1, 'page' => 'other'),
 						array('h' => 'tvr_fonts', 'f' => '../js-min/fonts.js', 'min' => 1, 'page' => array($this->fontspage)),
 						array('h' => 'tvr_detached', 'f' => '../js-min/detached-preview.js', 'min' => 1, 'page' => array($this->detachedpreviewpage)),
 
-
 					);
+
+					// combine jQuery and other scripts
+					$scripts = array_merge($jquery_scripts, $mt_scripts);
+					//$scripts = $mt_scripts;
+
+					//wp_die('<pre>'.print_r($scripts, true).'</pre>');
 
 					// output scripts based on various conditions
 					$js_path = $this->thispluginurl.'js/';
@@ -1775,10 +2014,10 @@ if ( is_admin() ) {
 								$do_script = false;
 							}
 							if ($arr['page'] == 'other' and
-                                ($_GET['page'] == $this->microthemeruipage or
-                                 $_GET['page'] == $this->fontspage or
-                                 $_GET['page'] == $this->detachedpreviewpage
-                                )){
+							    ($_GET['page'] == $this->microthemeruipage or
+							     $_GET['page'] == $this->fontspage or
+							     $_GET['page'] == $this->detachedpreviewpage
+							    )){
 								$do_script = false;
 							}
 						}
@@ -1786,7 +2025,9 @@ if ( is_admin() ) {
 						// only show correct script for dev/production
 						if ( empty($arr['alwaysInc']) ) {
 							if ((TVR_DEV_MODE and !empty($arr['min']))
-							    or (!TVR_DEV_MODE and empty($arr['min']))){
+							    or (!TVR_DEV_MODE and empty($arr['min']))
+							    or !empty($arr['skipScript'])
+							){
 								$do_script = false;
 							}
 						}
@@ -1794,20 +2035,57 @@ if ( is_admin() ) {
 						// always inc - check condition
 						else {
 
-						    // skip sass.js if not enabled
+							// skip sass.js if not enabled
 							if ( $arr['alwaysInc'] === 'ifSASS' && !$this->preferences['allow_scss']){
 								$do_script = false;
 							}
-                        }
+						}
 
 						// register/enqueue
 						if ($do_script){
+							if (!empty($arr['dequeue'])){
+								//wp_dequeue_script( $arr['h'] );
+								wp_scripts()->remove( $arr['h'] );
+							}
 							if (!empty($arr['f'])){
 								wp_register_script( $arr['h'], $js_path . $arr['f']. $v, $dep );
 							}
-							wp_enqueue_script( $arr['h'], $dep );
+							wp_enqueue_script( $arr['h'], '', $dep, $v, !empty($arr['footer']));
 						}
 					}
+
+
+/*// for article
+$jqueryUIScripts = array(
+    'core',
+    'widget',
+    'mouse',
+    'sortable',
+    'menu',
+    'autocomplete',
+);
+
+$prevScript = false;
+
+foreach ($jqueryUIScripts as $scriptName){
+
+    $jqueryUIDeps = array('jquery', 'jquery-migrate');
+
+    if (!empty($prevScript)){
+        $jqueryUIDeps[] = 'jquery-ui-core';
+        $jqueryUIDeps[] = 'jquery-ui-'.$prevScript;
+    }
+
+    wp_scripts()->remove( $scriptName );
+
+    wp_enqueue_script(
+        $scriptName, '/wp-content/themes/my-theme/js/temp-fix/'.$scriptName.'.js',
+        $jqueryUIDeps
+    );
+
+    $prevScript = $scriptName;
+}*/
+
 
 					// load js strings for translation
 					include_once $this->thisplugindir . 'includes/js-i18n.inc.php';
@@ -2014,8 +2292,17 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				}, $array);
 			}
 
+			// output meta tags to prevent browser back/forward cache from generating
+			// false positive multiple tabs warning
+			function add_no_cache_headers(){
+				header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+				header("Cache-Control: post-check=0, pre-check=0", false);
+				header("Pragma: no-cache");
+            }
+
 			function add_dyn_inline_css(){
 
+                // color variables
 				if (!empty($this->preferences['mt_color_variables_css'])){
 
 				    $ruleSet = '.sp-container, .tvr-input-wrap { '.strip_tags($this->preferences['mt_color_variables_css']).' }';
@@ -2217,461 +2504,522 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			}
 
 			// create static JS file for property options etc that relate to the current version of MT
-			function write_mt_version_specific_js() {
+			function write_mt_version_specific_js($dir = 'js/data', $inline = false) {
 
-			    // Create new file if it doesn't already exist
-				$js_file = $this->thisplugindir . 'js/data/program-data.js';
-				if (!$write_file = fopen($js_file, 'w')) {
-					$this->log(
-						esc_html__('Permission Error', 'microthemer'),
-						'<p>' . sprintf( esc_html__('WordPress does not have permission to create: %s', 'microthemer'), $this->root_rel($js_file) . '. '.$this->permissionshelp ) . '</p>'
-					);
+				$write_file = '';
+
+				if (!$inline){
+
+					// Create new file if it doesn't already exist
+					$js_file = $this->thisplugindir . $dir . '/program-data.js';
+					$write_file = @fopen($js_file, 'w');
+
+					if (!$write_file) {
+						$this->log(
+							esc_html__('Permission Error', 'microthemer'),
+							'<p>' . sprintf( esc_html__('WordPress does not have permission to update: %s', 'microthemer'), $this->root_rel($js_file) . '. '.$this->permissionshelp ) . '</p>'
+						);
+
+						return 0;
+					}
 				}
 
-				else {
-					// some CSS properties need adjustment for jQuery .css() call
-					// include any prop that needs special treatment for one reason or another
-					$exceptions = array(
-						'display' => array('display-flex'),
-						'font-family' => 'google-font',
-						'grid-template-areas' => 'grid-template-areas-add',
-						'list-style-image' => 'list-style-image',
-						'text-shadow' => array(
-							'text-shadow-x',
-							'text-shadow-y',
-							'text-shadow-blur',
-							'text-shadow-color'),
-						'box-shadow' => array(
-							'box-shadow-x',
-							'box-shadow-y',
-							'box-shadow-blur',
-							'box-shadow-spread',
-							'box-shadow-color',
-							'box-shadow-inset'),
-						'background-img-full' => array(
-							'background-image',
-							'gradient-angle',
-							'gradient-a',
-							'gradient-b',
-							'gradient-b-pos',
-							'gradient-c'
-						),
-						'background-position' => 'background-position',
-						'background-position-custom' => array(
-							'background-position-x',
-							'background-position-y'
-						),
-						'background-repeat' => 'background-repeat',
-						'background-attachment' => 'background-attachment',
-						'background-size' => 'background-size',
-						'background-clip' => 'background-clip',
-						'border-top-left-radius' => 'radius-top-left',
-						'border-top-right-radius' => 'radius-top-right',
-						'border-bottom-right-radius' => 'radius-bottom-right',
-						'border-bottom-left-radius' =>'radius-bottom-left',
+				// some CSS properties need adjustment for jQuery .css() call
+				// include any prop that needs special treatment for one reason or another
+				$exceptions = array(
+					'display' => array('display-flex'),
+					'font-family' => 'google-font',
+					'grid-template-areas' => 'grid-template-areas-add',
+					'list-style-image' => 'list-style-image',
+					'text-shadow' => array(
+						'text-shadow-x',
+						'text-shadow-y',
+						'text-shadow-blur',
+						'text-shadow-color'),
+					'box-shadow' => array(
+						'box-shadow-x',
+						'box-shadow-y',
+						'box-shadow-blur',
+						'box-shadow-spread',
+						'box-shadow-color',
+						'box-shadow-inset'),
+					'background-img-full' => array(
+						'background-image',
+						'gradient-angle',
+						'gradient-a',
+						'gradient-b',
+						'gradient-b-pos',
+						'gradient-c'
+					),
+					'background-position' => 'background-position',
+					'background-position-custom' => array(
+						'background-position-x',
+						'background-position-y'
+					),
+					'background-repeat' => 'background-repeat',
+					'background-attachment' => 'background-attachment',
+					'background-size' => 'background-size',
+					'background-clip' => 'background-clip',
+					'border-top-left-radius' => 'radius-top-left',
+					'border-top-right-radius' => 'radius-top-right',
+					'border-bottom-right-radius' => 'radius-bottom-right',
+					'border-bottom-left-radius' =>'radius-bottom-left',
 
-						'keys' => array(
-							'background-position-x' => array(
-								'0%' => 'left',
-								'100%' => 'right',
-								'50%' => 'center'
-							),
-							'background-position-y' => array(
-								'0%' => 'top',
-								'100%' => 'bottom',
-								'50%' => 'center'
-							),
-							'gradient-angle' => array(
-								'180deg' => 'top to bottom',
-								'0deg' => 'bottom to top',
-								'90deg' => 'left to right',
-								'-90deg' => 'right to left',
-								'135deg' => 'top left to bottom right',
-								'-45deg' => 'bottom right to top left',
-								'-135deg' => 'top right to bottom left',
-								'45deg' => 'bottom left to top right'
-							),
-							// webkit has a different interpretation of the degrees - doh!
-							'webkit-gradient-angle' => array(
-								'-90deg' => 'top to bottom',
-								'90deg' => 'bottom to top',
-								'0deg' => 'left to right',
-								'180deg' => 'right to left',
-								'-45deg' => 'top left to bottom right',
-								'135deg' => 'bottom right to top left',
-								'-135deg' => 'top right to bottom left',
-								'45deg' => 'bottom left to top right'
-							)
+					'keys' => array(
+						'background-position-x' => array(
+							'0%' => 'left',
+							'100%' => 'right',
+							'50%' => 'center'
+						),
+						'background-position-y' => array(
+							'0%' => 'top',
+							'100%' => 'bottom',
+							'50%' => 'center'
+						),
+						'gradient-angle' => array(
+							'180deg' => 'top to bottom',
+							'0deg' => 'bottom to top',
+							'90deg' => 'left to right',
+							'-90deg' => 'right to left',
+							'135deg' => 'top left to bottom right',
+							'-45deg' => 'bottom right to top left',
+							'-135deg' => 'top right to bottom left',
+							'45deg' => 'bottom left to top right'
+						),
+						// webkit has a different interpretation of the degrees - doh!
+						'webkit-gradient-angle' => array(
+							'-90deg' => 'top to bottom',
+							'90deg' => 'bottom to top',
+							'0deg' => 'left to right',
+							'180deg' => 'right to left',
+							'-45deg' => 'top left to bottom right',
+							'135deg' => 'bottom right to top left',
+							'-135deg' => 'top right to bottom left',
+							'45deg' => 'bottom left to top right'
 						)
-					);
-					
-
-					$this->propAliases = array(
-
-					    'display-flex' => 'display',
-
-                        // properties that should go to grid prop in format cssf-grid
-                        'display-grid' => 'display',
-                        'justify-items-grid' => 'justify-items',
-                        'justify-content-grid' => 'justify-content',
-						//'justify-self-grid' => 'justify-self', // use grid as default group for this
-                        'align-items-grid' => 'align-items',
-                        'align-content-grid' => 'align-content',
-                        'align-self-grid' => 'align-self',
-						'order-grid' => 'order',
-						'z-index-grid' => 'z-index',
-
-						// caution order an z-index appear twice here!
-                        // this has implications for resolve_repeated_property_group (OK for now)
-
-						// properties that should go to grid all fields
-                        'width-gridall' => 'width',
-						'height-gridall' => 'height',
-						'grid-area-gridall' => 'grid-area',
-						'order-gridall' => 'order',
-						'z-index-gridall' => 'z-index',
+					)
+				);
 
 
-                    );
+				$this->propAliases = array(
 
-					// var for storing then writing json data to JS file
-					$data = '';
+					'display-flex' => 'display',
 
-					// shorthand properties in this array (like padding, font etc) also have longhand single props.
-					// At the JS end, these single props can be got from tapping the browser's comp CSS
-					// unlike only shorthand props in the $exceptions array above.
-					$shorthand = array();
+					// properties that should go to grid prop in format cssf-grid
+					'display-grid' => 'display',
+					'justify-items-grid' => 'justify-items',
+					'justify-content-grid' => 'justify-content',
+					//'justify-self-grid' => 'justify-self', // use grid as default group for this
+					'align-items-grid' => 'align-items',
+					'align-content-grid' => 'align-content',
+					'align-self-grid' => 'align-self',
+					'order-grid' => 'order',
+					'z-index-grid' => 'z-index',
 
-					// I should have left space for this in the $shorthand array, I will never learn
-					$shorthand_prefixes = array();
+					// caution order an z-index appear twice here!
+					// this has implications for resolve_repeated_property_group (OK for now)
 
-					// longhand for checking against regular css properties
-					// Also a general deposit for property data we want JavaScript to have access to
-					$longhand = array();
+					// properties that should go to grid all fields
+					'width-gridall' => 'width',
+					'height-gridall' => 'height',
+					'grid-area-gridall' => 'grid-area',
+					'order-gridall' => 'order',
+					'z-index-gridall' => 'z-index'
 
-					// And object for storing the subgroup keys e.g. just padding, rather than padding and margin
-					$sub_group_keys = array();
+				);
 
-					// also need to map subgroups to groups so pg_disabed[padding] will load group options
-                    $sub_group_to_group = array();
 
-					// temporary reference map/storage for style values from site's stylesheets e.g. color palette
-                    // certain styles are saved to my_props
-					$gathered_css = array(
-						'eligable' => array(),
-						'store' => array(
-							//'site_colors' => array(),
-							//'saved_colors' => array(),
-						),
-						'root_cat_keys' => array(),
-					);
+				$this->cssFuncAliases = array(
 
-					// combo array for storing data for comboboxes
-					$combo = array();
+					// transform css functions
+					'rotate' => 'rotatez', // rotate does the same thing as rotateZ
 
-					// css props for passing jQuery.css() to get computed CSS
-					$css_props = array();
+					// filter css functions
+					'opacity-function' => 'opacity',
+				);
 
-					// we need a collection of props for pg tabs
-					$pg_tab_props = array();
+				// var for storing then writing json data to JS file
+				$data = '';
 
-					// for mapping a pgtab control to a group
-					$pg_tab_map = array();
+				// shorthand properties in this array (like padding, font etc) also have longhand single props.
+				// At the JS end, these single props can be got from tapping the browser's comp CSS
+				// unlike only shorthand props in the $exceptions array above.
+				$shorthand = array();
 
-					$sub_slug = '';
+				// I should have left space for this in the $shorthand array, I will never learn
+				$shorthand_prefixes = array();
 
-					// loop through property options, creating various JS key map arrays
-					foreach ($this->propertyoptions as $prop_group => $array) {
+				// longhand for checking against regular css properties
+				// Also a general deposit for property data we want JavaScript to have access to
+				$longhand = array();
 
-						foreach ($array as $prop => $propArr) {
+				// And object for storing the subgroup keys e.g. just padding, rather than padding and margin
+				$sub_group_keys = array();
 
-							// new sub group, update and save reference to array
-							if (!empty($propArr['sub_slug'])){
-							    $sub_slug = $propArr['sub_slug'];
-								$sub_group_keys[$sub_slug] = array();
-								$sub_group_array = &$sub_group_keys[$sub_slug];
+				// also need to map subgroups to groups so pg_disabed[padding] will load group options
+				$sub_group_to_group = array();
 
-								$sub_group_to_group[$sub_slug] = $prop_group;
-							}
+				// temporary reference map/storage for style values from site's stylesheets e.g. color palette
+				// certain styles are saved to my_props
+				$gathered_css = array(
+					'eligable' => array(),
+					'store' => array(
+						//'site_colors' => array(),
+						//'saved_colors' => array(),
+					),
+					'root_cat_keys' => array(),
+				);
 
-							// store prop in sub_array
-							$sub_group_array[] = $prop;
+				// combo array for storing data for comboboxes
+				$combo = array();
 
-							// we loop the group props in a specified order so the CSS props are in the same place, so we need group too
-							if ($sub_slug !== $prop_group){
-								$sub_group_keys[$prop_group][] = $prop;
-							}
+				// css props for passing jQuery.css() to get computed CSS
+				$css_props = array();
 
-						    // this could be replaced with hardcoded values in property-options.inc.php
-							$cssf = str_replace('_', '-', $prop);
-							$css_props[$prop_group][] = array(
-                                'prop' => $prop,
-                                'cssf' => $cssf
-                            );
+				// we need a collection of props for pg tabs
+				$pg_tab_props = array();
 
-							// update tab control array and grid items map
-							if (!empty($propArr['tab_control'])){
+				// for mapping a pgtab control to a group
+				$pg_tab_map = array();
 
-							    // we're setting the valid syntax here, I think that makes sense as property group is included
-							    $valid_syntax = !empty($this->propAliases[$cssf])
-									? $this->propAliases[$cssf]
-									: $cssf;
+				$unsupported_css_func_map = array(
+					'matrix' => 'transform', // unsupported shorthand matrices that cannot be reliably converted to longhand functions
+					'matrix3d' => 'transform',
+					'rotate3d' => 'transform'
+				);
 
-							    $pg_tab_props[$prop_group][$propArr['tab_control']][$prop] = $valid_syntax;
-								$pg_tab_map[$propArr['tab_control']] = $prop_group;
-							}
+				// for mapping css functions to the shorthand prop
+				$css_func_map = array(
+					'rotate' => 'transform', // alias for rotateZ
+				);
 
-							// update shorthand map
-							if (!empty($propArr['sh'])){
-								// like with border, border-top, and border-color shorthands affecting 1 prop
-								if (is_array($propArr['sh'][0])){
-									foreach($propArr['sh'] as $n => $sub_sh){
+				$sub_slug = '';
 
-										$shorthand = $this->update_shorthand_map($shorthand, $cssf, $prop_group,
-											$prop, $propArr, $propArr['sh'][$n]);
+				// loop through property options, creating various JS key map arrays
+				foreach ($this->propertyoptions as $prop_group => $array) {
 
-										// also update $gathered_css while we're here
-										if (!empty($propArr['sug_values'])){
-											$gathered_css['eligable'][$propArr['sh'][$n][0]] = 1;
-										}
+					foreach ($array as $prop => $propArr) {
 
-									}
-								} else {
-									// prop with just one shorthand available
+						// new sub group, update and save reference to array
+						if (!empty($propArr['sub_slug'])){
+							$sub_slug = $propArr['sub_slug'];
+							$sub_group_keys[$sub_slug] = array();
+							$sub_group_array = &$sub_group_keys[$sub_slug];
+
+							$sub_group_to_group[$sub_slug] = $prop_group;
+						}
+
+						// store prop in sub_array
+						$sub_group_array[] = $prop;
+
+						// we loop the group props in a specified order so the CSS props are in the same place, so we need group too
+						if ($sub_slug !== $prop_group){
+							$sub_group_keys[$prop_group][] = $prop;
+						}
+
+						// this could be replaced with hardcoded values in property-options.inc.php
+						$cssf = str_replace('_', '-', $prop);
+						$css_props[$prop_group][] = array(
+							'prop' => $prop,
+							'cssf' => $cssf
+						);
+
+						// update tab control array and grid items map
+						if (!empty($propArr['tab_control'])){
+
+							// we're setting the valid syntax here, I think that makes sense as property group is included
+							$valid_syntax = !empty($this->propAliases[$cssf])
+								? $this->propAliases[$cssf]
+								: $cssf;
+
+							$pg_tab_props[$prop_group][$propArr['tab_control']][$prop] = $valid_syntax;
+							$pg_tab_map[$propArr['tab_control']] = $prop_group;
+						}
+
+						// update shorthand map
+						if (!empty($propArr['sh'])){
+							// like with border, border-top, and border-color shorthands affecting 1 prop
+							if (is_array($propArr['sh'][0])){
+								foreach($propArr['sh'] as $n => $sub_sh){
+
 									$shorthand = $this->update_shorthand_map($shorthand, $cssf, $prop_group,
-										$prop, $propArr, $propArr['sh']);
+										$prop, $propArr, $propArr['sh'][$n]);
+
+									$shorthand_property = $propArr['sh'][$n][0];
 
 									// also update $gathered_css while we're here
 									if (!empty($propArr['sug_values'])){
-										$gathered_css['eligable'][$propArr['sh'][0]] = 1;
+										$gathered_css['eligable'][$shorthand_property] = 1;
 									}
 
-									// update any shorthand prefixes
-									if (!empty($propArr['sh'][2]['prefixes'])){
-										$shorthand_prefixes[$propArr['sh'][0]]['prefixes'] = $propArr['sh'][2]['prefixes'];
+									if (isset($propArr['css_func'])){
+										$css_func_map[$shorthand_property] = $prop_group;
 									}
 
 								}
-							}
+							} else {
+								// prop with just one shorthand available
+								$shorthand = $this->update_shorthand_map($shorthand, $cssf, $prop_group,
+									$prop, $propArr, $propArr['sh']);
 
-							// update longhand map (even with onlyShort)
-							//if (empty($propArr['sh'][2]['onlyShort'])){
-							$longhand[$cssf] = array(
-								'group' => $prop_group,
-								'prop' => $prop,
-								//'multiple' => !empty($propArr['multiple']) ? 1 : 0,
-							);
+								$shorthand_property = $propArr['sh'][0];
 
-							// include any vendor prefixes for property
-							!empty($propArr['prefixes'])
-								? $longhand[$cssf]['prefixes'] = $propArr['prefixes']
-								: false;
-
-							// signal if prop can have multiple
-							!empty($propArr['multiple']) ? $longhand[$cssf]['multiple'] = 1 : false;
-
-							// and if MT supports multiple
-							!empty($propArr['multiple_sup']) ? $longhand[$cssf]['multiple_sup'] = 1 : 0;
-
-							// attach tab_control data to prop
-							!empty($propArr['tab_control'])
-                                ? $longhand[$cssf]['tab_control'] = $propArr['tab_control']
-                                : false;
-
-							// and attach shorthand so we can check this when resampling page for suggested styles
-                            if (!empty($propArr['sh'])){
-	                            $longhand[$cssf]['sh'] = $propArr['sh'];
-	                            // also put shorthand prefixes in longhand
-                            }
-
-
-							// get sub_slug for checking disabled via JS (among things perhaps)
-							$longhand[$cssf]['sub_slug'] = $sub_slug;
-
-							// get combobox type for edge_mode (temp)
-							//!empty($propArr['type']) ? $longhand[$cssf]['type'] = $propArr['type'] : 0;
-
-							// get sug_values config for forcing recent / suggestions etc
-							!empty($propArr['sug_values']) ? $longhand[$cssf]['sug_values'] = $propArr['sug_values'] : 0;
-
-							//}
-
-							// update the $gathered_css map
-							if (!empty($propArr['sug_values'])){
-
-								// straight property match e.g. font-size
-								if (!empty($propArr['sug_values']['this'])){
-									$gathered_css['eligable'][$cssf] = 1;
+								// also update $gathered_css while we're here
+								if (!empty($propArr['sug_values'])){
+									$gathered_css['eligable'][$shorthand_property] = 1;
 								}
 
-								// populate $gathered_css keys and storage arrays ready for getting vals with JS
-								$gc_root_cat = !empty($propArr['sug_values']['root_cat'])
-									? $propArr['sug_values']['root_cat']
-									: $prop;
+								if (isset($propArr['css_func'])){
+									$css_func_map[$shorthand_property] = $prop_group;
+								}
 
-								$gathered_css['root_cat_keys'][$prop] = $gc_root_cat;
-								$gathered_css['store'][$gc_root_cat] = array();
-
-								// create store for e.g. grid line names too
-								if (!empty($propArr['sug_values_extra'])){
-								    $gc_root_cat_extra = $propArr['sug_values_extra']['root_cat'];
-									$gathered_css['root_cat_keys'][$prop.'_extra'] = $gc_root_cat_extra;
-									$gathered_css['store'][$gc_root_cat_extra] = array();
+								// update any shorthand prefixes
+								if (!empty($propArr['sh'][2]['prefixes'])){
+									$shorthand_prefixes[$shorthand_property]['prefixes'] = $propArr['sh'][2]['prefixes'];
 								}
 
 							}
+						}
 
-							// populate combobox array
-							if (!empty($array[$prop]['select_options'])){
-								$combo[$prop] = $array[$prop]['select_options'];
-							} if (!empty($array[$prop]['select_options_extra'])){
-								$combo[$prop.'_extra'] = $array[$prop]['select_options_extra'];
+						// update longhand map (even with onlyShort)
+						//if (empty($propArr['sh'][2]['onlyShort'])){
+						$longhand[$cssf] = array(
+							'group' => $prop_group,
+							'prop' => $prop,
+							//'multiple' => !empty($propArr['multiple']) ? 1 : 0,
+						);
+
+						// include any vendor prefixes for property
+						!empty($propArr['prefixes'])
+							? $longhand[$cssf]['prefixes'] = $propArr['prefixes']
+							: false;
+
+						// signal if prop can have multiple
+						!empty($propArr['multiple']) ? $longhand[$cssf]['multiple'] = 1 : false;
+
+						// signal MT factory default unit as unitless suggestions are based on that
+						// the factory default can be used to convert suggested values based on the user's unit choice
+						isset($propArr['default_unit'])
+							? $longhand[$cssf]['fdu'] = $propArr['default_unit']
+							: false;
+
+						// signal if property has special units
+						!empty($propArr['special_units'])
+							? $longhand[$cssf]['special_units'] = $propArr['special_units']
+							: false;
+
+						// css function like rotateX or rotate3d for transform or filter
+						if (isset($propArr['css_func'])){
+							$longhand[$cssf]['css_func'] = $propArr['css_func'];
+							$css_func_map[$prop] = $prop_group;
+						}
+
+						// and if MT supports multiple
+						!empty($propArr['multiple_sup']) ? $longhand[$cssf]['multiple_sup'] = 1 : 0;
+
+						// attach tab_control data to prop
+						!empty($propArr['tab_control'])
+							? $longhand[$cssf]['tab_control'] = $propArr['tab_control']
+							: false;
+
+						// and attach shorthand so we can check this when resampling page for suggested styles
+						if (!empty($propArr['sh'])){
+							$longhand[$cssf]['sh'] = $propArr['sh'];
+							// also put shorthand prefixes in longhand
+						}
+
+
+						// get sub_slug for checking disabled via JS (among things perhaps)
+						$longhand[$cssf]['sub_slug'] = $sub_slug;
+
+						// get combobox type for edge_mode (temp)
+						//!empty($propArr['type']) ? $longhand[$cssf]['type'] = $propArr['type'] : 0;
+
+						// get sug_values config for forcing recent / suggestions etc
+						!empty($propArr['sug_values']) ? $longhand[$cssf]['sug_values'] = $propArr['sug_values'] : 0;
+
+						//}
+
+						// update the $gathered_css map
+						if (!empty($propArr['sug_values'])){
+
+							// straight property match e.g. font-size
+							if (!empty($propArr['sug_values']['this'])){
+								$gathered_css['eligable'][$cssf] = 1;
 							}
 
-							// exceptions for more complicated select items with categories
-							else {
+							// populate $gathered_css keys and storage arrays ready for getting vals with JS
+							$gc_root_cat = !empty($propArr['sug_values']['root_cat'])
+								? $propArr['sug_values']['root_cat']
+								: $prop;
 
-								// event options
-                                if ($prop == 'font_family'){
-                                    $combo[$prop] = $this->system_fonts;
-                                }
+							$gathered_css['root_cat_keys'][$prop] = $gc_root_cat;
+							$gathered_css['store'][$gc_root_cat] = array();
 
-								// get preset animations from include file
-								elseif ($prop == 'animation_name'){
-									$animation_names = array();
-									include $this->thisplugindir . 'includes/animation/animation-code.inc.php';
-									$combo[$prop] = $animation_names;
-								}
-
-								// event options
-                                elseif ($prop == 'event'){
-									$combo[$prop] = $this->browser_events;
-								}
-
-								// animatable properties
-                                elseif ($prop == 'transition_property'){
-									$combo[$prop] = $this->animatable;
-								}
-
+							// create store for e.g. grid line names too
+							if (!empty($propArr['sug_values_extra'])){
+								$gc_root_cat_extra = $propArr['sug_values_extra']['root_cat'];
+								$gathered_css['root_cat_keys'][$prop.'_extra'] = $gc_root_cat_extra;
+								$gathered_css['store'][$gc_root_cat_extra] = array();
 							}
-
 
 						}
+
+						// populate combobox array
+						if (!empty($array[$prop]['select_options'])){
+							$combo[$prop] = $array[$prop]['select_options'];
+						} if (!empty($array[$prop]['select_options_extra'])){
+							$combo[$prop.'_extra'] = $array[$prop]['select_options_extra'];
+						}
+
+						// exceptions for more complicated select items with categories
+						else {
+
+							// event options
+							if ($prop == 'font_family'){
+								$combo[$prop] = $this->system_fonts;
+							}
+
+							// get preset animations from include file
+                            elseif ($prop == 'animation_name'){
+								$animation_names = array();
+								include $this->thisplugindir . 'includes/animation/animation-code.inc.php';
+								$combo[$prop] = $animation_names;
+							}
+
+							// event options
+                            elseif ($prop == 'event'){
+								$combo[$prop] = $this->browser_events;
+							}
+
+							// animatable properties
+                            elseif ($prop == 'transition_property'){
+								$combo[$prop] = $this->animatable;
+							}
+
+						}
+
+
 					}
+				}
 
-					//$this->show_me.= print_r($combo, true);
+				//$this->show_me.= print_r($combo, true);
 
-					$this->shorthand = $shorthand;
-					$this->longhand = $longhand;
+				$this->shorthand = $shorthand;
+				$this->longhand = $longhand;
 
-					// text/box-shadow need to be called as one
-					$css_props['shadow'][] = array(
-						'prop' => 'text_shadow',
-						'cssf' => 'text-shadow'
-					);
-					$css_props['shadow'][] = array(
-						'prop' => 'box_shadow',
-						'cssf' => 'box-shadow'
-					);
-					$css_props['background'][] = array(
-						'prop' => 'background_img_full',
-						'cssf' => 'background-img-full'
-					);
-					// for storing full string (inc gradient)
-					$css_props['background'][] = array(
-						'prop' => 'extracted_gradient',
-						'cssf' => 'extracted-gradient'
-					);
-					// for storing just gradient (for mixed-comp check)
-					$css_props['gradient'][] = array(
-						'prop' => 'background_image',
-						'cssf' => 'background-image'
-					);
-					// gradient group needs this
-					$css_props['gradient'][] = array(
-						'prop' => 'background_img_full',
-						'cssf' => 'background-img-full'
-					);
-					// for storing full string (inc gradient)
-					$css_props['gradient'][] = array(
-						'prop' => 'extracted_gradient',
-						'cssf' => 'extracted-gradient'
-					);
+				// text/box-shadow need to be called as one
+				$css_props['shadow'][] = array(
+					'prop' => 'text_shadow',
+					'cssf' => 'text-shadow'
+				);
+				$css_props['shadow'][] = array(
+					'prop' => 'box_shadow',
+					'cssf' => 'box-shadow'
+				);
+				$css_props['background'][] = array(
+					'prop' => 'background_img_full',
+					'cssf' => 'background-img-full'
+				);
+				// for storing full string (inc gradient)
+				$css_props['background'][] = array(
+					'prop' => 'extracted_gradient',
+					'cssf' => 'extracted-gradient'
+				);
+				// for storing just gradient (for mixed-comp check)
+				$css_props['gradient'][] = array(
+					'prop' => 'background_image',
+					'cssf' => 'background-image'
+				);
+				// gradient group needs this
+				$css_props['gradient'][] = array(
+					'prop' => 'background_img_full',
+					'cssf' => 'background-img-full'
+				);
+				// for storing full string (inc gradient)
+				$css_props['gradient'][] = array(
+					'prop' => 'extracted_gradient',
+					'cssf' => 'extracted-gradient'
+				);
 
-					// dev option for showing function times
-					$combo['show_total_times'] = array('avg_time', 'total_time', 'calls');
+				// dev option for showing function times
+				$combo['show_total_times'] = array('avg_time', 'total_time', 'calls');
 
-					// set options for :lang(language) pseudo class
-					$combo['lang_codes'] = $this->country_codes;
+				// set options for :lang(language) pseudo class
+				$combo['lang_codes'] = $this->country_codes;
 
-					// suggest some handy nth formulas
-					$combo['nth_formulas'] = $this->nth_formulas;
+				// suggest some handy nth formulas
+				$combo['nth_formulas'] = $this->nth_formulas;
 
-					// ready combo for css_units
-					$combo['css_units'] = array_keys( $this->css_units );
-
-					// num history saves
-                    $combo['num_history_points'] = array(
-                            '50', '75', '100', '150', '200', '300'
-                    );
-
-                    $combo['builder_sync_tabs'] = array_merge(
-                        array(
-                          '360', '568', '800'
-                        ),
-                        $this->builder_sync_tabs
-                    );
-
-					// example scripts for enqueuing
-					$combo['enq_js'] = array( 'jquery', 'jquery-form', 'jquery-color', 'jquery-masonry', 'masonry', 'jquery-ui-core', 'jquery-ui-widget', 'jquery-ui-accordion', 'jquery-ui-autocomplete', 'jquery-ui-button', 'jquery-ui-datepicker', 'jquery-ui-dialog', 'jquery-ui-draggable', 'jquery-ui-droppable', 'jquery-ui-menu', 'jquery-ui-mouse', 'jquery-ui-position', 'jquery-ui-progressbar', 'jquery-ui-selectable', 'jquery-ui-resizable', 'jquery-ui-selectmenu', 'jquery-ui-sortable', 'jquery-ui-slider', 'jquery-ui-spinner', 'jquery-ui-tooltip', 'jquery-ui-tabs', 'jquery-effects-core', 'jquery-effects-blind', 'jquery-effects-bounce', 'jquery-effects-clip', 'jquery-effects-drop', 'jquery-effects-explode', 'jquery-effects-fade', 'jquery-effects-fold', 'jquery-effects-highlight', 'jquery-effects-pulsate', 'jquery-effects-scale', 'jquery-effects-shake', 'jquery-effects-slide', 'jquery-effects-transfer', 'wp-mediaelement', 'schedule', 'suggest', 'thickbox', 'hoverIntent', 'jquery-hotkeys', 'sack', 'quicktags', 'iris', 'json2', 'plupload', 'plupload-all', 'plupload-html4', 'plupload-html5', 'plupload-flash', 'plupload-silverlight', 'underscore', 'backbone' );
-					sort($combo['enq_js']);
-
-					// also write full css units array with descriptions
-					$data.= 'TvrMT.data.prog.CSSUnits = ' . json_encode($this->css_units) . ';' . "\n\n";
-
-					// also write full css units array with descriptions
-					$data.= 'TvrMT.data.prog.browser_event_keys = ' . json_encode($this->browser_event_keys) . ';' . "\n\n";
+				// ready combo for css_units
+				$length_units = array();
+				$unit_types = $this->lang['css_unit_types'];
+				$length_units[$unit_types['none']] = $this->css_units[$unit_types['none']];
+				$length_units[$unit_types['common']] = $this->css_units[$unit_types['common']];
+				$length_units[$unit_types['other']] = $this->css_units[$unit_types['other']];
+				$combo['css_length_units'] = $this->to_autocomplete_arr($length_units);
 
 
-					// finish data string
-					$data.= 'TvrMT.data.prog.propExc = ' . json_encode($exceptions) . ';' . "\n\n";
-					$data.= 'TvrMT.data.prog.propAliases = ' . json_encode($this->propAliases) . ';' . "\n\n";
-					// not actually using this right now
-					//$data.= 'var TvrInputProps = ' . json_encode($input_props) . ';' . "\n\n";
-					// key map for shorthand properties
-                    $data.= 'TvrMT.data.prog.subGroupKeys = ' . json_encode($sub_group_keys) . ';' . "\n\n";
-					$data.= 'TvrMT.data.prog.subToGroup = ' . json_encode($sub_group_to_group) . ';' . "\n\n";
-
-					$data.= 'TvrMT.data.prog.sh = ' . json_encode($shorthand) . ';' . "\n\n";
-					$data.= 'TvrMT.data.prog.sh_prefixes = ' . json_encode($shorthand_prefixes) . ';' . "\n\n";
-					$data.= 'TvrMT.data.prog.lh = ' . json_encode($longhand) . ';' . "\n\n";
-					$data.= 'TvrMT.data.prog.gatheredCSS = ' . json_encode($gathered_css) . ';' . "\n\n";
-					$data.= 'TvrMT.data.prog.CSSProps = ' . json_encode($css_props) . ';' . "\n\n";
-					$data.= 'TvrMT.data.prog.PGs = ' . json_encode($this->property_option_groups) . ';' . "\n\n";
-					$data.= 'TvrMT.data.prog.autoMap = ' . json_encode($this->auto_convert_map) . ';' . "\n\n";
-					// TvrMT.data.prog.combo needs to be updated with dynamic JS file for suggested values based on user action
-					$data.= 'TvrMT.data.prog.combo = ' . json_encode($combo) . ';' . "\n\n";
-					$data.= 'TvrMT.data.prog.mobPreview = ' . json_encode($this->mob_preview) . ';' . "\n\n";
-					$data.= 'TvrMT.data.prog.CSSFilters = ' . json_encode($this->css_filters) . ';' . "\n\n";
-					$data.= 'TvrMT.data.prog.custom_code_flat = ' . json_encode($this->custom_code_flat) . ';' . "\n\n";
-					//$data.= 'TvrMT.data.prog.grid_items = ' . json_encode($grid_items) . ';' . "\n\n";
-					$data.= 'TvrMT.data.prog.pg_tab_props = ' . json_encode($pg_tab_props) . ';' . "\n\n";
-					$data.= 'TvrMT.data.prog.pg_tab_map = ' . json_encode($pg_tab_map) . ';' . "\n\n";
-                    $data.= 'TvrMT.data.prog.params_to_strip = ' . json_encode($this->params_to_strip ) . ';' . "\n\n";
-
-					/***
-					 * HTML TEMPLATES
-					 */
-
-					$data.= $this->html_templates();
-
-					//$data.= $this->html_template_data_map(); don't this we need this system
 
 
-					// write and close file
+				// num history saves
+				$combo['num_history_points'] = array(
+					'50', '75', '100', '150', '200', '300'
+				);
+
+				$combo['builder_sync_tabs'] = array_merge(
+					array(
+						'360', '568', '800'
+					),
+					$this->builder_sync_tabs
+				);
+
+				// example scripts for enqueuing
+				$combo['enq_js'] = array( 'jquery', 'jquery-form', 'jquery-color', 'jquery-masonry', 'masonry', 'jquery-ui-core', 'jquery-ui-widget', 'jquery-ui-accordion', 'jquery-ui-autocomplete', 'jquery-ui-button', 'jquery-ui-datepicker', 'jquery-ui-dialog', 'jquery-ui-draggable', 'jquery-ui-droppable', 'jquery-ui-menu', 'jquery-ui-mouse', 'jquery-ui-position', 'jquery-ui-progressbar', 'jquery-ui-selectable', 'jquery-ui-resizable', 'jquery-ui-selectmenu', 'jquery-ui-sortable', 'jquery-ui-slider', 'jquery-ui-spinner', 'jquery-ui-tooltip', 'jquery-ui-tabs', 'jquery-effects-core', 'jquery-effects-blind', 'jquery-effects-bounce', 'jquery-effects-clip', 'jquery-effects-drop', 'jquery-effects-explode', 'jquery-effects-fade', 'jquery-effects-fold', 'jquery-effects-highlight', 'jquery-effects-pulsate', 'jquery-effects-scale', 'jquery-effects-shake', 'jquery-effects-slide', 'jquery-effects-transfer', 'wp-mediaelement', 'schedule', 'suggest', 'thickbox', 'hoverIntent', 'jquery-hotkeys', 'sack', 'quicktags', 'iris', 'json2', 'plupload', 'plupload-all', 'plupload-html4', 'plupload-html5', 'plupload-flash', 'plupload-silverlight', 'underscore', 'backbone' );
+				sort($combo['enq_js']);
+
+
+				// the full program data in one array
+				$prog = array(
+					'CSSUnits' =>  $this->css_units,
+					'browser_event_keys' =>  $this->browser_event_keys,
+					'propExc' =>  $exceptions,
+					'propAliases' =>  $this->propAliases,
+					'cssFuncAliases' =>  $this->cssFuncAliases,
+					'subGroupKeys' =>  $sub_group_keys,
+					'subToGroup' =>  $sub_group_to_group,
+					'sh' =>  $shorthand,
+					'sh_prefixes' =>  $shorthand_prefixes,
+					'lh' =>  $longhand,
+					'gatheredCSS' =>  $gathered_css,
+					'CSSProps' =>  $css_props,
+					'PGs' =>  $this->property_option_groups,
+					'autoMap' =>  $this->auto_convert_map,
+					'combo' =>  $combo,
+					'mobPreview' =>  $this->mob_preview,
+					'CSSFilters' =>  $this->css_filters,
+					'custom_code_flat' =>  $this->custom_code_flat,
+					'pg_tab_props' =>  $pg_tab_props,
+					'pg_tab_map' =>  $pg_tab_map,
+					'css_func_map' =>  $css_func_map,
+					'unsupported_css_func_map' =>  $unsupported_css_func_map,
+					'params_to_strip' =>  $this->params_to_strip,
+				);
+
+				$data.= 'TvrMT.data.prog = ' . json_encode($prog) . ';' . "\n\n";
+				$data.= 'TvrMT.data.templates = ' . json_encode($this->html_templates()) . ';' . "\n\n";
+
+				// if the server can't overwrite an external JS file, add it inline with other dynamic JS
+				if ($inline){
+					return $data;
+				}
+
+				else {
 					fwrite($write_file, $data);
 					fclose($write_file);
 				}
+
+				return 1;
 
 			}
 
@@ -2716,12 +3064,14 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
                 );
 
+			    return $templates; //$this->strip_tabs_and_line_breaks($templates);
+
 			    //$templates = $this->strip_tabs_and_line_breaks($templates);
 
 				// print templates to JS object
-				$data = 'TvrMT.data.templates = ' . $this->strip_tabs_and_line_breaks(json_encode($templates)) . ';' . "\n\n";
+				//$data = 'TvrMT.data.templates = ' . $this->strip_tabs_and_line_breaks(json_encode($templates)) . ';' . "\n\n";
 
-			    return $data;
+			    //return $data;
             }
 
             function strip_tabs_and_line_breaks($string){
@@ -2771,8 +3121,11 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			        ),
 			        'property' => array(
 				        'important'  => $this->icon_control(true, 'important', true, 'group', 'selector_section',
+					        'selector_css', 'all-devices', 'group_slug', 'subgroup_slug', 'property_slug'),
+                        'css_unit' => $this->icon_control(true, 'css_unit', true, 'property', 'selector_section',
 					        'selector_css', 'all-devices', 'group_slug', 'subgroup_slug', 'property_slug')
-			        )
+                    )
+
 			    );
 
 
@@ -3007,9 +3360,9 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				    /*wp_die('the special '. !empty($this->preferences['version']) . ' '.$this->preferences['version']. ' '.$this->version. ' '.($this->preferences['version'] != $this->version));*/
 
 				    // check if this is a new version of Microthemer
-					if (empty($this->preferences['version']) || $this->preferences['version'] != $this->version){
+					if ($this->new_version){ // empty($this->preferences['version']) || $this->preferences['version'] != $this->version){
 
-					    $this->new_version = true;
+					    //$this->new_version = true;
 
 					    // maybe update revisions table
 						$this->maybeCreateOrUpdateRevsTable();
@@ -3061,6 +3414,173 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				//$this->show_me = '<pre>after preference saved: '.print_r($this->preferences['my_props']['sug_values']['color'], true).'</pre>';
 
 				return true;
+			}
+
+			// common function for outputting yes/no radios
+			function preferences_grid($pref_cats, $settings_class){
+                
+                // labels
+				$yes_label = __('Yes', 'microthemer' );
+				$no_label = __('No', 'microthemer' );
+
+				// ensure CSS recompile is off by default
+				$this->preferences['manual_recompile_all_css'] = 0;
+
+				// generate the HTML
+				$html = '
+                <ul id="'.$settings_class.'" class="mt-form-settings '.$settings_class.'">';
+
+                    foreach ($pref_cats as $cat_key => $cat_array){
+        
+                        $html.= '
+                        <li class="empty-cell empty-before-'.$cat_key.'"></li>
+                        <li class="preference-category pref-cat-'.$cat_key.'">'.$cat_array['label'].'</li>';
+
+                        $opts = $cat_array['items'];
+
+                        foreach ($opts as $key => $array) {
+
+                            // skip edge mode if not available
+                            if ($key == 'edge_mode' and !$this->edge_mode['available']){
+                                continue;
+                            }
+
+                            // common
+                            $input_name = 'tvr_preferences['.$key.']';
+                            $array['link'] = ( !empty($array['link']) ) ? $array['link'] : '';
+
+                            // if radio
+                            if (empty($array['is_text'])){
+
+                                // ensure various vars are defined
+                                $li_class = 'fake-radio-parent';
+                                $array['label_no'] = ( !empty($array['label_no']) ) ? $array['label_no'] : '';
+                                $yes_val = ($key == 'draft_mode') ? $this->current_user_id : 1;
+                                $no_val = 0;
+
+                                if (!empty($this->preferences[$key])) {
+                                    $yes_checked = 'checked="checked"';
+                                    $yes_on = 'on';
+                                    $no_checked = $no_on = '';
+                                } else {
+                                    $no_checked = 'checked="checked"';
+                                    $no_on = 'on';
+                                    $yes_checked = $yes_on = '';
+                                }
+
+                                $form_options = '
+                                <span class="yes-wrap p-option-wrap">
+                                    <input type="radio" autocomplete="off" class="radio"
+                                       name="'.$input_name.'" value="'.$yes_val.'" '.$yes_checked.' />
+                                    <span class="fake-radio '.$yes_on.'"></span>
+                                    <span class="ef-label">'.$yes_label.'</span>
+                                </span>
+                                 <span class="no-wrap p-option-wrap">
+                                    <input type="radio" autocomplete="off" class="radio"
+                                       name="'.$input_name.'" value="'.$no_val.'" '.$no_checked.' />
+                                    <span class="fake-radio '.$no_on.'"></span>
+                                    <span class="ef-label">'.$no_label.'</span>
+                                </span>';
+
+                            }
+
+                            // else if input
+                            else {
+                                $li_class = 'mt-text-option';
+
+	                            if (!empty($array['one_line'])){
+		                            $li_class.= ' one-line';
+	                            }
+
+                                $input_id = $input_class = $arrow_class = $class = $rel = $arrow = '';
+                                $input_value = ( !empty($this->preferences[$key]) ) ? $this->preferences[$key] : '';
+                                $extra_info = '';
+
+                                // does it need a custom id?
+                                if (!empty($array['input_id'])){
+                                    $input_id = $array['input_id'];
+                                }
+                                // does it need a custom input class?
+                                if (!empty($array['input_class'])){
+                                    $input_class = $array['input_class'];
+                                }
+                                // does it need a custom arrow class?
+                                if (!empty($array['arrow_class'])){
+                                    $arrow_class = $array['arrow_class'];
+                                }
+                                // does it need a custom input name?
+                                if (!empty($array['input_name'])){
+                                    $input_name = $array['input_name'];
+                                }
+                                // does it need a custom input value?
+                                if (!empty($array['input_value'])){
+                                    $input_value = $array['input_value'];
+                                }
+                                // do we want to add a data attribute (quick and dirty way to support one att)
+                                if (!empty($array['extra_info'])){
+                                    $extra_info = ' data-info="'. $array['extra_info'].'"';
+                                }
+
+	                            if (!empty($array['prop'])){
+		                            $extra_info.= ' data-prop="'. $array['prop'].'"';
+	                            }
+
+                                // exception for css unit set (keep blank)
+                                if ($input_id == 'css_unit_set'){
+                                    $input_value = '';
+                                }
+
+                                // is it a combobox?
+                                if (!empty($array['combobox'])){
+                                    $class = 'combobox has-arrows';
+                                    $rel = 'rel="'.$array['combobox'].'"';
+                                    $arrow = '<span class="combo-arrow '.$arrow_class.'"></span>';
+                                }
+
+                                if (!empty($input_id)){
+                                    $input_id = 'id="'.$input_id.'"';
+                                }
+
+                                $form_options = '
+                                <span class="tvr-input-wrap">
+                                    <input '.$input_id.' type="text" autocomplete="off" name="'.$input_name.'"  
+                                    class="'.$class . ' ' . $input_class.'" '.$rel . $extra_info.'
+                                    value="'. esc_attr($input_value).'" />'
+                                    .$arrow .
+                                '</span>';
+                            }
+
+	                        // sometimes we use empty cell after
+	                        if (!empty($array['empty_before'])){
+		                        $html.= '<li class="empty-cell empty-before-'.$key.'"></li>';
+	                        }
+
+
+                            // the option
+                            $html.= '
+                            <li class="'.$li_class.'">
+                                <label>
+                                    <span title="'.esc_attr($array['explain']).'">
+                                        '.esc_html($array['label']) . $array['link'].'
+                                    </span>
+                                </label>
+                                '.$form_options.'
+                            </li>';
+
+
+                            // sometimes we use empty cell after
+	                        if (!empty($array['empty_after'])){
+		                        $html.= '<li class="empty-cell empty-after-'.$key.'"></li>';
+	                        }
+                        }
+
+                    }
+                    
+                $html.= '
+                </ul>';
+                    
+                return $html;
+
 			}
 
 			// common function for outputting yes/no radios
@@ -3133,6 +3653,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					$input_id = $input_class = $arrow_class = $class = $rel = $arrow = '';
 					$input_name = 'tvr_preferences['.$key.']';
 					$input_value = ( !empty($this->preferences[$key]) ) ? $this->preferences[$key] : '';
+					$extra_info = '';
 
 					// does it need a custom id?
 					if (!empty($array['input_id'])){
@@ -3153,6 +3674,10 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					// does it need a custom input value?
 					if (!empty($array['input_value'])){
 						$input_value = $array['input_value'];
+					}
+					// do we want to add a data attribute (quick and dirty way to support one att)
+					if (!empty($array['extra_info'])){
+						$extra_info = ' data-info="'. $array['extra_info'].'"';
 					}
 
 					// exception for css unit set (keep blank)
@@ -3180,7 +3705,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
                         </label>
                         <input type='text' autocomplete="off" name='<?php echo esc_attr($input_name); ?>'
                                <?php echo $input_id; ?>
-                               class="<?php echo $class . ' ' . $input_class; ?>" <?php echo $rel; ?>
+                               class="<?php echo $class . ' ' . $input_class; ?>" <?php echo $rel . $extra_info; ?>
                                value='<?php echo esc_attr($input_value); ?>' />
 						<?php echo $arrow; ?>
                     </li>
@@ -3257,6 +3782,13 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			function updateRevisions(
 			        $save_data, $user_action = '', $tryCreate = true, $preferences = false, $upgrade_backup = false
             ) {
+
+			    // sometimes we don't want to log an action e.g. if editing a selector's code via the editor
+                // the change will be shown in the code editor change history entry
+                // and we don't want them to restore one without the other (selector code and editor content)
+			    if (is_null($user_action) or $user_action === 'null'){
+			       return true; // false would generate an error message
+			    }
 
 			    $user_action = html_entity_decode($user_action);
 
@@ -3456,7 +3988,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					$rev_icon = $main_class = '';
 					$legacy_new_class = 'legacy-hi';
 					if (strpos($user_action, '{"') !== false){
-						$ua = json_decode($rev->user_action, true);
+						$ua = $this->json('decode', $rev->user_action); //  json_decode($rev->user_action, true);
 						$legacy_new_class = 'new-hi';
 						$user_action = $this->unescape_cus_quotes($ua['html'], true);
 						$rev_icon = $ua['icon_html'];
@@ -3520,6 +4052,8 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 				// add css units, mq keys (extra tabs) etc to settings display correctly
 				$filtered_json = $this->filter_incoming_data('restore', $rev->settings);
+
+
 
 				// if special revision that also has preferences, restore those too
                 if (!empty($rev->preferences)){
@@ -3938,7 +4472,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					$before_after[] = array(
 						'Full options:' => $this->options
 					);
-					$write_file = fopen($this->debug_dir . 'save-package.txt', 'w');
+					$write_file = @fopen($this->debug_dir . 'save-package.txt', 'w');
 					fwrite($write_file, print_r($before_after, true));
 					fclose($write_file);
 				}
@@ -3958,28 +4492,36 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 					// do safety check to make sure newer settings haven't been applied in another tab
 					// allow passed last save time to be 15 seconds out due to quirk of resave I haven't fully understood
-					if ( ($last_save_time + 10) < ($this->options['non_section']['last_save_time']) ){
+					if ( intval($last_save_time + 10) < intval($this->options['non_section']['last_save_time']) ){
 
 						$this->log(
 							esc_html__('Multiple tabs/users issue', 'microthemer'),
 							'<p>' . esc_html__('MT settings were updated more recently by another user or browser tab. Saving from this outdated tab could cause data loss. Please reload the page instead of saving from this tab (to get the latest changes).', 'microthemer') . '</p>'
 						);
 
-						$this->outdatedTabIssue = 1;
-						$this->outdatedTabDebug = 'Last save time: '.$last_save_time. ", \n" .
-						                          'Stored save time: '.$this->options['non_section']['last_save_time'] . ", \n" .
-						                          'Difference: ' . ($last_save_time) < $this->options['non_section']['last_save_time'];
+						$this->outdatedTabDebug = 'Last save time: '.intval($last_save_time). ", \n" .
+						                          'Stored save time: '.intval($this->options['non_section']['last_save_time'])  . ", \n" .
+						                          'Difference: ' . (intval($last_save_time) - intval($this->options['non_section']['last_save_time']));
 
+						$this->outdatedTabIssue = 1;
 
 						return false;
 					}
 
 					else {
 
+						$this->outdatedTabDebug = 'Last save time: '.$last_save_time. ", \n" .
+						                          'Stored save time: '.$this->options['non_section']['last_save_time'] . ", \n" .
+						                          'Difference: ' . (intval($last_save_time) - intval($this->options['non_section']['last_save_time']));
+
 					    // update last save time
 						$this->options['non_section']['last_save_time'] = time();
 
+
+
 					}
+
+
 
                 }
 
@@ -4004,178 +4546,14 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
                     $this->apply_save_package($savePackage, $this->options);
                 }
 
+                // tag version the settings were saved at so e.g. css units can be imported correctly for legacy data
+                $this->options['non_section']['mt_version'] = $this->version;
+
 				// update DB
                 update_option($this->optionsName, $this->options);
 
 				return true;
 
-			}
-
-			// Save the UI styles to the database - create hybrid of settings from existing non-loaded styles and saved styles
-			function saveUiOptions($theOptions){
-
-				// create debug save file if specified at top of script
-				if ($this->debug_save) {
-					$debug_file = $this->debug_dir . 'debug-save.txt';
-					$write_file = fopen($debug_file, 'w');
-					$data = '';
-					$data.= "\n\n" . __('### The new options', 'microthemer') . "\n\n";
-					$data.= print_r($theOptions, true);
-					$data.= "\n\n" . __('### The existing options in the DB', 'microthemer') . "\n\n";
-					$data.= print_r($this->options, true);
-				}
-
-				/**/// do safety check to make sure newer settings haven't been applied in another tab
-				if ( isset($this->options['non_section']['last_save_time'])
-				     and isset($theOptions['non_section']['last_save_time'])
-
-                         // allow passed last save time to be 1 second out due to quirk of resave I haven't fully understood
-                         and ($theOptions['non_section']['last_save_time']+1)
-                             < $this->options['non_section']['last_save_time']){
-
-					/* Debug last save checks
- 					 * $compare = '<br />Passed last save time: ' . $theOptions['non_section']['last_save_time'] .
-					           '<br />Recorded last save time: ' . $this->options['non_section']['last_save_time'];*/
-
-
-					           // todo i18n strings should be stored in central place (class prop or in DB prefereably) this is dupe text
-					$this->log(
-						esc_html__('Multiple tabs/users issue', 'microthemer'),
-						'<p>' . esc_html__('MT settings were updated more recently by another user or browser tab. Saving from this outdated tab could cause data loss. Please reload the page instead of saving from this tab (to get the latest changes).', 'microthemer') . '</p>'
-					);
-					$this->outdatedTabIssue = 1;
-					return false;
-				} else {
-					// update last save time
-					$theOptions['non_section']['last_save_time'] = time();
-					$this->outdatedTabIssue = 0;
-				}
-
-
-				// loop through all the state trackers
-				if (!empty($theOptions['non_section']['view_state']) and is_array($theOptions['non_section']['view_state'])) {
-					foreach($theOptions['non_section']['view_state'] as $section_name => $array) {
-						// need to use existing non-loaded sections again soon...
-
-						// loop through the selector trackers
-						if (is_array($array)) {
-							foreach ( $array as $css_selector => $view_state) {
-
-								if ($css_selector == 'this') continue;
-
-								// if the selector options haven't been pulled into the UI, use existing
-								if (
-									$view_state == 0
-									//$view_state == 'hannah'
-								) {
-
-									// check if user disabled/enabled non-loaded sel before overwriting
-									$dis = false;
-									if (!empty($theOptions[$section_name][$css_selector]['disabled'])){
-										$dis = true;
-									}
-
-									if ($this->debug_save) {
-										if (empty($this->options[$section_name][$css_selector])){
-											$data.= 'danger, DB not set: ' . $section_name . ', ' . $css_selector
-											        . "\n\n" . print_r($this->options, true);
-											$this->log(
-												esc_html__('Incomplete save', 'microthemer'),
-												'<p>DB not set for: ' . $section_name . ' '  . $css_selector. '</p>'
-											);
-										}
-
-									}
-
-									// replace sel with settings in DB
-									// todo setup a warning if this happens with 'send error report' option
-									// abandon save but give user the option to force save, otherwise malformed sels
-									// from a previous mishap can't be deleted
-									$theOptions[$section_name][$css_selector] = $this->options[$section_name][$css_selector];
-									//$theOptions[$section_name][$css_selector] = null;
-
-									// pull in !important
-									if( !empty($this->options['non_section']['important'][$section_name][$css_selector]) ){
-										$theOptions['non_section']['important'][$section_name][$css_selector] =
-											$this->options['non_section']['important'][$section_name][$css_selector];
-									}
-
-
-									// disable if necessary
-									if ($dis){
-										$theOptions[$section_name][$css_selector]['disabled'] = 1;
-									}
-									// or re-enable if necessary
-                                    elseif (!$dis and !empty($theOptions[$section_name][$css_selector]['disabled'])){
-										unset($theOptions[$section_name][$css_selector]['disabled']);
-									}
-
-								}
-
-								// decode selector post_sel data
-								//$theOptions[$section_name][$css_selector] = $this->post_sel_decoded($theOptions[$section_name][$css_selector]);
-
-								// media query values will also need to be pulled from existing settings
-								// I think $this->options['non_section']['m_query'] is the right array to iterate over because
-								// if m_query didn't have any settings before, it will be added by $theOptions['non_section']['m_query']
-								if (!empty($this->options['non_section']['m_query']) and
-								    is_array($this->options['non_section']['m_query'])) {
-									foreach ($this->options['non_section']['m_query'] as $m_key => $array) {
-
-										// if MQ not loaded, pull in from existing
-										if (
-											$view_state == 0
-
-										) {
-
-											// pull in mq
-											if (!empty($array[$section_name][$css_selector])
-											    and is_array($array[$section_name][$css_selector])) {
-
-												$theOptions['non_section']['m_query'][$m_key][$section_name][$css_selector] = $array[$section_name][$css_selector];
-
-											}
-
-											// pull in !important
-											if( !empty($this->options['non_section']['important']['m_query'][$m_key][$section_name][$css_selector]) ){
-												$theOptions['non_section']['important']['m_query'][$m_key][$section_name][$css_selector] =
-													$this->options['non_section']['important']['m_query'][$m_key][$section_name][$css_selector];
-											}
-
-										}
-
-										// If MQ has loaded it will already be part of $theOptions array.
-										// But it will potentially be in the wrong order (first). So unset then re-add.
-										else {
-											if (!empty($theOptions['non_section']['m_query'][$m_key][$section_name][$css_selector])){
-												$cache_new_mq = $theOptions['non_section']['m_query'][$m_key][$section_name][$css_selector];
-
-												// decode mq selector post_sel data
-												//$cache_new_mq = $this->post_sel_decoded($cache_new_mq);
-
-												unset($theOptions['non_section']['m_query'][$m_key][$section_name][$css_selector]);
-												$theOptions['non_section']['m_query'][$m_key][$section_name][$css_selector] = $cache_new_mq;
-											}
-										}
-									}
-								}
-
-
-							}
-						}
-					}
-				}
-				if ($this->debug_save) {
-					$data.= "\n\n" . __('### The hybrid options', 'microthemer') . "\n\n";
-					$data.= print_r($theOptions, true);
-					fwrite($write_file, $data);
-					fclose($write_file);
-				}
-
-				update_option($this->optionsName, $theOptions);
-				$this->options = get_option($this->optionsName);
-
-				return true;
 			}
 
 			// Resest the options.
@@ -4575,7 +4953,8 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				            $this->deep_unescape($_POST, 1, 1, 1);
 
 			            if (!empty($this->serialised_post['serialise'])){
-				            $this->serialised_post['tvr_mcth'] = json_decode($this->serialised_post['tvr_mcth'], true);
+				            $this->serialised_post['tvr_mcth'] = $this->json('decode', $this->serialised_post['tvr_mcth']);
+                            //json_decode($this->serialised_post['tvr_mcth'], true);
 				            /*echo 'show_me from tvr_mcth: <pre> ';
 							print_r($_POST);
 							echo '</pre>';*/
@@ -4735,7 +5114,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						// output pulled data to debug file
 						if ($this->debug_pulled_data){
 							$debug_file = $this->debug_dir . 'debug-pulled-data.txt';
-							$write_file = fopen($debug_file, 'w');
+							$write_file = @fopen($debug_file, 'w');
 							$data = '';
 							$data.= esc_html__('Custom debug output', 'microthemer') . "\n\n";
 							$data.= $this->debug_custom;
@@ -4992,6 +5371,22 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			            wp_die();
 		            }
 
+		            // update_default_unit
+                    if (isset($_GET['update_default_unit'])) {
+	                    $data = json_decode( stripslashes($_POST['tvr_serialized_data']), true );
+	                    $this->preferences['my_props'][$data['group']]['pg_props'][$data['prop']]['default_unit'] = $data['unit'];
+	                    $pref_array['my_props'] = $this->preferences['my_props'];
+	                    $this->savePreferences($pref_array);
+
+	                    wp_die();
+                    }
+
+		            // MT may update custom paths array via JS (e.g. path clear) and then post full array to replace current
+		            if (isset($_GET['update_custom_paths'])) {
+			            $pref_array['custom_paths'] = json_decode( stripslashes($_POST['tvr_serialized_data']), true );
+			            $this->savePreferences($pref_array);
+		            }
+
 		            // update suggested values
 		            if (isset($_GET['update_sug_values'])) {
 
@@ -5024,7 +5419,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			            }
 
 			            // update variable if passed
-			            if (!empty($data['sug_variables'])){
+			            if (isset($data['sug_variables'])){
 				            $this->preferences['my_props']['sug_variables'] = $data['sug_variables'];
 				            $pref_array['default_sug_variables_set'] = 1;
 			            }
@@ -5093,6 +5488,15 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 		            if (isset($_GET['grid_focus'])) {
 			            $pref_array = array();
 			            $pref_array['grid_focus'] = htmlentities($_GET['grid_focus']);
+			            $this->savePreferences($pref_array);
+			            // kill the program - this action is always requested via ajax. no message necessary
+			            wp_die();
+		            }
+
+		            // remember transform tab
+		            if (isset($_GET['transform_focus'])) {
+			            $pref_array = array();
+			            $pref_array['transform_focus'] = htmlentities($_GET['transform_focus']);
 			            $this->savePreferences($pref_array);
 			            // kill the program - this action is always requested via ajax. no message necessary
 			            wp_die();
@@ -5335,7 +5739,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 		            }
 
 		            // if it's a clear styles request
-                    elseif(isset($_GET['mt_action']) and $_GET['mt_action'] == 'tvr_clear_styles'){
+                    /*elseif(isset($_GET['mt_action']) and $_GET['mt_action'] == 'tvr_clear_styles'){
 			            if ($this->clearUiOptions()) {
 				            $this->update_active_styles2('customised');
 				            $item = esc_html__('Styles were cleared', 'microthemer');
@@ -5352,7 +5756,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			            // save last message in database so that it can be displayed on page reload (just once)
 			            $this->cache_global_msg();
 			            wp_die();
-		            }
+		            }*/
 
 		            // if it's an email error report request
                     elseif(isset($_GET['mt_action']) and $_GET['mt_action'] == 'tvr_error_email'){
@@ -5366,7 +5770,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			            // write file to error-reports dir
 			            $file_path = 'error-reports/error-'.date('Y-m-d').'.txt';
 			            $error_file = $this->thisplugindir . $file_path;
-			            $write_file = fopen($error_file, 'w');
+			            $write_file = @fopen($error_file, 'w');
 			            fwrite($write_file, $body);
 			            fclose($write_file);
 			            // Determine from email address. Try to use validated customer email. Don't contact if not Microthemer customer.
@@ -5599,6 +6003,8 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					    // tvr_validate_form
 						$this->get_validation_response($_POST['tvr_preferences']['buyer_email']);
 					}
+
+					$this->invalidLic();
 
 					// if user navigates from front to MT via toolbar, set previous front page in preview
 					if (isset($_GET['mt_preview_url'])) {
@@ -6149,7 +6555,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 					else {
 						if ($this->is_screenshot($filename)){
-							$result['screenshot'][$filename] = 1;
+							$result['screenshot'] = $filename;
 						} else {
 							$result[$filename] = 1;
 						}
@@ -6425,18 +6831,29 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// convert one array format to autocomplete with categories format
 			function to_autocomplete_arr(
 				$orig_array,
-				// new array has first empty item by default
-				$new_array = array(
-					//array( 'label' => '')
-				),
+				$new_array = array(),
 				$config = array()
 			){
 				foreach ($orig_array as $category => $array){
-					foreach ($array as $i => $label){
-						$new_array[] = array(
-							'label' => $label,
-							'category' => $category
-						);
+					foreach ($array as $i => $value){
+
+					    // array may be an array of arrays with the value as the key
+					    if (is_array($value)){
+						    $data = array_merge(array(
+							    'label' => $i,
+							    'category' => $category
+						    ), $value);
+					    }
+
+					    // simple numeric array with single values
+					    else {
+					       $data = array(
+						       'label' => $value,
+						       'category' => $category
+					       );
+					    }
+
+						$new_array[] = $data;
 					}
 				}
 				return $new_array;
@@ -6974,7 +7391,8 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$icon_class = $con.'-toggle input-icon-toggle';
 				$icon_inside = '';
 				$data_atts_arr = array();
-				$pos_title = '';
+				$pos_title = $neg_title = '';
+
 
 				// set MQ stub for tab and pg inputs
 				$imp_key = '';
@@ -7057,6 +7475,9 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 							break;
 						case "subgroup":
 							$name = $mq_stem . '['.$section_name.']['.$css_selector.'][pg_'.$con.']['.$subgroup.']';
+							break;
+						case "property":
+							$name = $mq_stem . '['.$section_name.']['.$css_selector.'][styles]['.$group.']['.$prop.']';
 							break;
 						case "script":
 							$name = 'tvr_preferences[enq_js]['.$section_name.']';
@@ -7492,7 +7913,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$value,
 				$con = 'reg',
 				$key = 1,
-				$sel_code) {
+				$sel_code = 'selector_code') {
 				$html = '';
 
 				// get value object, array, and string value
@@ -7608,6 +8029,8 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
                         // it seems to be a quirk of Oxygen that the template admin screen must be loaded first
 					    elseif ($item->post_type === 'ct_template'){
 							$url = $this->wp_blog_admin_url . 'post.php?post=' . $item->ID.'&action=edit';
+						    //$url = get_permalink($item).'&ct_builder=true';
+                            // enable this after fixing forever loading issue (maybe due to post locking...)
 						}
 
 						// non-standard permalink structure
@@ -9074,28 +9497,10 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				return strpos($property, 'duration') !== false || strpos($property, 'delay') !== false;
 			}
 
-			// add px unit if no unit specified (and qualifies)
-			function maybe_apply_px($property_group_name, $property, $value) {
-				$value = trim($value);
-				$unit = $this->is_time_prop($property) ? 's' : 'px';
-				if (!empty($this->propertyoptions[$property_group_name][$property]['default_unit'])) {
-					// if single plain number add px
-					if ( is_numeric($value) and $value != 0){
-						$value.= $unit;
-					}
-					// if space separated values, apply to each segment
-					if (strpos($value, ' ')) {
-						$m = explode(' ', $value);
-						foreach ($m as $k => $v){
-							$arr[$k] = $v;
-							if ( is_numeric($v) and $v != 0){
-								$arr[$k].= $unit;
-							}
-						}
-						$value = implode(' ', $arr);
-					}
-				}
-				return $value;
+			function is_non_length_unit($factoryUnit, $prop){
+				return $factoryUnit === 's' || $factoryUnit === 'deg' || ($factoryUnit === ''); //&& $prop !== 'line_height' -
+                // we removed line-height too as this is just for setting units globally,
+                // and we don't want to change line-height from default non-unit when using 'ALL Units' option
 			}
 
 			// check if !important should be used for CSS3 line
@@ -9287,7 +9692,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// write to a file (make more use of this function)
 			function write_file($file, $data){
 				// the file will be created if it doesn't exist. otherwise it is overwritten.
-				$write_file = fopen($file, 'w');
+				$write_file = @fopen($file, 'w');
 				// if write is unsuccessful for some reason
 				if (false === fwrite($write_file, $data)) {
 					$this->log(
@@ -9641,7 +10046,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$task = 'updated';
 				if (!file_exists($json_file)) {
 					$task = 'created';
-					if (!$write_file = fopen($json_file, 'w')) { // this creates a blank file for writing
+					if (!$write_file = @fopen($json_file, 'w')) { // this creates a blank file for writing
 						$this->log(
 							esc_html__('Create json error', 'microthemer'),
 							'<p>' . esc_html__('WordPress does not have permission to create: ', 'microthemer')
@@ -9732,7 +10137,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				if ($this->debug_selective_export) {
 					$data = '';
 					$debug_file = $this->debug_dir . 'debug-selective-export.txt';
-					$write_file = fopen($debug_file, 'w');
+					$write_file = @fopen($debug_file, 'w');
 					$data.= esc_html__('The Selectively Exported Options', 'microthemer') . "\n\n";
 					$data.= print_r($json_data, true);
 					$data.= "\n\n" . esc_html__('The Full Options', 'microthemer') . "\n\n";
@@ -9744,7 +10149,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				// write data to json file
 				if ($data = json_encode($json_data)) {
 					// the file will be created if it doesn't exist. otherwise it is overwritten.
-					$write_file = fopen($json_file, 'w');
+					$write_file = @fopen($json_file, 'w');
 					fwrite($write_file, $data);
 					fclose($write_file);
 					// report
@@ -9772,14 +10177,16 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// pre-process import or restore data
 			function filter_incoming_data($con, $data){
 
+				$filtered_json = $data;
+
 				// Unitless css values may need to be auto-adjusted, including MQs
-				$filtered_json = $this->filter_json_css_units($data);
+				/*$filtered_json = $this->filter_json_css_units($data);
 				if (!empty($filtered_json['non_section']['m_query']) and
 				    is_array($filtered_json['non_section']['m_query'])) {
 					foreach ($filtered_json['non_section']['m_query'] as $m_key => $array) {
 						$filtered_json['non_section']['m_query'][$m_key] = $this->filter_json_css_units($array);
 					}
-				}
+				}*/
 
 				// compare media queries in import/restore to existing
 				$mq_analysis = $this->analyse_mqs(
@@ -9858,7 +10265,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					$debug_mqs['mq_analysis'] = $mq_analysis;
 
 					$debug_file = $this->debug_dir . 'debug-'.$con.'.txt';
-					$write_file = fopen($debug_file, 'w');
+					$write_file = @fopen($debug_file, 'w');
 					$data = '';
 					$data.= "\n\n### 1. Key Debug Analysis \n\n";
 					$data.= print_r($debug_mqs, true);
@@ -9893,8 +10300,8 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$json_object = new Moxiecode_JSON();*/
 
 				// convert to array
-				if (!$json_array = json_decode($data, true)) {
-					$this->log('', '', 'error', 'json-decode', array('json_file', $json_file));
+				if (!$json_array = $this->json('decode', $data)) { // json_decode($data, true)
+					//$this->log('', '', 'error', 'json-decode', array('json_file', $json_file));
 					return false;
 				}
 
@@ -9994,7 +10401,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				// create debug merge file if set at top of script
 				if ($this->debug_merge) {
 					$debug_file = $this->debug_dir . 'debug-merge.txt';
-					$write_file = fopen($debug_file, 'w');
+					$write_file = @fopen($debug_file, 'w');
 					$data = '';
 					$data.= "\n\n" . __('### The to existing options (before merge)', 'microthemer') . "\n\n";
 					$data.= print_r($orig_settings, true);
@@ -10222,7 +10629,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				if (is_array($prime_files)){
 					foreach($prime_files as $key => $file){
 						if (!file_exists($file)) {
-							if (!$write_file = fopen($file, 'w')) {
+							if (!$write_file = @fopen($file, 'w')) {
 								$this->log(
 									esc_html__('Create stylesheet error', 'microthemer'),
 									'<p>' . esc_html__('WordPress does not have permission to create: ', 'microthemer') .
@@ -10479,7 +10886,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					);
 					return false;
 				}
-				$fh = fopen($file, 'r');
+				$fh = @fopen($file, 'r');
 				$data = fread($fh, filesize($file));
 				fclose($fh);
 				return $data;
@@ -10544,18 +10951,31 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// encode or decode json todo replace other $json_object actions with this function (and test)
 			function json($action, $data, $json_file = ''){
 
-				// tap into WordPress native JSON functions
-				/*if( !class_exists('Moxiecode_JSON') ) {
-					require_once($this->thisplugindir . 'includes/class-json.php');
-				}
-
-				$json_object = new Moxiecode_JSON();*/
-
 				// convert to array
 				if ($action == 'decode'){
-					if (!$json_array = json_decode($data, true)) {
-						$this->log('', '', 'error', 'json-decode', array('json_file', $json_file));
-						return false;
+
+				    // if we can't decode using native PHP function
+				    if (!$json_array = json_decode($data, true)) {
+
+						// MT may be trying to decode data encoded by an older custom JSON class, rather than PHP native
+                        // so attempt to decode using legacy class
+						if( !class_exists('Moxiecode_JSON') ) {
+							require_once($this->thisplugindir . 'includes/class-json.php');
+						}
+						$json_object = new Moxiecode_JSON();
+
+						// we still can't decode the data
+						if (!$json_array = $json_object->decode($data)) {
+							$this->log('', '', 'error', 'json-decode', array('json_file', $json_file));
+							return false;
+						}
+
+					    /*$this->log(
+						    esc_html__('Legacy format data successfully decoded', 'microthemer'),
+						    '<p>' . esc_html__('Please contact themeover.com for help', 'microthemer') . '</p>',
+                           'info'
+					    );*/
+
 					}
 					return $json_array;
 				}
@@ -10702,7 +11122,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 				// update the config.json image paths for images successfully moved to the library
 				if (is_writable($json_config_file)) {
-					if ($write_file = fopen($json_config_file, 'w')) {
+					if ($write_file = @fopen($json_config_file, 'w')) {
 						if (fwrite($write_file, $data)) {
 							fclose($write_file);
 							$this->log(
@@ -10727,8 +11147,12 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// for the prop is not 'px (implicit)' and the value is a unitless number
 			// Conversely, px values need to be removed if implicit pixels is set (and not custom code value)
 			// Note: we can't do e.g. em conversion here as we don't know the DOM context
-			function filter_json_css_units($data, $context = 'reg'){
-				$filtered_json = $data;
+			/*function filter_json_css_units($data, $context = 'reg'){
+
+			    $filtered_json = $data;
+				$possible_units = array_merge(array_keys($this->css_units), $this->special_css_units);
+				$before_units_change = empty($filtered_json['non_section']['mt_version']);
+
 				foreach ($filtered_json as $section_name => $array){
 					if ($section_name == 'non_section') {
 						continue;
@@ -10741,29 +11165,32 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 										foreach ($arr2 as $prop => $value) {
 
 										    // data structure was updated
-										    $value = !empty($value['value']) ? $value['value'] : $value;
+										    $value = !isset($value['value']) ? $value : $value['value'] ;
 
-										    // we're finally at property, does it have a default unit?
-											if (!empty($this->preferences['my_props'][$prop_group]['pg_props'][$prop]['default_unit'])){
-												$default_unit = $this->preferences['my_props'][$prop_group]['pg_props'][$prop]['default_unit'];
-											} else {
-												continue;
-											}
+										    // if the property has a default unit
+											if (isset($this->preferences['my_props'][$prop_group]['pg_props'][$prop]['default_unit'])){
 
-											// it has a default, is it something other than px (implicit)
-											if ($default_unit == 'px (implicit)'){
+											    $default_unit = $this->preferences['my_props'][$prop_group]['pg_props'][$prop]['default_unit'];
 
-											    // we should convert pixel values to plain numbers (if not custom code)
-												if ($prop_group != 'code' and strpos($value, 'px') !== false){
-													$filtered_json[$section_name][$css_selector]['styles'][$prop_group][$prop]['value'] =
-														preg_replace('/px$/', '', $value);
+											    // if the unit is included in the value, remove it and add to unit key
+                                                // todo limit to single values with css unit
+												preg_match('/('.implode('|', $possible_units).')\s*$/', $value, $unit_match);
+
+												if ($unit_match){
+												    $extracted_css_unit = $unit_match[1];
+                                                    $unitless_value = preg_replace(
+                                                            '/'.$extracted_css_unit.'\s*$/', '', $value
+                                                    );
+													$filtered_json[$section_name][$css_selector]['styles'][$prop_group][$prop]['value'] = $unitless_value;
+													$filtered_json[$section_name][$css_selector]['styles'][$prop_group][$prop]['unit'] = $extracted_css_unit;
 												}
-												continue;
-											}
 
-											// if the value is a unitless number apply px as the user doesn't have implicit pixels set
-											if (is_numeric($value) and $value != 0){
-												$filtered_json[$section_name][$css_selector]['styles'][$prop_group][$prop]['value'] = $value . 'px';
+												// if the value is a unitless number from before MT updated the units system,
+                                                // apply px so user's current default_unit setting doesn't change things to pixels
+												else if ($before_units_change && $prop !== 'line_height' && is_numeric($value) && $value != 0){ //
+													$filtered_json[$section_name][$css_selector]['styles'][$prop_group][$prop]['unit'] = 'px';
+												}
+
 											}
 										}
 									}
@@ -10773,7 +11200,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					}
 				}
 				return $filtered_json;
-			}
+			}*/
 
 			//Handle an individual file import.
 			function import_image_to_library($file, $just_image_name, $post_id = 0, $import_date = false) {
@@ -11030,7 +11457,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				if (is_file($readme_file)) {
 					// check if it's readable
 					if ( is_readable($readme_file) ) {
-						$fh = fopen($readme_file, 'r');
+						$fh = @fopen($readme_file, 'r');
 						$length = filesize($readme_file);
 						if ($length == 0) {
 							$length = 1;
@@ -11236,7 +11663,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 				// Create new file if it doesn't already exist
 				if (!file_exists($meta_file)) {
-					if (!$write_file = fopen($meta_file, 'w')) {
+					if (!$write_file = @fopen($meta_file, 'w')) {
 						$this->log(
 							sprintf( esc_html__('Create %s error', 'microthemer'), 'meta.txt' ),
 							'<p>' . sprintf(esc_html__('WordPress does not have permission to create: %s', 'microthemer'), $this->root_rel($meta_file) . '. '.$this->permissionshelp ) . '</p>'
@@ -11315,7 +11742,7 @@ DateCreated: '.date('Y-m-d').'
 */';
 
 					// the file will be created if it doesn't exist. otherwise it is overwritten.
-					$write_file = fopen($meta_file, 'w');
+					$write_file = @fopen($meta_file, 'w');
 					fwrite($write_file, $data);
 					fclose($write_file);
 					// success message
@@ -11339,7 +11766,7 @@ DateCreated: '.date('Y-m-d').'
 			function update_readme_file($readme_file) {
 				// Create new file if it doesn't already exist
 				if (!file_exists($readme_file)) {
-					if (!$write_file = fopen($readme_file, 'w')) {
+					if (!$write_file = @fopen($readme_file, 'w')) {
 						$this->log(
 							sprintf( esc_html__('Create %s error', 'microthemer'), 'readme.txt'),
 							'<p>' . sprintf(
@@ -11365,7 +11792,7 @@ DateCreated: '.date('Y-m-d').'
 				if ( is_writable($readme_file) ) {
 					$data = stripslashes($_POST['tvr_theme_readme']); // don't use striptags so html code can be added
 					// the file will be created if it doesn't exist. otherwise it is overwritten.
-					$write_file = fopen($readme_file, 'w');
+					$write_file = @fopen($readme_file, 'w');
 					fwrite($write_file, $data);
 					fclose($write_file);
 					// success message
@@ -11715,7 +12142,7 @@ if (!is_admin()) {
 			var $preferencesName = 'preferences_themer_loader';
 			// @var array $preferences Stores the ui options for this plugin
 			var $preferences = array();
-			var $version = '6.2.0.2';
+			var $version = '6.3.6.1';
 			var $microthemeruipage = 'tvr-microthemer.php';
 			var $file_stub = '';
 			var $min_stub = '';
@@ -11753,6 +12180,9 @@ if (!is_admin()) {
 
 				// logged out page view mode
 				add_action('init',  array(&$this, 'mt_nonlog'), $action_order);
+
+				// earliest action hook $post object is set, useful for redirects
+				add_action('wp',  array(&$this, 'mt_redirect'), $action_order);
 
 				// get draft, minify, and num saves
 				add_action( 'plugins_loaded', array(&$this, 'init_mt_vars'));
@@ -11853,6 +12283,48 @@ if (!is_admin()) {
 						die('Permission denied');
 					}
 				}
+            }
+
+            // perform redirect for e.g. Oxygen edit URL params for the current post
+            // this is more performant than getting the edit links in the quick edit menu
+            function mt_redirect(){
+
+			    // redirect to Oxygen edit page
+			    if ( isset($_GET['mto2_edit_link']) && function_exists('oxygen_add_posts_quick_action_link') ){
+
+				    $nonce = !empty($_GET['_wpnonce']) ? $_GET['_wpnonce'] : false;
+				    if ( current_user_can("administrator") and wp_verify_nonce( $nonce, 'mt_builder_redirect_check' ) ) {
+				        global $post;
+
+					    // try to get link
+					    $edit_link = oxygen_add_posts_quick_action_link(array(), $post);
+
+					    // we have a valid URL
+					    if (!empty($edit_link['oxy_edit'])){
+
+						    preg_match('/href="(.+?)"/', $edit_link['oxy_edit'], $matches);
+
+                            if (!empty($matches[1])){
+
+                                $edit_url = $matches[1];
+
+	                            wp_redirect( esc_url($edit_url) );
+                            }
+
+					    }
+
+					    else {
+					        // warn that edit lock might be in place
+                        }
+
+				    } else {
+					    die('Permission denied');
+				    }
+
+
+
+                }
+
             }
 
 			function init_mt_vars(){

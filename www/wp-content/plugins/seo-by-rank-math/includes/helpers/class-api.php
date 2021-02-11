@@ -49,6 +49,34 @@ trait Api {
 	}
 
 	/**
+	 * Get Auto update setting status.
+	 *
+	 * @return bool
+	 */
+	public static function get_auto_update_setting() {
+		return in_array( 'seo-by-rank-math/rank-math.php', (array) get_site_option( 'auto_update_plugins', [] ), true );
+	}
+
+	/**
+	 * Toggle auto updates option.
+	 *
+	 * @param string $toggle       New status.
+	 * @return void
+	 */
+	public static function toggle_auto_update_setting( $toggle ) {
+		do_action( 'rank_math/settings/toggle_auto_update', $toggle );
+
+		$auto_updates = (array) get_site_option( 'auto_update_plugins', [] );
+		if ( ! empty( $toggle ) && 'off' !== $toggle ) {
+			$auto_updates[] = 'seo-by-rank-math/rank-math.php';
+			update_site_option( 'auto_update_plugins', array_unique( $auto_updates ) );
+			return;
+		}
+
+		update_site_option( 'auto_update_plugins', array_diff( $auto_updates, [ 'seo-by-rank-math/rank-math.php' ] ) );
+	}
+
+	/**
 	 * Add something to the JSON object.
 	 *
 	 * @param string $key         Unique identifier.

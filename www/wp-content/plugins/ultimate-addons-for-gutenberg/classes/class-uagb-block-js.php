@@ -31,6 +31,7 @@ if ( ! class_exists( 'UAGB_Block_JS' ) ) {
 
 			$dots   = ( 'dots' === $attr['arrowDots'] || 'arrowDots' === $attr['arrowDots'] ) ? true : false;
 			$arrows = ( 'arrows' === $attr['arrowDots'] || 'arrowDots' === $attr['arrowDots'] ) ? true : false;
+			$is_rtl = is_rtl();
 
 			$slick_options = apply_filters(
 				'uagb_testimonials_slick_options',
@@ -44,7 +45,7 @@ if ( ! class_exists( 'UAGB_Block_JS' ) ) {
 					'speed'          => $attr['transitionSpeed'],
 					'arrows'         => $arrows,
 					'dots'           => $dots,
-					'rtl'            => false,
+					'rtl'            => $is_rtl,
 					'prevArrow'      => '<button type="button" data-role="none" class="slick-prev" aria-label="Previous" tabindex="0" role="button" style="border-color: ' . $attr['arrowColor'] . ';border-radius:' . $attr['arrowBorderRadius'] . 'px;border-width:' . $attr['arrowBorderSize'] . 'px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" height ="' . $attr['arrowSize'] . '" width = "' . $attr['arrowSize'] . '" fill ="' . $attr['arrowColor'] . '"  ><path d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"></path></svg></button>',
 					'nextArrow'      => '<button type="button" data-role="none" class="slick-next" aria-label="Next" tabindex="0" role="button" style="border-color: ' . $attr['arrowColor'] . ';border-radius:' . $attr['arrowBorderRadius'] . 'px;border-width:' . $attr['arrowBorderSize'] . 'px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" height ="' . $attr['arrowSize'] . '" width = "' . $attr['arrowSize'] . '" fill ="' . $attr['arrowColor'] . '" ><path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path></svg></button>',
 					'responsive'     => array(
@@ -119,9 +120,16 @@ if ( ! class_exists( 'UAGB_Block_JS' ) ) {
 		 * @param string $id The selector ID.
 		 */
 		public static function get_social_share_js( $attr, $id ) {
-
 			$base_selector = ( isset( $attr['classMigrate'] ) && $attr['classMigrate'] ) ? '.uagb-block-' : '#uagb-social-share-';
 			$selector      = $base_selector . $id;
+			global $post;
+			// Get the featured image.
+			if ( has_post_thumbnail() ) {
+				$thumbnail_id = get_post_thumbnail_id( $post->ID );
+				$thumbnail    = $thumbnail_id ? current( wp_get_attachment_image_src( $thumbnail_id, 'large', true ) ) : '';
+			} else {
+				$thumbnail = null;
+			}
 			ob_start();
 			?>
 			var ssLinks = document.querySelectorAll( '<?php echo esc_attr( $selector ); ?>' );
@@ -134,7 +142,12 @@ if ( ! class_exists( 'UAGB_Block_JS' ) ) {
 						if( social_url == "mailto:?body=" ) {
 							target = "_self";
 						}
-						var request_url = social_url + window.location.href;
+						var  request_url ="";
+						if( social_url.indexOf("/pin/create/link/?url=") !== -1) {
+							request_url = social_url + window.location.href + "&media=" + '<?php echo esc_url( $thumbnail ); ?>';
+						}else{
+							request_url = social_url + window.location.href;
+						}
 						window.open( request_url, target );
 					});
 				}
@@ -162,6 +175,63 @@ if ( ! class_exists( 'UAGB_Block_JS' ) ) {
 			?>
 			jQuery( document ).ready(function() {
 				UAGBTableOfContents._run( <?php echo wp_json_encode( $attr ); ?>, '<?php echo esc_attr( $selector ); ?>' );
+			});
+			<?php
+			return ob_get_clean();
+
+		}
+
+
+		/**
+		 * Get Inline Notice Js
+		 *
+		 * @since 1.16.0
+		 * @param array  $attr The block attributes.
+		 * @param string $id The selector ID.
+		 */
+		public static function get_inline_notice_js( $attr, $id ) {
+
+			$defaults = UAGB_Helper::$block_list['uagb/inline-notice']['attributes'];
+
+			$attr          = array_merge( $defaults, (array) $attr );
+			$base_selector = '.uagb-block-';
+			$selector      = $base_selector . $id;
+			$js_attr       = array(
+				'c_id'              => $attr['c_id'],
+				'cookies'           => $attr['cookies'],
+				'close_cookie_days' => $attr['close_cookie_days'],
+				'noticeDismiss'     => $attr['noticeDismiss'],
+			);
+
+			ob_start();
+			?>
+			jQuery( document ).ready(function() {
+				UAGBInlineNotice._run( <?php echo wp_json_encode( $js_attr ); ?>, '<?php echo esc_attr( $selector ); ?>' );
+			});
+			<?php
+			return ob_get_clean();
+
+		}
+
+		/**
+		 * Get UAGB Lottie Js
+		 *
+		 * @since 1.20.0
+		 * @param array  $attr The block attributes.
+		 * @param string $id The selector ID.
+		 */
+		public static function get_lottie_js( $attr, $id ) {
+
+			$defaults = UAGB_Helper::$block_list['uagb/lottie']['attributes'];
+
+			$attr          = array_merge( $defaults, (array) $attr );
+			$base_selector = 'uagb-block-';
+			$selector      = $base_selector . $id;
+
+			ob_start();
+			?>
+			jQuery( document ).ready(function() {
+				UAGBLottie._run( <?php echo wp_json_encode( $attr ); ?>, '<?php echo esc_attr( $selector ); ?>' );
 			});
 			<?php
 			return ob_get_clean();
@@ -218,6 +288,55 @@ if ( ! class_exists( 'UAGB_Block_JS' ) ) {
 			UAGB_Helper::blocks_google_font( $price_load_google_font, $price_font_family, $price_font_weight, $price_font_subset );
 		}
 
+		/**
+		 * Adds Google fonts for review block.
+		 *
+		 * @since 1.19.0
+		 * @param array $attr the blocks attr.
+		 */
+		public static function blocks_review_gfont( $attr ) {
+
+			$head_load_google_font = isset( $attr['headLoadGoogleFonts'] ) ? $attr['headLoadGoogleFonts'] : '';
+			$head_font_family      = isset( $attr['headFontFamily'] ) ? $attr['headFontFamily'] : '';
+			$head_font_weight      = isset( $attr['headFontWeight'] ) ? $attr['headFontWeight'] : '';
+			$head_font_subset      = isset( $attr['headFontSubset'] ) ? $attr['headFontSubset'] : '';
+
+			$subhead_load_google_font = isset( $attr['subHeadLoadGoogleFonts'] ) ? $attr['subHeadLoadGoogleFonts'] : '';
+			$subhead_font_family      = isset( $attr['subHeadFontFamily'] ) ? $attr['subHeadFontFamily'] : '';
+			$subhead_font_weight      = isset( $attr['subHeadFontWeight'] ) ? $attr['subHeadFontWeight'] : '';
+			$subhead_font_subset      = isset( $attr['subHeadFontSubset'] ) ? $attr['subHeadFontSubset'] : '';
+
+			$content_load_google_fonts = isset( $attr['contentLoadGoogleFonts'] ) ? $attr['contentLoadGoogleFonts'] : '';
+			$content_font_family       = isset( $attr['contentFontFamily'] ) ? $attr['contentFontFamily'] : '';
+			$content_font_weight       = isset( $attr['contentFontWeight'] ) ? $attr['contentFontWeight'] : '';
+			$content_font_subset       = isset( $attr['contentFontSubset'] ) ? $attr['contentFontSubset'] : '';
+
+			UAGB_Helper::blocks_google_font( $subhead_load_google_font, $subhead_font_family, $subhead_font_weight, $subhead_font_subset );
+			UAGB_Helper::blocks_google_font( $head_load_google_font, $head_font_family, $head_font_weight, $head_font_subset );
+			UAGB_Helper::blocks_google_font( $content_load_google_fonts, $content_font_family, $content_font_weight, $content_font_subset );
+		}
+
+		/**
+		 * Adds Google fonts for Inline Notice block.
+		 *
+		 * @since 1.16.0
+		 * @param array $attr the blocks attr.
+		 */
+		public static function blocks_inline_notice_gfont( $attr ) {
+
+			$title_load_google_font = isset( $attr['titleLoadGoogleFonts'] ) ? $attr['titleLoadGoogleFonts'] : '';
+			$title_font_family      = isset( $attr['titleFontFamily'] ) ? $attr['titleFontFamily'] : '';
+			$title_font_weight      = isset( $attr['titleFontWeight'] ) ? $attr['titleFontWeight'] : '';
+			$title_font_subset      = isset( $attr['titleFontSubset'] ) ? $attr['titleFontSubset'] : '';
+
+			$desc_load_google_font = isset( $attr['descLoadGoogleFonts'] ) ? $attr['descLoadGoogleFonts'] : '';
+			$desc_font_family      = isset( $attr['descFontFamily'] ) ? $attr['descFontFamily'] : '';
+			$desc_font_weight      = isset( $attr['descFontWeight'] ) ? $attr['descFontWeight'] : '';
+			$desc_font_subset      = isset( $attr['descFontSubset'] ) ? $attr['descFontSubset'] : '';
+
+			UAGB_Helper::blocks_google_font( $title_load_google_font, $title_font_family, $title_font_weight, $title_font_subset );
+			UAGB_Helper::blocks_google_font( $desc_load_google_font, $desc_font_family, $desc_font_weight, $desc_font_subset );
+		}
 
 		/**
 		 * Adds Google fonts for CF7 Styler block.
@@ -653,6 +772,57 @@ if ( ! class_exists( 'UAGB_Block_JS' ) ) {
 
 			UAGB_Helper::blocks_google_font( $question_load_google_font, $question_font_family, $question_font_weight, $question_font_subset );
 			UAGB_Helper::blocks_google_font( $answer_load_google_font, $answer_font_family, $answer_font_weight, $answer_font_subset );
+
+		}
+
+		/**
+		 * Adds Google fonts for WP Search block.
+		 *
+		 * @since 1.16.0
+		 * @param array $attr the blocks attr.
+		 */
+		public static function blocks_wp_search_gfont( $attr ) {
+
+			$input_load_google_font = isset( $attr['inputloadGoogleFonts'] ) ? $attr['inputloadGoogleFonts'] : '';
+			$input_font_family      = isset( $attr['inputFontFamily'] ) ? $attr['inputFontFamily'] : '';
+			$input_font_weight      = isset( $attr['inputFontWeight'] ) ? $attr['inputFontWeight'] : '';
+			$input_font_subset      = isset( $attr['inputFontSubset'] ) ? $attr['inputFontSubset'] : '';
+
+			$button_load_google_font = isset( $attr['buttonloadGoogleFonts'] ) ? $attr['buttonloadGoogleFonts'] : '';
+			$button_font_family      = isset( $attr['buttonFontFamily'] ) ? $attr['buttonFontFamily'] : '';
+			$button_font_weight      = isset( $attr['buttonFontWeight'] ) ? $attr['buttonFontWeight'] : '';
+			$button_font_subset      = isset( $attr['buttonFontSubset'] ) ? $attr['buttonFontSubset'] : '';
+
+			UAGB_Helper::blocks_google_font( $button_load_google_font, $button_font_family, $button_font_weight, $button_font_subset );
+			UAGB_Helper::blocks_google_font( $input_load_google_font, $input_font_family, $input_font_weight, $input_font_subset );
+		}
+
+		/**
+		 * Adds Google fonts for Taxonomy List.
+		 *
+		 * @since 1.18.0
+		 * @param array $attr the blocks attr.
+		 */
+		public static function blocks_taxonomy_list_gfont( $attr ) {
+
+			$title_load_google_font = isset( $attr['titleLoadGoogleFonts'] ) ? $attr['titleLoadGoogleFonts'] : '';
+			$title_font_family      = isset( $attr['titleFontFamily'] ) ? $attr['titleFontFamily'] : '';
+			$title_font_weight      = isset( $attr['titleFontWeight'] ) ? $attr['titleFontWeight'] : '';
+			$title_font_subset      = isset( $attr['titleFontSubset'] ) ? $attr['titleFontSubset'] : '';
+
+			$count_load_google_font = isset( $attr['countLoadGoogleFonts'] ) ? $attr['countLoadGoogleFonts'] : '';
+			$count_font_family      = isset( $attr['countFontFamily'] ) ? $attr['countFontFamily'] : '';
+			$count_font_weight      = isset( $attr['countFontWeight'] ) ? $attr['countFontWeight'] : '';
+			$count_font_subset      = isset( $attr['countFontSubset'] ) ? $attr['countFontSubset'] : '';
+
+			$list_load_google_font = isset( $attr['listLoadGoogleFonts'] ) ? $attr['listLoadGoogleFonts'] : '';
+			$list_font_family      = isset( $attr['listFontFamily'] ) ? $attr['listFontFamily'] : '';
+			$list_font_weight      = isset( $attr['listFontWeight'] ) ? $attr['listFontWeight'] : '';
+			$list_font_subset      = isset( $attr['listFontSubset'] ) ? $attr['listFontSubset'] : '';
+
+			UAGB_Helper::blocks_google_font( $title_load_google_font, $title_font_family, $title_font_weight, $title_font_subset );
+			UAGB_Helper::blocks_google_font( $count_load_google_font, $count_font_family, $count_font_weight, $count_font_subset );
+			UAGB_Helper::blocks_google_font( $list_load_google_font, $list_font_family, $list_font_weight, $list_font_subset );
 
 		}
 

@@ -55,51 +55,6 @@ class Astra_Control_Sortable extends WP_Customize_Control {
 	}
 
 	/**
-	 * An Underscore (JS) template for this control's content (but not its container).
-	 *
-	 * Class variables for this control class are available in the `data` JS object;
-	 * export custom variables by overriding {@see WP_Customize_Control::to_json()}.
-	 *
-	 * @see WP_Customize_Control::print_template()
-	 *
-	 * @access protected
-	 */
-	protected function content_template() {
-		?>
-		<label class='ast-sortable'>
-			<span class="customize-control-title">
-				{{{ data.label }}}
-			</span>
-			<# if ( data.description ) { #>
-				<span class="description customize-control-description">{{{ data.description }}}</span>
-			<# } #>
-
-			<ul class="sortable">
-				<# _.each( data.value, function( choiceID ) {
-					if ( data.choices[ choiceID ] ) { #>
-						<li {{{ data.inputAttrs }}} class='ast-sortable-item' data-value='{{ choiceID }}'>
-							<i class='dashicons dashicons-menu'></i>
-							<i class="dashicons dashicons-visibility visibility"></i>
-							{{{ data.choices[ choiceID ] }}}
-						</li>
-					<# }
-				}); #>
-				<# _.each( data.choices, function( choiceLabel, choiceID ) { #>
-				<# if ( Array.isArray(data.value) && -1 === data.value.indexOf( choiceID ) ) { #>
-						<li {{{ data.inputAttrs }}} class='ast-sortable-item invisible' data-value='{{ choiceID }}'>
-							<i class='dashicons dashicons-menu'></i>
-							<i class="dashicons dashicons-visibility visibility"></i>
-							{{{ data.choices[ choiceID ] }}}
-						</li>
-					<# } #>
-				<# }); #>
-			</ul>
-		</label>
-
-		<?php
-	}
-
-	/**
 	 * Render the control's content.
 	 *
 	 * @see WP_Customize_Control::render_content()

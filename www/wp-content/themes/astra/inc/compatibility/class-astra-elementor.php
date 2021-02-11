@@ -5,7 +5,7 @@
  * @package Astra
  */
 
-namespace Elementor;
+namespace Elementor;// phpcs:ignore PHPCompatibility.Keywords.NewKeywords.t_namespaceFound
 
 // If plugin - 'Elementor' not exist then return.
 if ( ! class_exists( '\Elementor\Plugin' ) ) {
@@ -54,8 +54,7 @@ if ( ! class_exists( 'Astra_Elementor' ) ) :
 			 *
 			 * @since  2.4.5
 			 */
-			add_action( 'elementor/preview/enqueue_styles', array( $this, 'enqueue_elementor_compatibility_styles' ) );
-			add_action( 'elementor/frontend/after_enqueue_styles', array( $this, 'enqueue_elementor_compatibility_styles' ) );
+			add_filter( 'astra_dynamic_theme_css', array( $this, 'enqueue_elementor_compatibility_styles' ) );
 		}
 
 		/**
@@ -66,17 +65,63 @@ if ( ! class_exists( 'Astra_Elementor' ) ) :
 		 *
 		 * That's why adding this CSS fix to headings by setting bottom-margin to 0.
 		 *
-		 * @return void
+		 * @param  string $dynamic_css Astra Dynamic CSS.
+		 * @param  string $dynamic_css_filtered Astra Dynamic CSS Filters.
+		 * @return string $dynamic_css Generated CSS.
+		 *
 		 * @since  2.4.5
 		 */
-		public function enqueue_elementor_compatibility_styles() {
-			?>
-				<style type="text/css" id="ast-elementor-compatibility-css">
-					.elementor-widget-heading .elementor-heading-title {
-						margin: 0;
-					}
-				</style>
-			<?php
+		public function enqueue_elementor_compatibility_styles( $dynamic_css, $dynamic_css_filtered = '' ) {
+
+			global $post;
+			$id = astra_get_post_id();
+
+			if ( $this->is_elementor_activated( $id ) ) {
+
+				$elementor_heading_margin_comp = array(
+					'.elementor-widget-heading .elementor-heading-title' => array(
+						'margin' => '0',
+					),
+				);
+
+				/* Parse CSS from array() */
+				$parse_css = astra_parse_css( $elementor_heading_margin_comp );
+
+				$elementor_base_css = array(
+					'.elementor-post.elementor-grid-item.hentry' => array(
+						'margin-bottom' => '0',
+					),
+					'.woocommerce div.product .elementor-element.elementor-products-grid .related.products ul.products li.product, .elementor-element .elementor-wc-products .woocommerce[class*=\'columns-\'] ul.products li.product' => array(
+						'width'  => 'auto',
+						'margin' => '0',
+						'float'  => 'none',
+					),
+				);
+				// Load base static CSS when Elmentor is activated.
+				$parse_css .= astra_parse_css( $elementor_base_css );
+
+				if ( is_rtl() ) {
+					$elementor_rtl_support_css = array(
+						'.ast-left-sidebar .elementor-section.elementor-section-stretched,.ast-right-sidebar .elementor-section.elementor-section-stretched' => array(
+							'max-width' => '100%',
+							'right'     => '0 !important',
+						),
+					);
+				} else {
+					$elementor_rtl_support_css = array(
+						'.ast-left-sidebar .elementor-section.elementor-section-stretched,.ast-right-sidebar .elementor-section.elementor-section-stretched' => array(
+							'max-width' => '100%',
+							'left'      => '0 !important',
+						),
+					);
+				}
+				$parse_css .= astra_parse_css( $elementor_rtl_support_css );
+				
+
+				$dynamic_css .= $parse_css;
+			}
+
+			return $dynamic_css;
 		}
 
 		/**
@@ -122,14 +167,14 @@ if ( ! class_exists( 'Astra_Elementor' ) ) :
 					// In the preview mode, Apply the layouts using filters for Elementor Template Library.
 					add_filter(
 						'astra_page_layout',
-						function() {
+						function() { // phpcs:ignore PHPCompatibility.FunctionDeclarations.NewClosure.Found
 							return 'no-sidebar';
 						}
 					);
 
 					add_filter(
 						'astra_get_content_layout',
-						function () {
+						function () { // phpcs:ignore PHPCompatibility.FunctionDeclarations.NewClosure.Found
 							return 'page-builder';
 						}
 					);

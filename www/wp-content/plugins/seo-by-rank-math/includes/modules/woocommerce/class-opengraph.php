@@ -76,9 +76,9 @@ class Opengraph extends Sitemap {
 			return;
 		}
 
-		$brands = WooCommerce::get_brands( get_the_ID() );
-		if ( ! empty( $brands ) ) {
-			$opengraph->tag( 'product:brand', $brands[0]->name );
+		$brand = WooCommerce::get_brands( get_the_ID() );
+		if ( ! empty( $brand ) ) {
+			$opengraph->tag( 'product:brand', $brand );
 		}
 
 		/**
@@ -86,7 +86,7 @@ class Opengraph extends Sitemap {
 		 *
 		 * @param bool unsigned Defaults to true.
 		 */
-		if ( $this->do_filter( 'woocommerce/og_price', true ) ) {
+		if ( $this->do_filter( 'woocommerce/og_price', ! $product->is_type( 'variable' ) ) ) {
 			$opengraph->tag( 'product:price:amount', $product->get_price() );
 			$opengraph->tag( 'product:price:currency', get_woocommerce_currency() );
 		}

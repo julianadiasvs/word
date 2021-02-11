@@ -145,7 +145,7 @@ class Admin_Bar_Menu {
 
 		$this->items['main'] = [
 			'id'       => self::MENU_IDENTIFIER,
-			'title'    => '<span class="rank-math-icon">' . $this->get_icon() . '</span><span class="rank-math-text">' . esc_html( 'Rank Math SEO', 'rank-math' ) . '</span>',
+			'title'    => '<span class="rank-math-icon">' . $this->get_icon() . '</span><span class="rank-math-text">' . esc_html__( 'Rank Math SEO', 'rank-math' ) . '</span>',
 			'href'     => Helper::get_admin_url( $first_menu ),
 			'meta'     => [ 'title' => esc_html__( 'Rank Math Dashboard', 'rank-math' ) ],
 			'priority' => 10,
@@ -284,7 +284,7 @@ class Admin_Bar_Menu {
 		);
 
 		$is_pillar_content = '';
-		$dashicon_format   = '<span class="dashicons dashicons-%s" style="font-family: dashicons; font-size: 19px;"></span>';
+		$dashicon_format   = '<span class="dashicons dashicons-%s" style="font-family: dashicons; font-size: 19px; line-height: 1.5;"></span>';
 
 		if ( is_singular( Helper::get_accessible_post_types() ) ) {
 			if ( get_post_meta( get_the_ID(), 'rank_math_pillar_content', true ) === 'on' ) {
@@ -341,14 +341,8 @@ class Admin_Bar_Menu {
 			]
 		);
 
-		$url   = urlencode( Url::get_current_url() );
+		$url   = rawurlencode( Url::get_current_url() );
 		$items = [
-			'google-structured-data'     => [
-				'title' => esc_html__( 'Google Structured Data', 'rank-math' ),
-				'href'  => 'https://search.google.com/structured-data/testing-tool/?url=' . $url,
-				'meta'  => [ 'title' => esc_html__( 'Google Structured Data Testing Tool', 'rank-math' ) ],
-			],
-
 			'google-pagespeed'           => [
 				'title' => esc_html__( 'Google PageSpeed', 'rank-math' ),
 				'href'  => 'https://developers.google.com/speed/pagespeed/insights/?url=' . $url,
@@ -395,7 +389,7 @@ class Admin_Bar_Menu {
 	/**
 	 * Add sub menu item
 	 *
-	 * @param string $id     Unique id for the node.
+	 * @param string $id     Unique ID for the node.
 	 * @param array  $args   Arguments for adding a node.
 	 * @param string $parent Node parent.
 	 */

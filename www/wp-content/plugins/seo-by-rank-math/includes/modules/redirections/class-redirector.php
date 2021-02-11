@@ -88,7 +88,7 @@ class Redirector {
 	 * Set the required values.
 	 */
 	private function start() {
-		$this->uri = str_replace( site_url( '/' ), '', Param::server( 'REQUEST_URI' ) );
+		$this->uri = str_replace( home_url( '/' ), '', Param::server( 'REQUEST_URI' ) );
 		$this->uri = urldecode( $this->uri );
 		$this->uri = trim( Redirection::strip_subdirectory( $this->uri ), '/' );
 
@@ -293,7 +293,7 @@ class Redirector {
 
 		if ( 'homepage' === $behavior ) {
 			$this->matched     = [];
-			$this->redirect_to = Sitepress::get()->get_site_url();
+			$this->redirect_to = home_url();
 			return;
 		}
 
@@ -318,7 +318,6 @@ class Redirector {
 
 		require_once ABSPATH . 'wp-admin/includes/screen.php';
 
-		$assets_uri = untrailingslashit( plugin_dir_url( __FILE__ ) );
 		include_once \dirname( __FILE__ ) . '/views/debugging.php';
 		exit;
 	}
@@ -379,7 +378,7 @@ class Redirector {
 	private function set_404() {
 		global $wp_query;
 
-		$wp_query         = is_object( $wp_query ) ? $wp_query : new WP_Query;
+		$wp_query         = is_object( $wp_query ) ? $wp_query : new WP_Query();
 		$wp_query->is_404 = true;
 	}
 

@@ -78,8 +78,10 @@ class EIO_Alt_Webp extends EIO_Page_Parser {
 		// Start an output buffer before any output starts.
 		/* add_action( 'template_redirect', array( $this, 'buffer_start' ), 0 ); */
 		add_filter( 'ewww_image_optimizer_filter_page_output', array( $this, 'filter_page_output' ), 20 );
-		// Filter for NextGEN image urls within JS.
+		// Filter for NextGEN image urls within JSON.
 		add_filter( 'ngg_pro_lightbox_images_queue', array( $this, 'ngg_pro_lightbox_images_queue' ), 11 );
+		// Filter for WooCommerce product variations JSON.
+		add_filter( 'woocommerce_pre_json_available_variations', array( $this, 'woocommerce_pre_json_available_variations' ) );
 
 		// Load up the minified script so we can inline it.
 		$this->inline_script = file_get_contents( EWWW_IMAGE_OPTIMIZER_PLUGIN_PATH . 'includes/load_webp.min.js' );
@@ -104,20 +106,58 @@ class EIO_Alt_Webp extends EIO_Page_Parser {
 			if ( is_wp_error( $s3_region ) ) {
 				$s3_region = '';
 			}
-			$s3_domain = $as3cf->get_provider()->get_url_domain( $s3_bucket, $s3_region, null, array(), true );
-			ewwwio_debug_message( "found S3 domain of $s3_domain with bucket $s3_bucket and region $s3_region" );
+			if ( ! empty( $s3_bucket ) && ! is_wp_error( $s3_bucket ) && method_exists( $as3cf, 'get_provider' ) ) {
+				$s3_domain = $as3cf->get_provider()->get_url_domain( $s3_bucket, $s3_region, null, array(), true );
+			} elseif ( ! empty( $s3_bucket ) && ! is_wp_error( $s3_bucket ) && method_exists( $as3cf, 'get_storage_provider' ) ) {
+				$s3_domain = $as3cf->get_storage_provider()->get_url_domain( $s3_bucket, $s3_region );
+			}
 			if ( ! empty( $s3_domain ) && $as3cf->get_setting( 'serve-from-s3' ) ) {
+				ewwwio_debug_message( "found S3 domain of $s3_domain with bucket $s3_bucket and region $s3_region" );
 				$this->webp_paths[] = $s3_scheme . '://' . $s3_domain . '/';
-				$this->s3_active    = $s3_domain;
+				if ( $as3cf->get_setting( 'enable-delivery-domain' ) && $as3cf->get_setting( 'delivery-domain' ) ) {
+					$delivery_domain    = $as3cf->get_setting( 'delivery-domain' );
+					$this->webp_paths[] = $s3_scheme . '://' . $delivery_domain . '/';
+					$this->debug_message( "found WOM delivery domain of $delivery_domain" );
+				}
+				$this->s3_active = $s3_domain;
 				if ( $as3cf->get_setting( 'enable-object-prefix' ) ) {
 					$this->s3_object_prefix = $as3cf->get_setting( 'object-prefix' );
 					$this->debug_message( $as3cf->get_setting( 'object-prefix' ) );
+				} else {
+					$this->debug_message( 'no WOM prefix' );
 				}
 				if ( $as3cf->get_setting( 'object-versioning' ) ) {
 					$this->s3_object_version = true;
 					$this->debug_message( 'object versioning enabled' );
 				}
 			}
+		}
+
+		if (
+			class_exists( 'S3_Uploads' ) &&
+			function_exists( 's3_uploads_enabled' ) && s3_uploads_enabled() &&
+			method_exists( 'S3_Uploads', 'get_instance' ) && method_exists( 'S3_Uploads', 'get_s3_url' )
+		) {
+			$s3_uploads_instance = \S3_Uploads::get_instance();
+			$s3_uploads_url      = $s3_uploads_instance->get_s3_url();
+			$this->webp_paths[]  = $s3_uploads_url;
+			$this->debug_message( "found S3 URL from S3_Uploads: $s3_uploads_url" );
+		}
+
+		if ( class_exists( 'wpCloud\StatelessMedia\EWWW' ) && function_exists( 'ud_get_stateless_media' ) ) {
+			$sm = ud_get_stateless_media();
+			if ( method_exists( $sm, 'get' ) && method_exists( $sm, 'get_gs_host' ) ) {
+				$sm_mode = $sm->get( 'sm.mode' );
+				if ( 'disabled' !== $sm_mode ) {
+					$sm_host = $sm->get_gs_host();
+					$this->debug_message( $sm_host );
+					$this->webp_paths[] = $sm_host;
+				}
+			}
+		}
+
+		if ( function_exists( 'swis' ) && swis()->settings->get_option( 'cdn_domain' ) ) {
+			$this->webp_paths[] = swis()->settings->get_option( 'cdn_domain' );
 		}
 
 		foreach ( $this->webp_paths as $webp_path ) {
@@ -150,6 +190,14 @@ class EIO_Alt_Webp extends EIO_Page_Parser {
 		$this->validate_user_exclusions();
 	}
 
+	/**
+	 * Grant read-only access to allowed WebP domains.
+	 *
+	 * @return array A list of WebP domains.
+	 */
+	function get_webp_domains() {
+		return $this->webp_domains;
+	}
 
 	/**
 	 * Starts an output buffer and registers the callback function to do WebP replacement.
@@ -198,11 +246,16 @@ class EIO_Alt_Webp extends EIO_Page_Parser {
 			'usemap',
 			'vspace',
 			'width',
+			'data-animation',
 			'data-attachment-id',
+			'data-auto-height',
 			'data-caption',
 			'data-comments-opened',
+			'data-delay',
 			'data-event-trigger',
+			'data-flex_fx',
 			'data-height',
+			'data-hide-on-end',
 			'data-highlight-color',
 			'data-highlight-border-color',
 			'data-highlight-border-opacity',
@@ -211,18 +264,32 @@ class EIO_Alt_Webp extends EIO_Page_Parser {
 			'data-image-meta',
 			'data-image-title',
 			'data-image-description',
+			'data-interval',
 			'data-large_image_width',
 			'data-large_image_height',
 			'data-lazy',
 			'data-lazy-type',
+			'data-mode',
+			'data-name',
 			'data-no-lazy',
 			'data-orig-size',
+			'data-partial',
+			'data-per-view',
 			'data-permalink',
 			'data-pin-description',
 			'data-pin-id',
 			'data-pin-media',
 			'data-pin-url',
+			'data-rel',
+			'data-ride',
+			'data-shadow',
+			'data-shadow-direction',
+			'data-slide',
+			'data-slide-to',
+			'data-target',
+			'data-vc-zoom',
 			'data-width',
+			'data-wrap',
 		);
 		foreach ( $attributes as $attribute ) {
 			$attr_value = $this->get_attribute( $image, $attribute );
@@ -367,6 +434,7 @@ class EIO_Alt_Webp extends EIO_Page_Parser {
 			is_embed() ||
 			is_feed() ||
 			is_preview() ||
+			is_customize_preview() ||
 			( defined( 'REST_REQUEST' ) && REST_REQUEST ) ||
 			preg_match( '/^<\?xml/', $buffer ) ||
 			strpos( $buffer, 'amp-boilerplate' ) ||
@@ -787,8 +855,8 @@ class EIO_Alt_Webp extends EIO_Page_Parser {
 	 * @return array The array of images with WebP versions added.
 	 */
 	function ngg_pro_lightbox_images_queue( $images ) {
-		ewwwio_debug_message( '<b>' . __METHOD__ . '()</b>' );
-		if ( ewww_image_optimizer_iterable( $images ) ) {
+		$this->debug_message( '<b>' . __METHOD__ . '()</b>' );
+		if ( $this->is_iterable( $images ) ) {
 			foreach ( $images as $index => $image ) {
 				if ( ! empty( $image['image'] ) && $this->validate_image_url( $image['image'] ) ) {
 					$images[ $index ]['image-webp'] = $this->generate_url( $image['image'] );
@@ -799,14 +867,14 @@ class EIO_Alt_Webp extends EIO_Page_Parser {
 				if ( ! empty( $image['full_image'] ) && $this->validate_image_url( $image['full_image'] ) ) {
 					$images[ $index ]['full_image_webp'] = $this->generate_url( $image['full_image'] );
 				}
-				if ( ewww_image_optimizer_iterable( $image['srcsets'] ) ) {
+				if ( $this->is_iterable( $image['srcsets'] ) ) {
 					foreach ( $image['srcsets'] as $size => $srcset ) {
 						if ( $this->validate_image_url( $srcset ) ) {
 							$images[ $index ]['srcsets'][ $size . '-webp' ] = $this->generate_url( $srcset );
 						}
 					}
 				}
-				if ( ewww_image_optimizer_iterable( $image['full_srcsets'] ) ) {
+				if ( $this->is_iterable( $image['full_srcsets'] ) ) {
 					foreach ( $image['full_srcsets'] as $size => $srcset ) {
 						if ( $this->validate_image_url( $srcset ) ) {
 							$images[ $index ]['full_srcsets'][ $size . '-webp' ] = $this->generate_url( $srcset );
@@ -816,6 +884,44 @@ class EIO_Alt_Webp extends EIO_Page_Parser {
 			}
 		}
 		return $images;
+	}
+
+	/**
+	 * Adds WebP URLs to the product variations data before it is JSON-encoded.
+	 *
+	 * @param array $variations The product variations with all the associated data.
+	 * @return array The product variations with WebP image URLs added.
+	 */
+	function woocommerce_pre_json_available_variations( $variations ) {
+		$this->debug_message( '<b>' . __METHOD__ . '()</b>' );
+		if ( $this->is_iterable( $variations ) ) {
+			foreach ( $variations as $index => $variation ) {
+				if ( $this->is_iterable( $variation['image'] ) ) {
+					if ( ! empty( $variation['image']['src'] ) && $this->validate_image_url( $variation['image']['src'] ) ) {
+						$variations[ $index ]['image']['src_webp'] = $this->generate_url( $variation['image']['src'] );
+					}
+					if ( ! empty( $variation['image']['full_src'] ) && $this->validate_image_url( $variation['image']['full_src'] ) ) {
+						$variations[ $index ]['image']['full_src_webp'] = $this->generate_url( $variation['image']['full_src'] );
+					}
+					if ( ! empty( $variation['image']['gallery_thumbnail_src'] ) && $this->validate_image_url( $variation['image']['gallery_thumbnail_src'] ) ) {
+						$variations[ $index ]['image']['gallery_thumbnail_src_webp'] = $this->generate_url( $variation['image']['gallery_thumbnail_src'] );
+					}
+					if ( ! empty( $variation['image']['thumb_src'] ) && $this->validate_image_url( $variation['image']['thumb_src'] ) ) {
+						$variations[ $index ]['image']['thumb_src_webp'] = $this->generate_url( $variation['image']['thumb_src'] );
+					}
+					if ( ! empty( $variation['image']['srcset'] ) ) {
+						$webp_srcset = $this->srcset_replace( $variation['image']['srcset'] );
+						if ( $webp_srcset ) {
+							$variations[ $index ]['image']['srcset_webp'] = $webp_srcset;
+						}
+					}
+				}
+			}
+			if ( $this->function_exists( 'print_r' ) ) {
+				$this->debug_message( print_r( $variations, true ) );
+			}
+		}
+		return $variations;
 	}
 
 	/**
@@ -1021,7 +1127,7 @@ class EIO_Alt_Webp extends EIO_Page_Parser {
 		if ( ! is_null( $image_path ) && $image_path ) {
 			$extension = strtolower( pathinfo( $image_path, PATHINFO_EXTENSION ) );
 		}
-		if ( $extension && 'gif' === $extension ) {
+		if ( $extension && 'gif' === $extension && ! ewww_image_optimizer_get_option( 'ewww_image_optimizer_force_gif2webp' ) ) {
 			return false;
 		}
 		if ( $extension && 'svg' === $extension ) {

@@ -13,7 +13,7 @@ Plugin Name: EWWW Image Optimizer
 Plugin URI: https://wordpress.org/plugins/ewww-image-optimizer/
 Description: Reduce file sizes for images within WordPress including NextGEN Gallery and GRAND FlAGallery. Uses jpegtran, optipng/pngout, and gifsicle.
 Author: Exactly WWW
-Version: 5.4.0
+Version: 6.0.1
 Author URI: https://ewww.io/
 License: GPLv3
 */
@@ -45,30 +45,6 @@ if ( ! defined( 'PHP_VERSION_ID' ) || PHP_VERSION_ID < 50600 ) {
 	// Prevent loading both EWWW IO plugins.
 	add_action( 'network_admin_notices', 'ewww_image_optimizer_dual_plugin' );
 	add_action( 'admin_notices', 'ewww_image_optimizer_dual_plugin' );
-	// Loads the plugin translations.
-	add_action( 'plugins_loaded', 'ewww_image_optimizer_false_init' );
-} elseif ( defined( 'KINSTAMU_VERSION' ) ) {
-	add_action( 'network_admin_notices', 'ewww_image_optimizer_notice_kinsta' );
-	add_action( 'admin_notices', 'ewww_image_optimizer_notice_kinsta' );
-	require_once( plugin_dir_path( __FILE__ ) . 'classes/class-ewwwio-install-cloud.php' );
-	// Loads the plugin translations.
-	add_action( 'plugins_loaded', 'ewww_image_optimizer_false_init' );
-} elseif ( defined( 'WPE_PLUGIN_VERSION' ) ) {
-	add_action( 'network_admin_notices', 'ewww_image_optimizer_notice_wpengine' );
-	add_action( 'admin_notices', 'ewww_image_optimizer_notice_wpengine' );
-	require_once( plugin_dir_path( __FILE__ ) . 'classes/class-ewwwio-install-cloud.php' );
-	// Loads the plugin translations.
-	add_action( 'plugins_loaded', 'ewww_image_optimizer_false_init' );
-} elseif ( defined( 'FLYWHEEL_CONFIG_DIR' ) ) {
-	add_action( 'network_admin_notices', 'ewww_image_optimizer_notice_flywheel' );
-	add_action( 'admin_notices', 'ewww_image_optimizer_notice_flywheel' );
-	require_once( plugin_dir_path( __FILE__ ) . 'classes/class-ewwwio-install-cloud.php' );
-	// Loads the plugin translations.
-	add_action( 'plugins_loaded', 'ewww_image_optimizer_false_init' );
-} elseif ( defined( 'WPNET_INIT_PLUGIN_VERSION' ) ) {
-	add_action( 'network_admin_notices', 'ewww_image_optimizer_notice_wpnetnz' );
-	add_action( 'admin_notices', 'ewww_image_optimizer_notice_wpnetnz' );
-	require_once( plugin_dir_path( __FILE__ ) . 'classes/class-ewwwio-install-cloud.php' );
 	// Loads the plugin translations.
 	add_action( 'plugins_loaded', 'ewww_image_optimizer_false_init' );
 } elseif ( false === strpos( add_query_arg( null, null ), 'ewwwio_disable=1' ) ) {
@@ -150,36 +126,4 @@ if ( ! function_exists( 'ewww_image_optimizer_unsupported_php' ) ) {
 	function ewww_image_optimizer_false_init() {
 		load_plugin_textdomain( 'ewww-image-optimizer', false, plugin_dir_path( __FILE__ ) . 'languages/' );
 	}
-}
-
-/**
- * Inform the user that only ewww-image-optimizer-cloud is permitted on WP Engine.
- */
-function ewww_image_optimizer_notice_wpengine() {
-	echo "<div id='ewww-image-optimizer-warning-wpengine' class='error'><p>" . esc_html__( 'The regular version of the EWWW Image Optimizer plugin is not permitted on WP Engine sites. However, the cloud version has been approved by WP Engine. Please deactivate EWWW Image Optimizer and install EWWW Image Optimizer Cloud to optimize your images.', 'ewww-image-optimizer' ) .
-		' <a href="' . esc_url( admin_url( 'admin.php?action=ewwwio_install_cloud_plugin' ) ) . '">' . esc_html__( 'Install now.', 'ewww-image-optimizer' ) . '</a></p></div>';
-}
-
-/**
- * Inform the user that only ewww-image-optimizer-cloud is permitted on Kinsta.
- */
-function ewww_image_optimizer_notice_kinsta() {
-	echo "<div id='ewww-image-optimizer-warning-kinsta' class='error'><p>" . esc_html__( 'The regular version of the EWWW Image Optimizer plugin is not permitted on Kinsta sites. Please deactivate EWWW Image Optimizer and install EWWW Image Optimizer Cloud to optimize your images.', 'ewww-image-optimizer' ) .
-		' <a href="admin.php?action=ewwwio_install_cloud_plugin">' . esc_html__( 'Install now.', 'ewww-image-optimizer' ) . '</a></p></div>';
-}
-
-/**
- * Inform the user that only ewww-image-optimizer-cloud is permitted on Flywheel.
- */
-function ewww_image_optimizer_notice_flywheel() {
-	echo "<div id='ewww-image-optimizer-warning-flywheel' class='error'><p>" . esc_html__( 'The regular version of the EWWW Image Optimizer plugin is not permitted on Flywheel sites. Please deactivate EWWW Image Optimizer and install EWWW Image Optimizer Cloud to optimize your images.', 'ewww-image-optimizer' ) .
-		' <a href="admin.php?action=ewwwio_install_cloud_plugin">' . esc_html__( 'Install now.', 'ewww-image-optimizer' ) . '</a></p></div>';
-}
-
-/**
- * Inform the user that only ewww-image-optimizer-cloud is permitted on WP NET (nz).
- */
-function ewww_image_optimizer_notice_wpnetnz() {
-	echo "<div id='ewww-image-optimizer-warning-wpnetnz' class='error'><p>" . esc_html__( 'The regular version of the EWWW Image Optimizer plugin is not permitted on WP NET sites. Please deactivate EWWW Image Optimizer and install EWWW Image Optimizer Cloud to optimize your images.', 'ewww-image-optimizer' ) .
-		' <a href="admin.php?action=ewwwio_install_cloud_plugin">' . esc_html__( 'Install now.', 'ewww-image-optimizer' ) . '</a></p></div>';
 }

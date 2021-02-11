@@ -106,6 +106,9 @@ class Installer {
 	 * Run network-wide activation/deactivation of the plugin.
 	 *
 	 * @param bool $activate True for plugin activation, false for de-activation.
+	 *
+	 * @copyright Copyright (C) 2008-2019, Yoast BV
+	 * The following code is a derivative work of the code from the Yoast(https://github.com/Yoast/wordpress-seo/), which is licensed under GPL v3.
 	 */
 	private function network_activate_deactivate( $activate ) {
 		global $wpdb;
@@ -129,12 +132,12 @@ class Installer {
 	 */
 	private function activate() {
 		// Init to use the common filters.
-		new \RankMath\Defaults;
+		new \RankMath\Defaults();
 
 		$current_version    = get_option( 'rank_math_version', null );
 		$current_db_version = get_option( 'rank_math_db_version', null );
 
-		$this->create_tables();
+		self::create_tables();
 		$this->create_options();
 		$this->set_capabilities();
 		$this->create_cron_jobs();
@@ -158,11 +161,12 @@ class Installer {
 		}
 
 		// Activate Watcher.
-		$watcher = new Watcher;
+		$watcher = new Watcher();
 		$watcher->check_activated_plugin();
 
 		$this->clear_rewrite_rules( true );
 		Helper::clear_cache();
+
 		$this->do_action( 'activate' );
 	}
 
@@ -180,13 +184,13 @@ class Installer {
 	/**
 	 * Set up the database tables.
 	 */
-	private function create_tables() {
+	public static function create_tables() {
 		global $wpdb;
 
 		$collate      = $wpdb->get_charset_collate();
 		$table_schema = [
 
-			"CREATE TABLE IF NOT EXISTS {$wpdb->prefix}rank_math_404_logs (
+			"CREATE TABLE {$wpdb->prefix}rank_math_404_logs (
 				id BIGINT(20) unsigned NOT NULL AUTO_INCREMENT,
 				uri VARCHAR(255) NOT NULL,
 				accessed DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -194,11 +198,11 @@ class Installer {
 				ip VARCHAR(50) NOT NULL DEFAULT '',
 				referer VARCHAR(255) NOT NULL DEFAULT '',
 				user_agent VARCHAR(255) NOT NULL DEFAULT '',
-				PRIMARY KEY (id),
+				PRIMARY KEY id (id),
 				KEY uri (uri(191))
 			) $collate;",
 
-			"CREATE TABLE IF NOT EXISTS {$wpdb->prefix}rank_math_redirections (
+			"CREATE TABLE {$wpdb->prefix}rank_math_redirections (
 				id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 				sources TEXT CHARACTER SET {$wpdb->charset} COLLATE {$wpdb->charset}_bin NOT NULL,
 				url_to TEXT NOT NULL,
@@ -208,56 +212,43 @@ class Installer {
 				created DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 				updated DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 				last_accessed DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-				PRIMARY KEY (id),
-				KEY (status)
+				PRIMARY KEY id (id),
+				KEY status (status)
 			) $collate;",
 
-			"CREATE TABLE IF NOT EXISTS {$wpdb->prefix}rank_math_redirections_cache (
+			"CREATE TABLE {$wpdb->prefix}rank_math_redirections_cache (
 				id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 				from_url TEXT CHARACTER SET {$wpdb->charset} COLLATE {$wpdb->charset}_bin NOT NULL,
 				redirection_id BIGINT(20) UNSIGNED NOT NULL,
 				object_id BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
 				object_type VARCHAR(10) NOT NULL DEFAULT 'post',
 				is_redirected TINYINT(1) NOT NULL DEFAULT '0',
-				PRIMARY KEY (id),
-				KEY (redirection_id)
+				PRIMARY KEY id (id),
+				KEY redirection_id (redirection_id)
 			) $collate;",
 
 			// Link Storage.
-			"CREATE TABLE IF NOT EXISTS {$wpdb->prefix}rank_math_internal_links (
+			"CREATE TABLE {$wpdb->prefix}rank_math_internal_links (
 				id BIGINT(20) unsigned NOT NULL AUTO_INCREMENT,
 				url VARCHAR(255) NOT NULL,
 				post_id bigint(20) unsigned NOT NULL,
 				target_post_id bigint(20) unsigned NOT NULL,
 				type VARCHAR(8) NOT NULL,
-				PRIMARY KEY (id),
+				PRIMARY KEY id (id),
 				KEY link_direction (post_id, type)
 			) $collate;",
 
 			// Link meta.
-			"CREATE TABLE IF NOT EXISTS {$wpdb->prefix}rank_math_internal_meta (
-				object_id bigint(20) UNSIGNED NOT NULL,
+			"CREATE TABLE {$wpdb->prefix}rank_math_internal_meta (
+				object_id BIGINT(20) UNSIGNED NOT NULL,
 				internal_link_count int(10) UNSIGNED NULL DEFAULT 0,
 				external_link_count int(10) UNSIGNED NULL DEFAULT 0,
 				incoming_link_count int(10) UNSIGNED NULL DEFAULT 0,
-				UNIQUE KEY object_id (object_id)
-			) $collate;",
-
-			"CREATE TABLE IF NOT EXISTS {$wpdb->prefix}rank_math_sc_analytics (
-				id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-				date DATETIME NOT NULL,
-				property TEXT NOT NULL,
-				clicks mediumint(6) NOT NULL,
-				impressions mediumint(6) NOT NULL,
-				position double NOT NULL,
-				ctr double NOT NULL,
-				dimension VARCHAR(25) NOT NULL,
-				PRIMARY KEY (id),
-				KEY property (property(191))
+				PRIMARY KEY object_id (object_id)
 			) $collate;",
 		];
 
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		foreach ( $table_schema as $table ) {
 			dbDelta( $table );
 		}
@@ -276,20 +267,12 @@ class Installer {
 	 * Create misc options.
 	 */
 	private function create_misc_options() {
-		add_option(
-			'rank_math_search_console_data',
-			[
-				'authorized' => false,
-				'profiles'   => [],
-			]
-		);
-
 		// Update "known CPTs" list, so we can send notice about new ones later.
 		add_option( 'rank_math_known_post_types', Helper::get_accessible_post_types() );
 
 		$modules = [
 			'link-counter',
-			'search-console',
+			'analytics',
 			'seo-analysis',
 			'sitemap',
 			'rich-snippet',
@@ -297,6 +280,7 @@ class Installer {
 			'buddypress',
 			'bbpress',
 			'acf',
+			'web-stories',
 		];
 
 		// Role Manager.
@@ -353,7 +337,6 @@ class Installer {
 					'404_monitor_ignore_query_parameters' => 'on',
 					'redirections_header_code'            => '301',
 					'redirections_debug'                  => 'off',
-					'console_profile'                     => '',
 					'console_caching_control'             => '90',
 					'link_builder_links_per_page'         => '7',
 					'link_builder_links_per_target'       => '1',
@@ -368,8 +351,7 @@ class Installer {
 					'frontend_seo_score_post_types'       => [ 'post' ],
 					'frontend_seo_score_position'         => 'top',
 					'frontend_seo_score'                  => 'off',
-					'enable_auto_update'                  => 'off',
-					'setup_mode'                          => 'easy',
+					'setup_mode'                          => 'advanced',
 				]
 			)
 		);
@@ -406,7 +388,7 @@ class Installer {
 			'author_robots'              => [ 'noindex' ],
 			'author_archive_title'       => '%name% %sep% %sitename% %page%',
 			'author_add_meta_box'        => 'on',
-			'disable_date_archives'      => 'off',
+			'disable_date_archives'      => 'on',
 			'date_archive_title'         => '%date% %page% %sep% %sitename%',
 			'search_title'               => '%search_query% %page% %sep% %sitename%',
 			'404_title'                  => 'Page Not Found %sep% %sitename%',
@@ -430,8 +412,8 @@ class Installer {
 	 * @param array $sitemap Hold sitemap settings.
 	 */
 	private function create_post_type_options( &$titles, &$sitemap ) {
-		$post_types   = Helper::get_accessible_post_types();
-		$post_types[] = 'product';
+		$post_types = Helper::get_accessible_post_types();
+		array_push( $post_types, 'product', 'web-story' );
 
 		$titles['pt_download_default_rich_snippet'] = 'product';
 		foreach ( $post_types as $post_type ) {
@@ -450,7 +432,7 @@ class Installer {
 				$titles[ 'pt_' . $post_type . '_archive_title' ] = '%title% %page% %sep% %sitename%';
 			}
 
-			if ( 'attachment' === $post_type ) {
+			if ( in_array( $post_type, [ 'attachment', 'web-story' ], true ) ) {
 				$sitemap[ 'pt_' . $post_type . '_sitemap' ]     = 'off';
 				$titles[ 'pt_' . $post_type . '_add_meta_box' ] = 'off';
 				continue;
@@ -482,10 +464,11 @@ class Installer {
 	 */
 	private function get_post_type_defaults( $post_type ) {
 		$rich_snippets = [
-			'post'     => 'article',
-			'page'     => 'article',
-			'product'  => 'product',
-			'download' => 'product',
+			'post'      => 'article',
+			'page'      => 'article',
+			'product'   => 'product',
+			'download'  => 'product',
+			'web-story' => 'article',
 		];
 
 		$defaults = [
@@ -596,9 +579,8 @@ class Installer {
 	 */
 	private function get_cron_jobs() {
 		return [
-			'search_console/get_analytics' => 'daily',  // Add cron job for Get Search Console Analytics Data.
-			'redirection/clean_trashed'    => 'daily',  // Add cron for cleaning trashed redirects.
-			'links/internal_links'         => 'daily',  // Add cron for counting links.
+			'redirection/clean_trashed' => 'daily',  // Add cron for cleaning trashed redirects.
+			'links/internal_links'      => 'daily',  // Add cron for counting links.
 		];
 	}
 

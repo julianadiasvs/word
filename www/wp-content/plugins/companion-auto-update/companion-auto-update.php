@@ -3,7 +3,7 @@
  * Plugin Name: Companion Auto Update
  * Plugin URI: http://codeermeneer.nl/portfolio/companion-auto-update/
  * Description: This plugin auto updates all plugins, all themes and the wordpress core.
- * Version: 3.5.3
+ * Version: 3.8.0
  * Author: Papin Schipper
  * Author URI: http://codeermeneer.nl/
  * Contributors: papin
@@ -17,21 +17,44 @@
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
 // Load translations
-function cau_load_translations() {
-	load_plugin_textdomain( 'companion-auto-update', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' ); 
+function cau_init() {
+	load_plugin_textdomain( 'companion-auto-update', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' ); // Load language files (for backwards compat mostly)
+	add_filter( 'plugins_auto_update_enabled', '__return_false' ); // Turn off default WP5.5 plugin update features to avoid confusion
+	add_filter( 'themes_auto_update_enabled', '__return_false' ); // Turn off default WP5.5 theme update features to avoid confusion
 }
-add_action( 'init', 'cau_load_translations' );
+add_action( 'init', 'cau_init' );
 
 // Set up the database and required schedules
-function cau_install() {
-	cau_database_creation(); // Db handle
-	if (! wp_next_scheduled ( 'cau_set_schedule_mail' )) wp_schedule_event( time(), 'daily', 'cau_set_schedule_mail'); // Set schedule for mail etc.
+function cau_install( $network_wide ) {
+    if ( is_multisite() && $network_wide ) {
+    	global $wpdb;
+        $blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+        foreach ( $blog_ids as $blog_id ) {
+            switch_to_blog( $blog_id );
+            cau_database_creation();
+            restore_current_blog();
+        }
+    } else {
+        cau_database_creation();
+    }
+	if (! wp_next_scheduled ( 'cau_set_schedule_mail' )) wp_schedule_event( time(), 'daily', 'cau_set_schedule_mail'); // Set schedule for basic notifcations
 	if (! wp_next_scheduled ( 'cau_custom_hooks_plugins' )) wp_schedule_event( time(), 'daily', 'cau_custom_hooks_plugins'); // Run custom hooks on plugin updates
 	if (! wp_next_scheduled ( 'cau_custom_hooks_themes' )) wp_schedule_event( time(), 'daily', 'cau_custom_hooks_themes'); // Run custom hooks on theme updates
+	if (! wp_next_scheduled ( 'cau_log_updater' )) wp_schedule_event( ( time() - 1800 ), 'daily', 'cau_log_updater'); // Keep the log up to date
+	if (! wp_next_scheduled ( 'cau_outdated_notifier' )) wp_schedule_event( time(), 'daily', 'cau_outdated_notifier'); // Set schedule for basic notifcations
 }
 add_action( 'cau_set_schedule_mail', 'cau_check_updates_mail' );
-add_action( 'cau_custom_hooks_plugins', 'cau_run_custom_hooks_p' );
-add_action( 'cau_custom_hooks_themes', 'cau_run_custom_hooks_t' );
+add_action( 'cau_outdated_notifier', 'cau_outdated_notifier_mail' );
+add_action( 'wp_update_plugins', 'cau_run_custom_hooks_p' );
+add_action( 'wp_update_themes', 'cau_run_custom_hooks_t' );
+add_action( 'wp_version_check', 'cau_run_custom_hooks_c' );
+
+// Hourly event to keep the log up to date
+function cau_keep_log_uptodate() {
+	cau_savePluginInformation(); // Check for new plugins and themes
+	cau_check_delayed(); // Check for plugin delays
+}
+add_action( 'cau_log_updater', 'cau_keep_log_uptodate' );
 
 // Redirect to welcome screen on activation of plugin
 function cau_pluginActivateWelcome() {
@@ -47,7 +70,7 @@ function cau_pluginRedirectWelcomeScreen() {
         }
     }
 }
-add_action('admin_init', 'cau_pluginRedirectWelcomeScreen');
+add_action( 'admin_init', 'cau_pluginRedirectWelcomeScreen' );
 
 // Donate url
 function cau_donateUrl() {
@@ -56,34 +79,39 @@ function cau_donateUrl() {
 
 // Database version
 function cau_db_version() {
-	return '3.5.3';
+	return '3.7.2';
 }
 function cau_database_creation() {
 
 	global $wpdb;
 
+	// Plugin db info
 	$cau_db_version = cau_db_version();
 	$autoupdates 	= $wpdb->prefix."auto_updates"; 
 	$updateLog 		= $wpdb->prefix."update_log"; 
 
-	// Create db table
+	// WordPress db info
+	$charset_collate = $wpdb->get_charset_collate();
+
+	// DB table creation queries
 	$sql = "CREATE TABLE $autoupdates (
 		id INT(9) NOT NULL AUTO_INCREMENT,
 		name VARCHAR(255) NOT NULL,
 		onoroff TEXT NOT NULL,
 		UNIQUE KEY id (id)
-	)";
+	) $charset_collate;";
 
-	// Create second db table
 	$sql2 = "CREATE TABLE $updateLog (
 		id INT(9) NOT NULL AUTO_INCREMENT,
 		slug VARCHAR(255) NOT NULL,
 		oldVersion VARCHAR(10) NOT NULL,
 		newVersion VARCHAR(10) NOT NULL,
 		method VARCHAR(10) NOT NULL,
+		put_on_hold VARCHAR(100) DEFAULT '0',
 		UNIQUE KEY id (id)
-	)";
+	) $charset_collate;";
 
+	// Create DB tables
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	dbDelta( $sql );
 	dbDelta( $sql2 );
@@ -121,47 +149,87 @@ function cau_install_data() {
 	$toemail 	= get_option('admin_email');
 
 	// Update configs
-	if( !cau_check_if_exists( 'plugins' ) ) $wpdb->insert( $table_name, array( 'name' => 'plugins', 'onoroff' => 'on' ) ); // 0
-	if( !cau_check_if_exists( 'themes' ) ) 	$wpdb->insert( $table_name, array( 'name' => 'themes', 'onoroff' => 'on' ) ); // 1
-	if( !cau_check_if_exists( 'minor' ) ) 	$wpdb->insert( $table_name, array( 'name' => 'minor', 'onoroff' => 'on' ) ); // 2
-	if( !cau_check_if_exists( 'major' ) ) 	$wpdb->insert( $table_name, array( 'name' => 'major', 'onoroff' => '' ) ); // 3
+	if( !cau_check_if_exists( 'plugins' ) ) $wpdb->insert( $table_name, array( 'name' => 'plugins', 'onoroff' => 'on' ) );
+	if( !cau_check_if_exists( 'themes' ) ) 	$wpdb->insert( $table_name, array( 'name' => 'themes', 'onoroff' => 'on' ) );
+	if( !cau_check_if_exists( 'minor' ) ) 	$wpdb->insert( $table_name, array( 'name' => 'minor', 'onoroff' => 'on' ) );
+	if( !cau_check_if_exists( 'major' ) ) 	$wpdb->insert( $table_name, array( 'name' => 'major', 'onoroff' => '' ) ); 
 
 	// Email configs
-	if( !cau_check_if_exists( 'email' ) ) 		$wpdb->insert( $table_name, array( 'name' => 'email', 'onoroff' => '' ) ); // 4
-	if( !cau_check_if_exists( 'send' ) ) 		$wpdb->insert( $table_name, array( 'name' => 'send', 'onoroff' => '' ) ); // 5
-	if( !cau_check_if_exists( 'sendupdate' ) ) 	$wpdb->insert( $table_name, array( 'name' => 'sendupdate', 'onoroff' => '' ) ); // 6
+	if( !cau_check_if_exists( 'email' ) ) 			$wpdb->insert( $table_name, array( 'name' => 'email', 'onoroff' => '' ) );
+	if( !cau_check_if_exists( 'send' ) ) 			$wpdb->insert( $table_name, array( 'name' => 'send', 'onoroff' => '' ) );
+	if( !cau_check_if_exists( 'sendupdate' ) ) 		$wpdb->insert( $table_name, array( 'name' => 'sendupdate', 'onoroff' => '' ) );
+	if( !cau_check_if_exists( 'sendoutdated' ) ) 	$wpdb->insert( $table_name, array( 'name' => 'sendoutdated', 'onoroff' => '' ) );
 
 	// Advanced
-	if( !cau_check_if_exists( 'notUpdateList' ) ) 	$wpdb->insert( $table_name, array( 'name' => 'notUpdateList', 'onoroff' => '' ) ); // 7
-	if( !cau_check_if_exists( 'translations' ) ) 	$wpdb->insert( $table_name, array( 'name' => 'translations', 'onoroff' => 'on' ) ); // 8
-	if( !cau_check_if_exists( 'wpemails' ) ) 		$wpdb->insert( $table_name, array( 'name' => 'wpemails', 'onoroff' => 'on' ) ); // 9
-	if( !cau_check_if_exists( 'notUpdateListTh' ) ) $wpdb->insert( $table_name, array( 'name' => 'notUpdateListTh', 'onoroff' => '' ) ); // 10
+	if( !cau_check_if_exists( 'notUpdateList' ) ) 	$wpdb->insert( $table_name, array( 'name' => 'notUpdateList', 'onoroff' => '' ) );
+	if( !cau_check_if_exists( 'translations' ) ) 	$wpdb->insert( $table_name, array( 'name' => 'translations', 'onoroff' => 'on' ) );
+	if( !cau_check_if_exists( 'wpemails' ) ) 		$wpdb->insert( $table_name, array( 'name' => 'wpemails', 'onoroff' => 'on' ) );
+	if( !cau_check_if_exists( 'notUpdateListTh' ) ) $wpdb->insert( $table_name, array( 'name' => 'notUpdateListTh', 'onoroff' => '' ) );
 
 	// Stuff
-	if( !cau_check_if_exists( 'html_or_text' ) ) $wpdb->insert( $table_name, array( 'name' => 'html_or_text', 'onoroff' => 'html' ) ); // 11
+	if( !cau_check_if_exists( 'html_or_text' ) ) $wpdb->insert( $table_name, array( 'name' => 'html_or_text', 'onoroff' => 'html' ) );
 
+	// Advanced
+	if( !cau_check_if_exists( 'allow_administrator' ) ) $wpdb->insert( $table_name, array( 'name' => 'allow_administrator', 'onoroff' => 'on' ) );
+	if( !cau_check_if_exists( 'allow_editor' ) ) $wpdb->insert( $table_name, array( 'name' => 'allow_editor', 'onoroff' => '' ) );
+	if( !cau_check_if_exists( 'allow_author' ) ) $wpdb->insert( $table_name, array( 'name' => 'allow_author', 'onoroff' => '' ) );
+	if( !cau_check_if_exists( 'ignore_seo' ) ) $wpdb->insert( $table_name, array( 'name' => 'ignore_seo', 'onoroff' => '' ) );
+	if( !cau_check_if_exists( 'ignore_cron' ) ) $wpdb->insert( $table_name, array( 'name' => 'ignore_cron', 'onoroff' => '' ) );
+	if( !cau_check_if_exists( 'advanced_info_emails' ) ) $wpdb->insert( $table_name, array( 'name' => 'advanced_info_emails', 'onoroff' => '' ) );
+	if( !cau_check_if_exists( 'update_delay' ) ) $wpdb->insert( $table_name, array( 'name' => 'update_delay', 'onoroff' => '' ) );
+	if( !cau_check_if_exists( 'update_delay_days' ) ) $wpdb->insert( $table_name, array( 'name' => 'update_delay_days', 'onoroff' => '' ) );
 
 }
 register_activation_hook( __FILE__, 'cau_install' );
 
 // Clear everything on deactivation
 function cau_remove() {
+
+	// Delete tables
 	global $wpdb;
 	$autoupdates 	= $wpdb->prefix."auto_updates"; 
 	$updateLog 		= $wpdb->prefix."update_log"; 
 	$wpdb->query( "DROP TABLE IF EXISTS $autoupdates" );
 	$wpdb->query( "DROP TABLE IF EXISTS $updateLog" );
-	wp_clear_scheduled_hook('cau_set_schedule_mail');
+
+	// Clear schedules
+	wp_clear_scheduled_hook( 'cau_set_schedule_mail' );
+	wp_clear_scheduled_hook( 'cau_custom_hooks_plugins' );
+	wp_clear_scheduled_hook( 'cau_custom_hooks_themes' );
+	wp_clear_scheduled_hook( 'cau_log_updater' );
+
+	// Restore WordPress default update functionality
+	add_filter( 'plugins_auto_update_enabled', '__return_true' );
+	add_filter( 'themes_auto_update_enabled', '__return_true' );
+	add_filter( 'auto_plugin_update_send_email', '__return_true' );
+	add_filter( 'auto_theme_update_send_email', '__return_true' );
 }
 register_deactivation_hook(  __FILE__, 'cau_remove' );
 
 // Update
 function cau_update_db_check() {
+
 	$cau_db_version = cau_db_version();
+
     if ( get_site_option( 'cau_db_version' ) != $cau_db_version ) {
+
         cau_database_creation();
+
+        // In 3.7.2 we've added $wpdb->get_charset_collate
+        if( get_site_option( 'cau_db_version' ) < '3.7.2' ) {
+
+        	global $wpdb;
+			$autoupdates 	= $wpdb->prefix."auto_updates"; 
+			$updateLog 		= $wpdb->prefix."update_log"; 
+        	$db_charset 	= constant( 'DB_CHARSET' );
+        	$wpdb->query( "ALTER TABLE $autoupdates CONVERT TO CHARACTER SET $db_charset" );
+        	$wpdb->query( "ALTER TABLE $updateLog CONVERT TO CHARACTER SET $db_charset" );
+
+        }
+
         update_option( "cau_db_version", $cau_db_version );
     }
+
 }
 add_action( 'upgrader_process_complete', 'cau_update_db_check' );
 
@@ -175,7 +243,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'cau_functions.php' );
 
 // Add plugin to menu
 function register_cau_menu_page() {
-	add_submenu_page( cau_menloc() , __( 'Auto Updater', 'companion-auto-update' ), __( 'Auto Updater', 'companion-auto-update' ), 'manage_options', 'cau-settings', 'cau_frontend' );
+	if( cau_allowed_user_rights() ) add_submenu_page( cau_menloc() , __( 'Auto Updater', 'companion-auto-update' ), __( 'Auto Updater', 'companion-auto-update' ), 'manage_options', 'cau-settings', 'cau_frontend' );
 }
 add_action( 'admin_menu', 'register_cau_menu_page' );
 
@@ -184,7 +252,7 @@ function cau_frontend() { ?>
 	
 	<div class='wrap cau_content_wrap cau_content'>
 
-		<h1 class="wp-heading-inline"><?php _e('Companion Auto Update', 'companion-auto-update'); ?></h1>
+		<h1 class="wp-heading-inline"><?php _e( 'Companion Auto Update', 'companion-auto-update' ); ?></h1>
 
 		<hr class="wp-header-end">
 
@@ -206,7 +274,7 @@ function cau_frontend() { ?>
 		foreach ( $allowedPages as $page => $title ) {
 			echo "<a href='".cau_url( $page )."' id='tab-".$page."' class='nav-tab "._active_tab( $page )."'>".$title;
 			if( $page == 'status' ) {
-				if(  cau_pluginHasIssues() ) {
+				if( cau_pluginHasIssues() ) {
 					echo "<span class='cau_melding level-".cau_pluginIssueLevels()."'></span>";
 				} else {
 					echo "<span class='cau_melding level-okay'></span>";
@@ -238,7 +306,7 @@ function cau_frontend() { ?>
 
 // Add a widget to the dashboard.
 function cau_add_widget() {
-	if ( current_user_can( 'manage_options' ) ) wp_add_dashboard_widget( 'cau-update-log', __('Update log', 'companion-auto-update'), 'cau_widget' );	
+	if ( cau_allowed_user_rights() ) wp_add_dashboard_widget( 'cau-update-log', __('Update log', 'companion-auto-update'), 'cau_widget' );	
 }
 add_action( 'wp_dashboard_setup', 'cau_add_widget' );
 
@@ -256,24 +324,30 @@ function cau_widget() {
 }
 
 // Load admin styles
-function load_cau_sytyles( $hook ) {
-
-	// Only load on plugins' pages
-    if( $hook != 'tools_page_cau-settings' && $hook != 'index_page_cau-settings' ) return;
+function load_cau_global_styles( $hook ) {
 
 	// Plugin scripts
     wp_enqueue_style( 'cau_admin_styles', plugins_url( 'backend/style.css' , __FILE__ ) );
+
+	// Check for issues
+    wp_enqueue_style( 'cau_warning_styles', plugins_url( 'backend/warningbar.css' , __FILE__ ) ); 
+
+}
+add_action( 'admin_enqueue_scripts', 'load_cau_global_styles', 99 );
+
+// Load admin styles
+function load_cau_page_styles( $hook ) {
+
+	// Only load on plugins' pages
+    if( $hook != 'tools_page_cau-settings' && $hook != 'index_page_cau-settings' ) return;
 
     // WordPress scripts we need
 	wp_enqueue_style( 'thickbox' );
 	wp_enqueue_script( 'thickbox' );   
 	wp_enqueue_script( 'plugin-install' );   
 
-	// Check for issues
-    wp_enqueue_style( 'cau_warning_styles', plugins_url( 'backend/warningbar.css' , __FILE__ ) ); 
-
 }
-add_action( 'admin_enqueue_scripts', 'load_cau_sytyles', 100 );
+add_action( 'admin_enqueue_scripts', 'load_cau_page_styles', 100 );
 
 // Send e-mails
 require_once( plugin_dir_path( __FILE__ ) . 'cau_emails.php' );
@@ -287,7 +361,7 @@ function cau_settings_link( $links ) {
 	
 	array_unshift( $links, $settings_link2 ); 
 	array_unshift( $links, $settings_link3 ); 
-	array_unshift( $links, $settings_link ); 
+	if( cau_allowed_user_rights() )	array_unshift( $links, $settings_link ); 
 
 	return $links; 
 
@@ -309,6 +383,10 @@ class CAU_auto_update {
 
 		global $wpdb;
 		$table_name = $wpdb->prefix . "auto_updates"; 
+
+		// Disable WP emails
+		add_filter( 'auto_plugin_update_send_email', '__return_false' ); // Plugin updates
+		add_filter( 'auto_theme_update_send_email', '__return_false' ); // Theme updates
 
 		// Enable for major updates
 		$configs = $wpdb->get_results( "SELECT * FROM {$table_name} WHERE name = 'major'");
@@ -348,8 +426,11 @@ class CAU_auto_update {
 		// WP Email Config
 		$configs = $wpdb->get_results( "SELECT * FROM {$table_name} WHERE name = 'wpemails'");
 		foreach ( $configs as $config ) {
-			if( $config->onoroff == 'on' ) add_filter( 'auto_core_update_send_email', '__return_true' ); // Turn on
-			else add_filter( 'auto_core_update_send_email', '__return_false' ); // Turn off
+			if( $config->onoroff == 'on' ) {
+				add_filter( 'auto_core_update_send_email', '__return_true' ); // Core updates
+			} else {
+				add_filter( 'auto_core_update_send_email', '__return_false' ); // Core updates
+			}
 		}
 		
 

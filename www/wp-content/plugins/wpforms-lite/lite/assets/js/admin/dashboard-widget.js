@@ -1,4 +1,4 @@
-/* globals wpforms_dashboard_widget, ajaxurl, moment, Chart */
+/* global wpforms_dashboard_widget, moment, Chart */
 /**
  * WPForms Dashboard Widget function.
  *
@@ -205,7 +205,7 @@ var WPFormsDashboardWidget = window.WPFormsDashboardWidget || ( function( docume
 		 * @since 1.5.0
 		 */
 		init: function() {
-			$( document ).ready( app.ready );
+			$( app.ready );
 		},
 
 		/**

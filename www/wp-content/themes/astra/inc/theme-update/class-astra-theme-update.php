@@ -431,11 +431,10 @@ if ( ! class_exists( 'Astra_Theme_Update' ) ) {
 		public static function v_1_0_28() {
 
 			$query = array(
-				'post_type'      => 'fl-theme-layout',
-				'posts_per_page' => '-1',
-				'no_found_rows'  => true,
-				'post_status'    => 'any',
-				'fields'         => 'ids',
+				'post_type'     => 'fl-theme-layout',
+				'no_found_rows' => true,
+				'post_status'   => 'any',
+				'fields'        => 'ids',
 			);
 
 			// Execute the query.
