@@ -101,6 +101,11 @@ Microthemer has built-in documentation! Just click the Help option (top right of
 
 == Changelog ==
 
+= 6.3.6.2 (February 11th, 2021) =
+
+# Bugs fixed
+* Setting the WP toolbar preference "If yes to above, include as a top level link" to "No" was ignored on the frontend.
+
 = 6.3.6.1 (February 8th, 2021) =
 
 # Change
