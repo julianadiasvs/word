@@ -269,7 +269,15 @@ function tvr_render_form_inputs($name, $section){
                 <p>
                     <input type="checkbox" name="<?php echo $name; ?>[<?php echo $value; ?>]"
                            value="1" data-category="<?php echo $value; ?>" />
-                    <span class="fake-checkbox" data-action="toggle-category"></span>
+
+                    <?php
+                    // can't use $this in this file
+                   /* echo $this->iconFont('tick-box-unchecked', array(
+                            'class' => 'fake-checkbox',
+                            'data-action' => 'toggle-category'
+                    ));*/
+                    ?>
+                    <span class="fake-checkbox mtif mtif-tick-box-unchecked" data-action="toggle-category"></span>
                     <label><?php echo $input['label']; ?></label>
                 </p>
 				<?php
@@ -293,9 +301,12 @@ function tvr_render_form_inputs($name, $section){
 	}
 }
 
+$ui_class = '';
+require_once('common-inline-assets.php');
+
 ?>
 
-<div id="tvr" class='wrap tvr-wrap tvr-fonts'>
+<div id="tvr" class='wrap tvr-wrap tvr-fonts <?php echo $ui_class; ?>'>
 	<div id='tvr-fonts'>
 
         <div id="controls">
@@ -327,7 +338,7 @@ function tvr_render_form_inputs($name, $section){
         </div>
 
         <!-- area for displaying fonts -->
-        <div id="output"></div>
+        <div id="gf-output"></div>
 
 
         <!-- pagination -->
@@ -351,9 +362,9 @@ function tvr_render_form_inputs($name, $section){
                 </div>
 
                 <div class="next-controls">
-                        <span class="last-page" data-value="last" data-action="pagination"
+                        <span class="gf-last-page" data-value="last" data-action="pagination"
                               title="<?php echo esc_attr__('Last page', 'microthemer'); ?>">&raquo;</span>
-                    <span class="next-page" data-value="next" data-action="pagination"
+                    <span class="gf-next-page" data-value="next" data-action="pagination"
                           title="<?php echo esc_attr__('Next page', 'microthemer'); ?>">&rsaquo;</span>
                 </div>
 

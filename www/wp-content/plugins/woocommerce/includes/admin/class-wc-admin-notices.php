@@ -51,7 +51,7 @@ class WC_Admin_Notices {
 		add_action( 'switch_theme', array( __CLASS__, 'reset_admin_notices' ) );
 		add_action( 'woocommerce_installed', array( __CLASS__, 'reset_admin_notices' ) );
 		add_action( 'wp_loaded', array( __CLASS__, 'add_redirect_download_method_notice' ) );
-		add_action( 'wp_loaded', array( __CLASS__, 'hide_notices' ) );
+		add_action( 'admin_init', array( __CLASS__, 'hide_notices' ), 20 );
 		// @TODO: This prevents Action Scheduler async jobs from storing empty list of notices during WC installation.
 		// That could lead to OBW not starting and 'Run setup wizard' notice not appearing in WP admin, which we want
 		// to avoid.
@@ -62,6 +62,19 @@ class WC_Admin_Notices {
 		if ( current_user_can( 'manage_woocommerce' ) ) {
 			add_action( 'admin_print_styles', array( __CLASS__, 'add_notices' ) );
 		}
+	}
+
+	/**
+	 * Parses query to create nonces when available.
+	 *
+	 * @deprecated 5.4.0
+	 * @param object $response The WP_REST_Response we're working with.
+	 * @return object $response The prepared WP_REST_Response object.
+	 */
+	public static function prepare_note_with_nonce( $response ) {
+		wc_deprecated_function( __CLASS__ . '::' . __FUNCTION__, '5.4.0' );
+
+		return $response;
 	}
 
 	/**

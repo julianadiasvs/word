@@ -3,7 +3,7 @@ Contributors: EnvoThemes
 Tags: one-column, two-columns, right-sidebar, custom-background, custom-menu, featured-images, theme-options, translation-ready
 Requires at least: 4.4
 Tested up to: 5.6
-Version: 1.3.11
+Version: 1.3.12
 License: GNU General Public License v3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -57,6 +57,9 @@ All other resources and theme elements are licensed under the [GNU GPL](http://w
 Envo Magazine is distributed under the terms of the GNU GPL (http://www.gnu.org/licenses/gpl-3.0.txt), version 3 or later.
 
 == Changelog ==
+
+= Version 1.3.12 =
+* Updated scripts and keyboard navigation
 
 = Version 1.3.11 =
 * Updated code

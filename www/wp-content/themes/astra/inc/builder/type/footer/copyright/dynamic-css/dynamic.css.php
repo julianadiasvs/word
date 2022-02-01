@@ -32,7 +32,7 @@ function astra_fb_copyright_dynamic_css( $dynamic_css, $dynamic_css_filtered = '
 
 	$_section = 'section-footer-copyright';
 
-	$selector = '.ast-footer-copyright .ast-footer-html-inner';
+	$selector = '.ast-footer-copyright ';
 
 	$visibility_selector = '.ast-footer-copyright.ast-builder-layout-element';
 
@@ -52,7 +52,7 @@ function astra_fb_copyright_dynamic_css( $dynamic_css, $dynamic_css_filtered = '
 			'text-align' => $desktop_alignment,
 		),
 		$selector               => array(
-			'color'         => astra_get_option( 'footer-copyright-color' ),
+			'color'         => astra_get_option( 'footer-copyright-color', astra_get_option( 'text-color' ) ),
 			// Margin CSS.
 			'margin-top'    => astra_responsive_spacing( $margin, 'top', 'desktop' ),
 			'margin-bottom' => astra_responsive_spacing( $margin, 'bottom', 'desktop' ),

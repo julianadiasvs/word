@@ -10,6 +10,8 @@
 
 namespace RankMath\Helpers;
 
+use RankMath\Admin\Admin_Helper;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -25,7 +27,19 @@ trait Api {
 	 */
 	public static function add_notification( $message, $options = [] ) {
 		$options['classes'] = ! empty( $options['classes'] ) ? $options['classes'] . ' rank-math-notice' : 'rank-math-notice';
-		rank_math()->notification->add( $message, $options );
+		$notification       = compact( 'message', 'options' );
+
+		/**
+		 * Filter notification message & arguments before adding.
+		 * Pass a falsy value to stop the notification from getting added.
+		 */
+		apply_filters( 'rank_math/admin/add_notification', $notification );
+
+		if ( empty( $notification ) || ! is_array( $notification ) ) {
+			return;
+		}
+
+		rank_math()->notification->add( $notification['message'], $notification['options'] );
 	}
 
 	/**
@@ -35,6 +49,15 @@ trait Api {
 	 */
 	public static function remove_notification( $notification_id ) {
 		rank_math()->notification->remove_by_id( $notification_id );
+	}
+
+	/**
+	 * Check if notification exists.
+	 *
+	 * @param string $notification_id Notification id.
+	 */
+	public static function has_notification( $notification_id ) {
+		return rank_math()->notification->has_notification( $notification_id );
 	}
 
 	/**
@@ -95,5 +118,52 @@ trait Api {
 	 */
 	public static function remove_json( $key, $object_name = 'rankMath' ) {
 		rank_math()->json->remove( $key, $object_name );
+	}
+
+	/**
+	 * Get the Content AI Credits.
+	 *
+	 * @param bool $force_update Whether to send a request to API to get the new Credits value.
+	 */
+	public static function get_content_ai_credits( $force_update = false ) {
+		$registered = Admin_Helper::get_registration_data();
+		if ( empty( $registered ) ) {
+			return 0;
+		}
+
+		$credits = get_option( 'rank_math_ca_credits' );
+		if ( $credits && ! $force_update ) {
+			return $credits;
+		}
+
+		$args = [
+			'username' => rawurlencode( $registered['username'] ),
+			'api_key'  => rawurlencode( $registered['api_key'] ),
+			'site_url' => rawurlencode( home_url() ),
+		];
+
+		$url = add_query_arg(
+			$args,
+			'https://rankmath.com/wp-json/rankmath/v1/contentAiCredits'
+		);
+
+		$data = wp_remote_get(
+			$url,
+			[
+				'timeout' => 60,
+			]
+		);
+
+		$response_code = wp_remote_retrieve_response_code( $data );
+		if ( 200 !== $response_code ) {
+			return 0;
+		}
+
+		$data = wp_remote_retrieve_body( $data );
+		$data = json_decode( $data, true );
+
+		$credits = ! empty( $data['remaining_credits'] ) ? $data['remaining_credits'] : 0;
+		update_option( 'rank_math_ca_credits', $credits, false );
+		return $credits;
 	}
 }

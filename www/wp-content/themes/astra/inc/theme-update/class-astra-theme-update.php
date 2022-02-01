@@ -74,6 +74,7 @@ if ( ! class_exists( 'Astra_Theme_Update' ) ) {
 			do_action( 'astra_update_before' );
 
 			// Get auto saved version number.
+			/** @psalm-suppress InvalidArgument */ // phpcs:ignore Generic.Commenting.DocComment.MissingShort
 			$saved_version = astra_get_option( 'theme-auto-version', false );
 
 			// If there is no saved version in the database then return.
@@ -491,8 +492,6 @@ if ( ! class_exists( 'Astra_Theme_Update' ) ) {
 		 */
 		public static function v_1_1_0_beta_4() {
 
-			$astra_options = get_option( ASTRA_THEME_SETTINGS, array() );
-
 			$options = array(
 				'woocommerce-content-layout' => 'default',
 				'woocommerce-sidebar-layout' => 'default',
@@ -855,7 +854,7 @@ if ( ! class_exists( 'Astra_Theme_Update' ) ) {
 			$theme_options               = get_option( 'astra-settings', array() );
 			$primary_submenu_otem_border = isset( $theme_options['primary-submenu-item-border'] ) ? $theme_options['primary-submenu-item-border'] : array();
 
-			if ( ( is_array( $primary_submenu_otem_border ) && '0' != $primary_submenu_otem_border['bottom'] ) ) {
+			if ( is_array( $primary_submenu_otem_border ) && '0' != $primary_submenu_otem_border['bottom'] ) {
 				$theme_options['primary-submenu-item-border'] = 1;
 			} else {
 				$theme_options['primary-submenu-item-border'] = 0;

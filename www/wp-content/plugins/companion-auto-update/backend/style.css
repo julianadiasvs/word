@@ -113,6 +113,34 @@ select.schedule_interval {
 	max-width: 90%;
 	width: 225px;
 }
+.cau_save_button.fixed_button {
+	background: #FFF;
+    box-sizing: border-box;
+    position: fixed;
+    width: 100%;
+    right: 0;
+    bottom: 0;
+    margin-left: -25px;
+    z-index: 1001;
+    padding: 5px;
+    box-shadow: 0 -8px 16px 0 rgb(85 93 102 / 30%);
+}
+.cau_save_button.fixed_button p.submit {
+	display: block;
+	text-align: center;
+	font-weight: bold;
+	margin: 0;
+	padding: 0;
+}
+.cau_save_button.fixed_button p.submit input {
+	width: 100%;
+	max-width: 250px;
+	height: 100%;
+	padding: 5px;
+}
+.cau_save_button__space {
+	height: 75px;
+}
 
 /* Overwrite core UI */
 /*.cau_content input[type="checkbox"]:checked::before {

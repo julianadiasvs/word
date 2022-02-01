@@ -17,6 +17,8 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 	private $callback_url;
 	
 	private $multi_directories = array();
+	
+	private $registered_prune = false;
 
 	/**
 	 * Constructor
@@ -33,17 +35,17 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 			$state = $parts[0];
 
 			if ('success' == $state) {
-				// If these are set then this is a request from our master app and the auth server has returned these to be saved.
+
 				if (isset($_GET['user_id']) && isset($_GET['access_token'])) {
-					$opts = $this->get_options();
-					$opts['user_id'] = base64_decode($_GET['user_id']);
-					$opts['tmp_access_token'] = base64_decode($_GET['access_token']);
-					// Unset this value if it is set as this is a fresh auth we will set this value in the next step
-					if (isset($opts['expires_in'])) unset($opts['expires_in']);
-					$this->set_options($opts, true);
+					$code = array(
+						'user_id' => $_GET['user_id'],
+						'access_token' => $_GET['access_token']
+					);
+				} else {
+					$code = array();
 				}
 
-				add_action('all_admin_notices', array($this, 'show_authed_admin_success'));
+				$this->do_complete_authentication($state, $code);
 
 			} elseif ('token' == $state) {
 				$this->gdrive_auth_token();
@@ -66,7 +68,7 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 	 */
 	public function get_supported_features() {
 		// This options format is handled via only accessing options via $this->get_options()
-		return array('multi_options', 'config_templates', 'multi_storage', 'conditional_logic');
+		return array('multi_options', 'config_templates', 'multi_storage', 'conditional_logic', 'manual_authentication');
 	}
 
 	/**
@@ -330,10 +332,10 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 	/**
 	 * Get a Google account access token using the refresh token
 	 *
-	 * @param  string $refresh_token Specify refresh token
-	 * @param  string $client_id 	 Specify Client ID
-	 * @param  string $client_secret Specify client secret
-	 * @return boolean
+	 * @param  String $refresh_token Specify refresh token
+	 * @param  String $client_id 	 Specify Client ID
+	 * @param  String $client_secret Specify client secret
+	 * @return Boolean
 	 */
 	private function access_token($refresh_token, $client_id, $client_secret) {
 
@@ -402,6 +404,10 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 		// First, revoke any existing token, since Google doesn't appear to like issuing new ones
 		if (!empty($opts['token']) && !$use_master) $this->gdrive_auth_revoke();
 
+		// Set a flag so we know this authentication is in progress
+		$opts['auth_in_progress'] = true;
+		$this->set_options($opts, true);
+
 		$prefixed_instance_id = ':' . $instance_id;
 		
 		// We use 'force' here for the approval_prompt, not 'auto', as that deals better with messy situations where the user authenticated, then changed settings
@@ -413,7 +419,7 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 			$client_id = $opts['clientid'];
 			$token = 'token'.$prefixed_instance_id;
 		}
-		// We require access to all Google Drive files (not just ones created by this app - scope https://www.googleapis.com/auth/drive.file) - because we need to be able to re-scan storage for backups uploaded by other installs. But, if you are happy to lose that capability, you can use the filter below to remove the drive.readonly scope.
+		// We require access to all Google Drive files (not just ones created by this app - scope https://www.googleapis.com/auth/drive.file) - because we need to be able to re-scan storage for backups uploaded by other installs, or manually by the user into their Google Drive. But, if you are happy to lose that capability, you can use the filter below to remove the drive.readonly scope.
 		$params = array(
 			'response_type' => 'code',
 			'client_id' => $client_id,
@@ -431,11 +437,41 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 	}
 
 	/**
+	 * This function will complete the oAuth flow, if return_instead_of_echo is true then add the action to display the authed admin notice, otherwise echo this notice to page.
+	 *
+	 * @param string  $state                  - the state
+	 * @param string  $code                   - the oauth code
+	 * @param boolean $return_instead_of_echo - a boolean to indicate if we should return the result or echo it
+	 *
+	 * @return void|string - returns the authentication message if return_instead_of_echo is true
+	 */
+	public function do_complete_authentication($state, $code, $return_instead_of_echo = false) {
+		
+		// If these are set then this is a request from our master app and the auth server has returned these to be saved.
+		if (isset($code['user_id']) && isset($code['access_token'])) {
+			$opts = $this->get_options();
+			$opts['user_id'] = base64_decode($code['user_id']);
+			$opts['tmp_access_token'] = base64_decode($code['access_token']);
+			// Unset this value if it is set as this is a fresh auth we will set this value in the next step
+			if (isset($opts['expires_in'])) unset($opts['expires_in']);
+			// remove our flag so we know this authentication is complete
+			if (isset($opts['auth_in_progress'])) unset($opts['auth_in_progress']);
+			$this->set_options($opts, true);
+		}
+
+		if ($return_instead_of_echo) {
+			return $this->show_authed_admin_success($return_instead_of_echo);
+		} else {
+			add_action('all_admin_notices', array($this, 'show_authed_admin_success'));
+		}
+	}
+
+	/**
 	 * Revoke a Google account refresh token
 	 * Returns the parameter fed in, so can be used as a WordPress options filter
 	 * Can be called statically from UpdraftPlus::googledrive_clientid_checkchange()
 	 *
-	 * @param  boolean $unsetopt unset options is set to true unless otherwise specified
+	 * @param  Boolean $unsetopt unset options is set to true unless otherwise specified
 	 */
 	public function gdrive_auth_revoke($unsetopt = true) {
 		$opts = $this->get_options();
@@ -505,10 +541,14 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 		}
 	}
 
-	/***
-	 * Print the dashboard notice that follows a successful authentication
+	/**
+	 * This method will setup the authenticated admin warning, it can either return this or echo it
+	 *
+	 * @param boolean $return_instead_of_echo - a boolean to indicate if we should return the result or echo it
+	 *
+	 * @return void|string - returns the authentication message if return_instead_of_echo is true
 	 */
-	public function show_authed_admin_success() {
+	public function show_authed_admin_success($return_instead_of_echo) {
 
 		global $updraftplus_admin;
 
@@ -567,11 +607,16 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 			}
 		}
 
-		$updraftplus_admin->show_admin_warning(__('Success', 'updraftplus').': '.sprintf(__('you have authenticated your %s account.', 'updraftplus'), __('Google Drive', 'updraftplus')).' '.((!empty($username)) ? sprintf(__('Name: %s.', 'updraftplus'), $username).' ' : '').$message);
-
 		unset($opts['tmp_access_token']);
 		$this->set_options($opts, true);
 
+		$final_message = __('Success', 'updraftplus').': '.sprintf(__('you have authenticated your %s account.', 'updraftplus'), __('Google Drive', 'updraftplus')).' '.((!empty($username)) ? sprintf(__('Name: %s.', 'updraftplus'), $username).' ' : '').$message;
+
+		if ($return_instead_of_echo) {
+			return "<div class='updraftmessage updated'><p>{$final_message}</p></div>";
+		} else {
+			$updraftplus_admin->show_admin_warning($final_message);
+		}
 	}
 
 	/**
@@ -597,9 +642,8 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 				$parent_id = key($parent_ids);
 				if (count($parent_ids) > 1) {
 					$this->log('there appears to be more than one folder: '.implode(', ', array_keys($parent_ids)));
-					static $registered_prune = false;
-					if (!$registered_prune) {
-						$registered_prune = true;
+					if (!$this->registered_prune) {
+						$this->registered_prune = true;
 						$this->multi_directories = $parent_ids;
 						add_action('updraftplus_prune_retained_backups_finished', array($this, 'prune_retained_backups_finished'));
 					}
@@ -675,7 +719,7 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 					}
 				} catch (Exception $e) {
 					$msg = $e->getMessage();
-					$this->log("Upload error: ".$msg.' (line: '.$e->getLine().', file: '.$e->getFile().')');
+					$this->log("Upload exception (".get_class($e)."): $msg (line: ".$e->getLine().', file: '.$e->getFile().')');
 					
 					// If the issue was a problem refreshing the OAuth2 token, bootstrap again and try again
 					if (false !== ($p = strpos($msg, 'Error refreshing the OAuth2 token'))) {
@@ -971,11 +1015,11 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 	/**
 	 * Returns array of UDP_Google_Service_Drive_DriveFile objects
 	 *
-	 * @param  string $parent_id This is the Parent ID
-	 * @param  string $type 	 This is the type of file or directory but by default it is set to 'any' unless specified
-	 * @param  string $match 	 This will specify which match is used for the SQL but by default it is set to 'backup_' unless specified
+	 * @param  String $parent_id This is the Parent ID
+	 * @param  String $type 	 This is the type of file or directory but by default it is set to 'any' unless specified
+	 * @param  String $match 	 This will specify which match is used for the SQL but by default it is set to 'backup_' unless specified
 	 *
-	 * @return array - list of UDP_Google_Service_Drive_DriveFile items
+	 * @return Array - list of UDP_Google_Service_Drive_DriveFile items
 	 */
 	private function get_subitems($parent_id, $type = 'any', $match = 'backup_') {
 
@@ -1112,8 +1156,7 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 
 		$chunk_size = 1048576;
 
-		$hash = md5($file);
-		$transkey = 'resume_'.$hash;
+		$transkey = 'resume_'.md5($file);
 		// This is unset upon completion, so if it is set then we are resuming
 		$possible_location = $this->jobdata_get($transkey, null, 'gd'.$transkey);
 
@@ -1178,6 +1221,7 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 			$this->log("$basename: ".__('Error: Failed to open local file', 'updraftplus'), 'error');
 			return false;
 		}
+		
 		if ($size > 0 && 0 != fseek($handle, $size)) {
 			$this->log("failed to fseek file: $basename, $size");
 			$this->log("$basename (fseek): ".__('Error: Failed to open local file', 'updraftplus'), 'error');
@@ -1189,26 +1233,38 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 		try {
 			while (!$status && !feof($handle)) {
 				$chunk = '';
-				// Google requires chunks of the previous indicated size. Short reads are thus problematic.
+				// Google requires chunks of the previous indicated size. Short reads are thus problematic. (Or does it? Was this just because the content-length header was hard-coded to the chunk size? Should be investigated, to see if we can change chunk size dynamically).
 				while (strlen($chunk) < $chunk_size && !feof($handle)) {
 					$chunk .= fread($handle, $chunk_size - strlen($chunk));
 				}
 				// Do we need any further error handling??
 				$pointer += strlen($chunk);
+				
+				$start_time = microtime(true);
 				$status = $media->nextChunk($chunk);
+
+				unset($chunk);
+				
+				$extra_log = $media->getProgress();
+				
+				if (!$status && $chunk_size < 67108864 && microtime(true) - $start_time < 2.5 && !feof($handle) && $updraftplus->verify_free_memory($chunk_size * 4)) {
+				
+					$memory_usage = round(@memory_get_usage(false)/1048576, 1);// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+					$memory_usage2 = round(@memory_get_usage(true)/1048576, 1);// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+				
+					$chunk_size = $chunk_size * 2;
+					$extra_log .= ' - increasing chunk size to '.round($chunk_size/1024).' KB';
+					$extra_log .= " - memory usage: $memory_usage / $memory_usage2";
+				}
+				
 				$this->jobdata_set($transkey, array($media->updraftplus_getResumeUri(), $media->getProgress()));
-				$updraftplus->record_uploaded_chunk(round(100*$pointer/$local_size, 1), $media->getProgress(), $file);
+				$updraftplus->record_uploaded_chunk(round(100*$pointer/$local_size, 1), $extra_log, $file);
 			}
 			
 		} catch (UDP_Google_Service_Exception $e) {
-			$this->log("ERROR: upload error (".get_class($e)."): ".$e->getMessage().' (line: '.$e->getLine().', file: '.$e->getFile().')');
-			$client->setDefer(false);
-			fclose($handle);
-			$this->jobdata_delete($transkey, 'gd'.$transkey);
-			if (false == $try_again) throw($e);
-			// Reset this counter to prevent the something_useful_happened condition's possibility being sent into the far future and potentially missed
-			if ($updraftplus->current_resumption > 9) $updraftplus->jobdata_set('uploaded_lastreset', $updraftplus->current_resumption);
-			return $this->upload_file($file, $parent_id, false);
+			return $this->catch_upload_engine_exceptions($e, $handle, $try_again, $file, $parent_id);
+		} catch (UDP_Google_IO_Exception $e) {
+			return $this->catch_upload_engine_exceptions($e, $handle, $try_again, $file, $parent_id);
 		}
 
 		// The final value of $status will be the data from the API for the object
@@ -1223,6 +1279,30 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 
 	}
 
+	/**
+	 * This function is used to handle certain exceptions that can rise from uploading files to Google Drive when a retry is possibly desirable.
+	 *
+	 * @param Exception $e         - the Google exception we caught
+	 * @param Resource  $handle    - a file handler object that needs closing
+	 * @param Boolean   $try_again - indicates if we should try again
+	 * @param String    $file      - the full file path
+	 * @param String    $parent_id - the Google Drive ID for the parent folder
+	 *
+	 * @return Boolean
+	 */
+	private function catch_upload_engine_exceptions($e, $handle, $try_again, $file, $parent_id) {
+		$this->log('ERROR: upload exception ('.get_class($e).'): '.$e->getMessage().' (line: '.$e->getLine().', file: '.$e->getFile().')');
+		$this->client->setDefer(false);
+		fclose($handle);
+		$transkey = $transkey = 'resume_'.md5($file);
+		$this->jobdata_delete($transkey, 'gd'.$transkey);
+		if (false == $try_again) throw($e);
+		// Reset this counter to prevent the something_useful_happened condition's possibility being sent into the far future and potentially missed
+		global $updraftplus;
+		if ($updraftplus->current_resumption > 9) $updraftplus->jobdata_set('uploaded_lastreset', $updraftplus->current_resumption);
+		return $this->upload_file($file, $parent_id, false);
+	}
+	
 	public function download($file) {
 
 		global $updraftplus;
@@ -1366,6 +1446,8 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 	 * @return String - the template, ready for substitutions to be carried out
 	 */
 	public function get_configuration_template() {
+		global $updraftplus;
+		
 		$classes = $this->get_css_classes();
 		ob_start();
 		?>
@@ -1403,7 +1485,7 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 				{{/if}}
 							<br>
 							<em>
-								<a href="<?php echo apply_filters("updraftplus_com_link", "https://updraftplus.com/shop/updraftplus-premium/");?>" target="_blank">
+								<a href="<?php echo $updraftplus->get_url('premium');?>" target="_blank">
 									<?php echo __('To be able to set a custom folder name, use UpdraftPlus Premium.', 'updraftplus');?>
 								</a>
 							</em>
@@ -1445,7 +1527,7 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 	 * Modifies handerbar template options
 	 *
 	 * @param array $opts
-	 * @return array - Modified handerbar template options
+	 * @return Array - Modified handerbar template options
 	 */
 	public function transform_options_for_template($opts) {
 		$opts['use_master'] = $this->use_master($opts);
@@ -1465,7 +1547,7 @@ class UpdraftPlus_BackupModule_googledrive extends UpdraftPlus_BackupModule {
 	 * Gives settings keys which values should not passed to handlebarsjs context.
 	 * The settings stored in UD in the database sometimes also include internal information that it would be best not to send to the front-end (so that it can't be stolen by a man-in-the-middle attacker)
 	 *
-	 * @return array - Settings array keys which should be filtered
+	 * @return Array - Settings array keys which should be filtered
 	 */
 	public function filter_frontend_settings_keys() {
 		return array(

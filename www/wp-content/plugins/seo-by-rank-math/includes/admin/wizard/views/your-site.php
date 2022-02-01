@@ -26,15 +26,11 @@ defined( 'ABSPATH' ) || exit;
 	<div class="rank-math-wizard-tutorial">
 		<header>
 			<?php
-			$allowed_html = [
-				'a' => [
-					'href'        => [],
-					'class'       => [],
-					'data-target' => [],
-				],
-			];
-			/* translators: help link */
-			printf( wp_kses( __( 'If you are new to Rank Math, <a href="%s" data-target="rank-math-wizard-tabs" class="rank-math-collapsible-trigger">click here</a> to learn more.', 'rank-math' ), $allowed_html ), KB::get( 'your-site' ) );
+			printf(
+				/* translators: help link */
+				esc_html__( 'If you are new to Rank Math, %s to learn more.', 'rank-math' ),
+				'<a href="#" data-target="rank-math-wizard-tabs" class="rank-math-collapsible-trigger">' . esc_html__( 'click here', 'rank-math' ) . '</a>'
+			);
 			?>
 		</header>
 
@@ -45,15 +41,15 @@ defined( 'ABSPATH' ) || exit;
 			</div>
 			<div class="rank-math-tabs-content rank-math-custom">
 				<div id="help-panel-video" class="rank-math-tab">
-					<a href="<?php KB::the( 'your-site' ); ?>" target="_blank" style="font-size: 15px; border-bottom: 1px dashed;">
-						<?php _e( 'Click here to learn how to setup Rank Math properly', 'rank-math' ); ?>
+					<a href="<?php KB::the( 'how-to-setup-your-site' ); ?>" target="_blank" style="font-size: 15px; border-bottom: 1px dashed;">
+						<?php echo esc_html_e( 'Click here to learn how to setup Rank Math properly', 'rank-math' ); ?>
 					</a>
 				</div>
 				<div id="help-panel-knowledge" class="rank-math-tab">
 					<div class="search-form wp-core-ui rank-math-ui">
 						<label for="rank-math-search-input"><?php esc_html_e( 'Search the Knowledge Base for answers to your questions:', 'rank-math' ); ?></label>
 						<input type="text" class="regular-text" id="rank-math-search-input" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" placeholder="<?php esc_attr_e( 'Type here to search...', 'rank-math' ); ?>" value="">
-						<a data-href="https://rankmath.com/kb/wordpress/seo-suite/?ht-kb-search=1&lang=<?php echo get_locale(); ?>&s=" target="_blank" class="button button-primary"><?php esc_html_e( 'Search', 'rank-math' ); ?></a>
+						<a data-href="https://rankmath.com/kb/wordpress/seo-suite/?ht-kb-search=1&lang=<?php echo get_locale(); ?>&utm_source=Plugin&utm_medium=SW%20Your%20Site%20Search&utm_campaign=WP&s=" target="_blank" class="button button-primary"><?php esc_html_e( 'Search', 'rank-math' ); ?></a>
 					</div>
 				</div>
 			</div>

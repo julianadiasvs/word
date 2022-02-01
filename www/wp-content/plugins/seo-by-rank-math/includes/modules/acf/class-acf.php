@@ -30,11 +30,11 @@ class ACF {
 			return;
 		}
 
-		$this->action( 'rank_math/admin/enqueue_scripts', 'enqueue' );
+		$this->action( 'rank_math/admin/editor_scripts', 'enqueue' );
 	}
 
 	/**
-	 * Enqueue styles and scripts for the metabox.
+	 * Enqueue styles and scripts for the metabox on the post editor & term editor screens.
 	 */
 	public function enqueue() {
 		if ( Helper::is_elementor_editor() ) {
@@ -45,17 +45,23 @@ class ACF {
 			return;
 		}
 
-		wp_enqueue_script( 'rank-math-acf-post-analysis', rank_math()->plugin_url() . 'assets/admin/js/acf-analysis.js', [ 'wp-hooks', 'rank-math-analyzer' ], rank_math()->version, true );
+		wp_enqueue_script( 'rank-math-acf-post-analysis', rank_math()->plugin_url() . 'includes/modules/acf/assets/js/acf.js', [ 'wp-hooks', 'rank-math-analyzer' ], rank_math()->version, true );
 
 		Helper::add_json( 'acf', $this->get_config() );
 	}
 
 	/**
-	 * Get Config data
+	 * Get ACF module config data.
 	 *
 	 * @return array The config data.
 	 */
 	private function get_config() {
+
+		/**
+		 * Filter the ACF config data.
+		 *
+		 * @param array $config Config data array.
+		 */
 		return $this->do_filter(
 			'acf/config',
 			[
@@ -69,11 +75,17 @@ class ACF {
 	}
 
 	/**
-	 * Retrieves the default blacklist.
+	 * Retrieves the default blacklist - the field types we won't include in the SEO analysis.
 	 *
-	 * @return array The blacklist field types.
+	 * @return array The blacklisted field types.
 	 */
 	private function get_blacklist_type() {
+
+		/**
+		 * Filter the blacklisted ACF field types.
+		 *
+		 * @param array $blacklist The blacklisted field types.
+		 */
 		return $this->do_filter(
 			'acf/blacklist/types',
 			[
@@ -105,10 +117,11 @@ class ACF {
 	 * @return int The number of milliseconds between runs.
 	 */
 	private function get_refresh_rate() {
+
 		/**
-		 * Refresh rate for changes to ACF fields
+		 * Filter the refresh rate for changes to ACF fields.
 		 *
-		 * @param int $refresh_rate Refresh rates in milliseconds
+		 * @param int $refresh_rate Refresh rates in milliseconds.
 		 */
 		$refresh_rate = $this->do_filter( 'acf/refresh_rate', 1000 );
 		$refresh_rate = intval( $refresh_rate, 10 );

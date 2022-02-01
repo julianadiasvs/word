@@ -39,6 +39,7 @@ class WC_Tracks {
 				'blog_lang'      => get_user_locale( $user_id ),
 				'blog_id'        => class_exists( 'Jetpack_Options' ) ? Jetpack_Options::get_option( 'id' ) : null,
 				'products_count' => self::get_products_count(),
+				'wc_version'     => WC()->version,
 			);
 			set_transient( 'wc_tracks_blog_details', $blog_details, DAY_IN_SECONDS );
 		}
@@ -67,6 +68,7 @@ class WC_Tracks {
 
 	/**
 	 * Record an event in Tracks - this is the preferred way to record events from PHP.
+	 * Note: the event request won't be made if $properties has a member called `error`.
 	 *
 	 * @param string $event_name The name of the event.
 	 * @param array  $properties Custom properties to send with the event.

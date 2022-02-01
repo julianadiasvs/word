@@ -1,5 +1,445 @@
 CHANGELOG
 
+= 7.1.1.3 (February 1st, 2022) =
+
+# Bugs fixed
+* An error could happen when selecting elements at the point of maxing out the number of selectors allowed in a folder.
+
+= 7.1.1.2 (January 25th, 2022) =
+
+# Bugs fixed
+* An error that could occur when selecting multiple text inputs using the shift key could generate a downstream JS error when loading Microthemer: unauthorized TypeError:i.split is not a function.
+
+= 7.1.1.1 (January 21st, 2022) =
+
+# Bugs fixed
+* PHP Warning: Illegal string offset 'label' in tvr-microthemer.php on line 5589.
+
+= 7.1.1.0 (January 18th, 2022) =
+
+# Enhancement
+* Improved compatibility with Bricks builder - Microthemer now has a workaround for creating CSS grid layouts on container elements that also display in the Bricks editor. This workaround is on by default, but can be turned off via the preferences. There is also an option to remove the workaround from all selectors automatically, as it may become redundant in future.
+
+# Bugs fixed
+* When clearing the top field for editing selector targeting, and then typing very quickly, an error could be generated: "this.source is not a function".
+* An upgrade error could happen if old MT settings contained data that hadn't been cleaned by a more recent version of Microthemer.
+
+= 7.1.0.7 (January 16th, 2022) =
+
+# Enhancement
+* Styles applied to Bricks container elements also render in the Bricks editor which makes it easier to apply CSS grid layouts to Bricks content using Microthemer.
+
+# Bugs fixed
+* The grid controls could display behind the options panel with certain toolbar layout configurations.
+* Artificial Microthemer body and HTML classes were being included in the selector suggestions list.
+
+= 7.1.0.4 (January 14th, 2022) =
+
+# Bugs fixed
+* The detached preview layout did not load properly due to a JS error "TvrLang is not defined".
+* Microthemer's targeting did not resume when switching between pages on the frontend.
+
+= 7.1.0.2 (January 13th, 2022) =
+
+# Bugs fixed
+* Horizontal scrollbars could appear when targeting elements with Microthemer if the element name was too wide for the available space.
+
+= 7.1.0.1 (January 12th, 2022) =
+
+# Bugs fixed
+* An issue with the dropdown menus on the standalone preferences page.
+
+= 7.1.0.0 (January 12th, 2022) =
+
+# Bugs fixed
+* Using the re-target selector option could sometimes save the preliminary retargeting even if it was cancelled.
+* The color picker could generate an error after re-targeting a selector if it was opened just before re-targeting.
+
+= 7.0.9.8 (January 8th, 2022) =
+
+# Bugs fixed
+* The opacity input field was not working properly.
+
+= 7.0.9.7 (January 7th, 2022) =
+
+# Enhancement
+* Minor performance increase.
+
+# Change
+* Some terminology updates to make it clearer that styles are saved as a draft until the Publish button is clicked (unless auto-publish is enabled).
+
+# Bugs fixed
+* When adding a new selector to a closed folder, not all selectors in the folder displayed alongside the newly added selector.
+* Sometimes entries in the history table could say simply "false".
+
+= 7.0.9.3 (January 7th, 2022) =
+
+# Bugs fixed
+* The previous update caused an issue loading the MT interface on some sites, due to an issue with the JS script loading order.
+
+= 7.0.9.2 (January 6th, 2022) =
+
+# Enhancement
+* Added auto-publish option to Settings > General.
+* Added support for completing a firewall captcha form when submitting a license key from a server with a blocked IP address.
+
+# Bugs fixed
+* The publish button was not semi transparent on first install, and the initial notification was a bit confusing.
+* The color picker opacity slider did not work since the recent 7.0.8.5 update.
+* It was awkward to save multiple colors, one after the other, using the color picker save button.
+
+= 7.0.8.8 (December 28th, 2021) =
+
+# Bugs fixed
+* A conflict with UIPress admin styles.
+* Styling issue with CSS reference - white BG and spinner could display below scroll area.
+
+= 7.0.8.6 (December 27th, 2021) =
+
+# Bugs fixed
+* An issue loading tooltips on the frontend could cause issues loading MT.
+
+= 7.0.8.5 (December 22nd, 2021) =
+
+# Bugs fixed
+* An issue with the color picker closing when using the VAR field and generating an error sometimes.
+* Color picker opacity slider could overlap the VAR dropdown menu.
+* Dark theme colors could display in odd places (e.g. dividers, color picker, input borders) with the light theme if a CSS concatenation plugin changed the name of MT's internal CSS file that loads on the frontend.
+* The top selector suggestions menu could not be clicked under certain circumstances.
+
+= 7.0.8.1 (December 16th, 2021) =
+
+# Bugs fixed
+* The previous update could cause the page navigator search to return no results on some sites.
+
+= 7.0.8.0 (December 16th, 2021) =
+
+# Change
+* When enabling a page builder, Microthemer removes any draft selector, rather than saving it.
+
+# Bugs fixed
+* The page navigator was displaying a cached set of pages instead of fetching new results under some circumstances.
+
+= 7.0.7.8 (December 15th, 2021) =
+
+# Bugs fixed
+* Context menus did not reposition when the screen cut off some of the content.
+* Sometimes "undefined" could appear in the editor, rather than an empty string, if no property value was set.
+* Scrollbars could appear on the single selector editor when docked top.
+* Draft selectors were not removed when using the folders pane to navigate to an existing selector.
+* Copying a draft selector did not save it properly.
+* A warning could popup saying "Selector name already exists" when clicking on a draft selector that wasn't properly saved due to the previous two issues.
+* Matching search text in the page navigator was the wrong color (poor contrast).
+
+= 7.0.7.1 (December 14th, 2021) =
+
+# Critical bug
+* Brand new selectors did not save when using the single selector editor on a responsive tab and typing some CSS to confirm that the draft selector should be kept. This only happened when typing speed was neither very fast nor very slow, due to the way the auto-save system works.
+
+= 7.0.7.0 (December 9th, 2021) =
+
+# Change
+* The color of CSS or Sass comments when using the code editor with the dark theme.
+
+# Bugs fixed
+* The grid highlighting persisted when collapsing the MT interface
+* If the grid canvas was expanded, it continued to display when going back to the properties list when styles were docked left.
+* The Google font field was a bit small with the styles docked top.
+* When playing around with the layout options, sometimes overflowing docked top styles could overlap docked-left/right panels, instead of being hidden.
+* Folder search could generate an "invalid regex" error under some circumstances.
+* When doing a folder search, clicking any matching CSS code did not always work.
+
+= 7.0.6.3 (December 6th, 2021) =
+
+# Bugs fixed
+* Due to the fix in the previous update, the loading spinner could remain in place if the site preview page had very little content.
+* A light gradient was used to fade out overflowing responsive tabs, even with the dark theme.
+
+= 7.0.6.1 (December 2nd, 2021) =
+
+# Bugs fixed
+* On some servers, a forbidden error message was shown instead of Microthemer's site loading spinner.
+
+= 7.0.6.0 (December 2nd, 2021) =
+
+# Change
+* With the dark theme, the scrollbars are easier to see.
+* Values in the history table have been emboldened to make them easier to read.
+
+# Bugs fixed
+* Under some circumstances, the icon font didn't load properly.
+* An error in the sample code for loading Microthemer CSS manually.
+* Switching the low/high specificity toggle did not update the selector label.
+* Context menus, that are draggable via the header, did not have the correct cursor move icon.
+
+= 7.0.5.4 (November 25th, 2021) =
+
+# Change
+* When you select an element, and an existing selector targets it but in a different view (full code editor vs GUI), Microthemer notifies you about this rather than automatically switching view. This was a problem when universal selectors were used (*). And there may be other edge cases I haven't considered.
+
+# Bugs fixed
+* When using a universal selector (*), every element had blue highlighting to show you've created a selector for it. And while technically true, it obscured a useful feature.
+
+= 7.0.5.2 (November 22nd, 2021) =
+
+# Enhancement
+* Added link to new docs in Help menu.
+
+# Change
+* Icon for manually adding !important changed to look less like an error warning.
+
+= 7.0.5.0 (November 21st, 2021) =
+
+* Public release of version 7.
+
+# Enhancements summary
+* Hundreds of UI and UX improvements.
+* Dark theme.
+* Searchable folders.
+* Sharper icons.
+* Instant (draft) selectors.
+* Easier selector sorting within folders.
+* More customisable toolbar layouts.
+* Drag resizable panels.
+* Create hover selectors more easily.
+* Shortcut for setting page specific selectors.
+* Special on-page breadcrumbs for tightly nested elements.
+* Keyboard shortcuts reference panel.
+* Set the loading order of Microthemer's stylesheet.
+* Set the prefix used for page specific body classes (mtp is now the default).
+* Microthemer's stylesheet can be loaded in the footer.
+* Responsive HTML and CSS inspection panels.
+* Computed border, padding, margin box model properties.
+
+= 7.0.4.9 (November 21st, 2021) =
+
+# Change
+* Restored V6 CSS grid control styling, as my attempt to simplify the styling came at the cost of usability.
+* Current line of HTML in dark theme matches color scheme better.
+* Dark theme yellow text highlight when searching folders.
+* The settings toggle at the top right is hidden when the settings are permanently docked in view.
+
+# Bugs fixed
+* Oxygen device switching options did not work when loaded inside Microthemer.
+* The manage packs page did not update after a fresh export of settings.
+* The edit design pack icon prompted an 'Are you sure you want to delete this message'.
+* The text editor did not always fill the available height when docked left.
+* The checkboxes could be cropped on the 'Export' page on some screens.
+* Microthemer beatified the minified CSS file when display it, so it wasn't clear if minification was working.
+* Display issue when folder and editor were docked left, but styles were docked top.
+* Issue with dragging Grid template areas, the controls could get stuck. And dragging anywhere outside the grid canvas removed the area (not just when dropping on the clear item).
+* The CSS grid controls could get stuck when dragging the last item outside the graph area.
+* Toggling the folders off didn't always bring content hidden underneath back to the top.
+* In the full code view, switching the editor from docked top to docked left set it's width to zero.
+* Microthemer was not remembering the cursor position for the single selector editor when switching responsive tab or between selectors.
+* Disabling Beaver Builder via Microthemer's switch did not work of no changes had been made in BB.
+* Scrollbars for Google fonts browser and frontend and were not dark even if dark mode was enabled.
+
+= 7.0.4.8 [beta] (November 17th, 2021) =
+
+# Change
+* Alt key must be used to enable mousewheel adjust on styles docked top (not just when docked left). This is to prevent accidentally setting values.
+
+# Bugs fixed
+* Using the Alt key to select elements only worked once.
+* Renaming a folder did not work.
+* Tooltip accessibility content could display on screen if the jQuery stylesheet was unloaded.
+
+= 7.0.4.4 [beta] (November 16th, 2021) =
+
+# Bugs fixed
+* Media query scope not visible in top ruler with the light theme.
+* Color picker site colors refresh icon was missing.
+* Pixel equivalent value under tape measure was misaligned.
+* Microthemer was adding units to non-numeric values like clamp when loading the UI fields.
+
+= 7.0.4.0 [beta] (November 14th, 2021) =
+
+# Change
+* Tweaked the grid control styling.
+
+# Enhancement
+* Dark theme switch added to View menu.
+
+# Bugs fixed
+* More options icon appeared in the context menu it triggered.
+* Misaligned color picker saved and sampled styles panel.
+* Item number was missing from 'Item' tab in grid controls if docked left.
+* Using the CSS unit adjust option next to the property name could cause a display problem if the tape measure slider was showing when clicked.
+* Choosing a sampled variable or property value after expanding/resampling the options closed the menu without selecting anything.
+* The folders pane continued to overlap the code editor if the code editor was docked left bu the styles were docked top.
+
+= 7.0.3.6 [beta] (November 4th, 2021) =
+
+# Enhancement
+* Microthemer's stylesheet can now be loaded in the footer.
+
+# Change
+* New icon for "Re-target selector".
+* Added chevron to media query icon to indicate it can be clicked for more options.
+
+# Bugs fixed
+* Compatibility issue with servers that disallow static HTML files - a 403 error was briefly displayed before the site preview loaded.
+* Microthemer reset the default width for the current tab when switching property group, rather than keeping a custom width set by dragging the slider.
+* Default WordPress form styling was overriding Microthemer's styling on some versions of WordPress.
+* Legacy media queries were too long to be shown in the allocated space without the scroll arrows.
+* Loading Oxygen via the Integrations menu had a false positive warning "Page not editable with Oxygen".
+* Microthemer was not turning off targeting mode automatically when enabling a page builder with deep integration (Elementor, Beaver Builder, Oxygen) if it was activated via the WP toolbar menu, rather then the switch in Microthemer.
+* When leaving an unsaved Oxygen page, Microthemer did not release the Oxygen post lock when exiting via the Integrations menu switch. This causes issues for re-enabling Oxygen (an MT interface refresh was needed).
+
+= 7.0.2.7 [beta] (November 2nd, 2021) =
+
+# Enhancement
+* The loading order of Microthemer's stylesheet can be customised via the preferences.
+* The prefix used for page specific body classes can now be customised. And the default value (for new installs only) is 'mtp' rather than 'mt'. This change is due to a conflict with tailwind and boostrap with use e.g. .mt-4 to set margin-top, which could result in unwanted top margin on the body element.
+
+# Bugs fixed
+* Enabling Sass resulted in an error.
+* 'Fold widget' error when Microthemer was loading if cursor position was left at the end of the editor.
+* The code editor was flagging CSS stroke properties as unknown.
+
+
+= 7.0.2.2 [beta] (October 20th, 2021) =
+
+# Change
+* Top bar layout, reusing some patterns from version 6 to create more space.
+* The 'S' preset view keeps the device tabs at the top by default.
+* Unlock system referencing 'License key' rather than email or unlock code. But users can continue to use what ever is displayed in 'My Downloads'.
+
+= 7.0.1.9 [beta] (October 11th, 2021) =
+
+# Bugs fixed
+* The low/high CSS specificity toggle always showed as low when the interface first loads.
+* Clearing the suggested code field deselected the current element in the HTML pane.
+* Holding down the ALT key when hovering over a CSS property field still scrolled the page.
+* Using the ALT triggered the tools menu in Firefox.
+* The light grey computed CSS overlaying the CSS property fields did not update when selecting elements if the inspection tools were not expanded.
+
+= 7.0.1.4 [beta] (October 5th, 2021) =
+
+# Bugs fixed
+* Microthemer's HTML inspection pane could become out of sync if the page contained HTML comments.
+
+= 7.0.1.3 [beta] (October 4th, 2021) =
+
+# Enhancement
+* Microthemer temporarily hides the element selection overlay when an animation runs.
+
+= 7.0.1.2 [beta] (October 4th, 2021) =
+
+# Bugs fixed
+* Draft mode was not always on by default when upgrading existing versions of Microthemer (previously running version 6).
+
+= 7.0.1.1 [beta] (September 30th, 2021) =
+
+# Bugs fixed
+* Occasionally Microthemer's dropdown menus could display with default jQuery UI styling.
+* The selector label in the top toolbar could occasionally be cropped by 1 or 2 pixels.
+* When toggling full height for the left or right sidebars, the HTML pane did not adjust the flow of text properly.
+
+# Change
+* Replaced 'Specificity' label on targeting options with a more detailed tooltip.
+* Any field that contains selector code text matches the lighter color used for the code field in the top toolbar.
+
+# Enhancements
+* Inspect panels adapt to smaller screen sizes.
+* Min-width of Inspect panels reduced.
+* Color and background-color are included in key computed CSS info.
+* On initial install, Microthemer defaults to the small (S) layout preset if a screen size of 796 or below is detected.
+
+= 7.0.0.4 [beta] (September 28th, 2021) =
+
+# Bugs fixed
+* Oxygen and other page builders did not load when the detach preview feature was enabled.
+* On small screens, panel resizing was not possible.
+* On small screens, multiple left columns were not supported.
+
+= 7.0.0.0 [beta] (September 24th, 2021) =
+
+* Initial release of version 8 beta. See 7.0.5.0 for a summary of the new features.
+
+= 6.3.8.0 (September 27th, 2021) =
+
+# Bugs fixed
+* Final fix for issues creating a selector that arose from an update in June. A full repair on Microthemer's data settings runs when this version is installed. This should fix a period of MT instability for users that experienced it over the last few months.
+
+= 6.3.7.9 (September 21st, 2021) =
+
+# Bugs fixed
+* Plugin conflict with OxyMade, where Microthemer's color picker did not display properly.
+
+= 6.3.7.8 (September 15th, 2021) =
+
+# Bugs fixed
+* XAMPP (running PHP8) issue where the interface was unresponsive and an error displayed - e.tooltip is not a function. This affected non-English translations of Microthemer (e.g. Portuguese). Previously, setting a legacy version of jQuery via MT's preferences was recommended, but this is no longer necessary.
+
+= 6.3.7.7 (September 6th, 2021) =
+
+# Bugs fixed
+* Critical issue with using the custom code editor (to the left of the Font property) to edit styles on selectors created before June 2021. Styles could disappear if the selector label contained non-alphanumeric characters.
+
+= 6.3.7.6 (July 29th, 2021) =
+
+# Bugs fixed
+* Setting an animation or transition JavaScript event did not always work properly.
+
+= 6.3.7.5 (July 8th, 2021) =
+
+# Bugs fixed
+* Set max-width in code suggestion dropdown menu to prevent it displaying off screen when a very long selector is suggested.
+
+= 6.3.7.4 (July 1st, 2021) =
+
+# Bugs fixed
+* Conflict with a custom WP admin theme where the WP admin displayed in the MT interface, overlapping the top content.
+
+= 6.3.7.3 (June 18th, 2021) =
+
+# Bugs fixed
+* The previous update generated a JS error (Cannot read property 'split' of undefined) when creating a new selector in a folder that had the maximum number of selectors in it (40).
+
+= 6.3.7.2 (June 14th, 2021) =
+
+# Bugs fixed
+* Using entirely non alpha-numeric characters (e.g. Arabic, Chinese) for folder and selector names caused an error.
+* The code editor did not recognise aspect-ratio, padding/margin-block/inline properties, and was not correctly coloring the 'unset' keyword.
+
+= 6.3.7.0 (June 7th, 2021) =
+
+# Bugs fixed
+* Reverted the fix in 6.3.6.8 as it caused issues for some users.
+
+= 6.3.6.9 (June 6th, 2021) =
+
+# Bugs fixed
+* False positive warning in editor when a :not() selector contained spaces.
+
+= 6.3.6.8 (May 20th, 2021) =
+
+# Bugs fixed
+* Microthemer didn't always set the preview width to the exact size for min-width media queries on certain screen resolutions.
+
+= 6.3.6.7 (April 28th, 2021) =
+
+# Bugs fixed
+* Compatibility issues with Elementor 3.2+. The site preview displayed in a very small area, and MT's responsive tabs did not sync with Elementor's device mode.
+* MT did not accommodate the size of Elementor's right-hand navigator panel when adjusting the available space for mobile and tablet views. This issue pre-dated the compatibility issues with Elementor 3.2.
+
+= 6.3.6.5 (March 24th, 2021) =
+
+# Bugs fixed
+* Microthemer SSL detection could fail with certain server setups.
+
+= 6.3.6.4 (March 15th, 2021) =
+
+# Bugs fixed
+* Using the custom CSS property "mask-image" in the code editor caused formatting problems.
+
+= 6.3.6.3 (March 8th, 2021) =
+
+# Bugs fixed
+* Box-shadow spread and blur could get mixed up when switching between the editor and GUI options.
+
 = 6.3.6.2 (February 11th, 2021) =
 
 # Bugs fixed

@@ -170,22 +170,23 @@ $propertyOptions = array();
 
 // Custom code
 $propertyOptions['code']['css'] = array(
-	'short_label' => esc_html__('Styles', 'microthemer'),
-	'label' => esc_attr__('Styles', 'microthemer'),
-	'pg_label' => esc_attr__('Custom CSS', 'microthemer'),
-	'sub_label' => esc_html__('Custom CSS', 'microthemer'),
+	'short_label' => esc_html__('Editor', 'microthemer'),
+	'label' => esc_attr__('Editor', 'microthemer'),
+	'pg_label' => esc_attr__('Code editor', 'microthemer'),
+	'sub_label' => esc_html__('Code editor', 'microthemer'),
 	'field-class' => 'icon-size-3',
 	'input-class' => 'tvr-editor-hidden',
 	'sub_slug' => 'code',
 	'new_pg_cat' => esc_attr__('Code', 'microthemer'), // for delimiting property group categories
 	'type' => 'editor',
 	'icon' => '15, 1',
+	'icon-name' => 'code',
 	// ref
 	'ref_desc' => "<p>Enter CSS properties by hand instead/as well as using the GUI options. This is useful if Microthemer doesn't support a particular CSS property, or if you just prefer writing CSS styles by hand.</p>
 <p>This hybrid method of using the GUI with a code editor may be preferable over using just the custom code editor for many. Using this hybrid method, you can leverage the time saving selector wizard, as well as the repetition saving responsive tabs in the GUI view. You only need to update the CSS selector code in one place - the quick edit option in the top toolbar. The CSS selector will automatically update for all media queries.</p>",
 	'ref_values' => array(
 		"property:value;" => "Enter one or more css properties and values e.g. transform: rotate(7deg);",
-		".my-selector { @include my-mixin(); }" => "You can enter SASS code here too e.g. &:hover { @include animate-button-background(); color:\$button_hover_text_color; }"
+		".my-selector { @include my-mixin(); }" => "You can enter Sass code here too e.g. &:hover { @include animate-button-background(); color:\$button_hover_text_color; }"
 	),
 	'tutorials' => array(
 		array(
@@ -299,7 +300,7 @@ $propertyOptions['font']['color'] = array(
 	'sug_values_extra' => $colorvars_sug_config,
 	'icon' => '26',
 	// ref
-	'ref_desc' => "<p>The color property specifies the color of text. The reason it wasn't named \"text-color\" is a mystery.</p>",
+	'ref_desc' => "<p>The color property specifies the color of text.</p>",
 	'ref_values' => array(
 		"(hex code or RGB/A)" => "Microthemer provides a color picker for specifying color without having to remember hex codes or RGB/A values. Just click your mouse in the Color text field to reveal the color picker."
 	),
@@ -370,9 +371,9 @@ $propertyOptions['font']['font_size'] = array(
 	),
 	'icon' => '21',
 	// ref
-	'ref_desc' => "<p>As you might imagine, the font-size property sets the font-size of text.</p>",
+	'ref_desc' => "<p>The font-size property sets the font-size of text.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '12' would set the font size to 12 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em', 'rem', and '%'. So you could enter '1.2em' in the Font Size field."
+		"(numeric)" => "e.g. '12' would set the font size to 12 pixels. Other commonly used units include 'em', 'rem', and '%'. So you could enter '1.2em' in the Font Size field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
@@ -651,7 +652,7 @@ $propertyOptions['font']['text_decoration'] = array(
 // ------------------------------------------------------------
 
 $propertyOptions['text']['text_align'] = array(
-	'short_label' => esc_html__('Text Align', 'microthemer'),
+	'short_label' => esc_html__('Align', 'microthemer'),
 	'label' => esc_attr__('Text Align', 'microthemer'),
 	'pg_label' => esc_attr__('Text', 'microthemer'),
 	'sub_label' => esc_html__('Text', 'microthemer'),
@@ -689,7 +690,7 @@ $propertyOptions['text']['text_align'] = array(
 
 $propertyOptions['text']['text_indent'] = array(
 	'animatable' => 1,
-	'short_label' => esc_html_x('Text Indent', 'noun', 'microthemer'),
+	'short_label' => esc_html_x('Indent', 'noun', 'microthemer'),
 	'label' => esc_attr__('Text Indent', 'microthemer'),
 	'field-class' => 'icon-size-2',
 	'input-class' => 'size-0b',
@@ -715,7 +716,7 @@ $propertyOptions['text']['text_indent'] = array(
 	// ref
 	'ref_desc' => "<p>The text-indent property specifies the indentation of the first line in a text-block. You might choose to set this property on dense articles of text to improve readability where paragraphs have no bottom margin.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '80' would set the text indent to 80 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '15%' in the Text Indent field."
+		"(numeric)" => "e.g. '80' would set the text indent to 80 pixels. Other commonly used units include 'em' and '%'. So you could enter '15%' in the Text Indent field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
@@ -737,7 +738,7 @@ $propertyOptions['text']['text_indent'] = array(
 );
 
 $propertyOptions['text']['text_transform'] = array(
-	'short_label' => esc_html__('Text Transform', 'noun', 'microthemer'),
+	'short_label' => esc_html__('Transform', 'noun', 'microthemer'),
 	'label' => esc_attr__('Text Transform', 'microthemer'),
 	'input-class' => 'size-4',
 	'type' => 'combobox',
@@ -792,7 +793,7 @@ $propertyOptions['text']['word_spacing'] = array(
 	// ref
 	'ref_desc' => "<p>The word-spacing property increases or decreases the white space between words.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '10' would set the font size to 10 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '1em' in the Word Spacing field."
+		"(numeric)" => "e.g. '10' would set the font size to 10 pixels. Other commonly used units include 'em' and '%'. So you could enter '1em' in the Word Spacing field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
@@ -828,7 +829,7 @@ $propertyOptions['text']['letter_spacing'] = array(
 	// ref
 	'ref_desc' => "<p>The letter-spacing property increases or decreases the space between characters in text.<p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '2' would set the letter spacing to 2 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified)."),
+		"(numeric)" => "e.g. '2' would set the letter spacing to 2 pixels."),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
 		'css_tricks' => 'https://css-tricks.com/almanac/properties/l/letter-spacing/',
@@ -1162,8 +1163,8 @@ $propertyOptions['list']['list_style_image'] = array(
 	'short_label' => esc_html_x('List Style Image', 'noun', 'microthemer'),
 	'label' => esc_attr__('List Style Image', 'microthemer'),
 	'type' => 'combobox',
-	'field-class' => 'last span-3 icon-size-3 grid-large',
-	'input-class' => 'bg-image-select size-very-big',
+	'field-class' => 'last span-3 icon-size-3 grid-large size-very-big',
+	'input-class' => 'bg-image-select',
 	'sug_values' => array(
 		'this' => 1
 	),
@@ -1242,7 +1243,7 @@ $propertyOptions['shadow']['text_shadow_x'] = array(
 	)),
 	'multiple' => 1,
 	'animatable' => 1, // text-shadow shorthand is, no longhand (so use first)
-	'short_label' => esc_html__('X-Offset', 'microthemer'),
+	'short_label' => esc_html__('X', 'microthemer'),
 	'label' => esc_attr__('Text Shadow X-offset', 'microthemer'),
 	'pg_label' => esc_attr__('Shadow', 'microthemer'),
 	'sub_label' => esc_html__('Text Shadow', 'microthemer'),
@@ -1265,7 +1266,7 @@ $propertyOptions['shadow']['text_shadow_x'] = array(
 	// ref
 	'ref_desc' => "<p>The position of the horizontal shadow. Negative values are allowed</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '1' would create a 1 pixel shadow to the right of the text (Microthemer automatically adds the 'px' unit if a unit isn't specified)."
+		"(numeric)" => "e.g. '1' would create a 1 pixel shadow to the right of the text."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#feat=css-textshadow',
@@ -1293,7 +1294,7 @@ $propertyOptions['shadow']['text_shadow_y'] = array(
 		'initial' => 0
 		// required value
 	)),
-	'short_label' => esc_html__('Y-Offset', 'microthemer'),
+	'short_label' => esc_html__('Y', 'microthemer'),
 	'label' => esc_attr__('Text Shadow Y-offset', 'microthemer'),
 	'input-class' => 'size-0b',
 	'auto' => array(
@@ -1312,7 +1313,7 @@ $propertyOptions['shadow']['text_shadow_y'] = array(
 	// ref
 	'ref_desc' => "<p>The position of the vertical shadow. Negative values are allowed</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '-1' would create a 1 pixel shadow above the element (Microthemer automatically adds the 'px' unit if a unit isn't specified)."
+		"(numeric)" => "e.g. '-1' would create a 1 pixel shadow above the element."
 	),
 	'ref_links' => $propertyOptions['shadow']['text_shadow_x']['ref_links'],
 	'tutorials' => $propertyOptions['shadow']['text_shadow_x']['tutorials'],
@@ -1386,7 +1387,7 @@ $propertyOptions['shadow']['box_shadow_x'] = array(
 	)),
 	'multiple' => 1,
 	'animatable' => 1, // only shorthand, box-shadow (use first)
-	'short_label' => esc_html__('X-Offset', 'microthemer'),
+	'short_label' => esc_html__('X', 'microthemer'),
 	'label' => esc_attr__('Box Shadow x-offset', 'microthemer'),
 	'sub_label' => esc_html__('Box Shadow', 'microthemer'),
 	'sub_slug' => 'box_shadow',
@@ -1408,7 +1409,7 @@ $propertyOptions['shadow']['box_shadow_x'] = array(
 	// ref
 	'ref_desc' => "<p>The position of the horizontal shadow. Negative values are allowed</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '15' would create a 15 pixel shadow to the right of the element (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '2%'."
+		"(numeric)" => "e.g. '15' would create a 15 pixel shadow to the right of the element. Other commonly used units include 'em' and '%'. So you could enter '2%'."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#feat=css-boxshadow',
@@ -1449,7 +1450,7 @@ $propertyOptions['shadow']['box_shadow_y'] = array(
 		'initial' => 0
 		// required
 	)),
-	'short_label' => esc_html__('Y-Offset', 'microthemer'),
+	'short_label' => esc_html__('Y', 'microthemer'),
 	'label' => esc_attr__('Box Shadow y-offset', 'microthemer'),
 	'field-class' => 'icon-size-3',
 	'auto' => array(
@@ -1469,7 +1470,7 @@ $propertyOptions['shadow']['box_shadow_y'] = array(
 	// ref
 	'ref_desc' => "<p>The position of the vertical shadow. Negative values are allowed.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '-10' would create a 10 pixel shadow above the element (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '-2%'."
+		"(numeric)" => "e.g. '-10' would create a 10 pixel shadow above the element. Other commonly used units include 'em' and '%'. So you could enter '-2%'."
 	),
 	'ref_links' => $propertyOptions['shadow']['box_shadow_x']['ref_links'],
 	'tutorials' => $propertyOptions['shadow']['box_shadow_x']['tutorials'],
@@ -1479,7 +1480,7 @@ $propertyOptions['shadow']['box_shadow_y'] = array(
 $propertyOptions['shadow']['box_shadow_blur'] = array(
 	'sh' => array('box-shadow', 2, array(
 		'onlyShort' => 1,
-		'optional' => 1, // required (for MT) otherwise spread can be interpreted as blur - todo check this is true
+		//'optional' => 1, // required (for MT) otherwise spread can be interpreted as blur - todo check this is true
 		'initial' => 0
 	)),
 	'short_label' => esc_html_x('Blur', 'noun', 'microthemer'),
@@ -1511,7 +1512,7 @@ $propertyOptions['shadow']['box_shadow_blur'] = array(
 $propertyOptions['shadow']['box_shadow_spread'] = array(
 	'sh' => array('box-shadow', 3, array(
 		'onlyShort' => 1,
-		'optional' => 1,
+		//'optional' => 1,
 		'initial' => 0
 		// optional, but onlyShort so no initial needed
 	)),
@@ -1534,7 +1535,7 @@ $propertyOptions['shadow']['box_shadow_spread'] = array(
 	// ref
 	'ref_desc' => "<p>The size of the shadow. If X and Y offsets are set to 0, setting a positive spread will result in an even shadow on all sides. Negative values are also permitted.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '20' would create a 20 pixel shadow surrounding the element (Microthemer automatically adds the 'px' unit if a unit isn't specified)."
+		"(numeric)" => "e.g. '20' would create a 20 pixel shadow surrounding the element."
 	),
 	'ref_links' => $propertyOptions['shadow']['box_shadow_x']['ref_links'],
 	'tutorials' => $propertyOptions['shadow']['box_shadow_x']['tutorials'],
@@ -1679,8 +1680,8 @@ $propertyOptions['background']['background_image'] = array(
 	'short_label' => esc_html_x('Image', 'noun', 'microthemer'),
 	'label' => esc_attr__('Background Image', 'microthemer'),
 	'type' => 'combobox',
-	'field-class' => 'last span-3 grid-large',
-	'input-class' => 'bg-image-select size-very-big',
+	'field-class' => 'last span-3 grid-large size-very-big',
+	'input-class' => 'bg-image-select',
 	'sug_values' => array(
 		'this' => 1,
 	),
@@ -2040,6 +2041,7 @@ $propertyOptions['gradient']['gradient_a'] = array(
 	// note, may need to do some sug_values stuff here if just parsing 'background' isn't the best way to get gradient colors
 	'hide imp' => 1,
 	'icon' => '25',
+	'icon-name' => 'background-color',
 	// ref
 	'ref_desc' => "<p>One of the color stops in the linear gradient. The color you specify here will gradually blend into the color you specify for Gradient B if you specify one. If you don't specify a color for Gradient B, Gradient A will blend into Gradient C.</p>",
 	'ref_values' => array(
@@ -2061,6 +2063,7 @@ $propertyOptions['gradient']['gradient_b'] = array(
 	'input-class' => 'color mt-color-picker',
 	'hide imp' => 1,
 	'icon' => '25',
+	'icon-name' => 'background-color',
 	// ref
 	'ref_desc' => "<p>One of the color stops in the linear gradient. The color you specify here will gradually blend into Gradient A and C. <b>Gradient B is optional</b>. If you just want to blend 2 colors, you only need to specify a value for Grandient A and C. If you do use it, there is an additional option for Gradient B: 'B Position (optional)'. Click the label for this option for details.</p>",
 	'ref_values' => array(
@@ -2094,6 +2097,7 @@ $propertyOptions['gradient']['gradient_b_pos'] = array(
 	),
 	'hide imp' => 1,
 	'icon' => '40, 14',
+	'icon-name' => 'position',
 	// ref
 	'ref_desc' => "<p>The position of Gradient B in relation to Gradient A. Gradient B is the middle color of the gradient, but it doesn't have to appear exactly in between Gradient A and C. If you were to specify a 'B Position' of 10% (for instance) Gradient B would begin almost immediately after Gradient A. If you were to specify a 'B Position' of 90%, Gradient B wouldn't begin until just before Gradient C. If you leave this setting blank, or specify a value of 50% Gradient B, will be placed exactly between Gradient A and C.</p>",
 	'ref_values' => array(
@@ -2114,6 +2118,7 @@ $propertyOptions['gradient']['gradient_c'] = array(
 	'field-class' => 'is-picker',
 	'input-class' => 'color mt-color-picker',
 	'icon' => '25',
+	'icon-name' => 'background-color',
 	'important_carrier' => 1,
 	// ref
 	'ref_desc' => "<p>One of the color stops in the linear gradient. The color you specify here will gradually blend into the color you specify for Gradient B if you specify one. If you don't specify a color for Gradient B, Gradient C will blend into Gradient A.</p>",
@@ -2247,6 +2252,7 @@ $propertyOptions['filter']['drop_shadow_function'] = array(
 		'30px 30px 30px rgba(0,0,0,.3)'
 	),
 	'icon' => '37, 11',
+	'icon-name' => 'shadow',
 	// ref
 	'ref_desc' => "<p>Unlike the box-shadow property, which creates a rectangular shadow behind an element's entire box, the drop-shadow() filter function creates a shadow that conforms to the shape (alpha channel) of the image itself</p>",
 	'ref_links' => array(
@@ -2424,8 +2430,8 @@ $propertyOptions['filter']['url_function'] = array(
 	'label' => esc_html__('Url', 'microthemer'),
 	'css_func' => 'none',
 	'type' => 'combobox',
-	'field-class' => '',
-	'input-class' => 'size-very-big bg-image-select',
+	'field-class' => 'size-very-big',
+	'input-class' => 'bg-image-select',
 	'sug_values' => array(
 		'this' => 1,
 	),
@@ -2435,6 +2441,7 @@ $propertyOptions['filter']['url_function'] = array(
 		'/wp-content/plugins/microthemer/images/mt-logo.gif#mySVGFilter',
 	),
 	'icon' => '39, 14',
+	'icon-name' => 'background-image',
 	// ref
 	'ref_desc' => "<p>The url() CSS function adjusts the url of the input image.</p>",
 	'ref_links' => array(
@@ -2495,7 +2502,7 @@ $propertyOptions['dimensions']['width'] = array(
 	width + padding + borders (and in terms of the space it takes up on the page + margin too). However, if the width hasn't been given a numeric or percentage value (or has been explicitly set to 'auto') it will have a value of 'auto'. Applying padding, margin and border values when width is 'auto' causes the browser to decrease the value it calculates for width. Otherwise the element would be too big for it's parent element - which is what happens if you enter a value of '100%' for width and then add margins, padding or borders.</p>
 	<p>If 'box-sizing' is set to 'border-box' padding and border values are not added to the defined width. The defined width specifies the total width. So if you set width to '100' and border-left to '20' the total width would be '100' as opposed to '120' (the padding forces the width down to '80').</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '400' would set the width to 400 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '50%' in the Width field."
+		"(numeric)" => "e.g. '400' would set the width to 400 pixels. Other commonly used units include 'em' and '%'. So you could enter '50%' in the Width field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
@@ -2543,7 +2550,7 @@ $propertyOptions['dimensions']['min_width'] = array(
 	// ref
 	'ref_desc' => "<p>The min-width property sets the minimum width of an element. Note: The min-width property does not include padding, borders, or margins.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '400' would set the minimun width to 400 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '50%' in the Min Width field."),
+		"(numeric)" => "e.g. '400' would set the minimun width to 400 pixels. Other commonly used units include 'em' and '%'. So you could enter '50%' in the Min Width field."),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#feat=minmaxwh',
 		'css_tricks' => 'https://css-tricks.com/almanac/properties/m/min-width/',
@@ -2583,7 +2590,7 @@ $propertyOptions['dimensions']['max_width'] = array(
 	// ref
 	'ref_desc' => "<p>The max-width property sets the maximum width of an element. Note: The max-width property does not include padding, borders, or margins.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '400' would set the maximun width to 400 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '50%' in the Max Width field."
+		"(numeric)" => "e.g. '400' would set the maximun width to 400 pixels. Other commonly used units include 'em' and '%'. So you could enter '50%' in the Max Width field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#feat=minmaxwh',
@@ -2627,7 +2634,7 @@ $propertyOptions['dimensions']['height'] = array(
 	'ref_desc' => "<p>The height property sets the height of an element. <b>Note:</b> The total height of an element is
 	height + padding + borders (+ margins, if you consider the total space the element takes up on the page). However, if box-sizing is set to border-box padding and border are incorporated in the value set for height.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '200' would set the height to 400 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '10em' in the Height field."
+		"(numeric)" => "e.g. '200' would set the height to 400 pixels. Other commonly used units include 'em' and '%'. So you could enter '10em' in the Height field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#feat=minmaxwh',
@@ -2667,7 +2674,7 @@ $propertyOptions['dimensions']['min_height'] = array(
 	// ref
 	'ref_desc' => "<p>The min-height property sets the minimum height of an element. Note: The min-height property does not include padding, borders, or margins</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '400' would set the minimun height to 400 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified)."
+		"(numeric)" => "e.g. '400' would set the minimun height to 400 pixels."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#feat=minmaxwh',
@@ -2708,7 +2715,7 @@ $propertyOptions['dimensions']['max_height'] = array(
 	// ref
 	'ref_desc' => "<p>The max-height property sets the maximum height of an element. Note: The max-height property does not include padding, borders, or margins.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '400' would set the maximun height to 400 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified)."
+		"(numeric)" => "e.g. '400' would set the maximun height to 400 pixels."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#feat=minmaxwh',
@@ -2772,9 +2779,9 @@ $propertyOptions['dimensions']['box_sizing'] = array(
 $propertyOptions['padding_margin']['padding_top'] = array(
 	'sh' => array('padding', 0),
 	'animatable' => 1,
-	'short_label' => esc_html__('Padding Top', 'microthemer'),
+	'short_label' => esc_html__('Top', 'microthemer'),
 	'label' => esc_attr__('Padding Top', 'microthemer'),
-	'pg_label' => esc_attr__('Padding & Margin', 'microthemer'),
+	'pg_label' => esc_attr__('Spacing', 'microthemer'),
 	'sub_label' => esc_html__('Padding', 'microthemer'),
 	'sub_slug' => 'padding',
 	'field-class' => 'quad-top',
@@ -2796,7 +2803,7 @@ $propertyOptions['padding_margin']['padding_top'] = array(
 	// ref
 	'ref_desc' => "<p>The padding-top property sets the top padding (space) of an element. The space is created <i>inside</i> the element's border.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '15' would set the top padding for an element to 15 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '5%' in the Top Padding field."
+		"(numeric)" => "e.g. '15' would set the top padding for an element to 15 pixels. Other commonly used units include 'em' and '%'. So you could enter '5%' in the Top Padding field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
@@ -2825,7 +2832,7 @@ $propertyOptions['padding_margin']['padding_top'] = array(
 $propertyOptions['padding_margin']['padding_right'] = array(
 	'sh' => array('padding', 1),
 	'animatable' => 1,
-	'short_label' => esc_html__('Padding Right', 'microthemer'),
+	'short_label' => esc_html__('Right', 'microthemer'),
 	'label' => esc_attr__('Padding Right', 'microthemer'),
 	'field-class' => 'quad-right',
 	'input-class' => 'size-2',
@@ -2846,7 +2853,7 @@ $propertyOptions['padding_margin']['padding_right'] = array(
 	// ref
 	'ref_desc' => "<p>The padding-right property sets the right padding (space) of an element. The space is created <i>inside</i> the element's border.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '15' would set the right padding for an element to 15 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '5%' in the Right Padding field."
+		"(numeric)" => "e.g. '15' would set the right padding for an element to 15 pixels. Other commonly used units include 'em' and '%'. So you could enter '5%' in the Right Padding field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
@@ -2862,7 +2869,7 @@ $propertyOptions['padding_margin']['padding_right'] = array(
 $propertyOptions['padding_margin']['padding_bottom'] = array(
 	'sh' => array('padding', 2),
 	'animatable' => 1,
-	'short_label' => esc_html__('Padding Bottom', 'microthemer'),
+	'short_label' => esc_html__('Bottom', 'microthemer'),
 	'label' => esc_attr__('Padding Bottom', 'microthemer'),
 	'field-class' => 'quad-bottom',
 	'input-class' => 'size-2',
@@ -2883,7 +2890,7 @@ $propertyOptions['padding_margin']['padding_bottom'] = array(
 	// ref
 	'ref_desc' => "<p>The padding-bottom property sets the bottom padding (space) of an element. The space is created <i>inside</i> the element's border.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '15' would set the bottom padding for an element to 15 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '5%' in the Bottom Padding field."
+		"(numeric)" => "e.g. '15' would set the bottom padding for an element to 15 pixels. Other commonly used units include 'em' and '%'. So you could enter '5%' in the Bottom Padding field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
@@ -2899,7 +2906,7 @@ $propertyOptions['padding_margin']['padding_bottom'] = array(
 $propertyOptions['padding_margin']['padding_left'] = array(
 	'sh' => array('padding', 3),
 	'animatable' => 1,
-	'short_label' => esc_html__('Padding Left', 'microthemer'),
+	'short_label' => esc_html__('Left', 'microthemer'),
 	'label' => esc_attr__('Padding Left', 'microthemer'),
 	'field-class' => 'quad-left',
 	'input-class' => 'size-2',
@@ -2922,7 +2929,7 @@ $propertyOptions['padding_margin']['padding_left'] = array(
 	// ref
 	'ref_desc' => "<p>The padding-left property sets the left padding (space) of an element. The space is created <i>inside</i> the element's border.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '15' would set the left padding for an element to 15 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '5%' in the Left Padding field."
+		"(numeric)" => "e.g. '15' would set the left padding for an element to 15 pixels. Other commonly used units include 'em' and '%'. So you could enter '5%' in the Left Padding field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
@@ -2941,7 +2948,7 @@ $propertyOptions['padding_margin']['padding_left'] = array(
 $propertyOptions['padding_margin']['margin_top'] = array(
 	'sh' => array('margin', 0),
 	'animatable' => 1,
-	'short_label' => esc_html__('Margin Top', 'microthemer'),
+	'short_label' => esc_html__('Top', 'microthemer'),
 	'label' => esc_attr__('Margin Top', 'microthemer'),
 	'sub_label' => esc_html__('Margin', 'microthemer'),
 	'sub_slug' => 'margin',
@@ -2966,7 +2973,7 @@ $propertyOptions['padding_margin']['margin_top'] = array(
 	'ref_desc' => "<p>The margin-top property sets the top margin (space) of an element.
 The space is created <i>outside</i> the element's border.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '15' would set the top margin for an element to 15 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '5%' in the Top Margin field."
+		"(numeric)" => "e.g. '15' would set the top margin for an element to 15 pixels. Other commonly used units include 'em' and '%'. So you could enter '5%' in the Top Margin field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
@@ -2982,7 +2989,7 @@ The space is created <i>outside</i> the element's border.</p>",
 $propertyOptions['padding_margin']['margin_right'] = array(
 	'sh' => array('margin', 1),
 	'animatable' => 1,
-	'short_label' => esc_html__('Margin Right', 'microthemer'),
+	'short_label' => esc_html__('Right', 'microthemer'),
 	'label' => esc_attr__('Margin Right', 'microthemer'),
 	'field-class' => 'icon-size-2 quad-right',
 	'input-class' => 'size-2',
@@ -3004,7 +3011,7 @@ $propertyOptions['padding_margin']['margin_right'] = array(
 	// ref
 	'ref_desc' => "<p>The margin-right property sets the right margin (space) of an element. The space is created <i>outside</i> the element's border.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '15' would set the right margin for an element to 15 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '5%' in the Right Margin field."
+		"(numeric)" => "e.g. '15' would set the right margin for an element to 15 pixels. Other commonly used units include 'em' and '%'. So you could enter '5%' in the Right Margin field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
@@ -3020,7 +3027,7 @@ $propertyOptions['padding_margin']['margin_right'] = array(
 $propertyOptions['padding_margin']['margin_bottom'] = array(
 	'sh' => array('margin', 2),
 	'animatable' => 1,
-	'short_label' => esc_html__('Margin Bottom', 'microthemer'),
+	'short_label' => esc_html__('Bottom', 'microthemer'),
 	'label' => esc_attr__('Margin Bottom', 'microthemer'),
 	'field-class' => 'quad-bottom',
 	'input-class' => 'size-2',
@@ -3042,7 +3049,7 @@ $propertyOptions['padding_margin']['margin_bottom'] = array(
 	// ref
 	'ref_desc' => "<p>The margin-bottom property sets the bottom margin (space) of an element. The space is created <i>outside</i> the element's border.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '15' would set the bottom margin for an element to 15 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '5%' in the Bottom Margin field."
+		"(numeric)" => "e.g. '15' would set the bottom margin for an element to 15 pixels. Other commonly used units include 'em' and '%'. So you could enter '5%' in the Bottom Margin field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
@@ -3058,7 +3065,7 @@ $propertyOptions['padding_margin']['margin_bottom'] = array(
 $propertyOptions['padding_margin']['margin_left'] = array(
 	'sh' => array('margin', 3),
 	'animatable' => 1,
-	'short_label' => esc_html__('Margin Left', 'microthemer'),
+	'short_label' => esc_html__('Left', 'microthemer'),
 	'label' => esc_attr__('Margin Left', 'microthemer'),
 	'field-class' => 'icon-size-3 last quad-left',
 	'input-class' => 'size-2',
@@ -3081,7 +3088,7 @@ $propertyOptions['padding_margin']['margin_left'] = array(
 	// ref
 	'ref_desc' => "<p>The margin-left property sets the left margin (space) of an element. The space is created <i>outside</i> the element's border.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '15' would set the left margin for an element to 15 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '5%' in the Left Margin field."
+		"(numeric)" => "e.g. '15' would set the left margin for an element to 15 pixels. Other commonly used units include 'em' and '%'. So you could enter '5%' in the Left Margin field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
@@ -3124,7 +3131,7 @@ $propertyOptions['border']['border_top_color'] = array(
 		array('border-color', 0, array('initial' => ''))
 	),
 	'animatable' => 1,
-	'short_label' => esc_html__('Top Color', 'microthemer'),
+	'short_label' => esc_html__('Top', 'microthemer'),
 	'label' => esc_attr__('Border Top Color', 'microthemer'),
 	'pg_label' => esc_attr__('Border', 'microthemer'),
 	'sub_label' => esc_html__('Border Color', 'microthemer'),
@@ -3173,7 +3180,7 @@ $propertyOptions['border']['border_right_color'] = array(
 		array('border-color', 1, array('initial' => ''))
 	),
 	'animatable' => 1,
-	'short_label' => esc_html__('Right Color', 'microthemer'),
+	'short_label' => esc_html__('Right', 'microthemer'),
 	'label' => esc_attr__('Border Right Color', 'microthemer'),
 	'rel' => 'border_color',
 	'field-class' => 'is-picker quad-right',
@@ -3206,7 +3213,7 @@ $propertyOptions['border']['border_bottom_color'] = array(
 		array('border-color', 2, array('initial' => ''))
 	),
 	'animatable' => 1,
-	'short_label' => esc_html__('Bottom Color', 'microthemer'),
+	'short_label' => esc_html__('Bottom', 'microthemer'),
 	'label' => esc_attr__('Border Bottom Color', 'microthemer'),
 	'rel' => 'border_color',
 	'field-class' => 'is-picker quad-bottom',
@@ -3239,7 +3246,7 @@ $propertyOptions['border']['border_left_color'] = array(
 		array('border-color', 3, array('initial' => ''))
 	),
 	'animatable' => 1,
-	'short_label' => esc_html__('Left Color', 'microthemer'),
+	'short_label' => esc_html__('Left', 'microthemer'),
 	'label' => esc_attr__('Border Left Color', 'microthemer'),
 	'rel' => 'border_color',
 	'field-class' => 'last is-picker quad-left',
@@ -3273,7 +3280,7 @@ $propertyOptions['border']['border_top_width'] = array(
 		array('border-width', 0, array('initial' => 'medium'))
 	),
 	'animatable' => 1,
-	'short_label' => esc_html__('Top Width', 'microthemer'),
+	'short_label' => esc_html__('Top', 'microthemer'),
 	'label' => esc_attr__('Border Top Width', 'microthemer'),
 	'sub_label' => esc_html__('Border Width', 'microthemer'),
 	'sub_slug' => 'border_width',
@@ -3292,7 +3299,7 @@ $propertyOptions['border']['border_top_width'] = array(
 	// ref
 	'ref_desc' => "<p>The border-top-width property sets the top border width of an element. <b>Note</b>: the Border Style property must be set for any of the other border properties to work.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '15' would set the top border width for an element to 15 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '5%' in the Top Border Width field."
+		"(numeric)" => "e.g. '15' would set the top border width for an element to 15 pixels. Other commonly used units include 'em' and '%'. So you could enter '5%' in the Top Border Width field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
@@ -3312,7 +3319,7 @@ $propertyOptions['border']['border_right_width'] = array(
 		array('border-width', 1, array('initial' => 'medium'))
 	),
 	'animatable' => 1,
-	'short_label' => esc_html__('Right Width', 'microthemer'),
+	'short_label' => esc_html__('Right', 'microthemer'),
 	'label' => esc_attr__('Border Right Width', 'microthemer'),
 	'field-class' => 'quad-right',
 	'auto' => array(
@@ -3329,7 +3336,7 @@ $propertyOptions['border']['border_right_width'] = array(
 	// ref
 	'ref_desc' => "<p>The border-right-width property sets the right border width of an element. <b>Note</b>: the Border Style property must be set for any of the other border properties to work.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '15' would set the right border for an element to 15 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '5%' in the Right Border Width field."
+		"(numeric)" => "e.g. '15' would set the right border for an element to 15 pixels. Other commonly used units include 'em' and '%'. So you could enter '5%' in the Right Border Width field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
@@ -3349,7 +3356,7 @@ $propertyOptions['border']['border_bottom_width'] = array(
 		array('border-width', 2, array('initial' => 'medium'))
 	),
 	'animatable' => 1,
-	'short_label' => esc_html__('Bottom Width', 'microthemer'),
+	'short_label' => esc_html__('Bottom', 'microthemer'),
 	'label' => esc_attr__('Border Bottom Width', 'microthemer'),
 	'field-class' => 'quad-bottom',
 	'auto' => array(
@@ -3366,7 +3373,7 @@ $propertyOptions['border']['border_bottom_width'] = array(
 	// ref
 	'ref_desc' => "<p>The border-bottom-width property sets the bottom border width of an element. <b>Note</b>: the Border Style property must be set for any of the other border properties to work.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '15' would set the bottom border for an element to 15 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '5%' in the Bottom Border Width field."
+		"(numeric)" => "e.g. '15' would set the bottom border for an element to 15 pixels. Other commonly used units include 'em' and '%'. So you could enter '5%' in the Bottom Border Width field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
@@ -3386,7 +3393,7 @@ $propertyOptions['border']['border_left_width'] = array(
 		array('border-width', 3, array('initial' => 'medium'))
 	),
 	'animatable' => 1,
-	'short_label' => esc_html__('Left Width', 'microthemer'),
+	'short_label' => esc_html__('Left', 'microthemer'),
 	'label' => esc_attr__('Border Left Width', 'microthemer'),
 	'field-class' => 'quad-left last',
 	'auto' => array(
@@ -3405,7 +3412,7 @@ $propertyOptions['border']['border_left_width'] = array(
 	// ref
 	'ref_desc' => "<p>The border-left-width property sets the left border width of an element. <b>Note</b>: the Border Style property must be set for any of the other border properties to work.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '15' would set the left border for an element to 15 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '5%' in the Left Border Width field."
+		"(numeric)" => "e.g. '15' would set the left border for an element to 15 pixels. Other commonly used units include 'em' and '%'. So you could enter '5%' in the Left Border Width field."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#search=CSS%202.1%20properties',
@@ -3437,7 +3444,7 @@ $propertyOptions['border']['border_top_style'] = array(
 		array('border-top', 1, array('initial' => 'none')),
 		array('border-style', 0, array('initial' => 'none'))
 	),
-	'short_label' => esc_html__('Top Style', 'microthemer'),
+	'short_label' => esc_html__('Top', 'microthemer'),
 	'label' => esc_attr__('Border Top Style', 'microthemer'),
 	'sub_label' => esc_html__('Border Style', 'microthemer'),
 	'sub_slug' => 'border_style',
@@ -3477,7 +3484,7 @@ $propertyOptions['border']['border_right_style'] = array(
 		array('border-right', 1, array('initial' => 'none')),
 		array('border-style', 1, array('initial' => 'none'))
 	),
-	'short_label' => esc_html__('Right Style', 'microthemer'),
+	'short_label' => esc_html__('Right', 'microthemer'),
 	'label' => esc_attr__('Border Right Style', 'microthemer'),
 	'field-class' => 'quad-right',
 	'type' => 'combobox',
@@ -3515,7 +3522,7 @@ $propertyOptions['border']['border_bottom_style'] = array(
 		array('border-bottom', 1, array('initial' => 'none')),
 		array('border-style', 2, array('initial' => 'none'))
 	),
-	'short_label' => esc_html__('Bottom Style', 'microthemer'),
+	'short_label' => esc_html__('Bottom', 'microthemer'),
 	'label' => esc_attr__('Border Bottom Style', 'microthemer'),
 	'field-class' => 'quad-bottom',
 	'type' => 'combobox',
@@ -3553,7 +3560,7 @@ $propertyOptions['border']['border_left_style'] = array(
 		array('border-left', 1, array('initial' => 'none')),
 		array('border-style', 3, array('initial' => 'none'))
 	),
-	'short_label' => esc_html__('Left Style', 'microthemer'),
+	'short_label' => esc_html__('Left', 'microthemer'),
 	'label' => esc_attr__('Border Left Style', 'microthemer'),
 	'type' => 'combobox',
 	'field-class' => 'last quad-left',
@@ -3591,7 +3598,7 @@ $propertyOptions['border']['border_left_style'] = array(
 
 $propertyOptions['border']['border_top_left_radius'] = array(
 	'sh' => array('border-radius', 0),
-	'short_label' => esc_html__('Top Left Radius', 'microthemer'),
+	'short_label' => esc_html__('Top Left', 'microthemer'),
 	'label' => esc_attr__('Top Left Border Radius', 'microthemer'),
 	'sub_label' => esc_html__('Border Radius', 'microthemer'),
 	'sub_slug' => 'border_radius',
@@ -3610,7 +3617,7 @@ $propertyOptions['border']['border_top_left_radius'] = array(
 	// ref
 	'ref_desc' => "<p>The top left radius property defines the shape of the border of the top-left corner. A higher value creates a more rounded curve.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '5' would set the top left border radius for an element to 5 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '5%'."
+		"(numeric)" => "e.g. '5' would set the top left border radius for an element to 5 pixels. Other commonly used units include 'em' and '%'. So you could enter '5%'."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#feat=border-radius',
@@ -3639,7 +3646,7 @@ $propertyOptions['border']['border_top_left_radius'] = array(
 
 $propertyOptions['border']['border_top_right_radius'] = array(
 	'sh' => array('border-radius', 1),
-	'short_label' => esc_html__('Top Right Radius', 'microthemer'),
+	'short_label' => esc_html__('Top Right', 'microthemer'),
 	'label' => esc_attr__('Top Right Border Radius', 'microthemer'),
 	'auto' => array(
 		'%' => $border_radius_unconvertable
@@ -3656,7 +3663,7 @@ $propertyOptions['border']['border_top_right_radius'] = array(
 	//ref
 	'ref_desc' => "<p>The top right radius property defines the shape of the border of the top-right corner. A higher value creates a more rounded curve.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '5' would set the top right border radius for an element to 5 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '5%'."
+		"(numeric)" => "e.g. '5' would set the top right border radius for an element to 5 pixels. Other commonly used units include 'em' and '%'. So you could enter '5%'."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#feat=border-radius',
@@ -3670,7 +3677,7 @@ $propertyOptions['border']['border_top_right_radius'] = array(
 
 $propertyOptions['border']['border_bottom_right_radius'] = array(
 	'sh' => array('border-radius', 2),
-	'short_label' => esc_html__('Bottom Right Radius', 'microthemer'),
+	'short_label' => esc_html__('Bottom Right', 'microthemer'),
 	'label' => esc_attr__('Bottom Right Border Radius', 'microthemer'),
 	'auto' => array(
 		'%' => $border_radius_unconvertable
@@ -3687,7 +3694,7 @@ $propertyOptions['border']['border_bottom_right_radius'] = array(
 	// ref
 	'ref_desc' => "<p>The bottom left radius property defines the shape of the border of the bottom-left corner. A higher value creates a more rounded curve.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '5' would set the bottom left border radius for an element to 5 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '5%'."
+		"(numeric)" => "e.g. '5' would set the bottom left border radius for an element to 5 pixels. Other commonly used units include 'em' and '%'. So you could enter '5%'."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#feat=border-radius',
@@ -3702,7 +3709,7 @@ $propertyOptions['border']['border_bottom_right_radius'] = array(
 
 $propertyOptions['border']['border_bottom_left_radius'] = array(
 	'sh' => array('border-radius', 3),
-	'short_label' => esc_html__('Bottom Left Radius', 'microthemer'),
+	'short_label' => esc_html__('Bottom Left', 'microthemer'),
 	'label' => esc_attr__('Bottom Left Border Radius', 'microthemer'),
 	'auto' => array(
 		'%' => $border_radius_unconvertable
@@ -3721,7 +3728,7 @@ $propertyOptions['border']['border_bottom_left_radius'] = array(
 	// ref
 	'ref_desc' => "<p>The bottom right radius property defines the shape of the border of the bottom-right corner. A higher value creates a more rounded curve.</p>",
 	'ref_values' => array(
-		"(numeric)" => "e.g. '5' would set the bottom right border radius for an element to 5 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '5%'."
+		"(numeric)" => "e.g. '5' would set the bottom right border radius for an element to 5 pixels. Other commonly used units include 'em' and '%'. So you could enter '5%'."
 	),
 	'ref_links' => array(
 		'can_i_use' => 'http://caniuse.com/#feat=border-radius',
@@ -4140,7 +4147,7 @@ $propertyOptions['flexbox']['flex_basis'] = array(
 	'ref_desc' => "<p>Specifies the initial length of a flexible item. This will override any width value, unless flex-basis is set to auto (see below).</p>",
 	'ref_values' => array(
 		"auto" => "Default. The existing width of the flexible item is honoured. If the item has no explicit width set, the width will be according to its content.",
-		"(numeric)" => "E.g. '400' would set the flex-basis to 400 pixels (Microthemer automatically adds the 'px' unit if a unit isn't specified). Other commonly used units include 'em' and '%'. So you could enter '50%'",
+		"(numeric)" => "E.g. '400' would set the flex-basis to 400 pixels. Other commonly used units include 'em' and '%'. So you could enter '50%'",
 	),
 	'ref_links' => array(
 		'can_i_use' => 'https://caniuse.com/#search=flex-basis',
@@ -4339,6 +4346,7 @@ $grid_area = array(
 	),
 	//'prefixes' => $flex_display_prefixes,
 	'icon' => '14, 8, B',
+	'icon-name' => 'grid-area-gridall',
 	// ref
 	'ref_desc' => "<p>Assign a grid item to a named grid area. Or a shorthand to set grid-row-start, grid-column-start, grid-row-end and grid-column-end using forward slashes (/) to separate values.</p>",
 	'ref_links' => array(
@@ -4358,6 +4366,7 @@ $grid_order = array(
 	'sub_slug' => 'itemother',
 	'tab_control' => 'griditems',
 	'icon' => '11, 1, B',
+	'icon-name' => 'order',
 	'select_options' => $flex_grow_shrink_order,
 	'sug_values' => array(
 		'this' => 1,
@@ -4394,7 +4403,8 @@ $grid_z_index = array(
 		'increment' => 1
 	),
 	//'prefixes' => $flex_display_prefixes,
-	'icon' => '10, 1, B',
+	'icon' => '21, 14',
+	'icon-name' => 'z-index',
 	// ref
 	'ref_desc' => "<p>Specifies the stack order of an element. An element with greater stack order is always in front of an element with a lower stack order.</p>",
 	'ref_values' => array(
@@ -4429,6 +4439,7 @@ $propertyOptions['grid']['display_grid'] = array(
 	),
 	//'prefixes' => $flex_display_prefixes,
 	'icon' => '23, 14',
+	'icon-name' => 'display',
 	// ref
 	'ref_desc' => "<p>Set the display value to either 'grid' or 'inline-grid' to make an element a grid container. The direct children of the container element will behave as grid items.</p>",
 	'ref_values' => array(
@@ -4461,7 +4472,7 @@ $propertyOptions['grid']['grid_auto_flow'] = array(
 	'label' => esc_attr_x('Grid auto flow', 'noun', 'microthemer'),
 	'field-class' => 'perma-show',
 	'input-class' => 'size-4',
-	'highlight_grid_toggle' => 1,
+	//'highlight_grid_toggle' => 1,
 	'text_before' => '<p>Position the current element as a <b>grid item</b></p>
 <p>Note: the parent element must display as a grid</p>
 <p><a class="learn-css-grid" href="https://gridbyexample.com/video/" target="_blank">Learn CSS grid - video series</a></p>',
@@ -4500,6 +4511,7 @@ $propertyOptions['grid']['column_gap'] = array(
 	'label' => esc_attr_x('Grid column gap', 'noun', 'microthemer'),
 	'field-class' => 'perma-show',
 	'input-class' => 'size-4',
+	'spacer_before' => 1,
 	'auto' => array(
 		'%' => array(
 			'node' => 'parent',
@@ -4586,6 +4598,18 @@ $propertyOptions['grid']['grid_template_columns'] = array(
 	'array_values' => 1,
 	'tab_control' => 'gridtemplate',
 	'field-class' => 'gridcolumns icon-size-2',
+	'tabs_before' => array(
+		'gridtemplate' => esc_html__('Template', 'microthemer'),
+		'gridauto' => esc_html__('Auto', 'microthemer'),
+		'gridalign' => esc_html__('Align', 'microthemer'),
+		'gridareas' => esc_html__('Areas', 'microthemer'),
+		'allgriditems' => esc_html__('All', 'microthemer'),
+		'griditems' => esc_html__('Item', 'microthemer')
+		               . '<span class="mt-tab-txt grid-tab-txt pg-tab-txt grid-item-num"></span>',
+
+	),
+	'tabs_has_options' => 1,
+
 	'auto' => array(
 		'%' => array(
 			'node' => 'element',
@@ -4792,6 +4816,7 @@ $propertyOptions['grid']['justify_content_grid'] = array(
 	),
 	//'sprite_type' => 'B',
 	'icon' => '12, 1, B',
+	'icon-name' => 'justify-content',
 	// ref
 	'ref_desc' => "<p>Align multiple lines of content along the horizontal axis. Note, this effect will only be apparent if the content doesn't fill all of the available space (and so there is room for margins).</p>",
 	'ref_links' => array(
@@ -4821,7 +4846,7 @@ $propertyOptions['grid']['align_items_grid'] = array(
 	),
 	//'sprite_type' => 'B',
 	'icon' => '2, 1, B',
-
+	'icon-name' => 'align-items',
 	// ref
 	'ref_desc' => "<p>Align items inside their grid areas along the vertical axis.</p>",
 	'ref_links' => array(
@@ -4852,6 +4877,7 @@ $propertyOptions['grid']['align_content_grid'] = array(
 	),
 	//'sprite_type' => 'B',
 	'icon' => '3, 1, B',
+	'icon-name' => 'align-content',
 	// ref
 	'ref_desc' => "<p>Align multiple lines of content along the vertical axis. Note, this effect will only be apparent if the content doesn't fill all of the available space (and so there is room for margins).</p>",
 	'ref_links' => array(
@@ -4935,6 +4961,7 @@ $propertyOptions['grid']['width_gridall'] = array(
 	'select_options' => $width_height_reset,
 	'sug_values' => $propertyOptions['dimensions']['width']['sug_values'],
 	'icon' => '9',
+	'icon-name' => 'width',
 	// ref
 	'ref_desc' => "<p>Set the width property of all grid items. Setting a value of '100%' or 'auto' makes grid items fill the full width of the grid tracks you define using grid-template-columns. This is useful when converting existing flexbox or float layouts to grid.</p>",
 	'ref_links' => $propertyOptions['dimensions']['width']['ref_links'],
@@ -4953,6 +4980,7 @@ $propertyOptions['grid']['height_gridall'] = array(
 	'select_options' => $width_height_reset,
 	'sug_values' => $propertyOptions['dimensions']['height']['sug_values'],
 	'icon' => '10',
+	'icon-name' => 'height',
 	// ref
 	'ref_desc' => "<p>Set the height property of all grid items. Setting a value of '100%' or 'auto' makes grid items fill the full height of the grid tracks you define using grid-template-rows.</p>",
 	'ref_links' => $propertyOptions['dimensions']['height']['ref_links'],
@@ -4973,6 +5001,7 @@ $propertyOptions['grid']['padding'] = array(
 	'select_options' => $padding_lengths,
 	'sug_values' => $propertyOptions['padding_margin']['padding_top']['sug_values'],
 	'icon' => $propertyOptions['padding_margin']['padding_top']['icon'],
+	'icon-name' => 'padding-top',
 	// ref
 	'ref_desc' => "<p>Set the padding shorthand property for all grid items.</p>",
 	'ref_links' => $propertyOptions['padding_margin']['padding_top']['ref_links'],
@@ -4991,6 +5020,7 @@ $propertyOptions['grid']['margin'] = array(
 	'select_options' => $margin_lengths,
 	'sug_values' => $propertyOptions['padding_margin']['margin_top']['sug_values'],
 	'icon' => $propertyOptions['padding_margin']['margin_top']['icon'],
+	'icon-name' => 'margin-top',
 	// ref
 	'ref_desc' => "<p>Set the margin shorthand property for all grid items. Setting this to zero may sometimes be necessary when converting float layouts to grid, as float layouts typically create column and row gaps using margin.</p>",
 	'ref_links' => $propertyOptions['padding_margin']['padding_top']['ref_links'],
@@ -5023,6 +5053,7 @@ $propertyOptions['grid']['order_gridall'] = array(
 	'type' => 'combobox',
 	'select_options' => array('0'),
 	'icon' => $grid_order['icon'],
+	'icon-name' => $grid_order['icon-name'],
 	// ref
 	'ref_desc' => "<p>Reset the order of all grid items to '0'. This is useful for resetting the grid on mobile.</p>",
 	'ref_links' => $grid_order['ref_links'],
@@ -5037,6 +5068,7 @@ $propertyOptions['grid']['z_index_gridall'] =  array(
 	'type' => 'combobox',
 	'select_options' => array('auto'),
 	'icon' => $grid_z_index['icon'],
+	'icon-name' => $grid_z_index['icon-name'],
 	// ref
 	'ref_desc' => "<p>Reset the z-index of all grid items to 'auto'. This is useful for resetting the grid on mobile.</p>",
 	'ref_links' => $grid_z_index['ref_links'],
@@ -5052,7 +5084,7 @@ $propertyOptions['grid']['grid_column_start'] = array(
 		array('grid-area', 1, array('initial' => 'auto')),
 		array('grid-column', 0, array('initial' => 'auto')),
 	),
-	'short_label' => esc_html_x('Column start', 'noun', 'microthemer'),
+	'short_label' => esc_html_x('Start', 'noun', 'microthemer'),
 	'label' => esc_attr_x('Grid column start', 'noun', 'microthemer'),
 	'sub_label' => esc_html__('Column', 'microthemer'),
 	'sub_slug' => 'itemcolumn',
@@ -5082,7 +5114,7 @@ $propertyOptions['grid']['grid_column_end'] = array(
 		array('grid-area', 3, array('initial' => 'auto')),
 		array('grid-column', 1, array('initial' => 'auto')),
 	),
-	'short_label' => esc_html_x('Column end', 'noun', 'microthemer'),
+	'short_label' => esc_html_x('End', 'noun', 'microthemer'),
 	'label' => esc_attr_x('Grid column end', 'noun', 'microthemer'),
 	'tab_control' => 'griditems',
 	'select_options' => $grid_lines_end,
@@ -5109,22 +5141,13 @@ $propertyOptions['grid']['grid_row_start'] = array(
 		array('grid-area', 0, array('initial' => 'auto')),
 		array('grid-row', 0, array('initial' => 'auto')),
 	),
-	'short_label' => esc_html_x('Row start', 'noun', 'microthemer'),
+	'short_label' => esc_html_x('Start', 'noun', 'microthemer'),
 	'label' => esc_attr_x('Grid row start', 'noun', 'microthemer'),
 	'sub_label' => esc_html__('Row', 'microthemer'),
 	'sub_slug' => 'itemrow',
 	'tab_control' => 'griditems',
-	'spacer_before' => 1,
-	'tabs_before' => array(
-		'gridtemplate' => esc_html__('Template', 'microthemer'),
-		'gridauto' => esc_html__('Auto', 'microthemer'),
-		'gridalign' => esc_html__('Align', 'microthemer'),
-		'gridareas' => esc_html__('Areas', 'microthemer'),
-		'allgriditems' => esc_html__('All', 'microthemer'),
-		'griditems' => esc_html__('Item', 'microthemer')
-		    . '<span class="mt-tab-txt grid-tab-txt pg-tab-txt grid-item-num"></span>',
+	//'spacer_before' => 1,
 
-	),
 	'select_options' => $grid_lines,
 	'sug_values' => array(
 		'this' => 1,
@@ -5149,7 +5172,7 @@ $propertyOptions['grid']['grid_row_end'] = array(
 		array('grid-area', 2, array('initial' => 'auto')),
 		array('grid-row', 1, array('initial' => 'auto')),
 	),
-	'short_label' => esc_html_x('Row end', 'noun', 'microthemer'),
+	'short_label' => esc_html_x('End', 'noun', 'microthemer'),
 	'label' => esc_attr_x('Grid row end', 'noun', 'microthemer'),
 	'tab_control' => 'griditems',
 	'select_options' => $grid_lines_end,
@@ -5208,6 +5231,7 @@ $propertyOptions['grid']['align_self_grid'] = array(
 	'select_options' => array_merge($ja_items, array('auto')),
 	//'prefixes' => $flex_display_prefixes,
 	'icon' => '10, 1, B',
+	'icon-name' => 'align-self',
 	// ref
 	'ref_desc' => "<p>Align a single grid item inside its grid area along the vertical axis</p>",
 	'ref_links' => array(
@@ -6573,6 +6597,7 @@ $propertyOptions['animation']['animation_play_state'] = array(
 $propertyOptions['animation']['event'] = array(
 	'short_label' => esc_html__('Event', 'microthemer'),
 	'label' => esc_attr__('Animation Event', 'microthemer'),
+	'field-class' => 'is-event-field',
 	'input-class' => 'size-6 mt-event-input',
 	'type' => 'combobox',
 	'icon' => '9, 4, B',
@@ -6602,7 +6627,7 @@ $event_target_ref_values = array(
 $propertyOptions['animation']['event_target'] = array(
 	'short_label' => esc_html__('JS Event Target', 'microthemer'),
 	'label' => esc_attr__('Animation Event Target', 'microthemer'),
-	'field-class' => 'event-target-field',
+	'field-class' => 'event-target-field is-event-field',
 	'input-class' => 'size-big event-target-input',
 	'icon' => '10, 4, B',
 	'sug_values' => array(
@@ -6707,6 +6732,7 @@ $propertyOptions['transition']['transition_duration'] = array(
 	'default_unit' => 's',
 	'special_units' => $time_units,
 	'icon' => '2, 4, B',
+	'icon-name' => 'animation-duration',
 	// ref
 	'ref_desc' => "<p>The time taken for the transition to complete one cycle.</p>",
 	'ref_values' => array(
@@ -6743,6 +6769,7 @@ $propertyOptions['transition']['transition_timing_function'] = array(
 		)
 	),
 	'icon' => '3, 4, B',
+	'icon-name' => 'animation-timing-function',
 	// ref
 	'ref_desc' => "<p>Specifies the speed curve of a transition. This is used to make the CSS styles change into another set smoothly or jerkily (using steps).</p>",
 	'ref_values' => array(
@@ -6790,6 +6817,7 @@ $propertyOptions['transition']['transition_delay'] = array(
 	'default_unit' => 's',
 	'special_units' => $time_units,
 	'icon' => '4, 4, B',
+	'icon-name' => 'animation-delay',
 	// ref
 	'ref_desc' => "<p>The delay before a transition should start. Negative values are allowed. Negative values cause the transition to start part way through its cycle, rather than from the start.</p>",
 	'ref_values' => array(
@@ -6809,6 +6837,7 @@ $propertyOptions['transition']['transition_delay'] = array(
 $propertyOptions['transition']['event'] = array(
 	'short_label' => esc_html__('Event', 'microthemer'),
 	'label' => esc_attr__('Transition Event', 'microthemer'),
+	'field-class' => 'is-event-field',
 	'input-class' => 'size-6 mt-event-input',
 	'type' => 'combobox',
 	'icon' => '9, 4, B',
@@ -6828,7 +6857,7 @@ $propertyOptions['transition']['event'] = array(
 $propertyOptions['transition']['event_value'] = array(
 	'short_label' => esc_html__('Event Value', 'microthemer'),
 	'label' => esc_attr__('Transition Event Value', 'microthemer'),
-	'field-class' => 'event-value-field',
+	'field-class' => 'event-value-field is-event-field',
 	'input-class' => 'size-big mt-event-value-input mt-variable-input',
 	'default_unit' => 'px',
 	'icon' => '11, 4, B',
@@ -6847,7 +6876,7 @@ $propertyOptions['transition']['event_value'] = array(
 $propertyOptions['transition']['event_target'] = array(
 	'short_label' => esc_html__('JS Event Target', 'microthemer'),
 	'label' => esc_attr__('Transition Event Target', 'microthemer'),
-	'field-class' => 'event-target-field',
+	'field-class' => 'event-target-field is-event-field',
 	'input-class' => 'size-big event-target-input',
 	'icon' => '10, 4, B',
 	// ref

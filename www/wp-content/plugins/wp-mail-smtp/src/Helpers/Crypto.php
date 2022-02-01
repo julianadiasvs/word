@@ -5,7 +5,7 @@ namespace WPMailSMTP\Helpers;
 // WP 5.2+ already load Sodium Compat polyfill for libsodium-fallback.
 // We need to do the same for under 5.2 versions (4.9-5.1).
 if ( ! version_compare( get_bloginfo( 'version' ), '5.2', '>=' ) && ! function_exists( 'sodium_crypto_box' ) ) {
-	require_once dirname( WPMS_PLUGIN_FILE ) . '/vendor/paragonie/sodium_compat/autoload.php';
+	require_once dirname( WPMS_PLUGIN_FILE ) . '/libs/sodium_compat/autoload.php';
 }
 
 /**
@@ -111,7 +111,7 @@ class Crypto {
 	 * @return string
 	 * @throws \Exception The exception object.
 	 */
-	public static function decrypt( $encrypted, $key = '' ) {
+	public static function decrypt( $encrypted, $key = '' ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		if ( apply_filters( 'wp_mail_smtp_helpers_crypto_stop', false ) ) {
 			return $encrypted;
@@ -122,6 +122,11 @@ class Crypto {
 
 		if ( false === $decoded ) {
 			return $encrypted;
+		}
+
+		// Include polyfill if mbstring PHP extension is not enabled.
+		if ( ! function_exists( 'mb_strlen' ) || ! function_exists( 'mb_substr' ) ) {
+			Helpers::include_mbstring_polyfill();
 		}
 
 		if ( mb_strlen( $decoded, '8bit' ) < ( SODIUM_CRYPTO_SECRETBOX_NONCEBYTES + SODIUM_CRYPTO_SECRETBOX_MACBYTES ) ) { // phpcs:ignore

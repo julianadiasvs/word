@@ -1,6 +1,6 @@
 <?php
 /**
- * Help Role page template.
+ * Role Manager main view.
  *
  * @package    RankMath
  * @subpackage RankMath\Role_Manager
@@ -22,8 +22,8 @@ rank_math()->admin->display_admin_header();
 				<h2><?php echo esc_html( get_admin_page_title() ); ?></h2>
 				<p>
 					<?php
-						/* translators: %s is a Learn More link to the documentation */
-						printf( __( 'Control which user has access to which options of Rank Math. %s', 'rank-math' ), '<a href="' . \RankMath\KB::get( 'role-manager' ) . '" target="_blank">' . esc_html__( 'Learn more', 'rank-math' ) . '</a>.' );
+						/* translators: %s is a Learn More link to the documentation. */
+						printf( esc_html__( 'Control which user has access to which options of Rank Math. %s', 'rank-math' ), '<a href="' . esc_url_raw( \RankMath\KB::get( 'role-manager' ) ) . '" target="_blank">' . esc_html__( 'Learn more', 'rank-math' ) . '</a>.' );
 					?>
 				</p>
 			</header>
@@ -45,3 +45,23 @@ rank_math()->admin->display_admin_header();
 	</div>
 
 </div>
+
+<script>
+	jQuery( function( $ ) {
+		var toggle = '<p><button class="button button-small toggle-all-capabilities"><?php echo esc_js( __( 'Toggle All', 'rank-math' ) ); ?></button></p>',
+			$table = $( '#cmb2-metabox-rank-math-role-manager' );
+
+		$( '.cmb-th', $table ).each( function( index, elem ) {
+			$( elem ).append( toggle );
+		} );
+
+		$( '.toggle-all-capabilities' ).on( 'click', function( e ) {
+			e.preventDefault();
+
+			var $checkboxes = $( this ).closest( '.cmb-row' ).find( 'input.cmb2-option' ),
+				should_check = ! $checkboxes.filter(':checked').length;
+
+			$checkboxes.prop( 'checked', should_check );
+		} );
+	} );
+</script>

@@ -11,7 +11,7 @@ use Automattic\WooCommerce\Blocks\RestApi\Routes;
  *
  * @internal This API is used internally by Blocks--it is still in flux and may be subject to revisions.
  */
-class BillingAddressSchema extends AbstractSchema {
+class BillingAddressSchema extends AbstractAddressSchema {
 	/**
 	 * The schema item name.
 	 *
@@ -32,63 +32,55 @@ class BillingAddressSchema extends AbstractSchema {
 	 * @return array
 	 */
 	public function get_properties() {
-		return [
-			'first_name' => [
-				'description' => __( 'First name', 'woocommerce' ),
-				'type'        => 'string',
-				'context'     => [ 'view', 'edit' ],
-			],
-			'last_name'  => [
-				'description' => __( 'Last name', 'woocommerce' ),
-				'type'        => 'string',
-				'context'     => [ 'view', 'edit' ],
-			],
-			'company'    => [
-				'description' => __( 'Company', 'woocommerce' ),
-				'type'        => 'string',
-				'context'     => [ 'view', 'edit' ],
-			],
-			'address_1'  => [
-				'description' => __( 'Address', 'woocommerce' ),
-				'type'        => 'string',
-				'context'     => [ 'view', 'edit' ],
-			],
-			'address_2'  => [
-				'description' => __( 'Apartment, suite, etc.', 'woocommerce' ),
-				'type'        => 'string',
-				'context'     => [ 'view', 'edit' ],
-			],
-			'city'       => [
-				'description' => __( 'City', 'woocommerce' ),
-				'type'        => 'string',
-				'context'     => [ 'view', 'edit' ],
-			],
-			'state'      => [
-				'description' => __( 'State/County code, or name of the state, county, province, or district.', 'woocommerce' ),
-				'type'        => 'string',
-				'context'     => [ 'view', 'edit' ],
-			],
-			'postcode'   => [
-				'description' => __( 'Postal code', 'woocommerce' ),
-				'type'        => 'string',
-				'context'     => [ 'view', 'edit' ],
-			],
-			'country'    => [
-				'description' => __( 'Country/Region code in ISO 3166-1 alpha-2 format.', 'woocommerce' ),
-				'type'        => 'string',
-				'context'     => [ 'view', 'edit' ],
-			],
-			'email'      => [
-				'description' => __( 'Email', 'woocommerce' ),
-				'type'        => 'string',
-				'context'     => [ 'view', 'edit' ],
-			],
-			'phone'      => [
-				'description' => __( 'Phone', 'woocommerce' ),
-				'type'        => 'string',
-				'context'     => [ 'view', 'edit' ],
-			],
-		];
+		$properties = parent::get_properties();
+		return array_merge(
+			$properties,
+			[
+				'email' => [
+					'description' => __( 'Email', 'woocommerce' ),
+					'type'        => 'string',
+					'context'     => [ 'view', 'edit' ],
+					'required'    => true,
+				],
+			]
+		);
+	}
+
+	/**
+	 * Sanitize and format the given address object.
+	 *
+	 * @param array            $address Value being sanitized.
+	 * @param \WP_REST_Request $request The Request.
+	 * @param string           $param The param being sanitized.
+	 * @return array
+	 */
+	public function sanitize_callback( $address, $request, $param ) {
+		$address          = parent::sanitize_callback( $address, $request, $param );
+		$address['email'] = wc_clean( wp_unslash( $address['email'] ) );
+		return $address;
+	}
+
+	/**
+	 * Validate the given address object.
+	 *
+	 * @param array            $address Value being sanitized.
+	 * @param \WP_REST_Request $request The Request.
+	 * @param string           $param The param being sanitized.
+	 * @return true|\WP_Error
+	 */
+	public function validate_callback( $address, $request, $param ) {
+		$errors  = parent::validate_callback( $address, $request, $param );
+		$address = $this->sanitize_callback( $address, $request, $param );
+		$errors  = is_wp_error( $errors ) ? $errors : new \WP_Error();
+
+		if ( ! empty( $address['email'] ) && ! is_email( $address['email'] ) ) {
+			$errors->add(
+				'invalid_email',
+				__( 'The provided email address is not valid', 'woocommerce' )
+			);
+		}
+
+		return $errors->has_errors( $errors ) ? $errors : true;
 	}
 
 	/**
@@ -101,6 +93,13 @@ class BillingAddressSchema extends AbstractSchema {
 	 */
 	public function get_item_response( $address ) {
 		if ( ( $address instanceof \WC_Customer || $address instanceof \WC_Order ) ) {
+			$billing_country = $address->get_billing_country();
+			$billing_state   = $address->get_billing_state();
+
+			if ( ! $this->validate_state( $billing_state, $billing_country ) ) {
+				$billing_state = '';
+			}
+
 			return (object) $this->prepare_html_response(
 				[
 					'first_name' => $address->get_billing_first_name(),
@@ -109,9 +108,9 @@ class BillingAddressSchema extends AbstractSchema {
 					'address_1'  => $address->get_billing_address_1(),
 					'address_2'  => $address->get_billing_address_2(),
 					'city'       => $address->get_billing_city(),
-					'state'      => $address->get_billing_state(),
+					'state'      => $billing_state,
 					'postcode'   => $address->get_billing_postcode(),
-					'country'    => $address->get_billing_country(),
+					'country'    => $billing_country,
 					'email'      => $address->get_billing_email(),
 					'phone'      => $address->get_billing_phone(),
 				]

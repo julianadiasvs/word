@@ -1,6 +1,6 @@
 <?php
 /**
- * The Sitemap Module
+ * The Sitemap module admin side functionality.
  *
  * @since      0.9.0
  * @package    RankMath
@@ -12,6 +12,7 @@ namespace RankMath\Sitemap;
 
 use RankMath\KB;
 use RankMath\Helper;
+use RankMath\Traits\Ajax;
 use RankMath\Module\Base;
 use RankMath\Admin\Options;
 use MyThemeShop\Helpers\Str;
@@ -23,6 +24,8 @@ defined( 'ABSPATH' ) || exit;
  * Admin class.
  */
 class Admin extends Base {
+
+	use Ajax;
 
 	/**
 	 * The Constructor.
@@ -41,12 +44,12 @@ class Admin extends Base {
 		$this->action( 'init', 'register_setting_page', 999 );
 		$this->filter( 'rank_math/settings/sitemap', 'post_type_settings' );
 		$this->filter( 'rank_math/settings/sitemap', 'taxonomy_settings' );
-		$this->filter( 'rank_math/settings/sitemap', 'special_seprator' );
 
 		// Attachment.
 		$this->filter( 'media_send_to_editor', 'media_popup_html', 10, 2 );
 		$this->filter( 'attachment_fields_to_edit', 'media_popup_fields', 20, 2 );
 		$this->filter( 'attachment_fields_to_save', 'media_popup_fields_save', 20, 2 );
+		$this->ajax( 'remove_nginx_notice', 'remove_nginx_notice' );
 	}
 
 	/**
@@ -92,9 +95,9 @@ class Admin extends Base {
 	}
 
 	/**
-	 * Add post type tabs into sitemap option panel
+	 * Add post type tabs in the Sitemap Settings options panel.
 	 *
-	 * @param array $tabs Hold tabs for optional panel.
+	 * @param array $tabs Hold tabs for the options panel.
 	 *
 	 * @return array
 	 */
@@ -146,9 +149,9 @@ class Admin extends Base {
 	}
 
 	/**
-	 * Add taxonomy tabs into sitemap option panel
+	 * Add taxonomy tabs in the Sitemap Settings options panel.
 	 *
-	 * @param array $tabs Hold tabs for optional panel.
+	 * @param array $tabs Hold tabs for the options panel.
 	 *
 	 * @return array
 	 */
@@ -199,25 +202,7 @@ class Admin extends Base {
 	}
 
 	/**
-	 * Add Special seprator into sitemap option panel
-	 *
-	 * @param array $tabs Hold tabs for optional panel.
-	 *
-	 * @return array
-	 */
-	public function special_seprator( $tabs ) {
-		if ( Helper::is_module_active( 'news-sitemap' ) || Helper::is_module_active( 'video-sitemap' ) ) {
-			$tabs['special'] = [
-				'title' => esc_html__( 'Special Sitemaps:', 'rank-math' ),
-				'type'  => 'seprator',
-			];
-		}
-
-		return $tabs;
-	}
-
-	/**
-	 * Adds new "exclude from sitemap" checkbox to media popup in the post editor.
+	 * Adds new "exclude from sitemap" checkbox to the media popup in the post editor.
 	 *
 	 * @param array  $form_fields Default form fields.
 	 * @param object $post        Current post.
@@ -227,7 +212,7 @@ class Admin extends Base {
 	public function media_popup_fields( $form_fields, $post ) {
 		$exclude   = get_post_meta( $post->ID, 'rank_math_exclude_sitemap', true );
 		$checkbox  = '<label><input type="checkbox" name="attachments[' . $post->ID . '][rank_math_media_exclude_sitemap]" ' . checked( $exclude, true, 0 ) . ' /> ';
-		$checkbox .= esc_html__( 'Exclude this image from sitemap', 'rank-math' ) . '</label>';
+		$checkbox .= esc_html__( 'Exclude this attachment from sitemap', 'rank-math' ) . '</label>';
 
 		$form_fields['rank_math_exclude_sitemap'] = [ 'tr' => "\t\t<tr><td></td><td>$checkbox</td></tr>\n" ];
 
@@ -235,7 +220,7 @@ class Admin extends Base {
 	}
 
 	/**
-	 * Saves new "exclude from sitemap" field as post meta to attachment.
+	 * Saves new "exclude from sitemap" field as post meta for the attachment.
 	 *
 	 * @param array $post       Attachment ID.
 	 * @param array $attachment Attachment data.
@@ -256,8 +241,8 @@ class Admin extends Base {
 	}
 
 	/**
-	 * Adds html attribute data-sitemapexclude to img tag in the post editor
-	 * when necessary.
+	 * Adds the "data-sitemapexclude" HTML attribute to the img tag in the post
+	 * editor when necessary.
 	 *
 	 * @param string $html          Original img HTML tag.
 	 * @param int    $attachment_id Attachment ID.
@@ -273,7 +258,19 @@ class Admin extends Base {
 	}
 
 	/**
-	 * Get notice start html div
+	 * Remove Sitemap nginx notice.
+	 *
+	 * @since 1.0.73
+	 */
+	public function remove_nginx_notice() {
+		check_ajax_referer( 'rank-math-ajax-nonce', 'security' );
+		$this->has_cap_ajax( 'sitemap' );
+		update_option( 'rank_math_remove_nginx_notice', true, false );
+		$this->success();
+	}
+
+	/**
+	 * Get opening tags for the notice HTML.
 	 *
 	 * @return string
 	 */
@@ -289,7 +286,7 @@ class Admin extends Base {
 	 * @return string
 	 */
 	private function get_nginx_notice() {
-		if ( empty( Param::server( 'SERVER_SOFTWARE' ) ) ) {
+		if ( 'rank-math-options-sitemap' !== Param::get( 'page' ) || empty( Param::server( 'SERVER_SOFTWARE' ) ) || get_option( 'rank_math_remove_nginx_notice' ) ) {
 			return '';
 		}
 
@@ -300,10 +297,17 @@ class Admin extends Base {
 
 		$sitemap_base = Router::get_sitemap_base() ? Router::get_sitemap_base() : '';
 
-		/* translators: sitemap base url */
-		return '<div class="sitemap-nginx-notice notice notice-alt notice-warning rank-math-notice">
-		 <p>' . sprintf( __( 'Since you are using NGINX, add this code to your NGINX %s <strong>if your Sitemap pages are not loading</strong> or you can ask your hosting support to add it.', 'rank-math' ), '<a href="https://help.dreamhost.com/hc/en-us/articles/216455077-Nginx-configuration-file-locations/?utm_campaign=Rank+Math" target="_blank">' . __( 'configuration file', 'rank-math' ) . '</a>' ) . '
-		 <a href="#"><span class="show">' . __( 'Click here to see the code.', 'rank-math' ) . '</span><span class="hide">' . __( 'Hide', 'rank-math' ) . '</span></a></p>
+		$message = sprintf(
+			/* Translators: the placeholder is for the sitemap base url. */
+			__( 'Since you are using an NGINX server, you may need to add the following code to your %s <strong>if your Sitemap pages are not loading</strong>. If you are unsure how to do it, please contact your hosting provider.', 'rank-math' ),
+			'<a href="https://help.dreamhost.com/hc/en-us/articles/216455077-Nginx-configuration-file-locations/?utm_campaign=Rank+Math" target="_blank">' . __( 'configuration file', 'rank-math' ) . '</a>'
+		);
+
+		return '<div class="sitemap-nginx-notice notice notice-alt notice-warning rank-math-notice">' .
+		'<p>' . $message .
+			' <a href="#"><span class="show">' . __( 'Click here to see the code.', 'rank-math' ) . '</span><span class="hide">' . __( 'Hide', 'rank-math' ) . '</span></a>
+			<a href="#" class="sitemap-close-notice">' . __( 'I already added', 'rank-math' ) . '</a>
+		</p>
  <pre>
  # START Nginx Rewrites for Rank Math Sitemaps
  rewrite ^/' . $sitemap_base . 'sitemap_index.xml$ /index.php?sitemap=1 last;

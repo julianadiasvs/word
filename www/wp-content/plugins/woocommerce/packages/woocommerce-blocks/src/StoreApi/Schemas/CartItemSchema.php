@@ -1,7 +1,6 @@
 <?php
 namespace Automattic\WooCommerce\Blocks\StoreApi\Schemas;
 
-use Automattic\WooCommerce\Blocks\Domain\Services\ExtendRestApi;
 use Automattic\WooCommerce\Checkout\Helpers\ReserveStock;
 
 /**
@@ -137,6 +136,35 @@ class CartItemSchema extends ProductSchema {
 						],
 						'value'     => [
 							'description' => __( 'Variation attribute value.', 'woocommerce' ),
+							'type'        => 'string',
+							'context'     => [ 'view', 'edit' ],
+							'readonly'    => true,
+						],
+					],
+				],
+			],
+			'item_data'            => [
+				'description' => __( 'Metadata related to the cart item', 'woocommerce' ),
+				'type'        => 'array',
+				'context'     => [ 'view', 'edit' ],
+				'readonly'    => true,
+				'items'       => [
+					'type'       => 'object',
+					'properties' => [
+						'name'    => [
+							'description' => __( 'Name of the metadata.', 'woocommerce' ),
+							'type'        => 'string',
+							'context'     => [ 'view', 'edit' ],
+							'readonly'    => true,
+						],
+						'value'   => [
+							'description' => __( 'Value of the metadata.', 'woocommerce' ),
+							'type'        => 'string',
+							'context'     => [ 'view', 'edit' ],
+							'readonly'    => true,
+						],
+						'display' => [
+							'description' => __( 'Optionally, how the metadata value should be displayed to the user.', 'woocommerce' ),
 							'type'        => 'string',
 							'context'     => [ 'view', 'edit' ],
 							'readonly'    => true,
@@ -285,8 +313,8 @@ class CartItemSchema extends ProductSchema {
 			'quantity'             => wc_stock_amount( $cart_item['quantity'] ),
 			'quantity_limit'       => $this->get_product_quantity_limit( $product ),
 			'name'                 => $this->prepare_html_response( $product->get_title() ),
-			'short_description'    => $this->prepare_html_response( wc_format_content( $product->get_short_description() ) ),
-			'description'          => $this->prepare_html_response( wc_format_content( $product->get_description() ) ),
+			'short_description'    => $this->prepare_html_response( wc_format_content( wp_kses_post( $product->get_short_description() ) ) ),
+			'description'          => $this->prepare_html_response( wc_format_content( wp_kses_post( $product->get_description() ) ) ),
 			'sku'                  => $this->prepare_html_response( $product->get_sku() ),
 			'low_stock_remaining'  => $this->get_low_stock_remaining( $product ),
 			'backorders_allowed'   => (bool) $product->backorders_allowed(),
@@ -295,6 +323,7 @@ class CartItemSchema extends ProductSchema {
 			'permalink'            => $product->get_permalink(),
 			'images'               => $this->get_images( $product ),
 			'variation'            => $this->format_variation_data( $cart_item['variation'], $product ),
+			'item_data'            => $this->get_item_data( $cart_item ),
 			'prices'               => (object) $this->prepare_product_price_response( $product, get_option( 'woocommerce_tax_display_cart' ) ),
 			'totals'               => (object) $this->prepare_currency_response(
 				[
@@ -362,6 +391,10 @@ class CartItemSchema extends ProductSchema {
 	protected function format_variation_data( $variation_data, $product ) {
 		$return = [];
 
+		if ( ! is_iterable( $variation_data ) ) {
+			return $return;
+		}
+
 		foreach ( $variation_data as $key => $value ) {
 			$taxonomy = wc_attribute_taxonomy_name( str_replace( 'attribute_pa_', '', urldecode( $key ) ) );
 
@@ -373,7 +406,17 @@ class CartItemSchema extends ProductSchema {
 				}
 				$label = wc_attribute_label( $taxonomy );
 			} else {
-				// If this is a custom option slug, get the options name.
+				/**
+				 * Filters the variation option name.
+				 *
+				 * Filters the variation option name for custom option slugs.
+				 *
+				 * @param string $value The name to display.
+				 * @param null $unused Unused because this is not a variation taxonomy.
+				 * @param string $taxonomy Taxonomy or product attribute name.
+				 * @param \WC_Product $product Product data.
+				 * @return string
+				 */
 				$value = apply_filters( 'woocommerce_variation_option_name', $value, null, $taxonomy, $product );
 				$label = wc_attribute_label( str_replace( 'attribute_', '', $key ), $product );
 			}
@@ -385,5 +428,39 @@ class CartItemSchema extends ProductSchema {
 		}
 
 		return $return;
+	}
+
+	/**
+	 * Format cart item data removing any HTML tag.
+	 *
+	 * @param array $cart_item Cart item array.
+	 * @return array
+	 */
+	protected function get_item_data( $cart_item ) {
+		/**
+		 * Filters cart item data.
+		 *
+		 * Filters the variation option name for custom option slugs.
+		 *
+		 * @param array $item_data Cart item data. Empty by default.
+		 * @param array $cart_item Cart item array.
+		 * @return array
+		 */
+		$item_data = apply_filters( 'woocommerce_get_item_data', array(), $cart_item );
+		return array_map( [ $this, 'format_item_data_element' ], $item_data );
+	}
+
+	/**
+	 * Remove HTML tags from cart item data and set the `hidden` property to
+	 * `__experimental_woocommerce_blocks_hidden`.
+	 *
+	 * @param array $item_data_element Individual element of a cart item data.
+	 * @return array
+	 */
+	protected function format_item_data_element( $item_data_element ) {
+		if ( array_key_exists( '__experimental_woocommerce_blocks_hidden', $item_data_element ) ) {
+			$item_data_element['hidden'] = $item_data_element['__experimental_woocommerce_blocks_hidden'];
+		}
+		return array_map( 'wp_strip_all_tags', $item_data_element );
 	}
 }

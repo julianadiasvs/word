@@ -35,10 +35,13 @@ if ($meta_info['Author'] == 'Anonymous') {
 $readme_info = $this->read_readme_file($this->micro_root_dir . $this->preferences['theme_in_focus'] . '/readme.txt');
 
 // json file
-$json_config_file = $this->micro_root_dir . $this->preferences['theme_in_focus'] . '/config.json'
+$json_config_file = $this->micro_root_dir . $this->preferences['theme_in_focus'] . '/config.json';
+
+$ui_class = '';
+require_once('common-inline-assets.php');
 
 ?>
-<div id="tvr" class='wrap tvr-wrap tvr-manage tvr-manage-single'>
+<div id="tvr" class='wrap tvr-wrap tvr-manage tvr-manage-single <?php echo $ui_class; ?>'>
 	<?php echo $this->manage_packs_header($this->managesinglepage); ?>
 	<div id='tvr-manage-single'>
 
@@ -163,14 +166,14 @@ $json_config_file = $this->micro_root_dir . $this->preferences['theme_in_focus']
 			<div id='edit-info' class='manage-content-wrap hidden show'>
 				<div class="explain">
 					<div class="heading"><?php esc_html_e('About This Feature', 'microthemer'); ?></div>
-					<p><?php printf(
-						esc_html__('If you plan to make your design pack available for sale or free download on themeover.com, please fill out all of the form fields on the right. Hover your mouse over the field labels to view instructions for each field. You will also need to upload a thumbnail image on the %1$s and (optionally) some instructions for the end user on the %2$s', 'microthemer'),
+					<!--<p><?php /*printf(
+						esc_html__('If you plan to make your design pack available for sale or free download on themeover.com, please fill out all of the form fields on the right. Hover your mouse over the field labels to view instructions for each field. You will also need to upload a thumbnail image on the %s and (optionally) some instructions for the end user on the %s', 'microthemer'),
 							'<span class="pack-action link" rel="attachments">' . esc_html__('Attachments tab', 'microthemer') . '</span>',
 							'<span class="pack-action link" rel="instructions">' . esc_html__('Instructions tab', 'microthemer') . '</span>'
-						); ?></p>
-					<p><?php esc_html__('The information you enter will update the meta.txt files in your design pack. Themeover will make use of this information if you submit your design pack for inclusion in our marketplace.', 'microthemer'); ?></p>
+						); */?></p>
+					<p><?php /*esc_html__('The information you enter will update the meta.txt files in your design pack. Themeover will make use of this information if you submit your design pack for inclusion in our marketplace.', 'microthemer'); */?></p>-->
 					<p><?php printf(
-						esc_html__('It\'s not necessary to fill out these fields if don\'t wish to share your design pack. But you may wish to upload a thumbnail image to replace the "No Screenshot" placeholder on the %s.', 'microthemer'),
+						esc_html__('It\'s not necessary to fill out these fields if don\'t wish to share your design pack (e.g. via a marketplace we may build in future). But if you\'re building up a personal library of designs, you may wish to upload a thumbnail image to replace the "No Screenshot" placeholder on the %s.', 'microthemer'),
 							'<span class="pack-action link" rel="attachments">' . esc_html__('Attachments tab', 'microthemer') . '</span>'
 					); ?></p>
 				</div>
@@ -238,7 +241,7 @@ $json_config_file = $this->micro_root_dir . $this->preferences['theme_in_focus']
 				<table id='micro-files-table' cellspacing="0">
 					<thead>
 					<tr>
-						<th scope="col" colspan="3" class="manage-column image-upload">
+						<th colspan="2" class="manage-column image-upload">
 
 							<form name='upload_file_form' id="upload-file-form" method="post" enctype="multipart/form-data"
 								action="<?php echo $this->page_prefix; ?>.php?page=<?php echo $this->managesinglepage;?>" autocomplete="off">
@@ -266,7 +269,7 @@ $json_config_file = $this->micro_root_dir . $this->preferences['theme_in_focus']
 							$file_url = $this->micro_root_url . $this->preferences['theme_in_focus'] . '/' . $file;
 							$combined_files[$i]['location'] = 'pack';
 							$combined_files[$i]['file_url'] = $file_url;
-							$combined_files[$i]['display_url'] = $this->root_rel($this->micro_root_url . $this->preferences['theme_in_focus'], false, true, true) . '/' . '<span class="base-file">'.$file.'</span>';
+							$combined_files[$i]['display_url'] = $this->root_rel($this->micro_root_url . $this->preferences['theme_in_focus'], false, true, true) . '/' . ''.$file.'';
 						}
 						// add any media library images to the array
 						if ($library_images = $this->get_linked_library_images($json_config_file )) {
@@ -306,25 +309,28 @@ $json_config_file = $this->micro_root_dir . $this->preferences['theme_in_focus']
 							?>
 							<tr>
 								<td class="file-name">
-									<?php echo $array['display_url']; ?>
+                                    <a href="<?php echo $array['file_url'] . $append_time;?>" target="_blank">
+	                                    <?php echo $array['display_url']; ?>
+                                    </a>
 								</td>
 								<td>
-									<span class='show-dialog tvr-icon view-icon'
-										data-ext="<?php echo $ext; ?>"
-										rel="view-pack-file"
-										data-base-name="<?php echo basename($array['file_url']); ?>"
-										data-href="<?php echo $array['file_url'] . $append_time;?>"
-										>
+                                    <?php
+                                    echo $this->iconFont('bin', array(
+                                        'class' => 'delete-file view-file delete-icon',
+                                        'data-href' => 'admin.php?page='.
+                                            $this->managesinglepage
+                                            .'&mt_action=tvr_delete_micro_file&file='.$array['file_url']
+                                            .'&location='.$array['location']
+                                            .'&_wpnonce='.wp_create_nonce('tvr_delete_micro_file')
+                                     ));
+                                    ?>
 
-									</span>
-								</td>
-								<td>
-									<span class='delete-file view-file tvr-icon delete-icon'
-										data-href='admin.php?page=<?php echo
-									$this->managesinglepage;?>&mt_action=tvr_delete_micro_file&file=<?php
-									echo $array['file_url']; ?>&location=<?php
-									echo $array['location']; ?>&_wpnonce=<?php echo wp_create_nonce('tvr_delete_micro_file'); ?>'>
-									</span>
+									<!--<span class='delete-file view-file tvr-icon delete-icon'
+										data-href='admin.php?page=<?php /*echo
+									$this->managesinglepage;*/?>&mt_action=tvr_delete_micro_file&file=<?php
+/*									echo $array['file_url']; */?>&location=<?php
+/*									echo $array['location']; */?>&_wpnonce=<?php /*echo wp_create_nonce('tvr_delete_micro_file'); */?>'>
+									</span>-->
 								</td>
 							</tr>
 						<?php
@@ -349,8 +355,7 @@ $json_config_file = $this->micro_root_dir . $this->preferences['theme_in_focus']
 			<div id='edit-instructions' class='manage-content-wrap hidden'>
 				<div class="explain">
 					<div class="heading"><?php esc_html_e('About This Feature', 'microthemer'); ?></div>
-					<p><?php esc_html_e('If you\'re going to submit your design pack to Themeover, adding some instructions to help end users customize your design pack is a really nice touch. This could include pointing out potential pitfalls or recommending best practices. The instructions you add will feature on Themeover\'s listing page.', 'microthemer'); ?></p>
-					<p><?php esc_html_e('Some design packs may not benefit much from additional instructions of course. In which case feel free to leave this blank.', 'microthemer'); ?></p>
+					<p><?php esc_html_e('If you\'re going to share your design pack, feel free to add some instructions for end users here', 'microthemer'); ?></p>
 				</div>
 				<div class="heading"><?php esc_html_e('Instructions For The End User', 'microthemer'); ?></div>
 

@@ -1,7 +1,6 @@
 <?php
 namespace Automattic\WooCommerce\Blocks\StoreApi\Routes;
 
-use Automattic\WooCommerce\Blocks\StoreApi\Utilities\CartController;
 use Automattic\WooCommerce\Blocks\StoreApi\Schemas\CartSchema;
 use Automattic\WooCommerce\Blocks\StoreApi\Schemas\BillingAddressSchema;
 use Automattic\WooCommerce\Blocks\StoreApi\Schemas\ShippingAddressSchema;
@@ -14,33 +13,6 @@ use Automattic\WooCommerce\Blocks\StoreApi\Schemas\ShippingAddressSchema;
  * @internal This API is used internally by Blocks--it is still in flux and may be subject to revisions.
  */
 class CartUpdateCustomer extends AbstractCartRoute {
-	/**
-	 * Billing address schema instance.
-	 *
-	 * @var BillingAddressSchema
-	 */
-	protected $billing_address_schema;
-
-	/**
-	 * Shipping address schema instance.
-	 *
-	 * @var ShippingAddressSchema
-	 */
-	protected $shipping_address_schema;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param CartSchema            $schema Schema class for this route.
-	 * @param ShippingAddressSchema $shipping_address_schema Billing address schema class for this route.
-	 * @param BillingAddressSchema  $billing_address_schema Billing address schema class for this route.
-	 */
-	public function __construct( CartSchema $schema, ShippingAddressSchema $shipping_address_schema, BillingAddressSchema $billing_address_schema ) {
-		$this->schema                  = $schema;
-		$this->shipping_address_schema = $shipping_address_schema;
-		$this->billing_address_schema  = $billing_address_schema;
-	}
-
 	/**
 	 * Get the namespace for this route.
 	 *
@@ -72,20 +44,25 @@ class CartUpdateCustomer extends AbstractCartRoute {
 				'permission_callback' => '__return_true',
 				'args'                => [
 					'billing_address'  => [
-						'description' => __( 'Billing address.', 'woocommerce' ),
-						'type'        => 'object',
-						'context'     => [ 'view', 'edit' ],
-						'properties'  => $this->billing_address_schema->get_properties(),
+						'description'       => __( 'Billing address.', 'woocommerce' ),
+						'type'              => 'object',
+						'context'           => [ 'view', 'edit' ],
+						'properties'        => $this->schema->billing_address_schema->get_properties(),
+						'sanitize_callback' => [ $this->schema->billing_address_schema, 'sanitize_callback' ],
+						'validate_callback' => [ $this->schema->billing_address_schema, 'validate_callback' ],
 					],
 					'shipping_address' => [
-						'description' => __( 'Shipping address.', 'woocommerce' ),
-						'type'        => 'object',
-						'context'     => [ 'view', 'edit' ],
-						'properties'  => $this->shipping_address_schema->get_properties(),
+						'description'       => __( 'Shipping address.', 'woocommerce' ),
+						'type'              => 'object',
+						'context'           => [ 'view', 'edit' ],
+						'properties'        => $this->schema->shipping_address_schema->get_properties(),
+						'sanitize_callback' => [ $this->schema->shipping_address_schema, 'sanitize_callback' ],
+						'validate_callback' => [ $this->schema->shipping_address_schema, 'validate_callback' ],
 					],
 				],
 			],
-			'schema' => [ $this->schema, 'get_public_item_schema' ],
+			'schema'      => [ $this->schema, 'get_public_item_schema' ],
+			'allow_batch' => [ 'v1' => true ],
 		];
 	}
 
@@ -97,29 +74,41 @@ class CartUpdateCustomer extends AbstractCartRoute {
 	 * @return \WP_REST_Response
 	 */
 	protected function get_route_post_response( \WP_REST_Request $request ) {
-		$controller = new CartController();
-		$cart       = $controller->get_cart_instance();
-		$billing    = isset( $request['billing_address'] ) ? $this->prepare_address_fields( $request['billing_address'], wc()->countries->get_allowed_countries() ) : [];
-		$shipping   = isset( $request['shipping_address'] ) ? $this->prepare_address_fields( $request['shipping_address'], wc()->countries->get_shipping_countries() ) : [];
+		$cart     = $this->cart_controller->get_cart_instance();
+		$billing  = isset( $request['billing_address'] ) ? $request['billing_address'] : [];
+		$shipping = isset( $request['shipping_address'] ) ? $request['shipping_address'] : [];
 
-		if ( ! $cart->needs_shipping() ) {
-			$shipping = $billing;
+		// If the cart does not need shipping, shipping address is forced to match billing address unless defined.
+		if ( ! $cart->needs_shipping() && ! isset( $request['shipping_address'] ) ) {
+			$shipping = isset( $request['billing_address'] ) ? $request['billing_address'] : [
+				'first_name' => wc()->customer->get_billing_first_name(),
+				'last_name'  => wc()->customer->get_billing_last_name(),
+				'company'    => wc()->customer->get_billing_company(),
+				'address_1'  => wc()->customer->get_billing_address_1(),
+				'address_2'  => wc()->customer->get_billing_address_2(),
+				'city'       => wc()->customer->get_billing_city(),
+				'state'      => wc()->customer->get_billing_state(),
+				'postcode'   => wc()->customer->get_billing_postcode(),
+				'country'    => wc()->customer->get_billing_country(),
+				'phone'      => wc()->customer->get_billing_phone(),
+			];
 		}
-
 		wc()->customer->set_props(
 			array(
 				'billing_first_name'  => isset( $billing['first_name'] ) ? $billing['first_name'] : null,
 				'billing_last_name'   => isset( $billing['last_name'] ) ? $billing['last_name'] : null,
+				'billing_company'     => isset( $billing['company'] ) ? $billing['company'] : null,
 				'billing_address_1'   => isset( $billing['address_1'] ) ? $billing['address_1'] : null,
 				'billing_address_2'   => isset( $billing['address_2'] ) ? $billing['address_2'] : null,
 				'billing_city'        => isset( $billing['city'] ) ? $billing['city'] : null,
 				'billing_state'       => isset( $billing['state'] ) ? $billing['state'] : null,
 				'billing_postcode'    => isset( $billing['postcode'] ) ? $billing['postcode'] : null,
 				'billing_country'     => isset( $billing['country'] ) ? $billing['country'] : null,
+				'billing_phone'       => isset( $billing['phone'] ) ? $billing['phone'] : null,
 				'billing_email'       => isset( $request['billing_address'], $request['billing_address']['email'] ) ? $request['billing_address']['email'] : null,
-				'billing_phone'       => isset( $request['billing_address'], $request['billing_address']['phone'] ) ? $request['billing_address']['phone'] : null,
 				'shipping_first_name' => isset( $shipping['first_name'] ) ? $shipping['first_name'] : null,
 				'shipping_last_name'  => isset( $shipping['last_name'] ) ? $shipping['last_name'] : null,
+				'shipping_company'    => isset( $shipping['company'] ) ? $shipping['company'] : null,
 				'shipping_address_1'  => isset( $shipping['address_1'] ) ? $shipping['address_1'] : null,
 				'shipping_address_2'  => isset( $shipping['address_2'] ) ? $shipping['address_2'] : null,
 				'shipping_city'       => isset( $shipping['city'] ) ? $shipping['city'] : null,
@@ -128,76 +117,70 @@ class CartUpdateCustomer extends AbstractCartRoute {
 				'shipping_country'    => isset( $shipping['country'] ) ? $shipping['country'] : null,
 			)
 		);
+
+		$shipping_phone_value = isset( $shipping['phone'] ) ? $shipping['phone'] : null;
+
+		// @todo Remove custom shipping_phone handling (requires WC 5.6+)
+		if ( is_callable( [ wc()->customer, 'set_shipping_phone' ] ) ) {
+			wc()->customer->set_shipping_phone( $shipping_phone_value );
+		} else {
+			wc()->customer->update_meta_data( 'shipping_phone', $shipping_phone_value );
+		}
+
 		wc()->customer->save();
 
-		$cart->calculate_shipping();
-		$cart->calculate_totals();
+		$this->calculate_totals();
+		$this->maybe_update_order();
 
 		return rest_ensure_response( $this->schema->get_item_response( $cart ) );
 	}
 
 	/**
-	 * Format provided address fields.
+	 * If there is a draft order, update customer data there also.
 	 *
-	 * @throws RouteException Thrown on error.
-	 * @param array $address Address fields.
-	 * @param array $allowed_countries Countries that must be used.
-	 * @return array
+	 * @return void
 	 */
-	protected function prepare_address_fields( $address, $allowed_countries ) {
-		// Addresses require a country, otherwise they are not valid. This returns an empty address. There is no address
-		// validation in this case because we do not want to block updates of other data such as email address.
-		if ( empty( $address['country'] ) ) {
-			return [];
+	protected function maybe_update_order() {
+		$draft_order_id = wc()->session->get( 'store_api_draft_order', 0 );
+		$draft_order    = $draft_order_id ? wc_get_order( $draft_order_id ) : false;
+
+		if ( ! $draft_order ) {
+			return;
 		}
 
-		$address['country'] = wc_strtoupper( $address['country'] );
+		$draft_order->set_props(
+			[
+				'billing_first_name'  => wc()->customer->get_billing_first_name(),
+				'billing_last_name'   => wc()->customer->get_billing_last_name(),
+				'billing_company'     => wc()->customer->get_billing_company(),
+				'billing_address_1'   => wc()->customer->get_billing_address_1(),
+				'billing_address_2'   => wc()->customer->get_billing_address_2(),
+				'billing_city'        => wc()->customer->get_billing_city(),
+				'billing_state'       => wc()->customer->get_billing_state(),
+				'billing_postcode'    => wc()->customer->get_billing_postcode(),
+				'billing_country'     => wc()->customer->get_billing_country(),
+				'billing_email'       => wc()->customer->get_billing_email(),
+				'billing_phone'       => wc()->customer->get_billing_phone(),
+				'shipping_first_name' => wc()->customer->get_shipping_first_name(),
+				'shipping_last_name'  => wc()->customer->get_shipping_last_name(),
+				'shipping_company'    => wc()->customer->get_shipping_company(),
+				'shipping_address_1'  => wc()->customer->get_shipping_address_1(),
+				'shipping_address_2'  => wc()->customer->get_shipping_address_2(),
+				'shipping_city'       => wc()->customer->get_shipping_city(),
+				'shipping_state'      => wc()->customer->get_shipping_state(),
+				'shipping_postcode'   => wc()->customer->get_shipping_postcode(),
+				'shipping_country'    => wc()->customer->get_shipping_country(),
+			]
+		);
 
-		if (
-			is_array( $allowed_countries ) &&
-			count( $allowed_countries ) > 0 &&
-			! array_key_exists( $address['country'], $allowed_countries )
-		) {
-			throw new RouteException(
-				'woocommerce_rest_cart_invalid_country',
-				sprintf(
-					/* translators: 1: valid country codes */
-					__( 'Address country is not valid. Please provide one of the following: %s', 'woocommerce' ),
-					implode( ', ', array_keys( $allowed_countries ) )
-				),
-				400
-			);
+		$shipping_phone_value = is_callable( [ wc()->customer, 'get_shipping_phone' ] ) ? wc()->customer->get_shipping_phone() : wc()->customer->get_meta( 'shipping_phone', true );
+
+		if ( is_callable( [ $draft_order, 'set_shipping_phone' ] ) ) {
+			$draft_order->set_shipping_phone( $shipping_phone_value );
+		} else {
+			$draft_order->update_meta_data( '_shipping_phone', $shipping_phone_value );
 		}
 
-		$address['postcode'] = isset( $address['postcode'] ) ? wc_format_postcode( $address['postcode'], $address['country'] ) : null;
-
-		if ( ! empty( $address['state'] ) ) {
-			$valid_states = wc()->countries->get_states( $address['country'] );
-
-			if ( is_array( $valid_states ) && count( $valid_states ) > 0 ) {
-				$valid_state_values = array_map( 'wc_strtoupper', array_flip( array_map( 'wc_strtoupper', $valid_states ) ) );
-				$address['state']   = wc_strtoupper( $address['state'] );
-
-				if ( isset( $valid_state_values[ $address['state'] ] ) ) {
-					// With this part we consider state value to be valid as well,
-					// convert it to the state key for the valid_states check below.
-					$address['state'] = $valid_state_values[ $address['state'] ];
-				}
-
-				if ( ! in_array( $address['state'], $valid_state_values, true ) ) {
-					throw new RouteException(
-						'woocommerce_rest_cart_invalid_state',
-						sprintf(
-							/* translators: 1: valid states */
-							__( 'Address state is not valid. Please enter one of the following: %s', 'woocommerce' ),
-							implode( ', ', $valid_states )
-						),
-						400
-					);
-				}
-			}
-		}
-
-		return $address;
+		$draft_order->save();
 	}
 }

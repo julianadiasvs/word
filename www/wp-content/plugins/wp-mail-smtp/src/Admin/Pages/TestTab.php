@@ -23,13 +23,22 @@ class TestTab extends PageAbstract {
 	protected $slug = 'test';
 
 	/**
+	 * Tab priority.
+	 *
+	 * @since 2.8.0
+	 *
+	 * @var int
+	 */
+	protected $priority = 10;
+
+	/**
 	 * Mailer debug error data.
 	 *
 	 * @since 1.3.0
 	 *
 	 * @var array
 	 */
-	private $debug = array();
+	private $debug = [];
 
 	/**
 	 * Domain Checker API object.
@@ -41,9 +50,55 @@ class TestTab extends PageAbstract {
 	private $domain_checker;
 
 	/**
+	 * Test email sending failed.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @const int
+	 */
+	const FAILED = 0;
+
+	/**
+	 * Test email sent successfully.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @const int
+	 */
+	const SUCCESS = 1;
+
+	/**
+	 * Test email domain check failed.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @const int
+	 */
+	const FAILED_DOMAIN_CHECK = 2;
+
+	/**
+	 * Test email result.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var int
+	 */
+	private $result = null;
+
+	/**
+	 * Test email POST data.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var array
+	 */
+	private $post_data = [];
+
+	/**
 	 * @inheritdoc
 	 */
 	public function get_label() {
+
 		return esc_html__( 'Email Test', 'wp-mail-smtp' );
 	}
 
@@ -51,24 +106,40 @@ class TestTab extends PageAbstract {
 	 * @inheritdoc
 	 */
 	public function get_title() {
+
 		return $this->get_label();
 	}
 
 	/**
-	 * @inheritdoc
+	 * Display the content of the tab.
+	 *
+	 * @since {1.0.0}
 	 */
 	public function display() {
-		?>
 
-		<form id="email-test-form" method="POST" action="<?php echo esc_url( add_query_arg( 'tab', 'test', wp_mail_smtp()->get_admin()->get_admin_page_url() ) ); ?>">
+		if ( $this->result === self::SUCCESS ) {
+			$this->display_success();
+		} elseif ( $this->result === self::FAILED ) {
+			$this->display_debug_details();
+		} elseif ( $this->result === self::FAILED_DOMAIN_CHECK ) {
+			$this->display_domain_check_details();
+		} else {
+			$this->display_form();
+		}
+	}
+
+	/**
+	 * Display test email form.
+	 *
+	 * @since 3.0.0
+	 */
+	private function display_form() {
+
+		?>
+		<form id="email-test-form" method="POST" action="<?php echo esc_url( $this->get_link() ); ?>">
 			<?php $this->wp_nonce_field(); ?>
 
-			<!-- Test Email Section Title -->
-			<div class="wp-mail-smtp-setting-row wp-mail-smtp-setting-row-content wp-mail-smtp-clear section-heading no-desc" id="wp-mail-smtp-setting-row-email-heading">
-				<div class="wp-mail-smtp-setting-field">
-					<h2><?php esc_html_e( 'Send a Test Email', 'wp-mail-smtp' ); ?></h2>
-				</div>
-			</div>
+			<?php $this->display_title_section(); ?>
 
 			<!-- Test Email -->
 			<div id="wp-mail-smtp-setting-row-test_email" class="wp-mail-smtp-setting-row wp-mail-smtp-setting-row-email wp-mail-smtp-clear">
@@ -77,7 +148,7 @@ class TestTab extends PageAbstract {
 				</div>
 				<div class="wp-mail-smtp-setting-field">
 					<input name="wp-mail-smtp[test][email]" value="<?php echo esc_attr( wp_get_current_user()->user_email ); ?>"
-						type="email" id="wp-mail-smtp-setting-test_email" spellcheck="false" required>
+							type="email" id="wp-mail-smtp-setting-test_email" spellcheck="false" required>
 					<p class="desc">
 						<?php esc_html_e( 'Enter email address where test email will be sent.', 'wp-mail-smtp' ); ?>
 					</p>
@@ -91,7 +162,7 @@ class TestTab extends PageAbstract {
 				</div>
 				<div class="wp-mail-smtp-setting-field">
 					<label for="wp-mail-smtp-setting-test_email_html">
-						<input type="checkbox" id="wp-mail-smtp-setting-test_email_html" name="wp-mail-smtp[test][html]" value="yes" checked />
+						<input type="checkbox" id="wp-mail-smtp-setting-test_email_html" name="wp-mail-smtp[test][html]" value="yes" checked/>
 						<span class="wp-mail-smtp-setting-toggle-switch"></span>
 						<span class="wp-mail-smtp-setting-toggle-checked-label"><?php esc_html_e( 'On', 'wp-mail-smtp' ); ?></span>
 						<span class="wp-mail-smtp-setting-toggle-unchecked-label"><?php esc_html_e( 'Off', 'wp-mail-smtp' ); ?></span>
@@ -126,25 +197,68 @@ class TestTab extends PageAbstract {
 				</button>
 				<?php echo $help_text; ?>
 			</p>
+			<?php $this->post_form_hidden_field(); ?>
 		</form>
 
 		<?php if ( ! empty( $mailer ) && $mailer->is_mailer_complete() && isset( $_GET['auto-start'] ) ) : // phpcs:ignore ?>
 			<script>
-				( function ( $ ) {
-					var $button = $( '.wp-mail-smtp-tab-test #email-test-form .wp-mail-smtp-btn' );
+				(function( $ ) {
+					var $button = $( '.wp-mail-smtp-tab-tools-test #email-test-form .wp-mail-smtp-btn' );
 
 					$button.attr( 'disabled', true );
 					$button.find( 'span' ).hide();
 					$button.find( '.wp-mail-smtp-loading' ).show();
 
 					$( '#email-test-form' ).submit();
-				} ( jQuery ) );
+				}( jQuery ));
 			</script>
-		<?php endif; ?>
-
 		<?php
-		$this->display_debug_details();
-		$this->display_domain_check_details();
+		endif;
+	}
+
+	/**
+	 * Display test email title section.
+	 *
+	 * @since 3.0.0
+	 */
+	private function display_title_section() {
+
+		?>
+		<!-- Test Email Section Title -->
+		<div class="wp-mail-smtp-setting-row wp-mail-smtp-setting-row-content wp-mail-smtp-clear section-heading no-desc" id="wp-mail-smtp-setting-row-email-heading">
+			<div class="wp-mail-smtp-setting-field">
+				<h2><?php esc_html_e( 'Send a Test Email', 'wp-mail-smtp' ); ?></h2>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Display test email success message.
+	 *
+	 * @since 3.0.0
+	 */
+	private function display_success() {
+
+		$img_path = wp_mail_smtp()->plugin_path . '/assets/images/email/illustration-success.svg';
+
+		$is_html = true;
+		if ( empty( $this->post_data['test']['html'] ) ) {
+			$is_html = false;
+		}
+		?>
+		<div id="email-test-success">
+			<?php echo file_exists( $img_path ) ? file_get_contents( $img_path ) : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<h2><?php esc_html_e( 'Success!', 'wp-mail-smtp' ); ?></h2>
+			<p>
+				<?php if ( $is_html ) : ?>
+					<?php esc_html_e( 'Test HTML email was sent successfully! Please check your inbox to make sure it was delivered.', 'wp-mail-smtp' ); ?>
+				<?php else : ?>
+					<?php esc_html_e( 'Test plain text email was sent successfully! Please check your inbox to make sure it was delivered.', 'wp-mail-smtp' ); ?>
+				<?php endif; ?>
+			</p>
+		</div>
+		<?php
 	}
 
 	/**
@@ -153,6 +267,8 @@ class TestTab extends PageAbstract {
 	public function process_post( $data ) {
 
 		$this->check_admin_referer();
+
+		$this->post_data = $data;
 
 		if ( ! empty( $data['test']['email'] ) ) {
 			$data['test']['email'] = filter_var( $data['test']['email'], FILTER_VALIDATE_EMAIL );
@@ -221,25 +337,13 @@ class TestTab extends PageAbstract {
 
 			$this->domain_checker = new DomainChecker( $mailer, $email, $domain );
 
-			if ( $this->domain_checker->no_issues() ) {
-				$result_message = esc_html__( 'Test plain text email was sent successfully!', 'wp-mail-smtp' );
-				if ( $is_html ) {
-					$result_message = sprintf(
-						/* translators: %s - "HTML" in bold. */
-						esc_html__( 'Test %s email was sent successfully! Please check your inbox to make sure it is delivered.', 'wp-mail-smtp' ),
-						'<strong>HTML</strong>'
-					);
-				}
-				WP::add_admin_notice(
-					$result_message,
-					WP::ADMIN_NOTICE_SUCCESS
-				);
-			}
+			$this->result = $this->domain_checker->no_issues() ? self::SUCCESS : self::FAILED_DOMAIN_CHECK;
 		} else {
 			// Grab the smtp debugging output.
 			$this->debug['smtp_debug'] = $smtp_debug;
 			$this->debug['smtp_error'] = wp_strip_all_tags( $phpmailer->ErrorInfo );
 			$this->debug['error_log']  = $this->get_debug_messages( $phpmailer, $smtp_debug );
+			$this->result              = self::FAILED;
 		}
 	}
 
@@ -318,7 +422,7 @@ class TestTab extends PageAbstract {
 										<img src="<?php echo esc_url( wp_mail_smtp()->plugin_url . '/assets/images/email/signature.png' ); ?>" width="180" alt="Signature" style="outline: none; text-decoration: none; max-width: 100%; clear: both; -ms-interpolation-mode: bicubic; width: 180px; display: block; margin: 0 0 0 0; Margin: 0 0 0 0;">
 									</p>
 									<p style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; color: #444; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-weight: normal; padding: 0; text-align: left; font-size: 14px; mso-line-height-rule: exactly; line-height: 140%; margin: 0 0 15px 0; Margin: 0 0 15px 0;">
-										Jared Atchison<br>Lead Developer, WP Mail SMTP
+										Jared Atchison<br>Co-Founder, WP Mail SMTP
 									</p>
 								</div>
 							</td>
@@ -328,12 +432,15 @@ class TestTab extends PageAbstract {
 							<tr style="padding: 0; vertical-align: top; text-align: left;">
 								<td align="left" valign="top" class="aside upsell-mi" style="word-wrap: break-word; -webkit-hyphens: auto; -moz-hyphens: auto; hyphens: auto; border-collapse: collapse !important; vertical-align: top; mso-table-lspace: 0pt; mso-table-rspace: 0pt; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; color: #444; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-weight: normal; margin: 0; Margin: 0; font-size: 14px; mso-line-height-rule: exactly; line-height: 140%; background-color: #f8f8f8; border-top: 1px solid #dddddd; border-right: 1px solid #dddddd; border-bottom: 1px solid #dddddd; border-left: 1px solid #dddddd; text-align: center !important; padding: 30px 75px 25px 75px;">
 									<h6 style="padding: 0; color: #444444; word-wrap: normal; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-weight: bold; mso-line-height-rule: exactly; line-height: 130%; font-size: 18px; text-align: center; margin: 0 0 15px 0; Margin: 0 0 15px 0;">
-										Unlock More Features with WP Mail SMTP Pro
+										Unlock Powerful Features with WP Mail SMTP Pro
 									</h6>
 									<p class="text-large" style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; color: #444; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-weight: normal; padding: 0; mso-line-height-rule: exactly; line-height: 140%; margin: 0 0 15px 0; Margin: 0 0 15px 0; font-size: 16px; text-align: center;">
-										Email Logs and Notification Controls<br>
-										Amazon SES / Outlook.com / Office 365 integrations<br>
-										Access to our world class support team
+										Email Logging and Exporting<br>
+										Amazon SES / Microsoft 365 / Zoho Mail<br>
+										Open and Click Tracking<br>
+										Email Resending<br>
+										Email Reports<br>
+										World-Class Support
 									</p>
 									<p class="text-large last" style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; color: #444; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-weight: normal; padding: 0; mso-line-height-rule: exactly; line-height: 140%; font-size: 13px; text-align: center; margin: 0 0 0 0; Margin: 0 0 0 0;">
 										WP Mail SMTP users get <span style="font-weight:700;color:#218900;">$50 off</span>, automatically applied at checkout
@@ -346,7 +453,7 @@ class TestTab extends PageAbstract {
 														<tr style="padding: 0; vertical-align: top; text-align: left;">
 															<td style="word-wrap: break-word; -webkit-hyphens: auto; -moz-hyphens: auto; hyphens: auto; border-collapse: collapse !important; vertical-align: top; mso-table-lspace: 0pt; mso-table-rspace: 0pt; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-weight: normal; padding: 0; margin: 0; Margin: 0; font-size: 14px; text-align: center; color: #ffffff; background: #e27730; border: 1px solid #c45e1b; border-bottom: 3px solid #c45e1b; mso-line-height-rule: exactly; line-height: 100%;">
 																<a href="<?php echo esc_url( wp_mail_smtp()->get_upgrade_link( 'email-test' ) ); ?>" style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; margin: 0; Margin: 0; font-family: Helvetica, Arial, sans-serif; font-weight: bold; color: #ffffff; text-decoration: none; display: inline-block; border: 0 solid #c45e1b; mso-line-height-rule: exactly; line-height: 100%; padding: 14px 20px 12px 20px; font-size: 20px; text-align: center; width: 100%; padding-left: 0; padding-right: 0;">
-																	Upgrade to WP Mail SMTP Pro Today
+																	Upgrade to Pro Today
 																</a>
 															</td>
 														</tr>
@@ -391,7 +498,7 @@ class TestTab extends PageAbstract {
 Thank you for trying out WP Mail SMTP. We are on a mission to make sure your emails actually get delivered.
 
 - Jared Atchison
-Lead Developer, WP Mail SMTP';
+Co-Founder, WP Mail SMTP';
 		} else {
 			// Free WP Mail SMTP is installed.
 			$message =
@@ -403,14 +510,17 @@ If you find this free plugin useful, please consider giving WP Mail SMTP Pro a t
 
 https://wpmailsmtp.com/lite-upgrade/
 
-Unlock More Features with WP Mail SMTP Pro:
+Unlock These Powerful Features with WP Mail SMTP Pro:
 
-+ Email Logs and Notification Controls
-+ Amazon SES / Outlook.com / Office 365 integrations
-+ Access to our world class support team
++ Log all emails and export your email logs in different formats
++ Send emails with Amazon SES / Microsoft 365 / Zoho Mail
++ Track opens and clicks to measure engagement
++ Resend failed emails from your email log
++ Create email reports and graphs
++ Get help from our world-class support team
 
 - Jared Atchison
-Lead Developer, WP Mail SMTP';
+Co-Founder, WP Mail SMTP';
 		}
 		// phpcs:enable
 
@@ -547,8 +657,8 @@ Lead Developer, WP Mail SMTP';
 					[ 'cURL error 60' ],
 					[ 'cURL error 77' ],
 				],
+				'title'       => esc_html__( 'SSL certificate issue.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'SSL certificate issue.', 'wp-mail-smtp' ) . '</strong>',
 					esc_html__( 'This means your web server cannot reliably make secure connections (make requests to HTTPS sites).', 'wp-mail-smtp' ),
 					esc_html__( 'Typically this error is returned when web server is not configured properly.', 'wp-mail-smtp' ),
 				],
@@ -565,8 +675,8 @@ Lead Developer, WP Mail SMTP';
 					[ 'cURL error 6' ],
 					[ 'cURL error 7' ],
 				],
+				'title'       => esc_html__( 'Could not connect to host.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'Could not connect to host.', 'wp-mail-smtp' ) . '</strong>',
 					! empty( $smtp_host )
 						? sprintf( /* translators: %s - SMTP host address. */
 							esc_html__( 'This means your web server was unable to connect to %s.', 'wp-mail-smtp' ),
@@ -590,8 +700,8 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ 'cURL error 18' ],
 				],
+				'title'       => esc_html__( 'Invalid SendGrid API key', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'Invalid SendGrid API key', 'wp-mail-smtp' ) . '</strong>',
 					esc_html__( 'It looks like your SendGrid API Key is invalid.', 'wp-mail-smtp' ),
 				],
 				'steps'       => [
@@ -607,8 +717,8 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ 'cURL error' ],
 				],
+				'title'       => esc_html__( 'Could not connect to your host.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'Could not connect to your host.', 'wp-mail-smtp' ) . '</strong>',
 					! empty( $smtp_host )
 						? sprintf( /* translators: %s - SMTP host address. */
 							esc_html__( 'This means your web server was unable to connect to %s.', 'wp-mail-smtp' ),
@@ -629,8 +739,8 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ 'SMTP Error: Could not authenticate.' ],
 				],
+				'title'       => esc_html__( 'Could not authenticate your SMTP account.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'Could not authenticate your SMTP account.', 'wp-mail-smtp' ) . '</strong>',
 					esc_html__( 'This means we were able to connect to your SMTP host, but were not able to proceed using the email/password in the settings.', 'wp-mail-smtp' ),
 					esc_html__( 'Typically this error is returned when the email or password is not correct or is not what the SMTP host is expecting.', 'wp-mail-smtp' ),
 				],
@@ -646,8 +756,8 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ 'We do not authorize the use of this system to transport unsolicited' ],
 				],
+				'title'       => esc_html__( 'Error due to unsolicited and/or bulk e-mail.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'Error due to unsolicited and/or bulk e-mail.', 'wp-mail-smtp' ) . '</strong>',
 					esc_html__( 'This means the connection to your SMTP host was made successfully, but the host rejected the email.', 'wp-mail-smtp' ),
 					esc_html__( 'Typically this error is returned when you are sending too many e-mails or e-mails that have been identified as spam.', 'wp-mail-smtp' ),
 				],
@@ -663,8 +773,8 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ 'Unauthenticated senders not allowed' ],
 				],
+				'title'       => esc_html__( 'Unauthenticated senders are not allowed.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'Unauthenticated senders are not allowed.', 'wp-mail-smtp' ) . '</strong>',
 					esc_html__( 'This means the connection to your SMTP host was made successfully, but you should enable Authentication and provide correct Username and Password.', 'wp-mail-smtp' ),
 				],
 				'steps'       => [
@@ -681,8 +791,8 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ 'certificate verify failed' ],
 				],
+				'title'       => esc_html__( 'Misconfigured server certificate.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'Misconfigured server certificate.', 'wp-mail-smtp' ) . '</strong>',
 					esc_html__( 'This means OpenSSL on your server isn\'t able to verify the host certificate.', 'wp-mail-smtp' ),
 					esc_html__( 'There are a few reasons why this is happening. It could be that the host certificate is misconfigured, or this server\'s OpenSSL is using an outdated CA bundle.', 'wp-mail-smtp' ),
 				],
@@ -709,8 +819,8 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ 'SMTP connect() failed' ],
 				],
+				'title'       => esc_html__( 'Could not connect to the SMTP host.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'Could not connect to the SMTP host.', 'wp-mail-smtp' ) . '</strong>',
 					! empty( $smtp_host )
 						? sprintf( /* translators: %s - SMTP host address. */
 							esc_html__( 'This means your web server was unable to connect to %s.', 'wp-mail-smtp' ),
@@ -718,9 +828,17 @@ Lead Developer, WP Mail SMTP';
 						)
 						: esc_html__( 'This means your web server was unable to connect to the host server.', 'wp-mail-smtp' ),
 					esc_html__( 'Typically this error is returned for one of the following reasons:', 'wp-mail-smtp' ),
-					'-' . esc_html__( 'SMTP settings are incorrect (wrong port, security setting, incorrect host).', 'wp-mail-smtp' ) . '<br>' .
-					'-' . esc_html__( 'Your web server is blocking the connection.', 'wp-mail-smtp' ) . '<br>' .
-					'-' . esc_html__( 'Your SMTP host is rejecting the connection.', 'wp-mail-smtp' ),
+					'<ul>'
+						. '<li>' .
+							esc_html__( 'SMTP settings are incorrect (wrong port, security setting, incorrect host).', 'wp-mail-smtp' )
+						. '</li>'
+						. '<li>' .
+							esc_html__( 'Your web server is blocking the connection.', 'wp-mail-smtp' )
+						. '</li>'
+						. '<li>' .
+							esc_html__( 'Your SMTP host is rejecting the connection.', 'wp-mail-smtp' )
+						. '</li>'
+					. '</ul>',
 				],
 				'steps'       => [
 					esc_html__( 'Triple check your SMTP settings including host address, email, and password, port, and security.', 'wp-mail-smtp' ),
@@ -751,8 +869,8 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ 'Please activate your Mailgun account' ],
 				],
+				'title'       => esc_html__( 'Mailgun failed.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'Mailgun failed.', 'wp-mail-smtp' ) . '</strong>',
 					esc_html__( 'It seems that you forgot to activate your Mailgun account.', 'wp-mail-smtp' ),
 				],
 				'steps'       => [
@@ -766,9 +884,9 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ 'Forbidden' ],
 				],
+				'title'       => esc_html__( 'Mailgun failed.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'Mailgun failed.', 'wp-mail-smtp' ) . '</strong>',
-					esc_html__( 'Typically this error is because there is an issue with your Mailgun settings, in many cases the API key.', 'wp-mail-smtp' ),
+					esc_html__( 'Typically this error occurs because there is an issue with your Mailgun settings, in many cases the API key.', 'wp-mail-smtp' ),
 				],
 				'steps'       => [
 					esc_html__( 'Verify your API key is correct.', 'wp-mail-smtp' ),
@@ -782,10 +900,10 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ 'Free accounts are for test purposes only' ],
 				],
+				'title'       => esc_html__( 'Mailgun failed.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'Mailgun failed.', 'wp-mail-smtp' ) . '</strong>',
 					esc_html__( 'Your Mailgun account does not have access to send emails.', 'wp-mail-smtp' ),
-					esc_html__( 'Typically this error is because you have not set up and/or complete domain name verification for your Mailgun account.', 'wp-mail-smtp' ),
+					esc_html__( 'Typically this error occurs because you have not set up and/or complete domain name verification for your Mailgun account.', 'wp-mail-smtp' ),
 				],
 				'steps'       => [
 					sprintf(
@@ -810,8 +928,8 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ '401', 'Login Required' ],
 				],
+				'title'       => esc_html__( 'Google API Error.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'Google API Error.', 'wp-mail-smtp' ) . '</strong>',
 					esc_html__( 'You have not properly configured Gmail mailer.', 'wp-mail-smtp' ),
 					esc_html__( 'Make sure that you have clicked the "Allow plugin to send emails using your Google account" button under Gmail settings.', 'wp-mail-smtp' ),
 				],
@@ -859,9 +977,9 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ '400', 'Recipient address required' ],
 				],
+				'title'       => esc_html__( 'Google API Error.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'Google API Error.', 'wp-mail-smtp' ) . '</strong>',
-					esc_html__( 'Typically this error is because address the email was sent to is invalid or was empty.', 'wp-mail-smtp' ),
+					esc_html__( 'Typically this error occurs because the address to which the email was sent to is invalid or was empty.', 'wp-mail-smtp' ),
 				],
 				'steps'       => [
 					esc_html__( 'Check the "Send To" email address used and confirm it is a valid email and was not empty.', 'wp-mail-smtp' ),
@@ -879,8 +997,8 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ 'invalid_grant', 'Token has been expired or revoked' ],
 				],
+				'title'       => esc_html__( 'Google API Error.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'Google API Error.', 'wp-mail-smtp' ) . '</strong>',
 					esc_html__( 'Unfortunately, this error can be due to many different reasons.', 'wp-mail-smtp' ),
 					sprintf(
 						wp_kses( /* translators: %s - Blog article URL. */
@@ -907,8 +1025,8 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ 'invalid_grant', 'Code was already redeemed' ],
 				],
+				'title'       => esc_html__( 'Google API Error.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'Google API Error.', 'wp-mail-smtp' ) . '</strong>',
 					esc_html__( 'Authentication code that Google returned to you has already been used on your previous auth attempt.', 'wp-mail-smtp' ),
 				],
 				'steps'       => [
@@ -923,8 +1041,8 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ '400', 'Mail service not enabled' ],
 				],
+				'title'       => esc_html__( 'Google API Error.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'Google API Error.', 'wp-mail-smtp' ) . '</strong>',
 					esc_html__( 'There are various reasons for that, please review the steps below.', 'wp-mail-smtp' ),
 				],
 				'steps'       => [
@@ -975,9 +1093,8 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ '403', 'is not found and cannot be used for API calls' ],
 				],
-				'description' => [
-					'<strong>' . esc_html__( 'Google API Error.', 'wp-mail-smtp' ) . '</strong>',
-				],
+				'title'       => esc_html__( 'Google API Error.', 'wp-mail-smtp' ),
+				'description' => [],
 				'steps'       => [
 					esc_html__( 'Make sure that the used Client ID/Secret correspond to a proper project that has Gmail API enabled.', 'wp-mail-smtp' ),
 					sprintf(
@@ -1001,8 +1118,8 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ 'disabled_client', 'The OAuth client was disabled' ],
 				],
+				'title'       => esc_html__( 'Google API Error.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'Google API Error.', 'wp-mail-smtp' ) . '</strong>',
 					esc_html__( 'You may have added a new API to a project', 'wp-mail-smtp' ),
 				],
 				'steps'       => [
@@ -1016,8 +1133,8 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ 'channel - not found' ],
 				],
+				'title'       => esc_html__( 'SMTP.com API Error.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'SMTP.com API Error.', 'wp-mail-smtp' ) . '</strong>',
 					esc_html__( 'Your Sender Name option is incorrect.', 'wp-mail-smtp' ),
 				],
 				'steps'       => [
@@ -1030,8 +1147,8 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ 'GuzzleHttp requires cURL, the allow_url_fopen ini setting, or a custom HTTP handler' ],
 				],
+				'title'       => esc_html__( 'GuzzleHttp requirements.', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'GuzzleHttp requirements.', 'wp-mail-smtp' ) . '</strong>',
 					esc_html__( 'GuzzleHttp requires cURL, the allow_url_fopen ini setting, or a custom HTTP handler.', 'wp-mail-smtp' ),
 				],
 				'steps'       => [
@@ -1039,6 +1156,49 @@ Lead Developer, WP Mail SMTP';
 					esc_html__( '(Recommended) Enable PHP extension: cURL, by adding "extension=curl" to the php.ini file (without the quotation marks) OR', 'wp-mail-smtp' ),
 					esc_html__( '(If cURL can\'t be enabled on your hosting server) Enable PHP setting: allow_url_fopen, by adding "allow_url_fopen = On" to the php.ini file (without the quotation marks)', 'wp-mail-smtp' ),
 					esc_html__( 'If you don\'t know how to do the above we strongly suggest contacting your hosting support and provide them the "full Error Log for debugging" below and these steps. They should be able to fix this issue for you.', 'wp-mail-smtp' ),
+				],
+			],
+			// [sparkpost] - Forbidden.
+			[
+				'mailer'      => 'sparkpost',
+				'errors'      => [
+					[ 'Forbidden' ],
+				],
+				'title'       => esc_html__( 'SparkPost API failed.', 'wp-mail-smtp' ),
+				'description' => [
+					esc_html__( 'Typically this error occurs because there is an issue with your SparkPost settings, in many cases an incorrect API key.', 'wp-mail-smtp' ),
+				],
+				'steps'       => [
+					sprintf(
+						wp_kses( /* translators: %1$s - SparkPost API Keys area URL, %1$s - SparkPost EU API Keys area URL. */
+							__( 'Go to your <a href="%1$s" target="_blank" rel="noopener noreferrer">SparkPost account</a> or <a href="%2$s" target="_blank" rel="noopener noreferrer">SparkPost EU account</a> and verify that your API key is correct.', 'wp-mail-smtp' ),
+							[
+								'a' => [
+									'href'   => [],
+									'rel'    => [],
+									'target' => [],
+								],
+								'b' => [],
+							]
+						),
+						'https://app.sparkpost.com/account/api-keys',
+						'https://app.eu.sparkpost.com/account/api-keys'
+					),
+					esc_html__( 'Verify that your API key has "Transmissions: Read/Write" permission.', 'wp-mail-smtp' ),
+				],
+			],
+			// [sparkpost] - Unauthorized.
+			[
+				'mailer'      => 'sparkpost',
+				'errors'      => [
+					[ 'Unauthorized' ],
+				],
+				'title'       => esc_html__( 'SparkPost API failed.', 'wp-mail-smtp' ),
+				'description' => [
+					esc_html__( 'Typically this error occurs because there is an issue with your SparkPost settings, in many cases an incorrect region.', 'wp-mail-smtp' ),
+				],
+				'steps'       => [
+					esc_html__( 'Verify that your SparkPost account region is selected in WP Mail SMTP settings.', 'wp-mail-smtp' ),
 				],
 			],
 		];
@@ -1059,8 +1219,8 @@ Lead Developer, WP Mail SMTP';
 				'errors'      => [
 					[ 'Invalid address:  (setFrom)' ],
 				],
+				'title'       => esc_html__( 'PCRE library issue', 'wp-mail-smtp' ),
 				'description' => [
-					'<strong>' . esc_html__( 'PCRE library issue', 'wp-mail-smtp' ) . '</strong>',
 					esc_html__( 'It looks like your server is running PHP version 7.4.x with an outdated PCRE library (libpcre2) that has a known issue with email address validation.', 'wp-mail-smtp' ),
 					esc_html__( 'There is a known issue with PHP version 7.4.x, when using libpcre2 library version lower than 10.33.', 'wp-mail-smtp' ),
 				],
@@ -1084,8 +1244,8 @@ Lead Developer, WP Mail SMTP';
 
 			// Attempt to detect errors.
 			foreach ( $data['errors'] as $error_group ) {
-				foreach ( $error_group as $error_code => $error_message ) {
-					$match = ( false !== strpos( $this->debug['error_log'], $error_message ) || false !== strpos( $this->debug['error_log'], $error_message ) );
+				foreach ( $error_group as $error_message ) {
+					$match = false !== strpos( $this->debug['error_log'], $error_message );
 					if ( ! $match ) {
 						break;
 					}
@@ -1102,13 +1262,21 @@ Lead Developer, WP Mail SMTP';
 
 		// Return defaults.
 		return [
+			'title'       => esc_html__( 'An issue was detected.', 'wp-mail-smtp' ),
 			'description' => [
-				'<strong>' . esc_html__( 'An issue was detected.', 'wp-mail-smtp' ) . '</strong>',
 				esc_html__( 'This means your test email was unable to be sent.', 'wp-mail-smtp' ),
 				esc_html__( 'Typically this error is returned for one of the following reasons:', 'wp-mail-smtp' ),
-				'- ' . esc_html__( 'Plugin settings are incorrect (wrong SMTP settings, invalid Mailer configuration, etc).', 'wp-mail-smtp' ) . '<br>' .
-				'- ' . esc_html__( 'Your web server is blocking the connection.', 'wp-mail-smtp' ) . '<br>' .
-				'- ' . esc_html__( 'Your host is rejecting the connection.', 'wp-mail-smtp' ),
+				'<ul>'
+					. '<li>' .
+						esc_html__( 'Plugin settings are incorrect (wrong SMTP settings, invalid Mailer configuration, etc).', 'wp-mail-smtp' )
+					. '</li>'
+					. '<li>' .
+						esc_html__( 'Your web server is blocking the connection.', 'wp-mail-smtp' )
+					. '</li>'
+					. '<li>' .
+						esc_html__( 'Your host is rejecting the connection.', 'wp-mail-smtp' )
+					. '</li>'
+				. '</ul>',
 			],
 			'steps'       => [
 				esc_html__( 'Triple check the plugin settings, consider reconfiguring to make sure everything is correct (eg bad copy and paste).', 'wp-mail-smtp' ),
@@ -1135,27 +1303,51 @@ Lead Developer, WP Mail SMTP';
 			return;
 		}
 
-		$debug = $this->get_debug_details();
+		$debug        = $this->get_debug_details();
+		$allowed_tags = [
+			'a'      => [
+				'href'   => [],
+				'rel'    => [],
+				'target' => [],
+			],
+			'p'      => [],
+			'strong' => [],
+			'b'      => [],
+			'i'      => [],
+			'br'     => [],
+			'code'   => [],
+			'ul'     => [],
+			'ol'     => [],
+			'li'     => [],
+			'pre'    => [],
+		];
+
+		$this->display_title_section();
 		?>
 		<div id="message" class="notice-error notice-inline">
 			<p><?php esc_html_e( 'There was a problem while sending the test email.', 'wp-mail-smtp' ); ?></p>
 		</div>
 
 		<div id="wp-mail-smtp-debug">
+			<h2><?php echo esc_html( $debug['title'] ); ?></h2>
+
 			<?php
 			foreach ( $debug['description'] as $description ) {
-				echo '<p>' . $description . '</p>';
+				$description = wp_kses( $description, $allowed_tags );
+				if ( substr( $description, 0, 1 ) !== '<' ) {
+					echo '<p>' . $description . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				} else {
+					echo $description; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				}
 			}
 			?>
 
 			<h2><?php esc_html_e( 'Recommended next steps:', 'wp-mail-smtp' ); ?></h2>
 
 			<ol>
-				<?php
-				foreach ( $debug['steps'] as $step ) {
-					echo '<li>' . $step . '</li>';
-				}
-				?>
+				<?php foreach ( $debug['steps'] as $step ) : ?>
+					<li><?php echo wp_kses( $step, $allowed_tags ); ?></li>
+				<?php endforeach; ?>
 			</ol>
 
 			<h2><?php esc_html_e( 'Need support?', 'wp-mail-smtp' ); ?></h2>
@@ -1210,13 +1402,16 @@ Lead Developer, WP Mail SMTP';
 
 				<p>
 					<?php
-					echo wp_kses(
-						__( 'As a valued WP Mail SMTP user, you will get <span class="price-off">$50 off regular pricing</span>, automatically applied at checkout!', 'wp-mail-smtp' ),
-						array(
-							'span' => array(
-								'class' => array(),
-							),
-						)
+					printf(
+						wp_kses( /* Translators: %s - discount value $50 */
+							__( 'As a valued WP Mail SMTP user, you will get <span class="price-off">%s off regular pricing</span>, automatically applied at checkout!', 'wp-mail-smtp' ),
+							array(
+								'span' => array(
+									'class' => array(),
+								),
+							)
+						),
+						'$50'
 					);
 					?>
 				</p>
@@ -1244,19 +1439,32 @@ Lead Developer, WP Mail SMTP';
 			<?php endif; ?>
 
 			<p>
-				<a href="#" class="error-log-toggle">
-					<span class="dashicons dashicons-arrow-right-alt2"></span>
-					<strong><?php esc_html_e( 'Click here to view the full Error Log for debugging', 'wp-mail-smtp' ); ?></strong>
-				</a>
+				<em><?php esc_html_e( 'Please copy the error log message below into the support ticket.', 'wp-mail-smtp' ); ?></em>
 			</p>
 
-			<div class="error-log">
-				<?php echo $this->debug['error_log']; ?>
+			<p class="error-log-button-container">
+				<button type="button" class="error-log-toggle wp-mail-smtp-btn wp-mail-smtp-btn-md wp-mail-smtp-btn-blueish">
+					<?php esc_html_e( 'View Full Error Log', 'wp-mail-smtp' ); ?>
+				</button>
+				<button type="button" class="error-log-copy wp-mail-smtp-btn wp-mail-smtp-btn-md wp-mail-smtp-btn-grey">
+					<span class="error-log-copy-front">
+						<?php esc_html_e( 'Copy Error Log', 'wp-mail-smtp' ); ?>
+					</span>
+					<span class="error-log-copy-back">
+						<?php esc_html_e( 'Copied', 'wp-mail-smtp' ); ?>
+					</span>
+				</button>
+			</p>
+
+			<div class="error-log notice-error notice-inline">
+				<?php echo wp_kses( $this->debug['error_log'], $allowed_tags ); ?>
 			</div>
 
-			<p class="error-log-note">
-				<em><?php esc_html_e( 'Please copy only the content of the error debug message above, identified with an orange left border, into the support forum topic if you experience any issues.', 'wp-mail-smtp' ); ?></em>
-			</p>
+			<div class="wp-mail-smtp-test-email-resend">
+				<a href="<?php echo esc_url( $this->get_link() ); ?>">
+					<?php esc_html_e( 'Send Another Test Email', 'wp-mail-smtp' ); ?>
+				</a>
+			</div>
 		</div>
 		<?php
 	}
@@ -1268,54 +1476,26 @@ Lead Developer, WP Mail SMTP';
 	 */
 	protected function display_domain_check_details() {
 
-		if ( empty( $this->domain_checker ) ) {
+		if ( empty( $this->domain_checker ) || $this->domain_checker->no_issues() ) {
 			return;
 		}
 
-		if ( $this->domain_checker->no_issues() ) {
-			return;
-		}
-
-		$results      = $this->domain_checker->get_results();
-		$allowed_html = [
-			'b' => [],
-			'i' => [],
-			'a' => [
-				'href' => [],
-				'target' => [],
-				'rel' => []
-			],
-		];
+		$this->display_title_section();
 		?>
 
-		<div class="notice-warning notice-inline">
-			<p><?php esc_html_e( 'The test email might have sent, but its deliverability should be improved.', 'wp-mail-smtp' ); ?></p>
+		<?php if ( $this->domain_checker->is_supported_mailer() ) : ?>
+			<div class="notice-warning notice-inline">
+				<p><?php esc_html_e( 'The test email might have sent, but its deliverability should be improved.', 'wp-mail-smtp' ); ?></p>
+			</div>
+		<?php endif; ?>
+
+		<?php echo $this->domain_checker->get_results_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+
+		<div class="wp-mail-smtp-test-email-resend">
+			<a href="<?php echo esc_url( $this->get_link() ); ?>">
+				<?php esc_html_e( 'Send Another Test Email', 'wp-mail-smtp' ); ?>
+			</a>
 		</div>
-
-		<div id="wp-mail-smtp-domain-check-details">
-			<h2><?php esc_html_e( 'Domain Check Results', 'wp-mail-smtp' ); ?></h2>
-
-			<?php if ( empty( $results['success'] ) ) : ?>
-				<div class="notice-error notice-inline">
-					<p><?php echo wp_kses( $results['message'], $allowed_html ); ?></p>
-				</div>
-			<?php endif; ?>
-
-			<?php if ( ! empty( $results['checks'] ) ) : ?>
-				<div class="wp-mail-smtp-domain-check-details-check-list">
-					<?php foreach ( $results['checks'] as $check ) : ?>
-						<div class="wp-mail-smtp-domain-check-details-check-list-item">
-							<img src="<?php echo esc_url( wp_mail_smtp()->assets_url . '/images/icons/' . esc_attr( $check['state'] ) . '.svg' ); ?>" class="wp-mail-smtp-domain-check-details-check-list-item-icon" alt="<?php printf( esc_attr__( '%s icon', 'wp-mail-smtp' ), esc_attr( $check['state'] ) ); ?>">
-							<div class="wp-mail-smtp-domain-check-details-check-list-item-content">
-								<h3><?php echo esc_html( $check['type'] ); ?></h3>
-								<p><?php echo wp_kses( $check['message'], $allowed_html ); ?></p>
-							</div>
-						</div>
-					<?php endforeach; ?>
-				</div>
-			<?php endif; ?>
-		</div>
-
 		<?php
 	}
 }

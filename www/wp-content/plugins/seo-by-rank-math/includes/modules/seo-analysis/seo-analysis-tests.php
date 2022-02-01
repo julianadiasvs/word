@@ -1,6 +1,6 @@
 <?php
 /**
- * The SEO Analyzer Local Tests
+ * The local tests for the SEO Analysis.
  *
  * @since      0.9.0
  * @package    RankMath
@@ -13,11 +13,14 @@ use RankMath\Helper;
 use RankMath\Google\Console;
 use RankMath\Google\Authentication;
 
+use MyThemeShop\Helpers\DB;
+
 defined( 'ABSPATH' ) || exit;
 
 add_filter( 'rank_math/seo_analysis/tests', 'rank_math_register_seo_analysis_basic_tests' );
+
 /**
- * Register local SEO analysis basic tests.
+ * Register basic local tests for the SEO Analysis.
  *
  * @param array $tests Array of tests.
  *
@@ -86,15 +89,16 @@ function rank_math_register_seo_analysis_basic_tests( $tests ) {
 	return $tests;
 }
 
-add_filter( 'rank_math/seo_analysis/tests', 'rank_math_register_seo_analysis_advance_tests' );
+add_filter( 'rank_math/seo_analysis/tests', 'rank_math_register_seo_analysis_advanced_tests' );
+
 /**
- * Register local SEO analysis basic tests.
+ * Register advanced local tests for the SEO Analysis.
  *
  * @param array $tests Array of tests.
  *
  * @return array
  */
-function rank_math_register_seo_analysis_advance_tests( $tests ) {
+function rank_math_register_seo_analysis_advanced_tests( $tests ) {
 	$tests['search_console'] = [
 		'category'    => 'advanced',
 		'title'       => esc_html__( 'Search Console', 'rank-math' ),
@@ -108,7 +112,7 @@ function rank_math_register_seo_analysis_advance_tests( $tests ) {
 			/* translators: link to plugin search console setting screen */
 			'<p>' . sprintf( wp_kses_post( __( 'You can integrate the Google Search Console with Rank math in the <a href="%1$s" target="_blank">Search Console tab</a>. of Rank Math\'s General Settings menu.', 'rank-math' ) ), esc_url( Helper::get_admin_url( 'options-general#setting-panel-analytics' ) ) ) . '</p>' .
 			/* translators: Link to Search Console KB article */
-			'<p>' . sprintf( wp_kses_post( __( 'Read <a href="%1$s" target="_blank">this article</a> for detailed instructions on setting up your Google Webmaster account and getting Rank Math to work with the Google Search Console.', 'rank-math' ) ), KB::get( 'analytics' ) ) . '</p>',
+			'<p>' . sprintf( wp_kses_post( __( 'Read <a href="%1$s" target="_blank">this article</a> for detailed instructions on setting up your Google Webmaster account and getting Rank Math to work with the Google Search Console.', 'rank-math' ) ), KB::get( 'seo-analysis-gsc-test' ) ) . '</p>',
 		'callback'    => 'rank_math_analyze_search_console',
 	];
 
@@ -124,8 +128,9 @@ function rank_math_register_seo_analysis_advance_tests( $tests ) {
 }
 
 add_filter( 'rank_math/seo_analysis/tests', 'rank_math_register_seo_analysis_auto_update_test', 20 );
+
 /**
- * Register test for auto update option.
+ * Register test for the auto update option.
  *
  * @param array $tests Array of tests.
  *
@@ -207,7 +212,7 @@ function rank_math_analyze_site_description() {
 }
 
 /**
- * Returns whether or not the site has the default tagline
+ * Returns whether or not the site has the default tagline.
  *
  * @return bool
  */
@@ -251,7 +256,7 @@ function rank_math_analyze_permalink_structure() {
 }
 
 /**
- * Check if the permalink uses %postname%
+ * Check if the permalink uses %postname%.
  *
  * @return bool
  */
@@ -280,6 +285,14 @@ function rank_math_analyze_search_console() {
  */
 function rank_math_analyze_focus_keywords() {
 	global $wpdb;
+
+	$postmeta_table_limit = apply_filters( 'rank_math/seo_analysis/postmeta_table_limit', 200000 );
+	if ( DB::table_size_exceeds( $wpdb->postmeta, $postmeta_table_limit ) ) {
+		return [
+			'status'  => 'warning',
+			'message' => esc_html__( 'Could not check Focus Keywords in posts - the post meta table exceeds the size limit.', 'rank-math' ),
+		];
+	}
 
 	$in_search_post_types = get_post_types( [ 'exclude_from_search' => false ] );
 	$in_search_post_types = empty( $in_search_post_types ) ? '' : " AND {$wpdb->posts}.post_type IN ('" . join( "', '", array_map( 'esc_sql', $in_search_post_types ) ) . "')";
@@ -318,16 +331,8 @@ function rank_math_analyze_focus_keywords() {
 		];
 	}
 
-	$rows = rank_math_analyze_group_result( $data );
-	foreach ( $rows as $post_type => $row ) {
-		$post_type = get_post_type_object( $post_type );
-		$count     = count( $row );
-		$links[]   = sprintf( '<a href="%1$s&focus_keyword=1" target="_blank">%2$s %3$s</a>',
-			esc_url( admin_url( 'edit.php?post_type=' . $post_type->name ) ),
-			$count,
-			$count > 1 ? $post_type->label : $post_type->labels->singular_name
-		);
-	}
+	$rows  = rank_math_analyze_group_result( $data );
+	$links = rank_math_get_post_type_links( $rows, '&focus_keyword=1' );
 
 	return [
 		'status'  => 'fail',
@@ -337,7 +342,7 @@ function rank_math_analyze_focus_keywords() {
 }
 
 /**
- * Checks for posts without a focus keyword.
+ * Checks for posts where the focus keyword doesn't appear in the title.
  *
  * @return array
  */
@@ -358,7 +363,7 @@ function rank_math_analyze_post_titles() {
 	}
 
 	$rows  = rank_math_analyze_group_result( $data );
-	$links = rank_math_get_post_type_links( $rows );
+	$links = rank_math_get_post_type_links( $rows, '&fk_in_title=1' );
 
 	$post_ids     = wp_list_pluck( $data, 'ID' );
 	$post_ids_max = array_slice( $post_ids, 0, 20 );
@@ -386,13 +391,15 @@ function rank_math_analyze_post_titles() {
  *
  * @return array
  */
-function rank_math_get_post_type_links( $rows ) {
+function rank_math_get_post_type_links( $rows, $extra_params ) {
 	$links = [];
 	foreach ( $rows as $post_type => $row ) {
 		$post_type = get_post_type_object( $post_type );
 		$count     = count( $row );
-		$links[]   = sprintf( '<a href="%1$s&fk_in_title=1" target="_blank">%2$s %3$s</a>',
+		$links[]   = sprintf(
+			'<a href="%1$s%2$s" target="_blank">%3$d %4$s</a>',
 			esc_url( admin_url( 'edit.php?post_type=' . $post_type->name ) ),
+			$extra_params,
 			$count,
 			$count > 1 ? $post_type->label : $post_type->labels->singular_name
 		);
@@ -402,7 +409,7 @@ function rank_math_get_post_type_links( $rows ) {
 }
 
 /**
- * Get posts.
+ * Get posts not set to noindex where the Focus Keyword has been added.
  *
  * @return mixed
  */
@@ -495,7 +502,7 @@ function rank_math_analyze_blog_public() {
 }
 
 /**
- * Check if the site is set to be publicly visible
+ * Check if the site is set to be publicly visible.
  *
  * @return bool
  */

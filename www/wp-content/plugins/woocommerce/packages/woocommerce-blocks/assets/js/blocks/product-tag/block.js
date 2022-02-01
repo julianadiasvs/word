@@ -3,24 +3,24 @@
  */
 import { __ } from '@wordpress/i18n';
 import { BlockControls, InspectorControls } from '@wordpress/block-editor';
-import { ServerSideRender } from '@wordpress/editor';
+import ServerSideRender from '@wordpress/server-side-render';
 import {
 	Button,
 	Disabled,
 	PanelBody,
 	Placeholder,
-	Toolbar,
+	ToolbarGroup,
 	withSpokenMessages,
 } from '@wordpress/components';
-import { Component, Fragment } from '@wordpress/element';
+import { Component } from '@wordpress/element';
 import PropTypes from 'prop-types';
-import { HAS_TAGS } from '@woocommerce/block-settings';
 import GridContentControl from '@woocommerce/editor-components/grid-content-control';
 import GridLayoutControl from '@woocommerce/editor-components/grid-layout-control';
 import ProductTagControl from '@woocommerce/editor-components/product-tag-control';
 import ProductOrderbyControl from '@woocommerce/editor-components/product-orderby-control';
 import { Icon, more } from '@woocommerce/icons';
 import { gridBlockPreview } from '@woocommerce/resource-previews';
+import { getSetting } from '@woocommerce/settings';
 
 /**
  * Component to handle edit mode of "Products by Tag".
@@ -112,6 +112,7 @@ class ProductsByTagBlock extends Component {
 						onOperatorChange={ ( value = 'any' ) =>
 							setAttributes( { tagOperator: value } )
 						}
+						isCompact={ true }
 					/>
 				</PanelBody>
 				<PanelBody
@@ -123,6 +124,10 @@ class ProductsByTagBlock extends Component {
 						rows={ rows }
 						alignButtons={ alignButtons }
 						setAttributes={ setAttributes }
+						minColumns={ getSetting( 'min_columns', 1 ) }
+						maxColumns={ getSetting( 'max_columns', 6 ) }
+						minRows={ getSetting( 'min_rows', 1 ) }
+						maxRows={ getSetting( 'max_rows', 6 ) }
 					/>
 				</PanelBody>
 				<PanelBody
@@ -260,51 +265,45 @@ class ProductsByTagBlock extends Component {
 			return gridBlockPreview;
 		}
 
-		return (
-			<Fragment>
-				{ HAS_TAGS ? (
-					<Fragment>
-						<BlockControls>
-							<Toolbar
-								controls={ [
-									{
-										icon: 'edit',
-										title: __( 'Edit' ),
-										onClick: () =>
-											isEditing
-												? this.stopEditing()
-												: this.startEditing(),
-										isActive: isEditing,
-									},
-								] }
-							/>
-						</BlockControls>
-						{ this.getInspectorControls() }
-						{ isEditing
-							? this.renderEditMode()
-							: this.renderViewMode() }
-					</Fragment>
-				) : (
-					<Placeholder
-						icon={
-							<Icon
-								icon={ more }
-								className="block-editor-block-icon"
-							/>
-						}
-						label={ __(
-							'Products by Tag',
-							'woocommerce'
-						) }
-						className="wc-block-products-grid wc-block-product-tag"
-					>
-						{ __(
-							"This block displays products from selected tags. In order to preview this you'll first need to create a product and assign it some tags.",
-							'woocommerce'
-						) }
-					</Placeholder>
+		return getSetting( 'hasTags', true ) ? (
+			<>
+				<BlockControls>
+					<ToolbarGroup
+						controls={ [
+							{
+								icon: 'edit',
+								title: __(
+									'Edit selected tags',
+									'woocommerce'
+								),
+								onClick: () =>
+									isEditing
+										? this.stopEditing()
+										: this.startEditing(),
+								isActive: isEditing,
+							},
+						] }
+					/>
+				</BlockControls>
+				{ this.getInspectorControls() }
+				{ isEditing ? this.renderEditMode() : this.renderViewMode() }
+			</>
+		) : (
+			<Placeholder
+				icon={
+					<Icon icon={ more } className="block-editor-block-icon" />
+				}
+				label={ __(
+					'Products by Tag',
+					'woocommerce'
 				) }
-			</Fragment>
+				className="wc-block-products-grid wc-block-product-tag"
+			>
+				{ __(
+					"This block displays products from selected tags. In order to preview this you'll first need to create a product and assign it some tags.",
+					'woocommerce'
+				) }
+			</Placeholder>
 		);
 	}
 }

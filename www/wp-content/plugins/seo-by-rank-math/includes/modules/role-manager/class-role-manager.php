@@ -74,12 +74,12 @@ class Role_Manager extends Base {
 				'render'     => $this->directory . '/views/main.php',
 				'classes'    => [ 'rank-math-page' ],
 				'assets'     => [
-					'styles' => [
+					'styles'  => [
 						'rank-math-common'       => '',
 						'rank-math-cmb2'         => '',
 						'rank-math-role-manager' => $uri . '/assets/css/role-manager.css',
 					],
-					'scripts' => [ 'rank-math-role-manager-script' => rank_math()->plugin_url() . 'assets/admin/js/role-manager.js' ],
+					'scripts' => [ 'rank-math-role-manager-script' => $uri . '/assets/js/role-manager.js' ],
 				],
 			]
 		);
@@ -129,18 +129,18 @@ class Role_Manager extends Base {
 
 		if ( ! Helper::has_cap( 'role_manager' ) ) {
 			Helper::add_notification( esc_html__( 'You are not authorized to perform this action.', 'rank-math' ), [ 'type' => 'error' ] );
-			wp_safe_redirect( Helper::get_admin_url( 'role-manager' ) );
+			Helper::redirect( Helper::get_admin_url( 'role-manager' ) );
 			exit;
 		}
 
-		if ( Param::post( 'reset-capabilities' ) ){
+		if ( Param::post( 'reset-capabilities' ) ) {
 			Capability_Manager::get()->reset_capabilities();
 		} else {
 			$cmb = cmb2_get_metabox( 'rank-math-role-manager' );
 			Helper::set_capabilities( $cmb->get_sanitized_values( $_POST ) );
 		}
 
-		wp_safe_redirect( Helper::get_admin_url( 'role-manager' ) );
+		Helper::redirect( Helper::get_admin_url( 'role-manager' ) );
 		exit;
 	}
 }

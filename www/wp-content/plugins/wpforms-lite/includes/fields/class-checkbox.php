@@ -288,7 +288,7 @@ class WPForms_Field_Checkbox extends WPForms_Field {
 			array(
 				'slug'    => 'random',
 				'content' => $this->field_element(
-					'checkbox',
+					'toggle',
 					$field,
 					array(
 						'slug'    => 'random',
@@ -310,13 +310,13 @@ class WPForms_Field_Checkbox extends WPForms_Field {
 				array(
 					'slug'    => 'show_values',
 					'content' => $this->field_element(
-						'checkbox',
+						'toggle',
 						$field,
 						array(
 							'slug'    => 'show_values',
 							'value'   => isset( $field['show_values'] ) ? $field['show_values'] : '0',
 							'desc'    => esc_html__( 'Show Values', 'wpforms-lite' ),
-							'tooltip' => esc_html__( 'Check this to manually set form field values.', 'wpforms-lite' ),
+							'tooltip' => esc_html__( 'Check this option to manually set form field values.', 'wpforms-lite' ),
 						),
 						false
 					),
@@ -360,45 +360,45 @@ class WPForms_Field_Checkbox extends WPForms_Field {
 			)
 		);
 
-		// Hide label.
-		$this->field_option( 'label_hide', $field );
-
-		// Custom CSS classes.
-		$this->field_option( 'css', $field );
-
-		// Dynamic choice auto-populating toggle.
+			// Dynamic choice auto-populating toggle.
 		$this->field_option( 'dynamic_choices', $field );
 
 		// Dynamic choice source.
 		$this->field_option( 'dynamic_choices_source', $field );
 
+		// Custom CSS classes.
+		$this->field_option( 'css', $field );
+
+		// Hide label.
+		$this->field_option( 'label_hide', $field );
+
 		// Enable Disclaimer formatting.
 		$this->field_element(
 			'row',
 			$field,
-			array(
+			[
 				'slug'    => 'disclaimer_format',
 				'content' => $this->field_element(
-					'checkbox',
+					'toggle',
 					$field,
-					array(
+					[
 						'slug'    => 'disclaimer_format',
 						'value'   => isset( $field['disclaimer_format'] ) ? '1' : '0',
 						'desc'    => esc_html__( 'Enable Disclaimer / Terms of Service Display', 'wpforms-lite' ),
 						'tooltip' => esc_html__( 'Check this option to adjust the field styling to support Disclaimers and Terms of Service type agreements.', 'wpforms-lite' ),
-					),
+					],
 					false
 				),
-			)
+			]
 		);
 
 		// Options close markup.
 		$this->field_option(
 			'advanced-options',
 			$field,
-			array(
+			[
 				'markup' => 'close',
-			)
+			]
 		);
 	}
 
@@ -675,22 +675,22 @@ class WPForms_Field_Checkbox extends WPForms_Field {
 
 			$data['value'] = ! empty( $terms ) ? wpforms_sanitize_array_combine( $terms ) : '';
 
-		}
-		else {
+		} else {
 
 			// Normal processing, dynamic population is off.
-			$choice_keys = array();
+			$choice_keys = [];
 
 			// If show_values is true, that means values posted are the raw values
 			// and not the labels. So we need to set label values. Also store
 			// the choice keys.
-			if ( ! empty( $field['show_values'] ) && '1' == $field['show_values'] ) {
+			if ( ! empty( $field['show_values'] ) && (int) $field['show_values'] === 1 ) {
 
 				foreach ( $field_submit as $item ) {
 					foreach ( $field['choices'] as $key => $choice ) {
 						if ( $item === $choice['value'] || ( empty( $choice['value'] ) && (int) str_replace( 'Choice ', '', $item ) === $key ) ) {
 							$value[]       = $choice['label'];
 							$choice_keys[] = $key;
+
 							break;
 						}
 					}
@@ -708,6 +708,7 @@ class WPForms_Field_Checkbox extends WPForms_Field {
 						/* translators: %s - choice number. */
 						if ( $item === $choice['label'] || $item === sprintf( esc_html__( 'Choice %s', 'wpforms-lite' ), $key ) ) {
 							$choice_keys[] = $key;
+
 							break;
 						}
 					}
@@ -717,7 +718,7 @@ class WPForms_Field_Checkbox extends WPForms_Field {
 			// Images choices are enabled, lookup and store image URLs.
 			if ( ! empty( $choice_keys ) && ! empty( $field['choices_images'] ) ) {
 
-				$data['images'] = array();
+				$data['images'] = [];
 
 				foreach ( $choice_keys as $key ) {
 					$data['images'][] = ! empty( $field['choices'][ $key ]['image'] ) ? esc_url_raw( $field['choices'][ $key ]['image'] ) : '';

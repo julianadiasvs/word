@@ -13,7 +13,7 @@ class InfoBlocks {
 	 *
 	 * @since 1.5.4
 	 */
-	const SOURCE_URL = 'https://cdn.wpforms.com/wp-content/email-summaries.json';
+	const SOURCE_URL = 'https://wpforms.com/wp-content/email-summaries.json';
 
 	/**
 	 * Get info blocks info from the cache file or remote.
@@ -26,7 +26,7 @@ class InfoBlocks {
 
 		$cache_file = $this->get_cache_file_path();
 
-		if ( empty( $cache_file ) || ! file_exists( $cache_file ) ) {
+		if ( empty( $cache_file ) || ! is_readable( $cache_file ) ) {
 			return $this->fetch_all();
 		}
 

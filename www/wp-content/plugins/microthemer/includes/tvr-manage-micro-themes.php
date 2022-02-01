@@ -23,8 +23,11 @@ if ($end > $total_packs) {
 	$end = $total_packs;
 }
 
+$ui_class = '';
+require_once('common-inline-assets.php');
+
 ?>
-<div id="tvr" class='wrap tvr-wrap tvr-manage'>
+<div id="tvr" class='wrap tvr-wrap tvr-manage <?php echo $ui_class; ?>'>
 	<div id='tvr-manage'>
 
 		<?php
@@ -73,17 +76,44 @@ if ($end > $total_packs) {
 							<img src="<?php echo $screenshot; ?>" width="145" height="83"
 								 title="<?php printf(esc_attr__('Edit %s', 'microthemer'), $name); ?>" />
 						</a>
-						<div class="pack-quick-icons">
-							<span class="tvr-icon delete-icon delete-pack-multi" title="<?php printf(esc_attr__('Delete %s', 'microthemer'), $name); ?>"
-								rel="delete" data-dir-name="<?php echo $pack; ?>"></span>
+						<div class="pack-quick-icons mt-icon-line">
 
-							<span class="tvr-icon download-icon download-pack-multi" title="<?php printf(esc_attr__('Download %s', 'microthemer'), $name); ?>"
-								rel="download" data-dir-name="<?php echo $pack; ?>"></span>
+                            <?php
 
-							<a href="<?php echo $url ; ?>" title="<?php printf(esc_attr__('Edit %s', 'microthemer'), $name); ?>"><span class="tvr-icon edit-icon"></span></a>
-							<span class="tvr-icon quick-import show-parent-dialog" rel="import-from-pack"
-								data-pack-name="<?php echo esc_attr($name); ?>"
-								title="<?php printf(__('Import %s into the Microthemer interface', 'microthemer'), $name); ?>"></span>
+                            // delete
+                            echo $this->iconFont('bin', array(
+                                    'class' => 'delete-pack-multi download-icon',
+                                    'rel' => 'delete',
+                                    'data-dir-name' => $pack,
+                                    'title' => sprintf(esc_attr__('Delete %s', 'microthemer'), $name)
+                            ));
+
+                            // download
+                            echo $this->iconFont('cloud-download-alt', array(
+	                            'class' => 'download-pack-multi',
+	                            'rel' => 'download',
+	                            'data-dir-name' => $pack,
+	                            'title' => sprintf(esc_attr__('Download %s', 'microthemer'), $name)
+                            ));
+
+                            // Edit
+                            echo $this->iconFont('edit', array(
+                                'tag' => 'a',
+	                            'href' => $url,
+	                            //'class' => '',
+	                            //'data-dir-name' => $pack,
+	                            'title' => sprintf(esc_attr__('Edit %s', 'microthemer'), $name)
+                            ));
+
+                            // Import
+                            echo $this->iconFont('import', array(
+	                            'class' => 'quick-import show-parent-dialog',
+	                            'rel' => 'import-from-pack',
+	                            'data-pack-name' => $pack,
+	                            'title' => sprintf(esc_attr__('Import %s into the Microthemer interface', 'microthemer'), $name)
+                            ));
+                            ?>
+
 						</div>
 
 						<?php

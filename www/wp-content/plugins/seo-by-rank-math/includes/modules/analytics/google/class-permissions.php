@@ -28,7 +28,7 @@ class Permissions {
 			return;
 		}
 
-		$url = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' . $tokens['access_token'];
+		$url      = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' . $tokens['access_token'];
 		$response = wp_remote_get( $url );
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			return;
@@ -103,13 +103,9 @@ class Permissions {
 	 * @return string
 	 */
 	public static function get_status() {
-		$list = [
-			esc_html__( 'AdSense', 'rank-math' )        => self::get_status_text( self::has_adsense() ),
-			esc_html__( 'Analytics', 'rank-math' )      => self::get_status_text( self::has_analytics() ),
+		return [
 			esc_html__( 'Search Console', 'rank-math' ) => self::get_status_text( self::has_console() ),
 		];
-
-		return $list;
 	}
 
 	/**

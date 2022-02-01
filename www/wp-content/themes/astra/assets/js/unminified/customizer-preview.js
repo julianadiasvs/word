@@ -74,7 +74,6 @@ function astra_color_responsive_css( addon, control, css_property, selector ) {
 				);
 
 			} else {
-				wp.customize.preview.send( 'refresh' );
 				jQuery( 'style#' + control + '-' + addon ).remove();
 			}
 
@@ -95,12 +94,13 @@ function astra_responsive_font_size( control, selector ) {
 				// Remove <style> first!
 				control = control.replace( '[', '-' );
 				control = control.replace( ']', '' );
-				jQuery( 'style#' + control + '-' + css_property ).remove();
 
 				var fontSize = '',
 					tabletFontSize = '',
 					mobileFontSize = '',
 					css_property = 'font-size';
+
+				jQuery( 'style#' + control + '-' + css_property ).remove();
 
 				if ( '' != value.desktop ) {
 					fontSize = 'font-size: ' + value.desktop + value['desktop-unit'];
@@ -126,8 +126,7 @@ function astra_responsive_font_size( control, selector ) {
 				);
 
 			} else {
-
-				jQuery( 'style#' + control ).remove();
+				jQuery( 'style#' + control  + '-font-size' ).remove();
 			}
 
 		} );
@@ -146,6 +145,7 @@ function astra_responsive_spacing( control, selector, type, side ) {
 			if ( value.desktop.top || value.desktop.right || value.desktop.bottom || value.desktop.left || value.tablet.top || value.tablet.right || value.tablet.bottom || value.tablet.left || value.mobile.top || value.mobile.right || value.mobile.bottom || value.mobile.left ) {
 				if ( typeof side != undefined ) {
 					sidesString = side + "";
+					// Replace comma character with dash, necessary to separate out spacing dimensions.
 					sidesString = sidesString.replace(/,/g , "-");
 				}
 				if ( typeof type != undefined ) {
@@ -255,7 +255,7 @@ function astra_css( control, css_property, selector, unit ) {
 			control = control.replace( '[', '-' );
 			control = control.replace( ']', '' );
 
-			if ( new_value ) {
+			if ( new_value || 0 === new_value ) {
 
 				/**
 				 *	If ( unit == 'url' ) then = url('{VALUE}')
@@ -282,9 +282,13 @@ function astra_css( control, css_property, selector, unit ) {
 					+ '</style>'
 				);
 
+				if( 'unset' === new_value ){
+					jQuery( 'style#' + control + '-' + css_property ).remove();
+				}
+
 			} else {
 				// Remove old.
-				jQuery( 'style#' + control ).remove();
+				jQuery( 'style#' + control + '-' + css_property ).remove();
 			}
 
 		} );
@@ -315,7 +319,7 @@ function astra_background_obj_css( wp_customize, bg_obj, ctrl_name, style ) {
 	var bg_color	= bg_obj['background-color'];
 
 	if( '' === bg_color && '' === bg_img ) {
-		wp_customize.preview.send( 'refresh' );
+		jQuery( 'style#' + ctrl_name ).remove();
 	}else{
 		if( undefined !== bg_obj['background-type'] && '' !== bg_obj['background-type'] ) {
 
@@ -370,6 +374,7 @@ function astra_generate_outside_font_family_css( control, selector ) {
 			var link = '';
 
 			var fontName = value.split(",")[0];
+			// Replace ' character with space, necessary to separate out font prop value.
 			fontName = fontName.replace(/'/g, '');
 
 			// Remove <style> first!
@@ -426,7 +431,7 @@ function astra_generate_font_weight_css( font_control, control, css_property, se
 					}
 				}
 
-				fontName = wp.customize._value[font_control]._value;
+				var fontName = wp.customize._value[font_control]._value;
 				fontName = fontName.split(',');
 				fontName = fontName[0].replace( /'/g, '' );
 
@@ -537,7 +542,6 @@ function astra_apply_responsive_background_css( control, selector, device, singl
 			// Remove old.
 			jQuery( 'style#' + control + '-' + device + '-' + addon ).remove();
 
-
 			if ( 'desktop' == device ) {
 				var dynamicStyle = '<style id="' + control + '-' + device + '-' + addon + '">'
 					+ selector + '	{ ' + gen_bg_css + ' }'
@@ -620,6 +624,10 @@ function isJsonString( str ) {
 	return true;
 }
 
+function hasWordPressWidgetBlockEditor() {
+	return astraCustomizer.has_block_editor_support || false;
+}
+
 ( function( $ ) {
 
 	/*
@@ -628,7 +636,7 @@ function isJsonString( str ) {
 	wp.customize( 'astra-settings[ast-header-responsive-logo-width]', function( setting ) {
 		setting.bind( function( logo_width ) {
 			if ( logo_width['desktop'] != '' || logo_width['tablet'] != '' || logo_width['mobile'] != '' ) {
-				var dynamicStyle = '#masthead .site-logo-img .custom-logo-link img { max-width: ' + logo_width['desktop'] + 'px; width: ' + logo_width['desktop'] + 'px;} @media( max-width: 768px ) { #masthead .site-logo-img .custom-logo-link img { max-width: ' + logo_width['tablet'] + 'px;  width: ' + logo_width['tablet'] + 'px;} #masthead .site-logo-img img { max-height: ' + logo_width['tablet'] + 'px; } } @media( max-width: 544px ) { .ast-header-break-point .site-branding img, .ast-header-break-point #masthead .site-logo-img .custom-logo-link img { max-width: ' + logo_width['mobile'] + 'px; width: ' + logo_width['mobile'] + 'px;}' +
+				var dynamicStyle = '#masthead .site-logo-img .custom-logo-link img { max-width: ' + logo_width['desktop'] + 'px; } @media( max-width: 768px ) { #masthead .site-logo-img .custom-logo-link img { max-width: ' + logo_width['tablet'] + 'px; } #masthead .site-logo-img img { max-height: ' + logo_width['tablet'] + 'px; } } @media( max-width: 544px ) { .ast-header-break-point .site-branding img, .ast-header-break-point #masthead .site-logo-img .custom-logo-link img { max-width: ' + logo_width['mobile'] + 'px; }' +
 			    '#masthead .site-logo-img img { max-height: ' + logo_width['mobile'] + 'px; } .astra-logo-svg{width: ' + logo_width['mobile'] + 'px !important; } }';
 				astra_add_dynamic_css( 'ast-header-responsive-logo-width', dynamicStyle );
 				var mobileLogoStyle = '.ast-header-break-point #masthead .site-logo-img .custom-mobile-logo-link img { max-width: ' + logo_width['tablet'] + 'px; } @media( max-width: 768px ) { .ast-header-break-point #masthead .site-logo-img .custom-mobile-logo-link img { max-width: ' + logo_width['tablet'] + 'px; }  @media( max-width: 544px ) { .ast-header-break-point #masthead .site-logo-img .custom-mobile-logo-link img { max-width: ' + logo_width['mobile'] + 'px; }';
@@ -637,6 +645,36 @@ function isJsonString( str ) {
 			else{
 				wp.customize.preview.send( 'refresh' );
 			}
+		} );
+	} );
+
+	/*
+	 * Responsive Logo Visibility
+	 */
+	wp.customize( 'astra-settings[display-site-title-responsive]', function( setting ) {
+		setting.bind( function( logo_visibility ) {
+			var desktopTitleVisibility  = ( logo_visibility['desktop'] ) ? 'block' : 'none';
+			var tabletTitleVisibility  = ( logo_visibility['tablet'] ) ? 'block' : 'none';
+			var mobileTitleVisibility  = ( logo_visibility['mobile'] ) ? 'block' : 'none';
+			var tabletBreakPoint    = astraBuilderPreview.tablet_break_point || 768,
+				mobileBreakPoint    = astraBuilderPreview.mobile_break_point || 544;
+			var dynamicStyle = '.ast-site-title-wrap .site-title { display: ' + desktopTitleVisibility + ';} @media( max-width: ' + tabletBreakPoint + 'px) { .ast-site-title-wrap .site-title { display: ' + tabletTitleVisibility + ';} } @media( max-width: ' + mobileBreakPoint + 'px) { .ast-site-title-wrap .site-title { display: ' + mobileTitleVisibility + ';} }';
+			astra_add_dynamic_css( 'display-site-title-responsive', dynamicStyle );
+		} );
+	} );
+
+	/*
+	 * Responsive Tagline Visibility
+	 */
+	wp.customize( 'astra-settings[display-site-tagline-responsive]', function( setting ) {
+		setting.bind( function( tagline_visibility ) {
+			var desktopTaglineVisibility  = ( tagline_visibility['desktop'] ) ? 'block' : 'none';
+			var tabletTaglineVisibility  = ( tagline_visibility['tablet'] ) ? 'block' : 'none';
+			var mobileTaglineVisibility  = ( tagline_visibility['mobile'] ) ? 'block' : 'none';
+			var tabletBreakPoint    = astraBuilderPreview.tablet_break_point || 768,
+				mobileBreakPoint    = astraBuilderPreview.mobile_break_point || 544;
+			var dynamicStyle = '.ast-site-title-wrap .site-description { display: ' + desktopTaglineVisibility + ';} @media( max-width: ' + tabletBreakPoint + 'px) { .ast-site-title-wrap .site-description { display: ' + tabletTaglineVisibility + ';} } @media( max-width: ' + mobileBreakPoint + 'px) { .ast-site-title-wrap .site-description { display: ' + mobileTaglineVisibility + ';} }';
+			astra_add_dynamic_css( 'display-site-tagline-responsive', dynamicStyle );
 		} );
 	} );
 
@@ -686,6 +724,45 @@ function isJsonString( str ) {
 	astra_apply_responsive_background_css( 'astra-settings[site-layout-outside-bg-obj-responsive]', 'body, .ast-separate-container', 'desktop' );
 	astra_apply_responsive_background_css( 'astra-settings[site-layout-outside-bg-obj-responsive]', 'body, .ast-separate-container', 'tablet' );
 	astra_apply_responsive_background_css( 'astra-settings[site-layout-outside-bg-obj-responsive]', 'body, .ast-separate-container', 'mobile' );
+
+	if( astraCustomizer.is_content_bg_option_to_load ) {
+
+		var content_layout = astraCustomizer.content_layout;
+		var site_layout    = astraCustomizer.site_layout;
+		var blog_grid = (typeof ( wp.customize._value['astra-settings[blog-grid]'] ) != 'undefined') ? wp.customize._value['astra-settings[blog-grid]']._value : 1;
+		var blog_layout = (typeof ( wp.customize._value['astra-settings[blog-layout]'] ) != 'undefined') ? wp.customize._value['astra-settings[blog-layout]']._value : 'blog-layout-1';
+
+		var dynamicSelector = '.ast-separate-container .ast-article-single:not(.ast-related-post), .ast-separate-container .comments-area .comment-respond,.ast-separate-container .comments-area .ast-comment-list li, .ast-separate-container .ast-woocommerce-container, .ast-separate-container .error-404, .ast-separate-container .no-results, .single.ast-separate-container .ast-author-meta, .ast-separate-container .related-posts, .ast-separate-container .comments-count-wrapper, .ast-separate-container .comments-area .comments-title, .ast-single-related-posts-container';
+
+		if( 'blog-layout-1' == blog_layout && 1 != blog_grid ) {
+			dynamicSelector   += ', .ast-separate-container .blog-layout-1, .ast-separate-container .blog-layout-2, .ast-separate-container .blog-layout-3';
+		} else {
+			dynamicSelector   += ', .ast-separate-container .ast-article-post';
+		}
+
+		/**
+		 * Content background color
+		 */
+		if( 'boxed-container' == content_layout ) {
+
+			dynamicSelector   += ', .ast-separate-container.ast-two-container #secondary .widget';
+			astra_apply_responsive_background_css( 'astra-settings[content-bg-obj-responsive]', dynamicSelector, 'desktop' );
+			astra_apply_responsive_background_css( 'astra-settings[content-bg-obj-responsive]', dynamicSelector, 'tablet' );
+			astra_apply_responsive_background_css( 'astra-settings[content-bg-obj-responsive]', dynamicSelector, 'mobile' );
+		}
+		else if ( 'content-boxed-container' == content_layout ) {
+
+			astra_apply_responsive_background_css( 'astra-settings[content-bg-obj-responsive]', dynamicSelector, 'desktop' );
+			astra_apply_responsive_background_css( 'astra-settings[content-bg-obj-responsive]', dynamicSelector, 'tablet' );
+			astra_apply_responsive_background_css( 'astra-settings[content-bg-obj-responsive]', dynamicSelector, 'mobile' );
+		}
+		else if ( 'plain-container' == content_layout && ( 'ast-box-layout' == site_layout || 'ast-padded-layout' == site_layout ) ) {
+			dynamicSelector   += ', .ast-box-layout.ast-plain-container .site-content, .ast-padded-layout.ast-plain-container .site-content';
+			astra_apply_responsive_background_css( 'astra-settings[content-bg-obj-responsive]', dynamicSelector, 'desktop' );
+			astra_apply_responsive_background_css( 'astra-settings[content-bg-obj-responsive]', dynamicSelector, 'tablet' );
+			astra_apply_responsive_background_css( 'astra-settings[content-bg-obj-responsive]', dynamicSelector, 'mobile' );
+		}
+	}
 
 	/*
 	 * Blog Custom Width
@@ -815,13 +892,20 @@ function isJsonString( str ) {
 	/**
 	 * Button Border Radius
 	 */
-	wp.customize( 'astra-settings[theme-button-border-group]', function( setting ) {
+	wp.customize( 'astra-settings[button-radius]', function( setting ) {
 		setting.bind( function( border ) {
 
-			var dynamicStyle = '.menu-toggle,button,.ast-button,input#submit,input[type="button"],input[type="submit"],input[type="reset"] { border-radius: ' + ( parseInt( border ) ) + 'px } ';
-			if (  jQuery( 'body' ).hasClass( 'woocommerce' ) ) {
+			var search_button_selector = hasWordPressWidgetBlockEditor() ? ', form[CLASS*="wp-block-search__"].wp-block-search .wp-block-search__inside-wrapper .wp-block-search__button' : '' ;
+			var lmsButtonSelectors = ', body #ld_course_list .btn, body a.btn-blue, body a.btn-blue:visited, body a#quiz_continue_link, body .btn-join, body .learndash_checkout_buttons input.btn-join[type="button"], body #btn-join, body .learndash_checkout_buttons input.btn-join[type="submit"], body .wpProQuiz_content .wpProQuiz_button2, a.llms-button-primary, .llms-button-secondary, .llms-button-action, .llms-field-button, .llms-button-action.large';
+
+			var dynamicStyle = '.menu-toggle, button, .ast-button, .ast-custom-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .wp-block-button .wp-block-button__link' + lmsButtonSelectors + search_button_selector + '{ border-radius: ' + ( parseInt( border ) ) + 'px } ';
+			if ( jQuery( 'body' ).hasClass( 'woocommerce' ) ) {
 				dynamicStyle += '.woocommerce a.button, .woocommerce button.button, .woocommerce .product a.button, .woocommerce .woocommerce-message a.button, .woocommerce #respond input#submit.alt, .woocommerce a.button.alt, .woocommerce button.button.alt, .woocommerce input.button.alt, .woocommerce input.button,.woocommerce input.button:disabled, .woocommerce input.button:disabled[disabled] { border-radius: ' + ( parseInt( border ) ) + 'px } ';
 			}
+			if ( jQuery( 'body' ).hasClass( 'edd-page' ) ) {
+				dynamicStyle += '.ast-edd-site-header-cart .widget_edd_cart_widget .edd_checkout a, .widget_edd_cart_widget .edd_checkout a { border-radius: ' + ( parseInt( border ) ) + 'px } ';
+			}
+
 			astra_add_dynamic_css( 'button-radius', dynamicStyle );
 
 		} );
@@ -927,6 +1011,20 @@ function isJsonString( str ) {
 		} );
 	} );
 
+	// Add preview underline in customizer for content links.
+	wp.customize( 'astra-settings[underline-content-links]', function( setting ) {
+		setting.bind( function( value ) {
+			var dynamicStyle = '';
+			if ( value ) {
+				dynamicStyle = '.ast-single-post .entry-content a, .ast-comment-content a:not(.ast-comment-edit-reply-wrap a) { text-decoration: underline; } ';
+				astra_add_dynamic_css( 'underline-content-links', dynamicStyle );
+			} else {
+				dynamicStyle = '.ast-single-post .entry-content a, .ast-comment-content a:not(.ast-comment-edit-reply-wrap a) { text-decoration: unset; } ';
+				astra_add_dynamic_css( 'underline-content-links', dynamicStyle );
+			}
+		} );
+	} );
+
 	if ( astraCustomizer.page_builder_button_style_css ) {
 		if (true == astraCustomizer.includeAnchorsInHeadindsCss) {
 			if ( 'color-typo' == astraCustomizer.elementor_default_color_font_setting || 'typo' == astraCustomizer.elementor_default_color_font_setting ) {
@@ -1008,10 +1106,53 @@ function isJsonString( str ) {
 	//[1] Primary Menu Toggle Button Style.
 	wp.customize( 'astra-settings[mobile-header-toggle-btn-style]', function( setting ) {
 		setting.bind( function( icon_style ) {
+			var icon_color = wp.customize('astra-settings[mobile-header-toggle-btn-color]').get();
+
+			if ( '' === icon_color && 'fill' === icon_style ) {
+				var dynamicStyle = ' [data-section="section-header-mobile-trigger"] .ast-button-wrap .mobile-menu-toggle-icon .ast-mobile-svg { fill: #ffffff; } ';
+				astra_add_dynamic_css( 'mobile-header-toggle-btn-style', dynamicStyle );
+			} else {
+				astra_add_dynamic_css( 'mobile-header-toggle-btn-style', '' );
+			}
+
 			var buttons = $(document).find('.ast-mobile-menu-buttons .menu-toggle');
 			buttons.removeClass('ast-mobile-menu-buttons-default ast-mobile-menu-buttons-fill ast-mobile-menu-buttons-outline');
 			buttons.removeClass('ast-mobile-menu-buttons-default ast-mobile-menu-buttons-fill ast-mobile-menu-buttons-minimal');
 			buttons.addClass( 'ast-mobile-menu-buttons-' + icon_style );
+
+			var themeColor = wp.customize( 'astra-settings[theme-color]' ).get();
+			var defaultColor = '#ffffff';
+			var toggleButtonColor = wp.customize( 'astra-settings[mobile-header-toggle-btn-color]' ).get();
+
+			if ( 'fill' !== icon_style ) {
+				defaultColor = themeColor
+			}
+
+			var iconColor = defaultColor;
+
+			if ( '' !== toggleButtonColor && undefined !== toggleButtonColor && null !== toggleButtonColor ) {
+				iconColor = toggleButtonColor
+			}
+
+			var dynamicStyle = '[data-section="section-header-mobile-trigger"] .ast-button-wrap .mobile-menu-toggle-icon .ast-mobile-svg {';
+			dynamicStyle += 'fill: ' + iconColor + ';';
+			dynamicStyle +='}';
+
+			dynamicStyle += '[data-section="section-header-mobile-trigger"] .ast-button-wrap .mobile-menu-wrap .mobile-menu {';
+			dynamicStyle += 'color: ' + iconColor + ';';
+			dynamicStyle +='}';
+
+			dynamicStyle += '[data-section="section-header-mobile-trigger"] .ast-button-wrap .ast-mobile-menu-trigger-fill, [data-section="section-header-mobile-trigger"] .ast-button-wrap .ast-mobile-menu-trigger-minimal {';
+			dynamicStyle += 'color: ' + iconColor + ';';
+			dynamicStyle += 'border: none;';
+			dynamicStyle +='}';
+
+			dynamicStyle += '[data-section="section-header-mobile-trigger"] .ast-button-wrap .ast-mobile-menu-trigger-outline {';
+			dynamicStyle += 'color: ' + iconColor + ';';
+			dynamicStyle +='}';
+			;
+			astra_add_dynamic_css( 'mobile-header-toggle-btn-style', dynamicStyle );
+
 		} );
 	} );
 
@@ -1215,24 +1356,47 @@ function isJsonString( str ) {
 	 */
 	wp.customize( 'astra-settings[theme-button-border-group-border-size]', function( value ) {
 		value.bind( function( border ) {
-			if( '' != border.top || '' != border.right || '' != border.bottom || '' != border.left ) {
-				var dynamicStyle = '.menu-toggle, button, .ast-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .wp-block-button .wp-block-button__link' + ele_border_width_selector;
-					dynamicStyle += '{';
-					dynamicStyle += 'border-top-width:'  + border.top + 'px;';
-					dynamicStyle += 'border-right-width:'  + border.right + 'px;';
-					dynamicStyle += 'border-left-width:'   + border.left + 'px;';
-					dynamicStyle += 'border-bottom-width:'   + border.bottom + 'px;';
-					dynamicStyle += 'border-style: solid;';
-					dynamicStyle += '}';
 
-				astra_add_dynamic_css( 'theme-button-border-group-border-size', dynamicStyle );
+			var search_button_selector = hasWordPressWidgetBlockEditor() ? ', form[CLASS*="wp-block-search__"].wp-block-search .wp-block-search__inside-wrapper .wp-block-search__button' : '' ;
+			var dynamicStyle = '.menu-toggle, button, .ast-button, .ast-custom-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .wp-block-button .wp-block-button__link' + ele_border_width_selector + search_button_selector;
+
+			if( '' != border.top || '' != border.right || '' != border.bottom || '' != border.left ) {
+				if( astraCustomizer.gb_outline_buttons_patterns_support && ! astraCustomizer.updated_gb_outline_button_patterns ) {
+					wp.customize.preview.send( 'refresh' );
+				} else {
+						dynamicStyle += '{';
+						dynamicStyle += 'border-top-width:'  + border.top + 'px;';
+						dynamicStyle += 'border-right-width:'  + border.right + 'px;';
+						dynamicStyle += 'border-left-width:'   + border.left + 'px;';
+						dynamicStyle += 'border-bottom-width:'   + border.bottom + 'px;';
+						dynamicStyle += 'border-style: solid;';
+						dynamicStyle += '}';
+
+					astra_add_dynamic_css( 'theme-button-border-group-border-size', dynamicStyle );
+				}
+			} else {
+
+				if( astraCustomizer.gb_outline_buttons_patterns_support && ! astraCustomizer.updated_gb_outline_button_patterns ) {
+					wp.customize.preview.send( 'refresh' );
+				} else {
+						dynamicStyle += '{';
+						dynamicStyle += 'border-top-width: 0;';
+						dynamicStyle += 'border-right-width: 0;';
+						dynamicStyle += 'border-left-width: 0;';
+						dynamicStyle += 'border-bottom-width: 0;';
+						dynamicStyle += '}';
+
+					astra_add_dynamic_css( 'theme-button-border-group-border-size', dynamicStyle );
+				}
 			}
 		} );
 	} );
 
-	astra_responsive_spacing( 'astra-settings[theme-button-padding]','.menu-toggle, button, .ast-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .woocommerce a.button, .woocommerce button.button, .woocommerce .product a.button, .woocommerce .woocommerce-message a.button, .woocommerce #respond input#submit.alt, .woocommerce a.button.alt, .woocommerce button.button.alt, .woocommerce input.button.alt, .woocommerce input.button,.woocommerce input.button:disabled, .woocommerce input.button:disabled[disabled], .wp-block-button .wp-block-button__link' + ele_padding_selector, 'padding', [ 'top', 'bottom' ] );
+	var search_button_selector = hasWordPressWidgetBlockEditor() ? ', form[CLASS*="wp-block-search__"].wp-block-search .wp-block-search__inside-wrapper .wp-block-search__button' : '' ;
 
-	astra_responsive_spacing( 'astra-settings[theme-button-padding]','.menu-toggle, button, .ast-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .woocommerce a.button, .woocommerce button.button, .woocommerce .product a.button, .woocommerce .woocommerce-message a.button, .woocommerce #respond input#submit.alt, .woocommerce a.button.alt, .woocommerce button.button.alt, .woocommerce input.button.alt, .woocommerce input.button,.woocommerce input.button:disabled, .woocommerce input.button:disabled[disabled], .wp-block-button .wp-block-button__link' + ele_padding_selector, 'padding', [ 'left', 'right' ] );
+	astra_responsive_spacing( 'astra-settings[theme-button-padding]','.menu-toggle, button, .ast-button, .ast-custom-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .woocommerce a.button, .woocommerce button.button, .woocommerce .product a.button, .woocommerce .woocommerce-message a.button, .woocommerce #respond input#submit.alt, .woocommerce a.button.alt, .woocommerce button.button.alt, .woocommerce input.button.alt, .woocommerce input.button,.woocommerce input.button:disabled, .woocommerce input.button:disabled[disabled], .wp-block-button .wp-block-button__link' + ele_padding_selector + search_button_selector, 'padding', [ 'top', 'bottom' ] );
+
+	astra_responsive_spacing( 'astra-settings[theme-button-padding]','.menu-toggle, button, .ast-button, .ast-custom-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .woocommerce a.button, .woocommerce button.button, .woocommerce .product a.button, .woocommerce .woocommerce-message a.button, .woocommerce #respond input#submit.alt, .woocommerce a.button.alt, .woocommerce button.button.alt, .woocommerce input.button.alt, .woocommerce input.button,.woocommerce input.button:disabled, .woocommerce input.button:disabled[disabled], .wp-block-button .wp-block-button__link' + ele_padding_selector + search_button_selector, 'padding', [ 'left', 'right' ] );
 
 	/**
 	 * Button border
@@ -1288,6 +1452,9 @@ function isJsonString( str ) {
 	// Site Tagline - Text Transform
 	astra_css( 'astra-settings[text-transform-site-tagline]', 'text-transform', '.site-header .site-description' );
 
+	var search_button_selector = hasWordPressWidgetBlockEditor() ? ', form[CLASS*="wp-block-search__"].wp-block-search .wp-block-search__inside-wrapper .wp-block-search__button' : '' ;
+	var search_button_hover_selector = hasWordPressWidgetBlockEditor() ? ', form[CLASS*="wp-block-search__"].wp-block-search .wp-block-search__inside-wrapper .wp-block-search__button:hover, form[CLASS*="wp-block-search__"].wp-block-search .wp-block-search__inside-wrapper .wp-block-search__button:focus' : '' ;
+
 	if ( astraCustomizer.page_builder_button_style_css ) {
 
 		var btn_color_ele = '';
@@ -1317,41 +1484,38 @@ function isJsonString( str ) {
 			btn_border_h_color_ele = ',.elementor-button-wrapper .elementor-button:hover, .elementor-button-wrapper .elementor-button:focus';
 		}
 
-		// Theme Button - Text Color
-		astra_css( 'astra-settings[button-color]', 'color', '.menu-toggle, button, .ast-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .wp-block-button .wp-block-button__link, .ast-builder-button-wrap .ast-custom-button' + btn_color_ele );
+		var btnSelector = '.menu-toggle, button, .ast-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .wp-block-button .wp-block-button__link, .ast-custom-button' + btn_bg_color_ele + search_button_selector;
 
-		// Theme Button - Background Color
-		astra_css( 'astra-settings[button-bg-color]', 'background-color', '.menu-toggle, button, .ast-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .wp-block-button .wp-block-button__link, .ast-builder-button-wrap .ast-custom-button' + btn_bg_color_ele );
+		astraHandleButtonPresetPreview( btnSelector );
 
 		// Theme Button - Text Hover Color
-		astra_css( 'astra-settings[button-h-color]', 'color', 'button:focus, .menu-toggle:hover, button:hover, .ast-button:hover, .button:hover, input[type=reset]:hover, input[type=reset]:focus, input#submit:hover, input#submit:focus, input[type="button"]:hover, input[type="button"]:focus, input[type="submit"]:hover, input[type="submit"]:focus, .wp-block-button .wp-block-button__link:hover, .wp-block-button .wp-block-button__link:focus, .ast-builder-button-wrap .ast-custom-button:hover, .ast-builder-button-wrap .ast-custom-button:focus' + btn_h_color_ele );
+		astra_css( 'astra-settings[button-h-color]', 'color', 'button:focus, .menu-toggle:hover, button:hover, .ast-button:hover, .button:hover, input[type=reset]:hover, input[type=reset]:focus, input#submit:hover, input#submit:focus, input[type="button"]:hover, input[type="button"]:focus, input[type="submit"]:hover, input[type="submit"]:focus, .wp-block-button .wp-block-button__link:hover, .wp-block-button .wp-block-button__link:focus, .ast-custom-button:hover, .ast-custom-button:focus' + btn_h_color_ele + search_button_hover_selector );
 
 		// Theme Button - Background Hover Color
-		astra_css( 'astra-settings[button-bg-h-color]', 'background-color', 'button:focus, .menu-toggle:hover, button:hover, .ast-button:hover, .button:hover, input[type=reset]:hover, input[type=reset]:focus, input#submit:hover, input#submit:focus, input[type="button"]:hover, input[type="button"]:focus, input[type="submit"]:hover, input[type="submit"]:focus, .wp-block-button .wp-block-button__link:hover, .wp-block-button .wp-block-button__link:focus, .ast-builder-button-wrap .ast-custom-button:hover, .ast-builder-button-wrap .ast-custom-button:focus' + btn_bg_h_color_ele );
+		astra_css( 'astra-settings[button-bg-h-color]', 'background-color', 'button:focus, .menu-toggle:hover, button:hover, .ast-button:hover, .button:hover, input[type=reset]:hover, input[type=reset]:focus, input#submit:hover, input#submit:focus, input[type="button"]:hover, input[type="button"]:focus, input[type="submit"]:hover, input[type="submit"]:focus, .wp-block-button .wp-block-button__link:hover, .wp-block-button .wp-block-button__link:focus, .ast-custom-button:hover, .ast-custom-button:focus' + btn_bg_h_color_ele + search_button_hover_selector );
 
-		astra_css( 'astra-settings[theme-button-border-group-border-color]', 'border-color', '.menu-toggle, button, .ast-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .wp-block-button .wp-block-button__link' + btn_border_color_ele );
+		astra_css( 'astra-settings[theme-button-border-group-border-color]', 'border-color', '.menu-toggle, button, .ast-button, .ast-custom-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .wp-block-button .wp-block-button__link' + btn_border_color_ele + search_button_selector );
 
 		// Theme Button - Border Hover Color
-		astra_css( 'astra-settings[theme-button-border-group-border-h-color]', 'border-color', 'button:focus, .menu-toggle:hover, button:hover, .ast-button:hover, .button:hover, input[type=reset]:hover, input[type=reset]:focus, input#submit:hover, input#submit:focus, input[type="button"]:hover, input[type="button"]:focus, input[type="submit"]:hover, input[type="submit"]:focus, .wp-block-button .wp-block-button__link:hover, .wp-block-button .wp-block-button__link:focus' + btn_border_h_color_ele );
+		astra_css( 'astra-settings[theme-button-border-group-border-h-color]', 'border-color', 'button:focus, .menu-toggle:hover, button:hover, .ast-button:hover, .ast-custom-button:hover, .button:hover, input[type=reset]:hover, input[type=reset]:focus, input#submit:hover, input#submit:focus, input[type="button"]:hover, input[type="button"]:focus, input[type="submit"]:hover, input[type="submit"]:focus, .wp-block-button .wp-block-button__link:hover, .wp-block-button .wp-block-button__link:focus' + btn_border_h_color_ele + search_button_hover_selector );
 
 	} else {
-		// Theme Button - Text Color
-		astra_css( 'astra-settings[button-color]', 'color', '.menu-toggle, button, .ast-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .ast-builder-button-wrap .ast-custom-button' );
 
-		// Theme Button - Background Color
-		astra_css( 'astra-settings[button-bg-color]', 'background-color', '.menu-toggle, button, .ast-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .ast-builder-button-wrap .ast-custom-button' );
+		var btnSelector = '.menu-toggle, button, .ast-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .ast-custom-button' + search_button_selector;
+
+		astraHandleButtonPresetPreview( btnSelector );
 
 		// Theme Button - Border Color
-		astra_css( 'astra-settings[button-bg-color]', 'border-color', '.menu-toggle, button, .ast-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .ast-builder-button-wrap .ast-custom-button' );
+		astra_css( 'astra-settings[button-bg-color]', 'border-color', '.menu-toggle, button, .ast-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .ast-custom-button' + search_button_selector );
 
 		// Theme Button - Text Hover Color
-		astra_css( 'astra-settings[button-h-color]', 'color', 'button:focus, .menu-toggle:hover, button:hover, .ast-button:hover, .button:hover, input[type=reset]:hover, input[type=reset]:focus, input#submit:hover, input#submit:focus, input[type="button"]:hover, input[type="button"]:focus, input[type="submit"]:hover, input[type="submit"]:focus, .ast-builder-button-wrap .ast-custom-button:hover, .ast-builder-button-wrap .ast-custom-button:focus' );
+		astra_css( 'astra-settings[button-h-color]', 'color', 'button:focus, .menu-toggle:hover, button:hover, .ast-button:hover, .button:hover, input[type=reset]:hover, input[type=reset]:focus, input#submit:hover, input#submit:focus, input[type="button"]:hover, input[type="button"]:focus, input[type="submit"]:hover, input[type="submit"]:focus, .ast-custom-button:hover, .ast-custom-button:focus' + search_button_hover_selector );
 
 		// Theme Button - Background Hover Color
-		astra_css( 'astra-settings[button-bg-h-color]', 'background-color', 'button:focus, .menu-toggle:hover, button:hover, .ast-button:hover, .button:hover, input[type=reset]:hover, input[type=reset]:focus, input#submit:hover, input#submit:focus, input[type="button"]:hover, input[type="button"]:focus, input[type="submit"]:hover, input[type="submit"]:focus, .ast-builder-button-wrap .ast-custom-button:hover, .ast-builder-button-wrap .ast-custom-button:focus' );
+		astra_css( 'astra-settings[button-bg-h-color]', 'background-color', 'button:focus, .menu-toggle:hover, button:hover, .ast-button:hover, .button:hover, input[type=reset]:hover, input[type=reset]:focus, input#submit:hover, input#submit:focus, input[type="button"]:hover, input[type="button"]:focus, input[type="submit"]:hover, input[type="submit"]:focus, .ast-custom-button:hover, .ast-custom-button:focus' + search_button_hover_selector );
 
-		astra_responsive_spacing( 'astra-settings[theme-button-padding]','.menu-toggle, button, .ast-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .woocommerce a.button, .woocommerce button.button, .woocommerce .product a.button, .woocommerce .woocommerce-message a.button, .woocommerce #respond input#submit.alt, .woocommerce a.button.alt, .woocommerce button.button.alt, .woocommerce input.button.alt, .woocommerce input.button,.woocommerce input.button:disabled, .woocommerce input.button:disabled[disabled]', 'padding', [ 'top', 'bottom' ] );
-		astra_responsive_spacing( 'astra-settings[theme-button-padding]','.menu-toggle, button, .ast-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .woocommerce a.button, .woocommerce button.button, .woocommerce .product a.button, .woocommerce .woocommerce-message a.button, .woocommerce #respond input#submit.alt, .woocommerce a.button.alt, .woocommerce button.button.alt, .woocommerce input.button.alt, .woocommerce input.button,.woocommerce input.button:disabled, .woocommerce input.button:disabled[disabled]', 'padding', [ 'left', 'right' ] );
+		astra_responsive_spacing( 'astra-settings[theme-button-padding]','.menu-toggle, button, .ast-button, .ast-custom-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .woocommerce a.button, .woocommerce button.button, .woocommerce .product a.button, .woocommerce .woocommerce-message a.button, .woocommerce #respond input#submit.alt, .woocommerce a.button.alt, .woocommerce button.button.alt, .woocommerce input.button.alt, .woocommerce input.button,.woocommerce input.button:disabled, .woocommerce input.button:disabled[disabled]' + search_button_selector, 'padding', [ 'top', 'bottom' ] );
+		astra_responsive_spacing( 'astra-settings[theme-button-padding]','.menu-toggle, button, .ast-button, .ast-custom-button, .button, input#submit, input[type="button"], input[type="submit"], input[type="reset"], .woocommerce a.button, .woocommerce button.button, .woocommerce .product a.button, .woocommerce .woocommerce-message a.button, .woocommerce #respond input#submit.alt, .woocommerce a.button.alt, .woocommerce button.button.alt, .woocommerce input.button.alt, .woocommerce input.button,.woocommerce input.button:disabled, .woocommerce input.button:disabled[disabled]' + search_button_selector, 'padding', [ 'left', 'right' ] );
 	}
 
 	// Global custom event which triggers when partial refresh occurs.
@@ -1382,11 +1546,302 @@ function isJsonString( str ) {
 
 		});
 
+		wp.customize.selectiveRefresh.bind('partial-content-rendered', function (response) {
+
+			wp.customize.preview.send( 'AstraBuilderPartialContentRendered', response );
+
+		});
+
 		wp.customize.preview.bind( 'astPreviewDeviceChanged', function( device ) {
 			document.dispatchEvent( new CustomEvent( "astPreviewDeviceChanged",  { "detail": device }) );
 
 		} );
 
 	})
+
+	/**
+	 * Related Posts Query Arguments - Customizer preview support.
+	 */
+	 wp.customize( 'astra-settings[related-posts-based-on]', function( setting ) {
+		setting.bind( function() {
+			wp.customize.preview.send( 'refresh' );
+		} );
+	} );
+	wp.customize( 'astra-settings[related-posts-order-by]', function( setting ) {
+		setting.bind( function() {
+			wp.customize.preview.send( 'refresh' );
+		} );
+	} );
+	wp.customize( 'astra-settings[related-posts-order]', function( setting ) {
+		setting.bind( function() {
+			wp.customize.preview.send( 'refresh' );
+		} );
+	} );
+
+	/**
+	 * Related Posts color stylings.
+	 */
+	astra_css( 'astra-settings[related-posts-text-color]', 'color', '.ast-related-post-content .entry-header .ast-related-post-title a, .ast-related-post-content .ast-related-post-excerpt' );
+	astra_css( 'astra-settings[related-posts-meta-color]', 'color', '.ast-related-post-content .entry-meta, .ast-related-post-content .entry-meta *' );
+	astra_css( 'astra-settings[related-posts-title-color]', 'color', '.ast-single-related-posts-container .ast-related-posts-title-section .ast-related-posts-title' );
+	astra_css( 'astra-settings[related-posts-background-color]', 'background-color', '.ast-single-related-posts-container' );
+	astra_css( 'astra-settings[related-posts-link-color]', 'color', '.ast-related-post-content .ast-related-post-cta a' );
+	astra_css( 'astra-settings[related-posts-link-hover-color]', 'color', '.ast-related-post-content .ast-related-post-cta a:hover' );
+	astra_css( 'astra-settings[related-posts-meta-link-hover-color]', 'color', '.ast-related-post-content .entry-meta a:hover, .ast-related-post-content .entry-meta span a span:hover' );
+
+	// Related Posts - Customizer preview for Post Title.
+	astra_generate_outside_font_family_css( 'astra-settings[related-posts-title-font-family]', '.ast-related-post-content .entry-header .ast-related-post-title, .ast-related-post-content .entry-header .ast-related-post-title a' );
+	astra_css( 'astra-settings[related-posts-title-font-weight]', 'font-weight', '.ast-related-post-content .entry-header .ast-related-post-title, .ast-related-post-content .entry-header .ast-related-post-title a' );
+	astra_responsive_font_size( 'astra-settings[related-posts-title-font-size]', '.ast-related-post-content .entry-header .ast-related-post-title, .ast-related-post-content .entry-header .ast-related-post-title a' );
+	astra_css( 'astra-settings[related-posts-title-line-height]', 'line-height', '.ast-related-post-content .entry-header .ast-related-post-title, .ast-related-post-content .entry-header .ast-related-post-title a' );
+	astra_css( 'astra-settings[related-posts-title-text-transform]', 'text-transform', '.ast-related-post-content .entry-header .ast-related-post-title, .ast-related-post-content .entry-header .ast-related-post-title a' );
+
+	// Related Posts - Customizer preview for Section Title.
+	astra_generate_outside_font_family_css( 'astra-settings[related-posts-section-title-font-family]', '.ast-single-related-posts-container .ast-related-posts-title-section .ast-related-posts-title' );
+	astra_css( 'astra-settings[related-posts-section-title-font-weight]', 'font-weight', '.ast-single-related-posts-container .ast-related-posts-title-section .ast-related-posts-title' );
+	astra_responsive_font_size( 'astra-settings[related-posts-section-title-font-size]', '.ast-single-related-posts-container .ast-related-posts-title-section .ast-related-posts-title' );
+	astra_css( 'astra-settings[related-posts-section-title-line-height]', 'line-height', '.ast-single-related-posts-container .ast-related-posts-title-section .ast-related-posts-title' );
+	astra_css( 'astra-settings[related-posts-section-title-text-transform]', 'text-transform', '.ast-single-related-posts-container .ast-related-posts-title-section .ast-related-posts-title' );
+	astra_css( 'astra-settings[releted-posts-title-alignment]', 'text-align', '.ast-single-related-posts-container .ast-related-posts-title-section .ast-related-posts-title' );
+
+	// Related Posts - Customizer preview for Post Meta.
+	astra_generate_outside_font_family_css( 'astra-settings[related-posts-meta-font-family]', '.ast-related-post-content .entry-meta, .ast-related-post-content .entry-meta *' );
+	astra_css( 'astra-settings[related-posts-meta-font-weight]', 'font-weight', '.ast-related-post-content .entry-meta, .ast-related-post-content .entry-meta *' );
+	astra_responsive_font_size( 'astra-settings[related-posts-meta-font-size]', '.ast-related-post-content .entry-meta, .ast-related-post-content .entry-meta *' );
+	astra_css( 'astra-settings[related-posts-meta-line-height]', 'line-height', '.ast-related-post-content .entry-meta, .ast-related-post-content .entry-meta *' );
+	astra_css( 'astra-settings[related-posts-meta-text-transform]', 'text-transform', '.ast-related-post-content .entry-meta, .ast-related-post-content .entry-meta *' );
+
+	// Related Posts - Customizer preview for Post Content.
+	astra_generate_outside_font_family_css( 'astra-settings[related-posts-content-font-family]', '.ast-related-post-content .ast-related-post-excerpt' );
+	astra_css( 'astra-settings[related-posts-content-font-weight]', 'font-weight', '.ast-related-post-content .ast-related-post-excerpt' );
+	astra_responsive_font_size( 'astra-settings[related-posts-content-font-size]', '.ast-related-post-content .ast-related-post-excerpt' );
+	astra_css( 'astra-settings[related-posts-content-line-height]', 'line-height', '.ast-related-post-content .ast-related-post-excerpt' );
+	astra_css( 'astra-settings[related-posts-content-text-transform]', 'text-transform', '.ast-related-post-content .ast-related-post-excerpt' );
+
+	// Title Color.
+    astra_css(
+        'astra-settings[header-color-site-title]',
+        'color',
+        '.ast-site-identity .site-title a, .ast-site-identity .site-title'
+    );
+
+    // Title Hover Color.
+    astra_css(
+        'astra-settings[header-color-h-site-title]',
+        'color',
+        '.ast-site-identity .site-title a:hover, .ast-site-identity .site-title:hover'
+    );
+
+	// Tagline Color.
+    astra_css(
+        'astra-settings[header-color-site-tagline]',
+        'color',
+        '.ast-site-identity .site-description'
+    );
+
+	function astraHandleButtonPresetPreview( btnSelector ) {
+
+		wp.customize( 'astra-settings[button-preset-style]', function( setting ) {
+			setting.bind( function( value ) {
+
+				var buttonBGColor   = wp.customize( 'astra-settings[button-bg-color]' ).get();
+				var buttonTextColor = wp.customize( 'astra-settings[button-color]' ).get();
+				var themeColor = wp.customize( 'astra-settings[theme-color]' ).get();
+
+				if( 'button_04' === value || 'button_05' === value || 'button_06' === value ) {
+
+					var buttonBorderColor = wp.customize( 'astra-settings[theme-button-border-group-border-color]' ).get();
+
+					if( '' === buttonBorderColor ) {
+						jQuery( 'style#astra-settings-theme-button-border-group-border-color' ).remove();
+
+						// Theme Button - Background Color
+						jQuery( 'head' ).append(
+							'<style id="astra-settings-theme-button-border-group-border-color">'
+							+ btnSelector + '	{ border-color: ' + buttonBGColor + ' }'
+							+ '</style>'
+						);
+					}
+
+					if( '' === buttonTextColor && '' !== buttonBGColor ) {
+						jQuery( 'style#astra-settings-button-outline-preset-color' ).remove();
+
+						jQuery( 'head' ).append(
+							'<style id="astra-settings-button-outline-preset-color">'
+							+ btnSelector + '	{ color: ' + buttonBGColor + ' }'
+							+ '</style>'
+						);
+					}
+
+					if( '' === buttonTextColor && '' === buttonBGColor ) {
+
+						jQuery( 'style#astra-settings-button-outline-preset-color' ).remove();
+
+						jQuery( 'head' ).append(
+							'<style id="astra-settings-button-outline-preset-color">'
+							+ btnSelector + '	{ color: ' + themeColor + ' }'
+							+ '</style>'
+						);
+					}
+
+					// Remove old.
+					jQuery( 'style#astra-settings-button-preset-style-background-color' ).remove();
+
+					// Concat and append new <style>.
+					jQuery( 'head' ).append(
+						'<style id="astra-settings-button-preset-style-background-color">'
+						+ btnSelector + '	{ background: transparent }'
+						+ '</style>'
+					);
+				} else {
+
+					jQuery( 'style#astra-settings-button-bg-color-background-color' ).remove();
+					jQuery( 'style#astra-settings-button-outline-preset-color' ).remove();
+
+					if( '' === buttonTextColor && '' === buttonBGColor ) {
+
+						jQuery( 'head' ).append(
+							'<style id="astra-settings-button-bg-color-background-color">'
+							+ btnSelector + '	{ background-color: ' + themeColor + ' }'
+							+ '</style>'
+						);
+
+					} else {
+
+						// Set background color for button to theme color when value is empty. 
+						buttonBGColor = ( '' != buttonBGColor ) ? buttonBGColor : themeColor;
+
+						// Theme Button - Background Color
+						jQuery( 'head' ).append(
+							'<style id="astra-settings-button-bg-color-background-color">'
+							+ btnSelector + '	{ background-color: ' + buttonBGColor + ' }'
+							+ '</style>'
+						);
+					}
+
+					if( '' === buttonTextColor ) {
+
+						// Set button text color to white when value is empty. 
+						jQuery( 'head' ).append(
+							'<style id="astra-settings-button-outline-preset-color">'
+							+ btnSelector + '	{ color: #FFFFFF; }'
+							+ '</style>'
+						);
+
+						jQuery( 'style#astra-settings-button-color-color' ).remove();
+					}
+				}
+
+			} );
+		} );
+
+		wp.customize( 'astra-settings[button-color]', function( setting ) {
+			setting.bind( function( value ) {
+
+				if( '' === value ) {
+
+					var buttonPreset = wp.customize( 'astra-settings[button-preset-style]' ).get();
+
+					// If button has outline preset.
+					if( 'button_04' === buttonPreset || 'button_05' === buttonPreset || 'button_06' === buttonPreset ) {
+
+						var buttonBGColor   = wp.customize( 'astra-settings[button-bg-color]' ).get();
+
+						jQuery( 'style#astra-settings-button-outline-color' ).remove();
+
+						// Theme Button - Background Color
+						jQuery( 'head' ).append(
+							'<style id="astra-settings-button-color-color">'
+							+ btnSelector + '	{ color: ' + buttonBGColor + ' }'
+							+ '</style>'
+						);
+					} else {
+						jQuery( 'style#astra-settings-button-color-color' ).remove();
+
+						// Theme Button - Background Color
+						jQuery( 'head' ).append(
+							'<style id="astra-settings-button-color-color">'
+							+ btnSelector + '	{ color: #FFFFFF }'
+							+ '</style>'
+						);
+					}
+
+				} else {
+
+					jQuery( 'style#astra-settings-button-color-color' ).remove();
+
+					// Theme Button - Background Color
+					jQuery( 'head' ).append(
+						'<style id="astra-settings-button-color-color">'
+						+ btnSelector + '	{ color: ' + value + ' }'
+						+ '</style>'
+					);
+				}
+
+			} );
+		} );
+
+		wp.customize( 'astra-settings[button-bg-color]', function( setting ) {
+			setting.bind( function( value ) {
+
+				var buttonPreset = wp.customize( 'astra-settings[button-preset-style]' ).get();
+				var themeColor = wp.customize( 'astra-settings[theme-color]' ).get();
+				var buttonTextColor = wp.customize( 'astra-settings[button-color]' ).get();
+
+				// If button has outline preset.
+				if( 'button_04' === buttonPreset || 'button_05' === buttonPreset || 'button_06' === buttonPreset ) {
+
+					var buttonTextColor = wp.customize( 'astra-settings[button-color]' ).get();
+					var buttonBorderColor = wp.customize( 'astra-settings[theme-button-border-group-border-color]' ).get();
+
+					if( '' === buttonBorderColor ) {
+						// Theme Button - Background Color
+						jQuery( 'style#astra-settings-theme-button-border-group-border-color' ).remove();
+
+						// Theme Button - Background Color
+						jQuery( 'head' ).append(
+							'<style id="astra-settings-theme-button-border-group-border-color">'
+							+ btnSelector + '	{ border-color: ' + value + ' }'
+							+ '</style>'
+						);
+					}
+
+					if( '' === buttonTextColor ) {
+						jQuery( 'style#astra-settings-button-outline-preset-color' ).remove();
+
+						jQuery( 'head' ).append(
+							'<style id="astra-settings-button-outline-preset-color">'
+							+ btnSelector + '	{ color: ' + value + ' }'
+							+ '</style>'
+						);
+					}
+
+				} else {
+					jQuery( 'style#astra-settings-button-bg-color-background-color' ).remove();
+					jQuery( 'style#astra-settings-button-outline-preset-color' ).remove();
+
+					// Set background color for button to theme color when value is empty. 
+					value = ( '' != value ) ? value : themeColor;
+
+					if( '' === buttonTextColor ) {
+
+						jQuery( 'head' ).append(
+							'<style id="astra-settings-button-outline-preset-color">'
+							+ btnSelector + '	{ color: #FFFFFF; }'
+							+ '</style>'
+						);
+					}
+
+					// Theme Button - Background Color
+					jQuery( 'head' ).append(
+						'<style id="stra-settings-button-bg-color-background-color">'
+						+ btnSelector + '	{ background-color: ' + value + ' }'
+						+ '</style>'
+					);
+				}
+			} );
+		} );
+
+	}
 
 } )( jQuery );

@@ -72,14 +72,16 @@
                 if ($(':focus').closest('.menu-container').length <= 0) {
                     $("#blog").toggleClass("openNav");
                     $("#" + menu + ".open-panel").toggleClass("open");
+                    $("#" + menu + ".open-panel").focus();
                 }
             }, 0);
         });
     });
-    $('#top-navigation').on('focusout', function (e) {
+    $('#top-navigation .navbar-collapse').on('focusout', function (e) {
             setTimeout(function () { // needed because nothing has focus during 'focusout'
                 if ($(':focus').closest('.navbar-collapse').length <= 0) {
                     $(".navbar-collapse").toggleClass("in");
+                    $("#top-navigation .navbar-toggle").focus();
                 }
             }, 0);
         });

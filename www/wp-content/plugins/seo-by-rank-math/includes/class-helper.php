@@ -18,6 +18,7 @@ use RankMath\Helpers\Post_Type;
 use RankMath\Helpers\Options;
 use RankMath\Helpers\Taxonomy;
 use RankMath\Helpers\WordPress;
+use RankMath\Helpers\Schema;
 use RankMath\Replace_Variables\Replacer;
 
 defined( 'ABSPATH' ) || exit;
@@ -27,7 +28,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class Helper {
 
-	use Api, Attachment, Conditional, Choices, Post_Type, Options, Taxonomy, WordPress;
+	use Api, Attachment, Conditional, Choices, Post_Type, Options, Taxonomy, WordPress, Schema;
 
 	/**
 	 * Replace `%variables%` with context-dependent value.
@@ -106,7 +107,7 @@ class Helper {
 	public static function get_midnight( $time ) {
 		$org_time = $time;
 		if ( is_numeric( $time ) ) {
-			$time = date_i18n( 'Y-m-d H:i:s', $time );
+			$time = self::get_date( 'Y-m-d H:i:s', $time, false, true );
 		}
 
 		// Early bail if time format is invalid.
@@ -189,6 +190,28 @@ class Helper {
 		}
 
 		update_option( 'rank_math_modules', array_unique( $stored ) );
+	}
+
+	/**
+	 * Get list of currently active modules.
+	 *
+	 * @return array
+	 */
+	public static function get_active_modules() {
+		$registered_modules = rank_math()->manager->modules;
+		$stored             = array_values( get_option( 'rank_math_modules', [] ) );
+		foreach ( $stored as $key => $value ) {
+			if (
+				! isset( $registered_modules[ $value ] )
+				|| ! is_object( $registered_modules[ $value ] )
+				|| ! method_exists( $registered_modules[ $value ], 'is_disabled' )
+				|| $registered_modules[ $value ]->is_disabled()
+			) {
+				unset( $stored[ $key ] );
+			}
+		}
+
+		return $stored;
 	}
 
 	/**
@@ -275,5 +298,21 @@ class Helper {
 		$ip = filter_input( INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP );
 
 		return in_array( $ip, $whitelist, true );
+	}
+
+	/**
+	 * Get date using date_i18n() or date().
+	 *
+	 * @param string      $format Format to display the date.
+	 * @param int|boolean $timestamp_with_offset A sum of Unix timestamp and timezone offset in seconds.
+	 * @param boolean     $gmt Whether to use GMT timezone. Only applies if timestamp is not provided.
+	 * @param boolean     $mode Whether to use date() or date_i18n().
+	 * @return mixin
+	 */
+	public static function get_date( $format, $timestamp_with_offset = false, $gmt = false, $mode = false ) {
+		if ( true === $mode ) {
+			return date( $format, $timestamp_with_offset ); // phpcs:ignore
+		}
+		return date_i18n( $format, $timestamp_with_offset, $gmt );
 	}
 }

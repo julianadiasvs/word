@@ -14,6 +14,11 @@ function cau_check_updates_mail() {
 		cau_plugin_updated(); // Check for updated plugins
 	}
 
+	// Notify of required db update
+	if( cau_get_db_value( 'dbupdateemails' ) == 'on' ) {
+		cau_notify_outofdate_db();
+	}
+
 }
 
 // Notify of out of date software
@@ -229,6 +234,8 @@ function cau_list_plugin_updates() {
 		if( $config->onoroff != 'on' ) {
 
 			require_once(ABSPATH . 'wp-admin/includes/plugin-install.php');
+
+			if ( !function_exists( 'get_plugin_updates' ) ) require_once ABSPATH . 'wp-admin/includes/update.php';
 			$plugins = get_plugin_updates();
 
 			if ( !empty( $plugins ) ) {
@@ -381,24 +388,37 @@ function cau_plugin_updated() {
 	}
 
 	foreach ( $pluginDates as $key => $value ) {
-		
-		if( cau_get_db_value( 'html_or_text' ) == 'html' ) {
 
-			$more_info = '';
-			if( cau_get_db_value( 'advanced_info_emails' ) == 'on' ) $more_info = "<br /><span style='opacity: 0.5;'>".__( "Time of update", "companion-auto-update" ).": ".$pluginTimes[$key]."</span>"; 
+		// Set up some var
+		$plugin_name 	= $pluginNames[$key];
+		$plugin_slug 	= $pluginSlug[$key];
+		$to_version		= __( "to version", "companion-auto-update" ).' '.$pluginVersion[$key];
+		$more_info_arr	= array( __( "Time of update", "companion-auto-update" ) => $pluginTimes[$key] );
 
-			$updatedListP .= "<li>
-				<strong>".$pluginNames[$key]." </strong><br />
-				".__( "to version", "companion-auto-update" )." ".$pluginVersion[$key]." <a href='https://wordpress.org/plugins/".$pluginSlug[$key]."/#developers'>".__( "Release notes", "companion-auto-update" )."</a>
-				".$more_info."
-			</li>";
-
-		} else {
-
-			$updatedListP .= "- ".$pluginNames[$key]." ".__( "to version", "companion-auto-update" )." ".$pluginVersion[$key]."\n";
-			$updatedListP .= "  ".__( "Release notes", "companion-auto-update" ).": https://wordpress.org/plugins/".$pluginSlug[$key]."/#developers\n";
-
+		// Plugin links
+		if( cau_get_db_value( 'plugin_links_emails' ) == 'on' ) {
+			$more_info_arr[__( "Plugin details", "companion-auto-update" )] 	= "<a href='https://wordpress.org/plugins/{$plugin_slug}/'>".__( "Visit", "companion-auto-update" )."</a>";
+			$more_info_arr[__( "Release notes", "companion-auto-update" )] 		= "<a href='https://wordpress.org/plugins/{$plugin_slug}/#developers'>".__( "Visit", "companion-auto-update" )."</a>";
+			$more_info_arr[__( "Support", "companion-auto-update" )] 			= "<a href='https://wordpress.org/support/plugin/{$plugin_slug}/'>".__( "Visit", "companion-auto-update" )."</a>";
 		}
+
+		// Email format
+		$use_html 		= ( cau_get_db_value( 'html_or_text' ) == 'html' ) ? true : false;
+
+		// Email content
+		$updatedListP 	.= $use_html ? "<li>" : "-"; // Start row
+
+			$updatedListP 	.= $use_html ? "<strong>{$plugin_name}</strong> " : "{$plugin_name} "; // Show plugin name
+			$updatedListP 	.= $to_version; // To version
+
+			// Get advanced info
+			if( cau_get_db_value( 'advanced_info_emails' ) == 'on' ) {
+				foreach( $more_info_arr as $label => $value ) {
+					$updatedListP 	.= $use_html ? "<br />{$label}: {$value}" : "\n{$label}: {$value}";
+				}
+			}
+
+		$updatedListP 	.= $use_html ? "</li>" : "\n"; // End row
 
 		$totalNumP++;
 	}
@@ -478,3 +498,28 @@ function cau_plugin_updated() {
 	}
 
 }
+
+function cau_notify_outofdate_db() {
+
+	// Check if cau_get_db_value() function exists.
+	if ( !function_exists( 'cau_get_db_value' ) ) require_once( plugin_dir_path( __FILE__ ) . 'cau_function.php' );
+
+	// Database requires an update
+	if ( cau_incorrectDatabaseVersion() ) {
+
+		// Set up mail
+		$subject 		= '[' . get_bloginfo( 'name' ) . '] ' . __( 'We need your help with something', 'companion-auto-update' );
+		$message 		= __( 'Hi there! We need your help updating the database of Companion Auto Update to the latest version. No rush, old features will continue to work but some new features might not work until you update the database.', 'companion-auto-update' );
+
+		// Send to all addresses
+		foreach ( cau_set_email() as $key => $value ) {
+			foreach ( $value as $k => $v ) {
+				wp_mail( $v, $subject, $message );
+			}
+			break;
+		}
+
+	}
+
+}
+

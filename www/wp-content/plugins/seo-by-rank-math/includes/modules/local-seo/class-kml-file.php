@@ -1,6 +1,6 @@
 <?php
 /**
- * The KML File
+ * The KML File.
  *
  * @since      1.0.24
  * @package    RankMath
@@ -10,13 +10,12 @@
 
 namespace RankMath\Local_Seo;
 
-use RankMath\Post;
 use RankMath\Helper;
 use RankMath\Traits\Ajax;
 use RankMath\Traits\Hooker;
 use MyThemeShop\Helpers\Str;
 use RankMath\Sitemap\Router;
-
+use MyThemeShop\Helpers\Param;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -32,6 +31,7 @@ class KML_File {
 	 */
 	public function __construct() {
 		$this->action( 'init', 'init', 1 );
+		$this->filter( 'rank_math/sitemap/http_headers', 'remove_x_robots_tag' );
 		$this->filter( 'rank_math/sitemap/index', 'add_local_sitemap' );
 		$this->filter( 'rank_math/sitemap/local/content', 'local_sitemap_content' );
 		$this->filter( 'rank_math/sitemap/locations/content', 'kml_file_content' );
@@ -42,7 +42,26 @@ class KML_File {
 	 * Set up rewrite rules.
 	 */
 	public function init() {
-		add_rewrite_rule( 'locations\.kml$', 'index.php?sitemap=locations', 'top' );
+		add_rewrite_rule( Router::get_sitemap_base() . 'locations\.kml$', 'index.php?sitemap=locations', 'top' );
+	}
+
+	/**
+	 * Filter function to remove x-robots tag from Locations KML file.
+	 *
+	 * @param array $headers HTTP headers.
+	 */
+	public function remove_x_robots_tag( $headers ) {
+		if ( ! isset( $headers['X-Robots-Tag'] ) ) {
+			return $headers;
+		}
+
+		$url = array_filter( explode( '/', Param::server( 'REQUEST_URI' ) ) );
+		if ( 'locations.kml' !== end( $url ) ) {
+			return $headers;
+		}
+
+		unset( $headers['X-Robots-Tag'] );
+		return $headers;
 	}
 
 	/**
@@ -51,10 +70,10 @@ class KML_File {
 	 * @return string $xml The sitemap index with the Local SEO Sitemap added.
 	 */
 	public function add_local_sitemap() {
-		$xml  = $this->newline( '<sitemap>' );
-		$xml .= $this->newline( '<loc>' . Router::get_base_url( 'local-sitemap.xml' ) . '</loc>' );
-		$xml .= $this->newline( '<lastmod>' . $this->get_modified_date() . '</lastmod>' );
-		$xml .= $this->newline( '</sitemap>' );
+		$xml  = $this->newline( '<sitemap>', 1 );
+		$xml .= $this->newline( '<loc>' . htmlspecialchars( Router::get_base_url( 'local-sitemap.xml' ) ) . '</loc>', 2 );
+		$xml .= $this->newline( '<lastmod>' . htmlspecialchars( $this->get_modified_date() ) . '</lastmod>', 2 );
+		$xml .= $this->newline( '</sitemap>', 1 );
 
 		return $xml;
 	}
@@ -67,8 +86,8 @@ class KML_File {
 	public function local_sitemap_content() {
 		$urlset = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 			<url>
-				<loc>' . Router::get_base_url( 'locations.kml' ) . '</loc>
-				<lastmod>' . $this->get_modified_date() . '</lastmod>
+				<loc>' . htmlspecialchars( Router::get_base_url( 'locations.kml' ) ) . '</loc>
+				<lastmod>' . htmlspecialchars( $this->get_modified_date() ) . '</lastmod>
 			</url>
 		</urlset>';
 
@@ -91,7 +110,7 @@ class KML_File {
 
 		$kml  = $this->newline( '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">' );
 		$kml .= $this->newline( '<Document>', 1 );
-		$kml .= $this->newline( '<name>Locations for ' . $business_name . '</name>', 2 );
+		$kml .= $this->newline( '<name>Locations for ' . esc_html( $business_name ) . '</name>', 2 );
 		$kml .= $this->newline( '<open>1</open>', 2 );
 		$kml .= $this->newline( '<Folder>', 2 );
 
@@ -142,7 +161,7 @@ class KML_File {
 	 * @param array $updated   Array of field IDs that were updated.
 	 *                         Will only include field IDs that had values change.
 	 */
-	public function update_sitemap( $object_id, $updated ) {
+	public function update_sitemap( $object_id, $updated ) { // phpcs:ignore
 		$local_seo_fields = [
 			'knowledgegraph_name',
 			'url',

@@ -1,6 +1,6 @@
 <?php
 /**
- * The WooCommerce register opengraph.
+ * Add Open Graph data for the WooCommerce module.
  *
  * @since      1.0.32
  * @package    RankMath
@@ -107,6 +107,15 @@ class Opengraph extends Sitemap {
 			$cat          = $wp_query->get_queried_object();
 			$thumbnail_id = get_term_meta( $cat->term_id, 'thumbnail_id', true );
 			$opengraph_image->add_image_by_id( $thumbnail_id );
+		}
+
+		/**
+		 * Passing a truthy value to the filter will effectively short-circuit the process of adding gallery images.
+		 *
+		 * @param bool $return Short-circuit return value. Either false or true.
+		 */
+		if ( ! $this->do_filter( 'woocommerce/opengraph/add_gallery_images', false ) ) {
+			return;
 		}
 
 		$product = $this->get_product();

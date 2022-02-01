@@ -16,7 +16,7 @@ class Notifications {
 	 *
 	 * @var string
 	 */
-	const SOURCE_URL = 'https://plugin-cdn.wpforms.com/wp-content/notifications.json';
+	const SOURCE_URL = 'https://plugin.wpforms.com/wp-content/notifications.json';
 
 	/**
 	 * Option value.
@@ -476,7 +476,7 @@ class Notifications {
 		// Remove notification.
 		if ( is_array( $option[ $type ] ) && ! empty( $option[ $type ] ) ) {
 			foreach ( $option[ $type ] as $key => $notification ) {
-				if ( $notification['id'] == $id ) { // phpcs:ignore WordPress.PHP.StrictComparisons
+				if ( (string) $notification['id'] === (string) $id ) {
 					unset( $option[ $type ][ $key ] );
 					break;
 				}

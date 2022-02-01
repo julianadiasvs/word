@@ -46,11 +46,17 @@ class WC_Comments {
 		// Support avatars for `review` comment type.
 		add_filter( 'get_avatar_comment_types', array( __CLASS__, 'add_avatar_for_review_comment_type' ) );
 
+		// Add Product Reviews filter for `review` comment type.
+		add_filter( 'admin_comment_types_dropdown', array( __CLASS__, 'add_review_comment_filter' ) );
+
 		// Review of verified purchase.
 		add_action( 'comment_post', array( __CLASS__, 'add_comment_purchase_verification' ) );
 
 		// Set comment type.
 		add_action( 'preprocess_comment', array( __CLASS__, 'update_comment_type' ), 1 );
+
+		// Validate product reviews if requires verified owners.
+		add_action( 'pre_comment_on_post', array( __CLASS__, 'validate_product_review_verified_owners' ) );
 	}
 
 	/**
@@ -291,6 +297,20 @@ class WC_Comments {
 	}
 
 	/**
+	 * Add Product Reviews filter for `review` comment type.
+	 *
+	 * @since 6.0.0
+	 *
+	 * @param array $comment_types Array of comment type labels keyed by their name.
+	 *
+	 * @return array
+	 */
+	public static function add_review_comment_filter( array $comment_types ): array {
+		$comment_types['review'] = __( 'Product Reviews', 'woocommerce' );
+		return $comment_types;
+	}
+
+	/**
 	 * Determine if a review is from a verified owner at submission.
 	 *
 	 * @param int $comment_id Comment ID.
@@ -442,6 +462,36 @@ class WC_Comments {
 		}
 
 		return $comment_data;
+	}
+
+	/**
+	 * Validate product reviews if requires a verified owner.
+	 *
+	 * @param int $comment_post_id Post ID.
+	 */
+	public static function validate_product_review_verified_owners( $comment_post_id ) {
+		// Only validate if option is enabled.
+		if ( 'yes' !== get_option( 'woocommerce_review_rating_verification_required' ) ) {
+			return;
+		}
+
+		// Validate only products.
+		if ( 'product' !== get_post_type( $comment_post_id ) ) {
+			return;
+		}
+
+		// Skip if is a verified owner.
+		if ( wc_customer_bought_product( '', get_current_user_id(), $comment_post_id ) ) {
+			return;
+		}
+
+		wp_die(
+			esc_html__( 'Only logged in customers who have purchased this product may leave a review.', 'woocommerce' ),
+			esc_html__( 'Reviews can only be left by "verified owners"', 'woocommerce' ),
+			array(
+				'code' => 403,
+			)
+		);
 	}
 
 	/**

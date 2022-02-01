@@ -90,7 +90,7 @@ class Rest extends WP_REST_Controller {
 			'/keywordsSummary',
 			[
 				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => [ Stats::get(), 'get_keywords_summary' ],
+				'callback'            => [ Stats::get(), 'get_analytics_summary' ],
 				'permission_callback' => [ $this, 'has_permission' ],
 			]
 		);
@@ -136,11 +136,11 @@ class Rest extends WP_REST_Controller {
 	}
 
 	/**
-	 * Add track keyword to DB.
+	 * Update user perferences.
 	 *
 	 * @param WP_REST_Request $request Full details about the request.
 	 *
-	 * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
+	 * @return boolean|WP_Error True on success, or WP_Error object on failure.
 	 */
 	public function update_user_preferences( WP_REST_Request $request ) {
 		$pref = $request->get_param( 'preferences' );
@@ -161,7 +161,7 @@ class Rest extends WP_REST_Controller {
 	}
 
 	/**
-	 * Get dashboard.
+	 * Get post data.
 	 *
 	 * @param WP_REST_Request $request Full details about the request.
 	 *
@@ -176,11 +176,11 @@ class Rest extends WP_REST_Controller {
 			);
 		}
 
-		return rest_ensure_response( Stats::get()->get_post( $id ) );
+		return rest_ensure_response( Stats::get()->get_post( $request ) );
 	}
 
 	/**
-	 * Get dashboard.
+	 * Get dashboard data.
 	 *
 	 * @param WP_REST_Request $request Full details about the request.
 	 *
@@ -196,17 +196,18 @@ class Rest extends WP_REST_Controller {
 	}
 
 	/**
-	 * Get dashboard.
+	 * Get analytics summary.
 	 *
 	 * @param WP_REST_Request $request Full details about the request.
 	 *
 	 * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
 	 */
 	public function get_analytics_summary( WP_REST_Request $request ) { // phpcs:ignore
+		$post_type = sanitize_key( $request->get_param( 'postType' ) );
 		return rest_ensure_response(
 			[
-				'summary'      => Stats::get()->get_posts_summary(),
-				'optimization' => Stats::get()->get_optimization_summary(),
+				'summary'      => Stats::get()->get_posts_summary( $post_type ),
+				'optimization' => Stats::get()->get_optimization_summary( $post_type ),
 			]
 		);
 	}

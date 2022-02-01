@@ -3,9 +3,9 @@ Contributors: Papin, qweb
 Donate link: https://www.paypal.me/dakel/10/
 Tags: auto, automatic, background, update, updates, updating, automatic updates, automatic background updates, easy update, wordpress update, theme update, plugin update, up-to-date, security, update latest version, update core, update wp, update wp core, major updates, minor updates, update to new version, update core, update plugin, update plugins, update plugins automatically, update theme, plugin, theme, advance, control, mail, notifations, enable
 Requires at least: 3.6.0
-Tested up to: 5.6
+Tested up to: 5.9
 Requires PHP: 5.1
-Stable tag: 3.8.0
+Stable tag: 3.8.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,7 +81,19 @@ So obviously, some of you wondered what the difference would be between the defa
 
 == Changelog ==
 
-= 3.8.0 (January 14, 2020) =
+= 3.8.3 (December 9, 2021) =
+* New: Plugin update e-mails now have an option to link to a few important pages
+* Fix: Error: Undefined index: dbupdateemails
+* Fix: Error: A non-numeric value encountered
+
+= 3.8.2 (July 1, 2021) =
+* Fix: Error: Call to undefined function get_plugin_updates()
+
+= 3.8.1 (June 4, 2021) =
+* New: Be notified when we need your help updating to a new database version [Feature Request](https://wordpress.org/support/topic/feature-request-839/)
+* Tweak: Made some under the hood performance improvements
+
+= 3.8.0 (January 14, 2021) =
 * New: Better handling of plugins with an unknown WP version
 * New: More intervals for notifications
 * Fix: Call to undefined function errors

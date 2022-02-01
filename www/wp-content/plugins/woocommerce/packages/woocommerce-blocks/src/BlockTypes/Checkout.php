@@ -1,17 +1,12 @@
 <?php
 namespace Automattic\WooCommerce\Blocks\BlockTypes;
 
-use Automattic\WooCommerce\Blocks\Package;
-use Automattic\WooCommerce\Blocks\Assets;
-use Automattic\WooCommerce\Blocks\Assets\AssetDataRegistry;
-
 /**
  * Checkout class.
  *
  * @internal
  */
 class Checkout extends AbstractBlock {
-
 	/**
 	 * Block name.
 	 *
@@ -20,48 +15,101 @@ class Checkout extends AbstractBlock {
 	protected $block_name = 'checkout';
 
 	/**
-	 * Registers the block type with WordPress.
+	 * Get the editor script handle for this block type.
+	 *
+	 * @param string $key Data to get, or default to everything.
+	 * @return array|string;
 	 */
-	public function register_block_type() {
-		register_block_type(
-			$this->namespace . '/' . $this->block_name,
-			array(
-				'render_callback' => array( $this, 'render' ),
-				'editor_script'   => 'wc-' . $this->block_name . '-block',
-				'editor_style'    => 'wc-block-editor',
-				'style'           => 'wc-block-style',
-				'script'          => 'wc-' . $this->block_name . '-block-frontend',
-				'supports'        => [],
-			)
-		);
+	protected function get_block_type_editor_script( $key = null ) {
+		$script = [
+			'handle'       => 'wc-' . $this->block_name . '-block',
+			'path'         => $this->asset_api->get_block_asset_build_path( $this->block_name ),
+			'dependencies' => [ 'wc-blocks' ],
+		];
+		return $key ? $script[ $key ] : $script;
+	}
+
+	/**
+	 * Get the frontend script handle for this block type.
+	 *
+	 * @see $this->register_block_type()
+	 * @param string $key Data to get, or default to everything.
+	 * @return array|string
+	 */
+	protected function get_block_type_script( $key = null ) {
+		$script = [
+			'handle'       => 'wc-' . $this->block_name . '-block-frontend',
+			'path'         => $this->asset_api->get_block_asset_build_path( $this->block_name . '-frontend' ),
+			'dependencies' => [],
+		];
+		return $key ? $script[ $key ] : $script;
+	}
+
+	/**
+	 * Enqueue frontend assets for this block, just in time for rendering.
+	 *
+	 * @param array $attributes  Any attributes that currently are available from the block.
+	 */
+	protected function enqueue_assets( array $attributes ) {
+		/**
+		 * Fires before checkout block scripts are enqueued.
+		 */
+		do_action( 'woocommerce_blocks_enqueue_checkout_block_scripts_before' );
+		parent::enqueue_assets( $attributes );
+		/**
+		 * Fires after checkout block scripts are enqueued.
+		 */
+		do_action( 'woocommerce_blocks_enqueue_checkout_block_scripts_after' );
 	}
 
 	/**
 	 * Append frontend scripts when rendering the block.
 	 *
-	 * @param array|\WP_Block $attributes Block attributes, or an instance of a WP_Block. Defaults to an empty array.
-	 * @param string          $content    Block content. Default empty string.
+	 * @param array  $attributes Block attributes.
+	 * @param string $content    Block content.
 	 * @return string Rendered block type output.
 	 */
-	public function render( $attributes = array(), $content = '' ) {
+	protected function render( $attributes, $content ) {
 		if ( $this->is_checkout_endpoint() ) {
 			// Note: Currently the block only takes care of the main checkout form -- if an endpoint is set, refer to the
 			// legacy shortcode instead and do not render block.
 			return '[woocommerce_checkout]';
 		}
-		$block_attributes = is_a( $attributes, '\WP_Block' ) ? $attributes->attributes : $attributes;
-
-		do_action( 'woocommerce_blocks_enqueue_checkout_block_scripts_before' );
-		$this->enqueue_assets( $block_attributes );
-		do_action( 'woocommerce_blocks_enqueue_checkout_block_scripts_after' );
 
 		// Deregister core checkout scripts and styles.
-		wp_deregister_script( 'wc-checkout' );
-		wp_deregister_script( 'wc-password-strength-meter' );
-		wp_deregister_script( 'selectWoo' );
-		wp_deregister_style( 'select2' );
+		wp_dequeue_script( 'wc-checkout' );
+		wp_dequeue_script( 'wc-password-strength-meter' );
+		wp_dequeue_script( 'selectWoo' );
+		wp_dequeue_style( 'select2' );
 
-		return $this->inject_html_data_attributes( $content . $this->get_skeleton(), $block_attributes );
+		// If the content is empty, we may still be in the older checkout block. Insert the default list of blocks.
+		$regex_for_empty_block = '/<div class="[a-zA-Z0-9_\- ]*wp-block-woocommerce-checkout[a-zA-Z0-9_\- ]*"><\/div>/mi';
+
+		$is_empty = preg_match( $regex_for_empty_block, $content );
+
+		if ( $is_empty ) {
+			// This fallback needs to match the default templates defined in our Blocks.
+			$inner_blocks_html = '
+				<div data-block-name="woocommerce/checkout-fields-block" class="wp-block-woocommerce-checkout-fields-block">
+					<div data-block-name="woocommerce/checkout-express-payment-block" class="wp-block-woocommerce-checkout-express-payment-block"></div>
+					<div data-block-name="woocommerce/checkout-contact-information-block" class="wp-block-woocommerce-checkout-contact-information-block"></div>
+					<div data-block-name="woocommerce/checkout-shipping-address-block" class="wp-block-woocommerce-checkout-shipping-address-block"></div>
+					<div data-block-name="woocommerce/checkout-billing-address-block" class="wp-block-woocommerce-checkout-billing-address-block"></div>
+					<div data-block-name="woocommerce/checkout-shipping-methods-block" class="wp-block-woocommerce-checkout-shipping-methods-block"></div>
+					<div data-block-name="woocommerce/checkout-payment-block" class="wp-block-woocommerce-checkout-payment-block"></div>' .
+					( isset( $attributes['showOrderNotes'] ) && false === $attributes['showOrderNotes'] ? '' : '<div data-block-name="woocommerce/checkout-order-note-block" class="wp-block-woocommerce-checkout-order-note-block"></div>' ) .
+					( isset( $attributes['showPolicyLinks'] ) && false === $attributes['showPolicyLinks'] ? '' : '<div data-block-name="woocommerce/checkout-terms-block" class="wp-block-woocommerce-checkout-terms-block"></div>' ) .
+					'<div data-block-name="woocommerce/checkout-actions-block" class="wp-block-woocommerce-checkout-actions-block"></div>
+				</div>
+				<div data-block-name="woocommerce/checkout-totals-block" class="wp-block-woocommerce-checkout-totals-block">
+					<div data-block-name="woocommerce/checkout-order-summary-block" class="wp-block-woocommerce-checkout-order-summary-block"></div>
+				</div>
+			';
+
+			$content = str_replace( '</div>', $inner_blocks_html . '</div>', $content );
+		}
+
+		return $content;
 	}
 
 	/**
@@ -81,48 +129,168 @@ class Checkout extends AbstractBlock {
 	 *                           not in the post content on editor load.
 	 */
 	protected function enqueue_data( array $attributes = [] ) {
-		$data_registry = Package::container()->get(
-			AssetDataRegistry::class
+		parent::enqueue_data( $attributes );
+
+		$this->asset_data_registry->add(
+			'allowedCountries',
+			function() {
+				return $this->deep_sort_with_accents( WC()->countries->get_allowed_countries() );
+			},
+			true
 		);
+		$this->asset_data_registry->add(
+			'allowedStates',
+			function() {
+				return $this->deep_sort_with_accents( WC()->countries->get_allowed_country_states() );
+			},
+			true
+		);
+		$this->asset_data_registry->add(
+			'shippingCountries',
+			function() {
+				return $this->deep_sort_with_accents( WC()->countries->get_shipping_countries() );
+			},
+			true
+		);
+		$this->asset_data_registry->add(
+			'shippingStates',
+			function() {
+				return $this->deep_sort_with_accents( WC()->countries->get_shipping_country_states() );
+			},
+			true
+		);
+		$this->asset_data_registry->add(
+			'countryLocale',
+			function() {
+				// Merge country and state data to work around https://github.com/woocommerce/woocommerce/issues/28944.
+				$country_locale = wc()->countries->get_country_locale();
+				$states         = wc()->countries->get_states();
 
-		if ( ! $data_registry->exists( 'allowedCountries' ) ) {
-			$data_registry->add( 'allowedCountries', $this->deep_sort_with_accents( WC()->countries->get_allowed_countries() ) );
-		}
+				foreach ( $states as $country => $states ) {
+					if ( empty( $states ) ) {
+						$country_locale[ $country ]['state']['required'] = false;
+						$country_locale[ $country ]['state']['hidden']   = true;
+					}
+				}
+				return $country_locale;
+			},
+			true
+		);
+		$this->asset_data_registry->add( 'baseLocation', wc_get_base_location(), true );
+		$this->asset_data_registry->add(
+			'checkoutAllowsGuest',
+			false === filter_var(
+				WC()->checkout()->is_registration_required(),
+				FILTER_VALIDATE_BOOLEAN
+			),
+			true
+		);
+		$this->asset_data_registry->add(
+			'checkoutAllowsSignup',
+			filter_var(
+				WC()->checkout()->is_registration_enabled(),
+				FILTER_VALIDATE_BOOLEAN
+			),
+			true
+		);
+		$this->asset_data_registry->add( 'checkoutShowLoginReminder', filter_var( get_option( 'woocommerce_enable_checkout_login_reminder' ), FILTER_VALIDATE_BOOLEAN ), true );
+		$this->asset_data_registry->add( 'displayCartPricesIncludingTax', 'incl' === get_option( 'woocommerce_tax_display_cart' ), true );
+		$this->asset_data_registry->add( 'displayItemizedTaxes', 'itemized' === get_option( 'woocommerce_tax_total_display' ), true );
+		$this->asset_data_registry->add( 'taxesEnabled', wc_tax_enabled(), true );
+		$this->asset_data_registry->add( 'couponsEnabled', wc_coupons_enabled(), true );
+		$this->asset_data_registry->add( 'shippingEnabled', wc_shipping_enabled(), true );
+		$this->asset_data_registry->add( 'hasDarkEditorStyleSupport', current_theme_supports( 'dark-editor-style' ), true );
+		$this->asset_data_registry->register_page_id( isset( $attributes['cartPageId'] ) ? $attributes['cartPageId'] : 0 );
 
-		if ( ! $data_registry->exists( 'allowedStates' ) ) {
-			$data_registry->add( 'allowedStates', $this->deep_sort_with_accents( WC()->countries->get_allowed_country_states() ) );
-		}
-
-		if ( ! $data_registry->exists( 'shippingCountries' ) ) {
-			$data_registry->add( 'shippingCountries', $this->deep_sort_with_accents( WC()->countries->get_shipping_countries() ) );
-		}
-
-		if ( ! $data_registry->exists( 'shippingStates' ) ) {
-			$data_registry->add( 'shippingStates', $this->deep_sort_with_accents( WC()->countries->get_shipping_country_states() ) );
-		}
-
-		$permalink = ! empty( $attributes['cartPageId'] ) ? get_permalink( $attributes['cartPageId'] ) : false;
-
-		if ( $permalink && ! $data_registry->exists( 'page-' . $attributes['cartPageId'] ) ) {
-			$data_registry->add( 'page-' . $attributes['cartPageId'], $permalink );
-		}
+		$is_block_editor = $this->is_block_editor();
 
 		// Hydrate the following data depending on admin or frontend context.
-		if ( is_admin() ) {
-			$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : false;
+		if ( $is_block_editor && ! $this->asset_data_registry->exists( 'shippingMethodsExist' ) ) {
+			$methods_exist = wc_get_shipping_method_count( false, true ) > 0;
+			$this->asset_data_registry->add( 'shippingMethodsExist', $methods_exist );
+		}
 
-			if ( $screen && $screen->is_block_editor() && ! $data_registry->exists( 'shippingMethodsExist' ) ) {
-				$methods_exist = wc_get_shipping_method_count( false, true ) > 0;
-				$data_registry->add( 'shippingMethodsExist', $methods_exist );
-			}
+		if ( $is_block_editor && ! $this->asset_data_registry->exists( 'globalShippingMethods' ) ) {
+			$shipping_methods           = WC()->shipping()->get_shipping_methods();
+			$formatted_shipping_methods = array_reduce(
+				$shipping_methods,
+				function( $acc, $method ) {
+					if ( $method->supports( 'settings' ) ) {
+						$acc[] = [
+							'id'          => $method->id,
+							'title'       => $method->method_title,
+							'description' => $method->method_description,
+						];
+					}
+					return $acc;
+				},
+				[]
+			);
+			$this->asset_data_registry->add( 'globalShippingMethods', $formatted_shipping_methods );
+		}
+
+		if ( $is_block_editor && ! $this->asset_data_registry->exists( 'activeShippingZones' ) && class_exists( '\WC_Shipping_Zones' ) ) {
+			$shipping_zones             = \WC_Shipping_Zones::get_zones();
+			$formatted_shipping_zones   = array_reduce(
+				$shipping_zones,
+				function( $acc, $zone ) {
+					$acc[] = [
+						'id'          => $zone['id'],
+						'title'       => $zone['zone_name'],
+						'description' => $zone['formatted_zone_location'],
+					];
+					return $acc;
+				},
+				[]
+			);
+			$formatted_shipping_zones[] = [
+				'id'          => 0,
+				'title'       => __( 'International', 'woocommerce' ),
+				'description' => __( 'Locations outside all other zones', 'woocommerce' ),
+			];
+			$this->asset_data_registry->add( 'activeShippingZones', $formatted_shipping_zones );
+		}
+
+		if ( $is_block_editor && ! $this->asset_data_registry->exists( 'globalPaymentMethods' ) ) {
+			$payment_methods           = WC()->payment_gateways->payment_gateways();
+			$formatted_payment_methods = array_reduce(
+				$payment_methods,
+				function( $acc, $method ) {
+					if ( 'yes' === $method->enabled ) {
+						$acc[] = [
+							'id'          => $method->id,
+							'title'       => $method->method_title,
+							'description' => $method->method_description,
+						];
+					}
+					return $acc;
+				},
+				[]
+			);
+			$this->asset_data_registry->add( 'globalPaymentMethods', $formatted_payment_methods );
 		}
 
 		if ( ! is_admin() && ! WC()->is_rest_api_request() ) {
-			$this->hydrate_from_api( $data_registry );
-			$this->hydrate_customer_payment_methods( $data_registry );
+			$this->hydrate_from_api();
+			$this->hydrate_customer_payment_methods();
 		}
 
+		/**
+		 * Fires after checkout block data is registered.
+		 */
 		do_action( 'woocommerce_blocks_checkout_enqueue_data' );
+	}
+
+	/**
+	 * Are we currently on the admin block editor screen?
+	 */
+	protected function is_block_editor() {
+		if ( ! is_admin() || ! function_exists( 'get_current_screen' ) ) {
+			return false;
+		}
+		$screen = get_current_screen();
+
+		return $screen && $screen->is_block_editor();
 	}
 
 	/**
@@ -146,27 +314,14 @@ class Checkout extends AbstractBlock {
 	}
 
 	/**
-	 * Register/enqueue scripts used for this block.
-	 *
-	 * @param array $attributes  Any attributes that currently are available from the block.
-	 *                           Note, this will be empty in the editor context when the block is
-	 *                           not in the post content on editor load.
-	 */
-	protected function enqueue_scripts( array $attributes = [] ) {
-		Assets::register_block_script( $this->block_name . '-frontend', $this->block_name . '-block-frontend' );
-	}
-
-	/**
 	 * Get customer payment methods for use in checkout.
-	 *
-	 * @param AssetDataRegistry $data_registry Data registry instance.
 	 */
-	protected function hydrate_customer_payment_methods( AssetDataRegistry $data_registry ) {
-		if ( ! is_user_logged_in() || $data_registry->exists( 'customerPaymentMethods' ) ) {
+	protected function hydrate_customer_payment_methods() {
+		if ( ! is_user_logged_in() || $this->asset_data_registry->exists( 'customerPaymentMethods' ) ) {
 			return;
 		}
 		add_filter( 'woocommerce_payment_methods_list_item', [ $this, 'include_token_id_with_payment_methods' ], 10, 2 );
-		$data_registry->add(
+		$this->asset_data_registry->add(
 			'customerPaymentMethods',
 			wc_get_customer_saved_methods_list( get_current_user_id() )
 		);
@@ -175,86 +330,19 @@ class Checkout extends AbstractBlock {
 
 	/**
 	 * Hydrate the checkout block with data from the API.
-	 *
-	 * @param AssetDataRegistry $data_registry Data registry instance.
 	 */
-	protected function hydrate_from_api( AssetDataRegistry $data_registry ) {
+	protected function hydrate_from_api() {
+		$this->asset_data_registry->hydrate_api_request( '/wc/store/cart' );
+
 		// Print existing notices now, otherwise they are caught by the Cart
 		// Controller and converted to exceptions.
 		wc_print_notices();
+		add_filter( 'woocommerce_store_api_disable_nonce_check', '__return_true' );
 
-		if ( ! $data_registry->exists( 'cartData' ) ) {
-			$data_registry->add( 'cartData', WC()->api->get_endpoint_data( '/wc/store/cart' ) );
-		}
-		if ( ! $data_registry->exists( 'checkoutData' ) ) {
-			add_filter( 'woocommerce_store_api_disable_nonce_check', '__return_true' );
-			$data_registry->add( 'checkoutData', WC()->api->get_endpoint_data( '/wc/store/checkout' ) );
-			remove_filter( 'woocommerce_store_api_disable_nonce_check', '__return_true' );
-		}
-	}
+		$rest_preload_api_requests = rest_preload_api_request( [], '/wc/store/checkout' );
+		$this->asset_data_registry->add( 'checkoutData', $rest_preload_api_requests['/wc/store/checkout']['body'] ?? [] );
 
-	/**
-	 * Render skeleton markup for the checkout block.
-	 */
-	protected function get_skeleton() {
-		return '
-			<div class="wc-block-skeleton wc-block-components-sidebar-layout wc-block-checkout wc-block-checkout--is-loading wc-block-checkout--skeleton hidden" aria-hidden="true">
-				<div class="wc-block-components-main wc-block-checkout__main">
-					<div class="wc-block-components-express-payment wc-block-components-express-payment--checkout"></div>
-					<div class="wc-block-components-express-payment-continue-rule wc-block-components-express-payment-continue-rule--checkout"><span></span></div>
-					<form class="wc-block-checkout__form">
-						<fieldset class="wc-block-checkout__contact-fields wc-block-components-checkout-step">
-							<div class="wc-block-components-checkout-step__heading">
-								<div class="wc-block-components-checkout-step__title"></div>
-							</div>
-							<div class="wc-block-components-checkout-step__container">
-								<div class="wc-block-components-checkout-step__content">
-									<span></span>
-								</div>
-							</div>
-						</fieldset>
-						<fieldset class="wc-block-checkout__contact-fields wc-block-components-checkout-step">
-							<div class="wc-block-components-checkout-step__heading">
-								<div class="wc-block-components-checkout-step__title"></div>
-							</div>
-							<div class="wc-block-components-checkout-step__container">
-								<div class="wc-block-components-checkout-step__content">
-									<span></span>
-								</div>
-							</div>
-						</fieldset>
-						<fieldset class="wc-block-checkout__contact-fields wc-block-components-checkout-step">
-							<div class="wc-block-components-checkout-step__heading">
-								<div class="wc-block-components-checkout-step__title"></div>
-							</div>
-							<div class="wc-block-components-checkout-step__container">
-								<div class="wc-block-components-checkout-step__content">
-									<span></span>
-								</div>
-							</div>
-						</fieldset>
-						<fieldset class="wc-block-checkout__contact-fields wc-block-components-checkout-step">
-							<div class="wc-block-components-checkout-step__heading">
-								<div class="wc-block-components-checkout-step__title"></div>
-							</div>
-							<div class="wc-block-components-checkout-step__container">
-								<div class="wc-block-components-checkout-step__content">
-									<span></span>
-								</div>
-							</div>
-						</fieldset>
-					</form>
-				</div>
-				<div class="wc-block-components-sidebar wc-block-checkout__sidebar">
-					<div class="components-card"></div>
-				</div>
-				<div class="wc-block-components-main wc-block-checkout__main-totals">
-					<div class="wc-block-checkout__actions">
-						<button class="components-button button wc-block-button wc-block-components-checkout-place-order-button">&nbsp;</button>
-					</div>
-				</div>
-			</div>
-		' . $this->get_skeleton_inline_script();
+		remove_filter( 'woocommerce_store_api_disable_nonce_check', '__return_true' );
 	}
 
 	/**
@@ -276,5 +364,28 @@ class Checkout extends AbstractBlock {
 			$list_item['method']['brand'] = wc_get_credit_card_type_label( $brand );
 		}
 		return $list_item;
+	}
+
+	/**
+	 * Register script and style assets for the block type before it is registered.
+	 *
+	 * This registers the scripts; it does not enqueue them.
+	 */
+	protected function register_block_type_assets() {
+		parent::register_block_type_assets();
+		$blocks = [
+			'checkout-blocks/express-payment',
+			'checkout-blocks/contact-information',
+			'checkout-blocks/shipping-address',
+			'checkout-blocks/billing-address',
+			'checkout-blocks/shipping-methods',
+			'checkout-blocks/payment',
+			'checkout-blocks/order-note',
+			'checkout-blocks/actions',
+			'checkout-blocks/terms',
+			'checkout-blocks/order-summary',
+		];
+		$chunks = preg_filter( '/$/', '-frontend', $blocks );
+		$this->register_chunk_translations( $chunks );
 	}
 }

@@ -2,8 +2,9 @@
  * External dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useQueryStateByKey } from '@woocommerce/base-hooks';
-import { useMemo, Fragment } from '@wordpress/element';
+import { useQueryStateByKey } from '@woocommerce/base-context/hooks';
+import { getSetting } from '@woocommerce/settings';
+import { useMemo } from '@wordpress/element';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import Label from '@woocommerce/base-components/label';
@@ -31,8 +32,38 @@ const ActiveFiltersBlock = ( {
 		'attributes',
 		[]
 	);
+	const [ productStockStatus, setProductStockStatus ] = useQueryStateByKey(
+		'stock_status',
+		[]
+	);
 	const [ minPrice, setMinPrice ] = useQueryStateByKey( 'min_price' );
 	const [ maxPrice, setMaxPrice ] = useQueryStateByKey( 'max_price' );
+
+	const STOCK_STATUS_OPTIONS = getSetting( 'stockStatusOptions', [] );
+	const activeStockStatusFilters = useMemo( () => {
+		if ( productStockStatus.length > 0 ) {
+			return productStockStatus.map( ( slug ) => {
+				return renderRemovableListItem( {
+					type: __( 'Stock Status', 'woocommerce' ),
+					name: STOCK_STATUS_OPTIONS[ slug ],
+					removeCallback: () => {
+						const newStatuses = productStockStatus.filter(
+							( status ) => {
+								return status !== slug;
+							}
+						);
+						setProductStockStatus( newStatuses );
+					},
+					displayStyle: blockAttributes.displayStyle,
+				} );
+			} );
+		}
+	}, [
+		STOCK_STATUS_OPTIONS,
+		productStockStatus,
+		setProductStockStatus,
+		blockAttributes.displayStyle,
+	] );
 
 	const activePriceFilters = useMemo( () => {
 		if ( ! Number.isFinite( minPrice ) && ! Number.isFinite( maxPrice ) ) {
@@ -75,6 +106,7 @@ const ActiveFiltersBlock = ( {
 	const hasFilters = () => {
 		return (
 			productAttributes.length > 0 ||
+			productStockStatus.length > 0 ||
 			Number.isFinite( minPrice ) ||
 			Number.isFinite( maxPrice )
 		);
@@ -91,14 +123,16 @@ const ActiveFiltersBlock = ( {
 	} );
 
 	return (
-		<Fragment>
+		<>
 			{ ! isEditor && blockAttributes.heading && (
-				<TagName>{ blockAttributes.heading }</TagName>
+				<TagName className="wc-block-active-filters__title">
+					{ blockAttributes.heading }
+				</TagName>
 			) }
 			<div className="wc-block-active-filters">
 				<ul className={ listClasses }>
 					{ isEditor ? (
-						<Fragment>
+						<>
 							{ renderRemovableListItem( {
 								type: __(
 									'Size',
@@ -121,12 +155,13 @@ const ActiveFiltersBlock = ( {
 								),
 								displayStyle: blockAttributes.displayStyle,
 							} ) }
-						</Fragment>
+						</>
 					) : (
-						<Fragment>
+						<>
 							{ activePriceFilters }
+							{ activeStockStatusFilters }
 							{ activeAttributeFilters }
-						</Fragment>
+						</>
 					) }
 				</ul>
 				<button
@@ -135,6 +170,7 @@ const ActiveFiltersBlock = ( {
 						setMinPrice( undefined );
 						setMaxPrice( undefined );
 						setProductAttributes( [] );
+						setProductStockStatus( [] );
 					} }
 				>
 					<Label
@@ -149,7 +185,7 @@ const ActiveFiltersBlock = ( {
 					/>
 				</button>
 			</div>
-		</Fragment>
+		</>
 	);
 };
 

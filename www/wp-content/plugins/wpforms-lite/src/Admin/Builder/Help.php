@@ -34,7 +34,7 @@ class Help {
 	 */
 	public function init() {
 
-		// This should be here, otherwise sheduled task doesn't executes.
+		// This should be here, otherwise scheduled task doesn't executes.
 		add_action( 'wpforms_builder_help_cache_update', [ $this, 'update_docs' ] );
 
 		// Terminate initialization if not in builder.
@@ -54,12 +54,14 @@ class Help {
 	private function setup() {
 
 		$upload_dir  = wpforms_upload_dir();
-		$upload_path = ! empty( $upload_dir['path'] ) ? trailingslashit( wp_normalize_path( $upload_dir['path'] ) ) : trailingslashit( WP_CONTENT_DIR ) . 'uploads/wpforms/';
+		$upload_path = ! empty( $upload_dir['path'] )
+			? trailingslashit( wp_normalize_path( $upload_dir['path'] ) )
+			: WP_CONTENT_DIR . 'uploads/wpforms/';
 
 		$this->settings = [
 
 			// Remote source URL.
-			'docs_remote_source' => 'https://cdn.wpforms.com/wp-content/docs.json',
+			'docs_remote_source' => 'https://wpforms.com/wp-content/docs.json',
 
 			// Docs cache file (full path).
 			'cache_file'         => $upload_path . 'cache/docs.json',
@@ -138,7 +140,7 @@ class Help {
 	 */
 	public function get_docs() {
 
-		if ( file_exists( $this->settings['cache_file'] ) ) {
+		if ( is_file( $this->settings['cache_file'] ) && is_readable( $this->settings['cache_file'] ) ) {
 			$docs = json_decode( file_get_contents( $this->settings['cache_file'] ), true );
 		}
 
@@ -146,7 +148,7 @@ class Help {
 
 		if (
 			empty( $docs ) ||
-			(int) filemtime( $this->settings['cache_file'] ) + $this->settings['cache_ttl'] > time()
+			(int) filemtime( $this->settings['cache_file'] ) + $this->settings['cache_ttl'] < time()
 		) {
 			// This code should execute once when the method called the first time,
 			// Next update_docs() should be executed by schedule.
@@ -199,7 +201,8 @@ class Help {
 
 		// If the data successfully decoded to array we caching the content.
 		if ( is_array( $docs ) ) {
-			file_put_contents( $this->settings['cache_file'], $content ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents
+			file_put_contents( $this->settings['cache_file'], $content );
 		} else {
 			$docs = [];
 		}
@@ -269,27 +272,30 @@ class Help {
 			'fields/field_options/gdpr-checkbox'                 => 'gdpr agreement',
 			'fields/field_options/email'                         => 'email',
 			'fields/field_options/address'                       => 'address',
-			'fields/field_options/url'                           => 'website / url',
+			'fields/field_options/url'                           => 'website/url',
 			'fields/field_options/name'                          => 'name',
-			'fields/field_options/hidden'                        => 'hidden field',
+			'fields/field_options/hidden'                        => 'hidden',
 			'fields/field_options/html'                          => 'html',
-			'fields/field_options/page-break'                    => 'page break',
+			'fields/field_options/pagebreak'                     => 'page break',
+			'fields/field_options/entry-preview'                 => 'entry preview',
 			'fields/field_options/password'                      => 'password',
-			'fields/field_options/date-time'                     => 'date/time',
+			'fields/field_options/date-time'                     => 'date time',
 			'fields/field_options/divider'                       => 'section divider',
 			'fields/field_options/phone'                         => 'phone',
 			'fields/field_options/number'                        => 'numbers',
 			'fields/field_options/file-upload'                   => 'file upload',
-			'fields/field_options/custom-captcha'                => 'custom captcha',
+			'fields/field_options/captcha'                       => 'custom captcha',
 			'fields/field_options/rating'                        => 'rating',
+			'fields/field_options/richtext'                      => 'rich text',
 			'fields/field_options/likert_scale'                  => 'likert scale',
 			'fields/field_options/payment-single'                => 'single item',
 			'fields/field_options/payment-multiple'              => 'multiple items',
 			'fields/field_options/payment-checkbox'              => 'checkbox items',
-			'fields/field_options/payment-stripe-credit-card'    => 'stripe credit card',
-			'fields/field_options/payment-authorize-credit-card' => 'authorize.net',
 			'fields/field_options/payment-select'                => 'dropdown items',
 			'fields/field_options/payment-total'                 => 'total',
+			'fields/field_options/stripe-credit-card'            => 'stripe credit card',
+			'fields/field_options/authorize_net'                 => 'authorize.net credit card',
+			'fields/field_options/square'                        => 'square credit card',
 			'fields/field_options/signature'                     => 'signature',
 			'fields/field_options/net_promoter_score'            => 'net promoter score',
 			'settings/general'                                   => 'settings',
@@ -302,6 +308,7 @@ class Help {
 			'settings/conversational_forms'                      => 'conversational forms',
 			'settings/form_locker'                               => 'form locker',
 			'settings/form_pages'                                => 'form pages',
+			'settings/save_resume'                               => 'save and resume',
 			'settings/webhooks'                                  => 'webhooks',
 			'providers'                                          => '',
 			'providers/aweber'                                   => 'aweber',
@@ -315,10 +322,12 @@ class Help {
 			'providers/mailchimpv3'                              => 'mailchimp',
 			'providers/zapier'                                   => 'zapier',
 			'providers/salesforce'                               => 'salesforce',
+			'providers/sendinblue'                               => 'sendinblue',
 			'payments'                                           => '',
 			'payments/paypal_standard'                           => 'paypal standard',
 			'payments/stripe'                                    => 'stripe',
 			'payments/authorize_net'                             => 'authorize.net',
+			'payments/square'                                    => 'square',
 		];
 		// phpcs:enable
 	}
@@ -582,6 +591,7 @@ class Help {
 				'/docs/how-to-customize-the-style-of-individual-form-fields/',
 			],
 			'hidden'                    => [
+				'/docs/how-to-choose-the-right-form-field-for-your-forms/',
 				'/docs/how-to-use-smart-tags-in-wpforms/',
 				'/docs/how-to-use-conditional-logic-with-wpforms/',
 			],
@@ -599,6 +609,18 @@ class Help {
 				'/docs/how-to-use-conditional-logic-with-wpforms/',
 				'/docs/how-to-customize-the-style-of-individual-form-fields/',
 			],
+			'rich text'                 => [
+				'/docs/how-to-use-the-rich-text-field-in-wpforms/',
+			],
+			'wysiwyg'                   => [
+				'/docs/how-to-use-the-rich-text-field-in-wpforms/',
+			],
+			'editor'                    => [
+				'/docs/how-to-use-the-rich-text-field-in-wpforms/',
+			],
+			'rich editor'               => [
+				'/docs/how-to-use-the-rich-text-field-in-wpforms/',
+			],
 			'page break'                => [
 				'/docs/how-to-create-multi-page-forms-in-wpforms/',
 				'/docs/how-to-customize-form-field-options/',
@@ -606,6 +628,11 @@ class Help {
 			],
 			'page'                      => [
 				'/docs/how-to-create-multi-page-forms-in-wpforms/',
+				'/docs/how-to-customize-form-field-options/',
+				'/docs/how-to-customize-the-style-of-individual-form-fields/',
+			],
+			'entry preview'             => [
+				'/docs/how-to-show-entry-previews-in-wpforms/',
 				'/docs/how-to-customize-form-field-options/',
 				'/docs/how-to-customize-the-style-of-individual-form-fields/',
 			],
@@ -640,6 +667,12 @@ class Help {
 				'/docs/how-to-customize-the-style-of-individual-form-fields/',
 			],
 			'surname'                   => [
+				'/docs/how-to-customize-form-field-options/',
+				'/docs/how-to-use-conditional-logic-with-wpforms/',
+				'/docs/how-to-customize-the-style-of-individual-form-fields/',
+			],
+			'custom captcha'            => [
+				'/docs/how-to-install-and-use-custom-captcha-addon-in-wpforms/',
 				'/docs/how-to-customize-form-field-options/',
 				'/docs/how-to-use-conditional-logic-with-wpforms/',
 				'/docs/how-to-customize-the-style-of-individual-form-fields/',
@@ -901,6 +934,12 @@ class Help {
 				'/docs/how-to-customize-form-field-options/',
 				'/docs/how-to-use-conditional-logic-with-wpforms/',
 			],
+			'square credit card'        => [
+				'/docs/how-to-install-and-use-the-square-addon-with-wpforms/',
+				'/docs/how-to-test-square-payments-on-your-site/',
+				'/docs/how-to-customize-form-field-options/',
+				'/docs/how-to-use-conditional-logic-with-wpforms/',
+			],
 			'settings'                  => [
 				'/docs/creating-first-form/',
 				'/docs/setup-form-notification-wpforms/',
@@ -1066,6 +1105,21 @@ class Help {
 			'form pages'                => [
 				'/docs/how-to-install-and-use-the-form-pages-addon/',
 			],
+			'save'                      => [
+				'/docs/how-to-install-and-use-the-save-and-resume-addon-with-wpforms/',
+			],
+			'resume'                    => [
+				'/docs/how-to-install-and-use-the-save-and-resume-addon-with-wpforms/',
+			],
+			'continue'                  => [
+				'/docs/how-to-install-and-use-the-save-and-resume-addon-with-wpforms/',
+			],
+			'save and resume'           => [
+				'/docs/how-to-install-and-use-the-save-and-resume-addon-with-wpforms/',
+			],
+			'save and continue'         => [
+				'/docs/how-to-install-and-use-the-save-and-resume-addon-with-wpforms/',
+			],
 			'webhooks'                  => [
 				'/docs/how-to-install-and-use-the-webhooks-addon-with-wpforms/',
 			],
@@ -1092,6 +1146,9 @@ class Help {
 			],
 			'salesforce'                => [
 				'/docs/how-to-install-and-use-the-salesforce-addon-with-wpforms/',
+			],
+			'sendinblue'                => [
+				'/docs/how-to-install-and-use-the-sendinblue-addon-with-wpforms/',
 			],
 			'integrate'                 => [
 				'/docs/how-to-install-and-use-zapier-addon-with-wpforms/',
@@ -1128,6 +1185,10 @@ class Help {
 			],
 			'authorize.net'             => [
 				'/docs/how-to-install-and-use-the-authorize-net-addon-with-wpforms/',
+			],
+			'square'                    => [
+				'/docs/how-to-install-and-use-the-square-addon-with-wpforms/',
+				'/docs/how-to-test-square-payments-on-your-site/',
 			],
 		];
 	}
@@ -1172,7 +1233,7 @@ class Help {
 
 		$result = array_filter(
 			$this->docs,
-			function( $doc ) use ( $link ) {
+			static function( $doc ) use ( $link ) {
 
 				return ! empty( $doc['url'] ) && $doc['url'] === 'https://wpforms.com' . $link;
 			}
@@ -1212,7 +1273,8 @@ class Help {
 	 */
 	public function output() {
 
-		echo wpforms_render( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo wpforms_render(
 			'builder/help',
 			[
 				'settings' => $this->settings,

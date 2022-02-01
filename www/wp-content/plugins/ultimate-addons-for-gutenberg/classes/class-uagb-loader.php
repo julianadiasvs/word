@@ -58,25 +58,6 @@ if ( ! class_exists( 'UAGB_Loader' ) ) {
 		}
 
 		/**
-		 * Loads Other files.
-		 *
-		 * @since 1.0.0
-		 *
-		 * @return void
-		 */
-		public function loader() {
-			require_once UAGB_DIR . 'classes/class-uagb-admin-helper.php';
-			require_once UAGB_DIR . 'classes/class-uagb-helper.php';
-			require_once UAGB_DIR . 'classes/class-uagb-update.php';
-			require_once UAGB_DIR . 'admin/bsf-analytics/class-bsf-analytics.php';
-
-			if ( 'twentyseventeen' === get_template() ) {
-
-				require_once UAGB_DIR . 'classes/class-uagb-twenty-seventeen-compatibility.php';
-			}
-		}
-
-		/**
 		 * Defines all constants
 		 *
 		 * @since 1.0.0
@@ -85,7 +66,7 @@ if ( ! class_exists( 'UAGB_Loader' ) ) {
 			define( 'UAGB_BASE', plugin_basename( UAGB_FILE ) );
 			define( 'UAGB_DIR', plugin_dir_path( UAGB_FILE ) );
 			define( 'UAGB_URL', plugins_url( '/', UAGB_FILE ) );
-			define( 'UAGB_VER', '1.20.1' );
+			define( 'UAGB_VER', '1.25.3' );
 			define( 'UAGB_MODULES_DIR', UAGB_DIR . 'modules/' );
 			define( 'UAGB_MODULES_URL', UAGB_URL . 'modules/' );
 			define( 'UAGB_SLUG', 'uag' );
@@ -96,6 +77,30 @@ if ( ! class_exists( 'UAGB_Loader' ) ) {
 			}
 			if ( ! defined( 'UAGB_MOBILE_BREAKPOINT' ) ) {
 				define( 'UAGB_MOBILE_BREAKPOINT', '767' );
+			}
+
+			define( 'UAGB_ASSET_VER', get_option( '__uagb_asset_version', UAGB_VER ) );
+		}
+
+		/**
+		 * Loads Other files.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @return void
+		 */
+		public function loader() {
+			require_once UAGB_DIR . 'classes/class-uagb-admin-helper.php';
+			require_once UAGB_DIR . 'classes/class-uagb-helper.php';
+			require_once UAGB_DIR . 'classes/class-uagb-scripts-utils.php';
+			require_once UAGB_DIR . 'classes/class-uagb-filesystem.php';
+			require_once UAGB_DIR . 'classes/class-uagb-update.php';
+			require_once UAGB_DIR . 'admin/bsf-analytics/class-bsf-analytics.php';
+			require_once UAGB_DIR . 'lib/class-uagb-ast-block-templates.php';
+
+			if ( is_admin() ) {
+				require_once UAGB_DIR . 'classes/class-uagb-beta-updates.php';
+				require_once UAGB_DIR . 'classes/class-uagb-rollback.php';
 			}
 		}
 
@@ -110,15 +115,82 @@ if ( ! class_exists( 'UAGB_Loader' ) ) {
 
 			$this->load_textdomain();
 
-			require_once UAGB_DIR . 'classes/class-uagb-core-plugin.php';
-			require_once UAGB_DIR . 'classes/class-uagb-rest-api.php';
-			require_once UAGB_DIR . 'dist/blocks/post/class-uagb-post.php';
-			require_once UAGB_DIR . 'dist/blocks/post-timeline/class-uagb-post-timeline.php';
-			require_once UAGB_DIR . 'dist/blocks/cf7-styler/class-uagb-cf7-styler.php';
-			require_once UAGB_DIR . 'dist/blocks/gf-styler/class-uagb-gf-styler.php';
-			require_once UAGB_DIR . 'dist/blocks/taxonomy-list/class-uagb-taxonomy-list.php';
-			require_once UAGB_DIR . 'dist/blocks/lottie/class-uagb-lottie.php';
+			require_once UAGB_DIR . 'blocks-config/blocks-config.php';
+			require_once UAGB_DIR . 'lib/astra-notices/class-astra-notices.php';
 
+			if ( is_admin() ) {
+				require_once UAGB_DIR . 'classes/class-uagb-admin.php';
+			}
+
+			require_once UAGB_DIR . 'classes/class-uagb-post-assets.php';
+			require_once UAGB_DIR . 'classes/class-uagb-front-assets.php';
+			require_once UAGB_DIR . 'classes/class-uagb-init-blocks.php';
+			require_once UAGB_DIR . 'classes/class-uagb-rest-api.php';
+
+			if ( 'twentyseventeen' === get_template() ) {
+				require_once UAGB_DIR . 'classes/class-uagb-twenty-seventeen-compatibility.php';
+			}
+			add_filter( 'rest_pre_dispatch', array( $this, 'rest_pre_dispatch' ), 10, 3 );
+		}
+
+		/**
+		 * Fix REST API issue with blocks registered via PHP register_block_type.
+		 *
+		 * @since 1.25.2
+		 *
+		 * @param mixed  $result  Response to replace the requested version with.
+		 * @param object $server  Server instance.
+		 * @param object $request Request used to generate the response.
+		 *
+		 * @return array Returns updated results.
+		 */
+		public function rest_pre_dispatch( $result, $server, $request ) {
+
+			if ( strpos( $request->get_route(), '/wp/v2/block-renderer' ) !== false && isset( $request['attributes'] ) ) {
+
+					$attributes = $request['attributes'];
+
+				if ( isset( $attributes['UAGUserRole'] ) ) {
+					unset( $attributes['UAGUserRole'] );
+				}
+
+				if ( isset( $attributes['UAGBrowser'] ) ) {
+					unset( $attributes['UAGBrowser'] );
+				}
+
+				if ( isset( $attributes['UAGSystem'] ) ) {
+					unset( $attributes['UAGSystem'] );
+				}
+
+				if ( isset( $attributes['UAGDisplayConditions'] ) ) {
+					unset( $attributes['UAGDisplayConditions'] );
+				}
+
+				if ( isset( $attributes['UAGHideDesktop'] ) ) {
+					unset( $attributes['UAGHideDesktop'] );
+				}
+
+				if ( isset( $attributes['UAGHideMob'] ) ) {
+					unset( $attributes['UAGHideMob'] );
+				}
+
+				if ( isset( $attributes['UAGHideTab'] ) ) {
+					unset( $attributes['UAGHideTab'] );
+				}
+
+				if ( isset( $attributes['UAGLoggedIn'] ) ) {
+					unset( $attributes['UAGLoggedIn'] );
+				}
+
+				if ( isset( $attributes['UAGLoggedOut'] ) ) {
+					unset( $attributes['UAGLoggedOut'] );
+				}
+
+					$request['attributes'] = $attributes;
+
+			}
+
+			return $result;
 		}
 
 		/**
@@ -183,6 +255,7 @@ if ( ! class_exists( 'UAGB_Loader' ) ) {
 		 */
 		public function activation_reset() {
 			update_option( '__uagb_do_redirect', true );
+			update_option( '__uagb_asset_version', time() );
 		}
 
 		/**

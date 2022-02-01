@@ -14,11 +14,7 @@ import './style.scss';
 function getReviewImage( review, imageType, isLoading ) {
 	if ( isLoading || ! review ) {
 		return (
-			<div
-				className="wc-block-review-list-item__image wc-block-components-review-list-item__image"
-				width="48"
-				height="48"
-			/>
+			<div className="wc-block-review-list-item__image wc-block-components-review-list-item__image" />
 		);
 	}
 
@@ -34,8 +30,7 @@ function getReviewImage( review, imageType, isLoading ) {
 				<img
 					aria-hidden="true"
 					alt=""
-					src={ review.reviewer_avatar_urls[ '48' ] || '' }
-					srcSet={ review.reviewer_avatar_urls[ '96' ] + ' 2x' }
+					src={ review.reviewer_avatar_urls[ '96' ] || '' }
 				/>
 			) }
 			{ review.verified && (
@@ -124,22 +119,19 @@ function getReviewRating( review ) {
 	const starStyle = {
 		width: ( rating / 5 ) * 100 + '%' /* stylelint-disable-line */,
 	};
+	const ratingText = sprintf(
+		/* translators: %f is referring to the average rating value */
+		__( 'Rated %f out of 5', 'woocommerce' ),
+		rating
+	);
 	return (
 		<div className="wc-block-review-list-item__rating wc-block-components-review-list-item__rating">
 			<div
 				className="wc-block-review-list-item__rating__stars wc-block-components-review-list-item__rating__stars"
 				role="img"
+				aria-label={ ratingText }
 			>
-				<span style={ starStyle }>
-					{ sprintf(
-						/* Translators: %f to the average rating for the review. */
-						__(
-							'Rated %f out of 5',
-							'woocommerce'
-						),
-						rating
-					) }
-				</span>
+				<span style={ starStyle }>{ ratingText }</span>
 			</div>
 		</div>
 	);
@@ -166,6 +158,7 @@ const ReviewListItem = ( { attributes, review = {} } ) => {
 				'wc-block-components-review-list-item__item',
 				{
 					'is-loading': isLoading,
+					'wc-block-components-review-list-item__item--has-image': showReviewImage,
 				}
 			) }
 			aria-hidden={ isLoading }

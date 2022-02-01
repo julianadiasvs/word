@@ -82,6 +82,17 @@ class Astra_Social_Component_Dynamic_CSS {
 			$social_icons_h_bg_color_tablet  = astra_get_prop( astra_get_option( $builder_type . '-social-' . $index . '-bg-h-color' ), 'tablet' );
 			$social_icons_h_bg_color_mobile  = astra_get_prop( astra_get_option( $builder_type . '-social-' . $index . '-bg-h-color' ), 'mobile' );
 
+			// Normal Responsive Label Colors.
+			$social_icons_label_color_desktop = astra_get_prop( astra_get_option( $builder_type . '-social-' . $index . '-label-color' ), 'desktop' );
+			$social_icons_label_color_tablet  = astra_get_prop( astra_get_option( $builder_type . '-social-' . $index . '-label-color' ), 'tablet' );
+			$social_icons_label_color_mobile  = astra_get_prop( astra_get_option( $builder_type . '-social-' . $index . '-label-color' ), 'mobile' );
+
+			// Hover Responsive Label Colors.
+			$social_icons_label_h_color_desktop = astra_get_prop( astra_get_option( $builder_type . '-social-' . $index . '-label-h-color' ), 'desktop' );
+			$social_icons_label_h_color_tablet  = astra_get_prop( astra_get_option( $builder_type . '-social-' . $index . '-label-h-color' ), 'tablet' );
+			$social_icons_label_h_color_mobile  = astra_get_prop( astra_get_option( $builder_type . '-social-' . $index . '-label-h-color' ), 'mobile' );
+
+
 			$margin = astra_get_option( $_section . '-margin' );
 
 			/**
@@ -121,19 +132,29 @@ class Astra_Social_Component_Dynamic_CSS {
 			);
 
 			if ( 'custom' === $color_type || is_customize_preview() ) {
-				$css_output_desktop[ $selector . ' .ast-social-color-type-custom svg' ]['fill']                 = $social_icons_color_desktop;
-				$css_output_desktop[ $selector . ' .ast-social-color-type-custom .social-item-label' ]['color'] = $social_icons_color_desktop;
-				$css_output_desktop[ $selector . ' .ast-builder-social-element' ]['background']                 = $social_icons_bg_color_desktop;
+				$css_output_desktop[ $selector . ' .ast-social-color-type-custom svg' ]['fill'] = $social_icons_color_desktop;
+				$css_output_desktop[ $selector . ' .ast-builder-social-element' ]['background'] = $social_icons_bg_color_desktop;
 
-				$css_output_desktop[ $selector . ' .ast-builder-social-element:hover' ]                             = array(
+				$css_output_desktop[ $selector . ' .ast-social-color-type-custom .ast-builder-social-element:hover' ] = array(
 					// Hover.
 					'color'      => $social_icons_h_color_desktop,
 					'background' => $social_icons_h_bg_color_desktop,
 				);
-				$css_output_desktop[ $selector . ' .ast-builder-social-element:hover .social-item-label' ]['color'] = $social_icons_h_color_desktop;
-				$css_output_desktop[ $selector . ' .ast-builder-social-element:hover svg' ]                         = array(
+
+				$css_output_desktop[ $selector . ' .ast-social-color-type-custom .ast-builder-social-element:hover svg' ] = array(
 					'fill' => $social_icons_h_color_desktop,
 				);
+
+				if ( isset( $social_icons_label_color_desktop ) && ! empty( $social_icons_label_color_desktop ) ) {
+					$css_output_desktop[ $selector . ' .ast-social-color-type-custom .social-item-label' ]['color'] = $social_icons_label_color_desktop;
+				} else {
+					$css_output_desktop[ $selector . ' .ast-social-color-type-custom .social-item-label' ]['color'] = $social_icons_color_desktop;
+				}
+				if ( isset( $social_icons_label_h_color_desktop ) && ! empty( $social_icons_label_h_color_desktop ) ) {
+					$css_output_desktop[ $selector . ' .ast-builder-social-element:hover .social-item-label' ]['color'] = $social_icons_label_h_color_desktop;
+				} else {
+					$css_output_desktop[ $selector . ' .ast-builder-social-element:hover .social-item-label' ]['color'] = $social_icons_h_color_desktop;
+				}
 			}
 
 			/**
@@ -161,19 +182,29 @@ class Astra_Social_Component_Dynamic_CSS {
 			);
 
 			if ( 'custom' === $color_type || is_customize_preview() ) {
-				$css_output_tablet[ $selector . ' .ast-social-color-type-custom svg' ]['fill']                 = $social_icons_color_tablet;
-				$css_output_tablet[ $selector . ' .ast-social-color-type-custom .social-item-label' ]['color'] = $social_icons_color_tablet;
+				$css_output_tablet[ $selector . ' .ast-social-color-type-custom svg' ]['fill'] = $social_icons_color_tablet;
 
-				$css_output_tablet[ $selector . ' .ast-builder-social-element' ]['background'] = $social_icons_bg_color_tablet;
+				$css_output_tablet[ $selector . ' .ast-social-color-type-custom .ast-builder-social-element' ]['background'] = $social_icons_bg_color_tablet;
 
-				$css_output_tablet[ $selector . ' .ast-builder-social-element:hover' ]     = array(
+				$css_output_tablet[ $selector . ' .ast-social-color-type-custom .ast-builder-social-element:hover' ]     = array(
 					// Hover.
 					'color'      => $social_icons_h_color_tablet,
 					'background' => $social_icons_h_bg_color_tablet,
 				);
-				$css_output_tablet[ $selector . ' .ast-builder-social-element:hover svg' ] = array(
+				$css_output_tablet[ $selector . ' .ast-social-color-type-custom .ast-builder-social-element:hover svg' ] = array(
 					'fill' => $social_icons_h_color_tablet,
 				);
+
+				if ( isset( $social_icons_label_color_tablet ) && ! empty( $social_icons_label_color_tablet ) ) {
+					$css_output_tablet[ $selector . ' .ast-social-color-type-custom .social-item-label' ]['color'] = $social_icons_label_color_tablet;
+				} else {
+					$css_output_tablet[ $selector . ' .ast-social-color-type-custom .social-item-label' ]['color'] = $social_icons_color_tablet;
+				}
+				if ( isset( $social_icons_label_h_color_tablet ) && ! empty( $social_icons_label_h_color_tablet ) ) {
+					$css_output_tablet[ $selector . ' .ast-builder-social-element:hover .social-item-label' ]['color'] = $social_icons_label_h_color_tablet;
+				} else {
+					$css_output_tablet[ $selector . ' .ast-builder-social-element:hover .social-item-label' ]['color'] = $social_icons_h_color_tablet;
+				}
 			}
 
 			/**
@@ -201,19 +232,29 @@ class Astra_Social_Component_Dynamic_CSS {
 			);
 
 			if ( 'custom' === $color_type || is_customize_preview() ) {
-				$css_output_mobile[ $selector . ' .ast-social-color-type-custom svg' ]['fill']                 = $social_icons_color_mobile;
-				$css_output_mobile[ $selector . ' .ast-social-color-type-custom .social-item-label' ]['color'] = $social_icons_color_mobile;
+				$css_output_mobile[ $selector . ' .ast-social-color-type-custom svg' ]['fill'] = $social_icons_color_mobile;
 
-				$css_output_mobile[ $selector . ' .ast-builder-social-element' ]['background'] = $social_icons_bg_color_mobile;
+				$css_output_mobile[ $selector . ' .ast-social-color-type-custom .ast-builder-social-element' ]['background'] = $social_icons_bg_color_mobile;
 
-				$css_output_mobile[ $selector . ' .ast-builder-social-element:hover' ]     = array(
+				$css_output_mobile[ $selector . ' .ast-social-color-type-custom .ast-builder-social-element:hover' ]     = array(
 					// Hover.
 					'color'      => $social_icons_h_color_mobile,
 					'background' => $social_icons_h_bg_color_mobile,
 				);
-				$css_output_mobile[ $selector . ' .ast-builder-social-element:hover svg' ] = array(
+				$css_output_mobile[ $selector . ' .ast-social-color-type-custom .ast-builder-social-element:hover svg' ] = array(
 					'fill' => $social_icons_h_color_mobile,
 				);
+
+				if ( isset( $social_icons_label_color_mobile ) && ! empty( $social_icons_label_color_mobile ) ) {
+					$css_output_mobile[ $selector . ' .ast-social-color-type-custom .social-item-label' ]['color'] = $social_icons_label_color_mobile;
+				} else {
+					$css_output_mobile[ $selector . ' .ast-social-color-type-custom .social-item-label' ]['color'] = $social_icons_color_mobile;
+				}
+				if ( isset( $social_icons_label_h_color_mobile ) && ! empty( $social_icons_label_h_color_mobile ) ) {
+					$css_output_mobile[ $selector . ' .ast-builder-social-element:hover .social-item-label' ]['color'] = $social_icons_label_h_color_mobile;
+				} else {
+					$css_output_mobile[ $selector . ' .ast-builder-social-element:hover .social-item-label' ]['color'] = $social_icons_h_color_mobile;
+				}
 			}
 
 			if ( 'footer' === $builder_type ) {
@@ -225,7 +266,7 @@ class Astra_Social_Component_Dynamic_CSS {
 				$tablet_alignment  = ( isset( $alignment['tablet'] ) ) ? $alignment['tablet'] : '';
 				$mobile_alignment  = ( isset( $alignment['mobile'] ) ) ? $alignment['mobile'] : '';
 
-				$css_output_desktop[ '[data-section="section-fb-social-icons-' . $index . '"] .footer-social-inner-wrap' ] = array( 
+				$css_output_desktop[ '[data-section="section-fb-social-icons-' . $index . '"] .footer-social-inner-wrap' ] = array(
 					'text-align' => $desktop_alignment,
 				);
 				$css_output_tablet[ '[data-section="section-fb-social-icons-' . $index . '"] .footer-social-inner-wrap' ]  = array(
@@ -250,7 +291,7 @@ class Astra_Social_Component_Dynamic_CSS {
 			$generated_css .= $css_output;
 		}
 		if ( $social_css_flag ) {
-			$generated_css .= self::get_social_static_css();
+			return self::get_social_static_css() . $generated_css;
 		}
 
 		return $generated_css;
@@ -258,12 +299,20 @@ class Astra_Social_Component_Dynamic_CSS {
 
 	/**
 	 * Load Social default css.
-	 * 
+	 *
 	 * @since 3.0.0
 	 */
 	public static function get_social_static_css() {
-		return '
-		/* Social Icons Official CSS */
+		$social_static_css = '
+		.ast-builder-social-element:hover {
+			color: #0274be;
+		}
+		.ast-social-stack-desktop .ast-builder-social-element,
+		.ast-social-stack-tablet .ast-builder-social-element,
+		.ast-social-stack-mobile .ast-builder-social-element {
+		  margin-top: 6px;
+		  margin-bottom: 6px;
+		}
 		.ast-social-color-type-official .ast-builder-social-element, .ast-social-color-type-official .social-item-label {
 			color: var(--color);
 			background-color: var(--background-color);
@@ -271,7 +320,97 @@ class Astra_Social_Component_Dynamic_CSS {
 		.header-social-inner-wrap.ast-social-color-type-official .ast-builder-social-element svg,
 		.footer-social-inner-wrap.ast-social-color-type-official .ast-builder-social-element svg {
 		  fill: currentColor;
+		}
+		.social-show-label-true .ast-builder-social-element {
+			width: auto;
+			padding: 0 0.4em;
+		}
+		[data-section^="section-fb-social-icons-"] .footer-social-inner-wrap {
+			text-align: center;
+		}
+		.ast-footer-social-wrap {
+			width: 100%;
 		}';
+		
+		if ( is_rtl() ) {
+			$social_static_css .= '.ast-footer-social-wrap .ast-builder-social-element:first-child {
+				margin-right: 0;
+			}
+			.ast-footer-social-wrap .ast-builder-social-element:last-child {
+				margin-left: 0;
+			}
+			.ast-header-social-wrap .ast-builder-social-element:first-child {
+				margin-right: 0;
+			}  
+			.ast-header-social-wrap .ast-builder-social-element:last-child {
+				margin-left: 0;
+			}
+			.ast-builder-social-element {
+				line-height: 1;
+				color: #3a3a3a;
+				background: transparent;
+				vertical-align: middle;
+				transition: all 0.01s;
+				margin-right: 6px;
+				margin-left: 6px;
+				justify-content: center;
+				align-items: center;
+			}
+			.ast-builder-social-element {
+				line-height: 1;
+				color: #3a3a3a;
+				background: transparent;
+				vertical-align: middle;
+				transition: all 0.01s;
+				margin-right: 6px;
+				margin-left: 6px;
+				justify-content: center;
+				align-items: center;
+			}
+			.ast-builder-social-element .social-item-label {
+				padding-right: 6px;
+			}';
+		} else {
+			$social_static_css .= '.ast-footer-social-wrap .ast-builder-social-element:first-child {
+				margin-left: 0;
+			}  
+			.ast-footer-social-wrap .ast-builder-social-element:last-child {
+				margin-right: 0;
+			}
+			.ast-header-social-wrap .ast-builder-social-element:first-child {
+				margin-left: 0;
+			}  
+			.ast-header-social-wrap .ast-builder-social-element:last-child {
+				margin-right: 0;
+			}
+			.ast-builder-social-element {
+				line-height: 1;
+				color: #3a3a3a;
+				background: transparent;
+				vertical-align: middle;
+				transition: all 0.01s;
+				margin-left: 6px;
+				margin-right: 6px;
+				justify-content: center;
+				align-items: center;
+			}
+			.ast-builder-social-element {
+				line-height: 1;
+				color: #3a3a3a;
+				background: transparent;
+				vertical-align: middle;
+				transition: all 0.01s;
+				margin-left: 6px;
+				margin-right: 6px;
+				justify-content: center;
+				align-items: center;
+			}
+			.ast-builder-social-element .social-item-label {
+				padding-left: 6px;
+			}';
+		}
+
+		return Astra_Enqueue_Scripts::trim_css( $social_static_css );
 	}
 }
 

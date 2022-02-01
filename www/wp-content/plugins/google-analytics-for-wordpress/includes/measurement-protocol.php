@@ -122,6 +122,18 @@ function monsterinsights_mp_api_call( $args = array() ) {
 }
 
 function monsterinsights_mp_track_event_call( $args = array() ) {
+	$ua = monsterinsights_get_ua();
+
+	if ( empty( $ua ) ) {
+		return;
+	}
+
+	// Detect if browser request is a prefetch
+	if ( ( isset( $_SERVER["HTTP_X_PURPOSE"] ) && ( 'prefetch' === strtolower( $_SERVER["HTTP_X_PURPOSE"] ) ) ) ||
+	     ( isset( $_SERVER["HTTP_X_MOZ"] ) && ( 'prefetch' === strtolower( $_SERVER["HTTP_X_MOZ"] ) ) ) ) {
+		return;
+	}
+
 	$default_args = array(
 		// Change the default type to event
 		't'  => 'event',
@@ -138,7 +150,9 @@ function monsterinsights_mp_track_event_call( $args = array() ) {
 		// Optional: Event Value
 		'ev' => null,
 	);
-	$args  = wp_parse_args( $args, $default_args );
+
+	$args         = wp_parse_args( $args, $default_args );
+
 	//$args = apply_filters( 'monsterinsights_mp_track_event_call', $args );
 
 	return monsterinsights_mp_api_call( $args );

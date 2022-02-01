@@ -34,6 +34,15 @@
 
 	$updraftplus_admin->settings_debugrow(__('Web server:', 'updraftplus'), htmlspecialchars($web_server).' ('.htmlspecialchars($uname_info).')');
 
+	if (defined('UPDRAFTPLUS_THIS_IS_CLONE')) {
+		$response = wp_remote_get('http://169.254.169.254/metadata/v1/user-data', array('timeout' => 2));
+		if (!is_wp_error($response) && 200 === wp_remote_retrieve_response_code($response)) {
+			$json_body = wp_remote_retrieve_body($response);
+			$metadata = json_decode($json_body, true);
+			if (isset($metadata['image_id'])) $updraftplus_admin->settings_debugrow(__('UpdraftClone image:', 'updraftplus'), htmlspecialchars($metadata['image_id']));
+		}
+	}
+
 	$updraftplus_admin->settings_debugrow('ABSPATH:', htmlspecialchars(ABSPATH));
 	$updraftplus_admin->settings_debugrow('WP_CONTENT_DIR:', htmlspecialchars(WP_CONTENT_DIR));
 	$updraftplus_admin->settings_debugrow('WP_PLUGIN_DIR:', htmlspecialchars(WP_PLUGIN_DIR));
@@ -97,7 +106,7 @@
 	}
 	
 	if (empty($options['suppress_plugins_for_debugging'])) {
-		$updraftplus_admin->settings_debugrow(__('Plugins for debugging:', 'updraftplus'), '<a href="'.wp_nonce_url(self_admin_url('update.php?action=install-plugin&amp;updraftplus_noautobackup=1&amp;plugin=wp-crontrol'), 'install-plugin_wp-crontrol').'">WP Crontrol</a> | <a href="'.wp_nonce_url(self_admin_url('update.php?action=install-plugin&amp;updraftplus_noautobackup=1&amp;plugin=query-monitor'), 'install-plugin_query-monitor').'">Query Monitor</a> | <a href="'.wp_nonce_url(self_admin_url('update.php?action=install-plugin&amp;updraftplus_noautobackup=1&amp;plugin=sql-executioner'), 'install-plugin_sql-executioner').'">SQL Executioner</a> | <a href="'.wp_nonce_url(self_admin_url('update.php?action=install-plugin&amp;updraftplus_noautobackup=1&amp;plugin=wp-file-manager'), 'install-plugin_wp-file-manager').'">WP Filemanager</a>');
+		$updraftplus_admin->settings_debugrow(__('Install debugging plugins:', 'updraftplus'), '<a href="'.wp_nonce_url(self_admin_url('update.php?action=install-plugin&amp;updraftplus_noautobackup=1&amp;plugin=wp-crontrol'), 'install-plugin_wp-crontrol').'">WP Crontrol</a> | <a href="'.wp_nonce_url(self_admin_url('update.php?action=install-plugin&amp;updraftplus_noautobackup=1&amp;plugin=query-monitor'), 'install-plugin_query-monitor').'">Query Monitor</a> | <a href="'.wp_nonce_url(self_admin_url('update.php?action=install-plugin&amp;updraftplus_noautobackup=1&amp;plugin=sql-executioner'), 'install-plugin_sql-executioner').'">SQL Executioner</a> | <a href="'.wp_nonce_url(self_admin_url('update.php?action=install-plugin&amp;updraftplus_noautobackup=1&amp;plugin=wp-file-manager'), 'install-plugin_wp-file-manager').'">WP Filemanager</a>');
 	}
 
 	$updraftplus_admin->settings_debugrow("HTTP Get: ", '<input id="updraftplus_httpget_uri" type="text" class="call-action"> <a href="'.UpdraftPlus::get_current_clean_url().'" id="updraftplus_httpget_go">'.__('Fetch', 'updraftplus').'</a> <a href="'.UpdraftPlus::get_current_clean_url().'" id="updraftplus_httpget_gocurl">'.__('Fetch', 'updraftplus').' (Curl)</a><p id="updraftplus_httpget_results"></p>');

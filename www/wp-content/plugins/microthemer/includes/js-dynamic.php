@@ -29,6 +29,10 @@ $data.= 'TvrMT.data.prog.combo.directories = ' . json_encode($directories) . ';'
 // the last 20 custom site preview URLs the user enters are saved in DB
 $data.= 'TvrMT.data.prog.combo.custom_paths = ' . json_encode($this->preferences['custom_paths']) . ';' . "\n\n";
 
+// path to the icon font
+$data.= 'TvrMT.data.dyn.icon_font_face_style = ' . json_encode( array('css' => $this->load_icon_font(true)) ) . ';' ."\n\n";
+//'icon_font_face_style' => $this->load_icon_font(true),
+
 // ready combo for MQ and CSS unit sets (dynamic so they can be translated and added to with integrations)
 foreach ($this->mq_sets as $set => $junk){
 	$mq_sets[] = $set;
@@ -91,12 +95,17 @@ $data.= 'TvrMT.data.dyn.micro_root_url = "' . $this->micro_root_url . '";' . "\n
 // the default site pages list (posts and pages limited to 30, more results collected on search)
 $data.= 'TvrMT.data.dyn.site_pages = ' . json_encode($this->get_site_pages()) . ';' . "\n\n";
 
+// URLs for placehold (light, dark, current)
+//$data.= 'TvrMT.data.dyn.placeholderURLs = ' . json_encode($this->get_placeholder_urls()) . ';' . "\n\n";
+
 // dynamic menus: enq_js, mqs, custom code, animation, preset
 
 $data.= 'TvrMT.data.dyn.ui_config = ' . json_encode(array(
 	'mt_nonlog_nonce' => wp_create_nonce('mt_nonlog_check'), // note this won't work with browser sync enabled
 	'mt_builder_redirect_nonce' => wp_create_nonce('mt_builder_redirect_check') // note this won't work with browser sync enabled
 )) . ';' . "\n\n";
+
+
 
 
 // output JS

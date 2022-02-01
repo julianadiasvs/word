@@ -26,11 +26,11 @@ if( isset( $_POST['submit'] ) ) {
 	$table_name = $wpdb->prefix . "auto_updates"; 
 
 	// Auto updater
-	if( isset( $_POST['plugins'] ) ) 			$plugins 		= sanitize_text_field( $_POST['plugins'] ); else $plugins = '';
-	if( isset( $_POST['themes'] ) ) 			$themes 		= sanitize_text_field( $_POST['themes'] ); else $themes = '';
-	if( isset( $_POST['minor'] ) ) 				$minor 			= sanitize_text_field( $_POST['minor'] ); else $minor = '';
-	if( isset( $_POST['major'] ) ) 				$major 			= sanitize_text_field( $_POST['major'] ); else $major = '';
-	if( isset( $_POST['translations'] ) ) 		$translations 	= sanitize_text_field( $_POST['translations'] ); else $translations = '';
+	$plugins 			= isset( $_POST['plugins'] ) ? sanitize_text_field( $_POST['plugins'] ) : '';
+	$themes 			= isset( $_POST['themes'] ) ? sanitize_text_field( $_POST['themes'] ) : '';
+	$minor 				= isset( $_POST['minor'] ) ? sanitize_text_field( $_POST['minor'] ) : '';
+	$major 				= isset( $_POST['major'] ) ? sanitize_text_field( $_POST['major'] ) : '';
+	$translations 		= isset( $_POST['translations'] ) ? sanitize_text_field( $_POST['translations'] ) : '';
 
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'plugins'", $plugins ) );
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'themes'", $themes ) );
@@ -39,12 +39,13 @@ if( isset( $_POST['submit'] ) ) {
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'translations'", $translations ) );
 
 	// Emails
-	if( isset( $_POST['cau_send'] ) ) 			$send 			= sanitize_text_field( $_POST['cau_send'] ); else $send = '';
-	if( isset( $_POST['cau_send_update'] ) ) 	$sendupdate 	= sanitize_text_field( $_POST['cau_send_update'] ); else $sendupdate = '';
-	if( isset( $_POST['cau_send_outdated'] ) ) 	$sendoutdated 	= sanitize_text_field( $_POST['cau_send_outdated'] ); else $sendoutdated = '';
-	if( isset( $_POST['wpemails'] ) ) 			$wpemails 		= sanitize_text_field( $_POST['wpemails'] ); else $wpemails = '';
-	if( isset( $_POST['cau_email'] ) ) 			$email 			= sanitize_text_field( $_POST['cau_email'] );
-	if( isset( $_POST['html_or_text'] ) ) 		$html_or_text 	= sanitize_text_field( $_POST['html_or_text'] );
+	$send 				= isset( $_POST['cau_send'] ) ? sanitize_text_field( $_POST['cau_send'] ) : '';
+	$sendupdate 		= isset( $_POST['cau_send_update'] ) ? sanitize_text_field( $_POST['cau_send_update'] ) : '';
+	$sendoutdated 		= isset( $_POST['cau_send_outdated'] ) ? sanitize_text_field( $_POST['cau_send_outdated'] ) : '';
+	$wpemails 			= isset( $_POST['wpemails'] ) ? sanitize_text_field( $_POST['wpemails'] ) : '';
+	$email 				= isset( $_POST['cau_email'] ) ? sanitize_text_field( $_POST['cau_email'] ) : '';
+	$html_or_text 		= isset( $_POST['html_or_text'] ) ? sanitize_text_field( $_POST['html_or_text'] ) : 'html';
+	$dbupdateemails 	= isset( $_POST['dbupdateemails'] ) ? sanitize_text_field( $_POST['dbupdateemails'] ) : '';
 
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'email'", $email ) );
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'send'", $send ) );
@@ -52,18 +53,23 @@ if( isset( $_POST['submit'] ) ) {
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'sendoutdated'", $sendoutdated ) );
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'wpemails'", $wpemails ) );
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'html_or_text'", $html_or_text ) );
+	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'dbupdateemails'", $dbupdateemails ) );
 
 	// Advanced
-	if( isset( $_POST['allow_editor'] ) ) 					$allow_editor = sanitize_text_field( $_POST['allow_editor'] ); else $allow_editor = '';
-	if( isset( $_POST['allow_author'] ) ) 					$allow_author = sanitize_text_field( $_POST['allow_author'] ); else $allow_author = '';
-	if( isset( $_POST['advanced_info_emails'] ) ) 			$advanced_info_emails = sanitize_text_field( $_POST['advanced_info_emails'] ); else $advanced_info_emails = '';
+	$allow_editor 			= isset( $_POST['allow_editor'] ) ? sanitize_text_field( $_POST['allow_editor'] ) : '';
+	$allow_author 			= isset( $_POST['allow_author'] ) ? sanitize_text_field( $_POST['allow_author'] ) : '';
+	$advanced_info_emails 	= isset( $_POST['advanced_info_emails'] ) ? sanitize_text_field( $_POST['advanced_info_emails'] ) : '';
+	$plugin_links_emails 	= isset( $_POST['plugin_links_emails'] ) ? sanitize_text_field( $_POST['plugin_links_emails'] ) : '';
+
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'allow_editor'", $allow_editor ) );
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'allow_author'", $allow_author ) );
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'advanced_info_emails'", $advanced_info_emails ) );
+	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'plugin_links_emails'", $plugin_links_emails ) );
 
 	// Delay
-	if( isset( $_POST['update_delay'] ) ) 		$update_delay = sanitize_text_field( $_POST['update_delay'] ); else $update_delay = '';
-	if( isset( $_POST['update_delay_days'] ) ) 	$update_delay_days = sanitize_text_field( $_POST['update_delay_days'] ); else $update_delay_days = '';
+	$update_delay 			= isset( $_POST['update_delay'] ) ? sanitize_text_field( $_POST['update_delay'] ) : '';
+	$update_delay_days 		= isset( $_POST['update_delay_days'] ) ? sanitize_text_field( $_POST['update_delay_days'] ) : '';
+
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'update_delay'", $update_delay ) );
 	$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET onoroff = %s WHERE name = 'update_delay_days'", $update_delay_days ) );
 
@@ -75,7 +81,6 @@ if( isset( $_POST['submit'] ) ) {
 	$core_sc 			= sanitize_text_field( $_POST['core_schedule'] );
 	$schedule_mail 		= sanitize_text_field( $_POST['update_notifications'] );
 	$outdated_notifier 	= sanitize_text_field( $_POST['outdated_notifier'] );
-	$html_or_text 		= sanitize_text_field( $_POST['html_or_text'] );
 
 	// First clear schedules
 	wp_clear_scheduled_hook('wp_update_plugins');
@@ -208,18 +213,12 @@ if( isset( $_GET['welcome'] ) ) {
 	</div>';
 }
 
-$plugin_schedule 			= wp_get_schedule( 'wp_update_plugins' );
-$theme_schedule 			= wp_get_schedule( 'wp_update_themes' );
-$core_schedule 				= wp_get_schedule( 'wp_version_check' );
-$schedule_mail				= wp_get_schedule( 'cau_set_schedule_mail' );
-$outdated_notifier 			= wp_get_schedule( 'cau_outdated_notifier' );
 $cs_hooks_p 				= wp_get_schedule( 'cau_custom_hooks_plugins' );
 $cs_hooks_t 				= wp_get_schedule( 'cau_custom_hooks_themes' );
-$availableIntervals 		= cau_wp_get_schedules();
 
 ?>
 
-<div class="cau-column-wide">
+<div class="cau-dashboard cau-column-wide">
 	
 	<form method="POST">
 
@@ -287,7 +286,7 @@ $availableIntervals 		= cau_wp_get_schedules();
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php _e( 'Outdated software', 'companion-auto-update' );?></th>
+					<th scope="row"><?php _e( 'Check for outdated software', 'companion-auto-update' );?></th>
 					<td>
 						<p>
 							<input id="cau_send_outdated" name="cau_send_outdated" type="checkbox" <?php if( cau_get_db_value( 'sendoutdated' ) == 'on' ) { echo 'checked'; } ?> />
@@ -323,6 +322,9 @@ $availableIntervals 		= cau_wp_get_schedules();
 						<p>
 							<label for="advanced_info_emails"><input name="advanced_info_emails" type="checkbox" id="advanced_info_emails" <?php if( cau_get_db_value( 'advanced_info_emails' ) == 'on' ) { echo "CHECKED"; } ?>> <?php _e( 'Show the time of the update', 'companion-auto-update' ); ?></label>
 						</p>
+						<p>
+							<label for="plugin_links_emails"><input name="plugin_links_emails" type="checkbox" id="plugin_links_emails" <?php if( cau_get_db_value( 'plugin_links_emails' ) == 'on' ) { echo "CHECKED"; } ?>> <?php _e( 'Show links to WordPress.org pages', 'companion-auto-update' ); ?></label>
+						</p>
 					</td>
 				</tr>
 				<tr>
@@ -338,6 +340,15 @@ $availableIntervals 		= cau_wp_get_schedules();
 						<p>
 							<input id="wpemails" name="wpemails" type="checkbox" <?php if( cau_get_db_value( 'wpemails' ) == 'on' ) { echo 'checked'; } ?> />
 							<label for="wpemails"><?php _e( 'By default WordPress sends an email when a core update has occurred. Uncheck this box to disable these emails.', 'companion-auto-update' ); ?></label>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php _e( 'Database update required', 'companion-auto-update' );?></th>
+					<td>
+						<p>
+							<input id="dbupdateemails" name="dbupdateemails" type="checkbox" <?php if( cau_get_db_value( 'dbupdateemails' ) == 'on' ) { echo 'checked'; } ?> />
+							<label for="dbupdateemails"><?php _e( 'Sometimes we\'ll need your help updating our database version to the latest version, check this box to allow us to send you an email about this.', 'companion-auto-update' ); ?></label>
 						</p>
 					</td>
 				</tr>
@@ -410,6 +421,8 @@ $availableIntervals 		= cau_wp_get_schedules();
 
 			</div>
 
+			<p></p>
+
 			<div class="welcome-column">
 
 				<h4><?php _e( 'Update notifications', 'companion-auto-update' );?></h4>
@@ -459,7 +472,13 @@ $availableIntervals 		= cau_wp_get_schedules();
 		</div>
 
 		<?php wp_nonce_field( 'cau_save_settings' ); ?>	
-		<?php submit_button(); ?>
+		
+		<div class="cau_save_button">
+			<?php submit_button(); ?>
+		</div>
+		<div class="cau_save_button__space"></div>
+
+		<script>jQuery( '.cau-dashboard input, .cau-dashboard select, .cau-dashboard textarea' ).on( 'change', function() { jQuery('.cau_save_button').addClass( 'fixed_button' ); } );</script>
 
 	</form>
 

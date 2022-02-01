@@ -121,7 +121,7 @@ class WC_Geolocation {
 				}
 			}
 
-			set_transient( $transient_name, $external_ip_address, WEEK_IN_SECONDS );
+			set_transient( $transient_name, $external_ip_address, DAY_IN_SECONDS );
 		}
 
 		return $external_ip_address;
@@ -149,10 +149,9 @@ class WC_Geolocation {
 		}
 
 		if ( empty( $ip_address ) ) {
-			$ip_address = self::get_ip_address();
+			$ip_address   = self::get_ip_address();
+			$country_code = self::get_country_code_from_headers();
 		}
-
-		$country_code = self::get_country_code_from_headers();
 
 		/**
 		 * Get geolocation filter.
@@ -161,7 +160,7 @@ class WC_Geolocation {
 		 * @param array  $geolocation Geolocation data, including country, state, city, and postcode.
 		 * @param string $ip_address  IP Address.
 		 */
-		$geolocation  = apply_filters(
+		$geolocation = apply_filters(
 			'woocommerce_get_geolocation',
 			array(
 				'country'  => $country_code,
@@ -302,7 +301,7 @@ class WC_Geolocation {
 				}
 			}
 
-			set_transient( 'geoip_' . $ip_address, $country_code, WEEK_IN_SECONDS );
+			set_transient( 'geoip_' . $ip_address, $country_code, DAY_IN_SECONDS );
 		}
 
 		return $country_code;

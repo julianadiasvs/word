@@ -24,7 +24,6 @@ use MyThemeShop\Helpers\Param;
 use RankMath\Analytics\Workflow\Jobs;
 use RankMath\Analytics\Workflow\OAuth;
 use RankMath\Analytics\Workflow\Workflow;
-use RankMath\Schema\Admin as SchemaHelper;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -63,6 +62,7 @@ class Analytics extends Base {
 
 		$this->action( 'admin_notices', 'render_notice' );
 		$this->action( 'rank_math/admin/enqueue_scripts', 'enqueue' );
+		$this->action( 'admin_enqueue_scripts', 'options_panel_messages' );
 		$this->action( 'wp_helpers_notification_dismissed', 'analytic_first_fetch_dismiss' );
 
 		if ( is_admin() ) {
@@ -70,11 +70,6 @@ class Analytics extends Base {
 			$this->filter( 'rank_math/settings/general', 'add_settings' );
 			$this->action( 'admin_init', 'refres_token_missing', 25 );
 			$this->action( 'admin_init', 'cancel_fetch', 5 );
-
-			// Show Analytics block in the Dashboard widget only if account is connected or user has permissions.
-			if ( Helper::has_cap( 'analytics' ) && Authentication::is_authorized() ) {
-				$this->action( 'rank_math/dashboard/widget', 'dashboard_widget', 9 );
-			}
 
 			new OAuth();
 		}
@@ -141,91 +136,6 @@ class Analytics extends Base {
 	}
 
 	/**
-	 * Add stats into admin dashboard.
-	 *
-	 * @codeCoverageIgnore
-	 */
-	public function dashboard_widget() {
-		Stats::get()->set_date_range( '-30 days' );
-		$data                   = Stats::get()->get_widget();
-		$analytics              = get_option( 'rank_math_google_analytic_options' );
-		$is_analytics_connected = ! empty( $analytics ) && ! empty( $analytics['view_id'] );
-		?>
-		<h3>
-			<?php esc_html_e( 'Analytics', 'rank-math' ); ?>
-			<span><?php esc_html_e( 'Last 30 Days', 'rank-math' ); ?></span>
-			<a href="<?php echo esc_url( Helper::get_admin_url( 'analytics' ) ); ?>" class="rank-math-view-report" title="<?php esc_html_e( 'View Report', 'rank-math' ); ?>"><i class="dashicons dashicons-ellipsis"></i></a>
-		</h3>
-		<div class="rank-math-dashabord-block items-4">
-
-			<?php if ( $is_analytics_connected && defined( 'RANK_MATH_PRO_FILE' ) ) : ?>
-			<div>
-				<h4>
-					<?php esc_html_e( 'Search Traffic', 'rank-math' ); ?>
-					<span class="rank-math-tooltip"><em class="dashicons-before dashicons-editor-help"></em><span><?php esc_html_e( 'This is the number of pageviews carried out by visitors from Google.', 'rank-math' ); ?></span></span>
-				</h4>
-				<?php $this->get_analytic_block( $data->pageviews ); ?>
-			</div>
-			<?php endif; ?>
-
-			<div>
-				<h4>
-					<?php esc_html_e( 'Total Impressions', 'rank-math' ); ?>
-					<span class="rank-math-tooltip"><em class="dashicons-before dashicons-editor-help"></em><span><?php esc_html_e( 'How many times your site showed up in the search results.', 'rank-math' ); ?></span></span>
-				</h4>
-				<?php $this->get_analytic_block( $data->impressions ); ?>
-			</div>
-
-			<?php if ( ! $is_analytics_connected || ( $is_analytics_connected && ! defined( 'RANK_MATH_PRO_FILE' ) ) ) : ?>
-			<div>
-				<h4>
-					<?php esc_html_e( 'Total Clicks', 'rank-math' ); ?>
-					<span class="rank-math-tooltip"><em class="dashicons-before dashicons-editor-help"></em><span><?php esc_html_e( 'This is the number of pageviews carried out by visitors from Google.', 'rank-math' ); ?></span></span>
-				</h4>
-				<?php $this->get_analytic_block( $data->clicks ); ?>
-			</div>
-			<?php endif; ?>
-
-			<div>
-				<h4>
-					<?php esc_html_e( 'Total Keywords', 'rank-math' ); ?>
-					<span class="rank-math-tooltip"><em class="dashicons-before dashicons-editor-help"></em><span><?php esc_html_e( 'Total number of keywords your site ranking below 100 position.', 'rank-math' ); ?></span></span>
-				</h4>
-				<?php $this->get_analytic_block( $data->keywords ); ?>
-			</div>
-
-			<div>
-				<h4>
-					<?php esc_html_e( 'Average Position', 'rank-math' ); ?>
-					<span class="rank-math-tooltip"><em class="dashicons-before dashicons-editor-help"></em><span><?php esc_html_e( 'This is the number of pageviews carried out by visitors from Google.', 'rank-math' ); ?></span></span>
-				</h4>
-				<?php $this->get_analytic_block( $data->position ); ?>
-			</div>
-
-		</div>
-		<?php
-	}
-
-	/**
-	 * Get analytic block
-	 *
-	 * @param object $item Item.
-	 */
-	private function get_analytic_block( $item ) {
-		$is_negative = absint( $item['difference'] ) !== $item['difference'];
-		$diff_class  = $is_negative ? 'down' : 'up';
-		if ( ! $is_negative && $item['difference'] > 0 ) {
-			$diff_class = 'up';
-		}
-		?>
-		<div class="rank-math-item-numbers">
-			<strong class="text-large" title="<?php echo esc_html( Str::human_number( $item['total'] ) ); ?>"><?php echo esc_html( Str::human_number( $item['total'] ) ); ?></strong>
-			<span class="rank-math-item-difference <?php echo esc_attr( $diff_class ); ?>" title="<?php echo esc_html( Str::human_number( $item['difference'] ) ); ?>"><?php echo esc_html( Str::human_number( $item['difference'] ) ); ?></span>
-		</div>
-		<?php
-	}
-
-	/**
 	 * Admin init.
 	 */
 	public function render_notice() {
@@ -247,6 +157,7 @@ class Analytics extends Base {
 			$action         = current( $actions );
 			$schedule       = $action->get_schedule();
 			$next_timestamp = $schedule->get_date()->getTimestamp();
+			// phpcs:disable
 			$notification   = new \MyThemeShop\Notification(
 				/* translators: delete counter */
 				sprintf(
@@ -263,7 +174,7 @@ class Analytics extends Base {
 				]
 			);
 
-			echo $notification; // phpcs:ignore
+			echo $notification;
 		}
 	}
 
@@ -343,10 +254,30 @@ class Analytics extends Base {
 	}
 
 	/**
+	 * Add l18n for the Settings.
+	 *
+	 * @return void
+	 */
+	public function options_panel_messages() {
+		$screen = get_current_screen();
+
+		if ( 'rank-math_page_rank-math-options-general' !== $screen->id ) {
+			return;
+		}
+
+		Helper::add_json( 'confirmAction', esc_html__( 'Are you sure you want to do this?', 'rank-math' ) );
+		Helper::add_json( 'confirmClearImportedData', esc_html__( 'You are about to delete all the previously imported data.', 'rank-math' ) );
+		Helper::add_json( 'confirmClear90DaysCache', esc_html__( 'You are about to delete your 90 days cache.', 'rank-math' ) );
+		Helper::add_json( 'confirmDisconnect', esc_html__( 'Are you sure you want to disconnect Google services from your site?', 'rank-math' ) );
+		Helper::add_json( 'feedbackCacheDeleted', esc_html__( 'Cache deleted.', 'rank-math' ) );
+	}
+
+	/**
 	 * Enqueue scripts for the metabox.
 	 */
 	public function enqueue() {
 		$screen = get_current_screen();
+
 		if ( 'rank-math_page_rank-math-analytics' !== $screen->id ) {
 			return;
 		}
@@ -456,16 +387,6 @@ class Analytics extends Base {
 		Helper::add_json( 'lastUpdated', $updated );
 
 		Helper::add_json( 'singleImage', rank_math()->plugin_url() . 'includes/modules/analytics/assets/img/single-post-report.jpg' );
-
-		// Global Schema.
-		$post_types     = Helper::get_accessible_post_types();
-		$global_schemas = [];
-		foreach ( $post_types as $post_type ) {
-			$global_schemas[ $post_type ] = SchemaHelper::sanitize_schema_title(
-				Helper::get_default_schema_type( $post_type )
-			);
-		}
-		Helper::add_json( 'globalSchemaTypes', array_filter( $global_schemas ) );
 	}
 
 	/**
@@ -521,7 +442,7 @@ class Analytics extends Base {
 					'icon'  => 'rm-icon rm-icon-search-console',
 					'title' => esc_html__( 'Analytics', 'rank-math' ),
 					/* translators: Link to kb article */
-					'desc'  => sprintf( esc_html__( 'See your Google Search Console, Analyitcs and AdSense data without leaving your WP dashboard. %s.', 'rank-math' ), '<a href="' . KB::get( 'analytics-settings' ) . '" target="_blank">' . esc_html__( 'Learn more', 'rank-math' ) . '</a>' ),
+					'desc'  => sprintf( esc_html__( 'See your Google Search Console, Analytics and AdSense data without leaving your WP dashboard. %s.', 'rank-math' ), '<a href="' . KB::get( 'analytics-settings' ) . '" target="_blank">' . esc_html__( 'Learn more', 'rank-math' ) . '</a>' ),
 					'file'  => $this->directory . '/views/options.php',
 				],
 			],

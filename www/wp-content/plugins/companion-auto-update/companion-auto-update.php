@@ -3,7 +3,7 @@
  * Plugin Name: Companion Auto Update
  * Plugin URI: http://codeermeneer.nl/portfolio/companion-auto-update/
  * Description: This plugin auto updates all plugins, all themes and the wordpress core.
- * Version: 3.8.0
+ * Version: 3.8.3
  * Author: Papin Schipper
  * Author URI: http://codeermeneer.nl/
  * Contributors: papin
@@ -79,7 +79,7 @@ function cau_donateUrl() {
 
 // Database version
 function cau_db_version() {
-	return '3.7.2';
+	return '3.8.3';
 }
 function cau_database_creation() {
 
@@ -168,6 +168,7 @@ function cau_install_data() {
 
 	// Stuff
 	if( !cau_check_if_exists( 'html_or_text' ) ) $wpdb->insert( $table_name, array( 'name' => 'html_or_text', 'onoroff' => 'html' ) );
+	if( !cau_check_if_exists( 'dbupdateemails' ) ) $wpdb->insert( $table_name, array( 'name' => 'dbupdateemails', 'onoroff' => '' ) );
 
 	// Advanced
 	if( !cau_check_if_exists( 'allow_administrator' ) ) $wpdb->insert( $table_name, array( 'name' => 'allow_administrator', 'onoroff' => 'on' ) );
@@ -178,6 +179,7 @@ function cau_install_data() {
 	if( !cau_check_if_exists( 'advanced_info_emails' ) ) $wpdb->insert( $table_name, array( 'name' => 'advanced_info_emails', 'onoroff' => '' ) );
 	if( !cau_check_if_exists( 'update_delay' ) ) $wpdb->insert( $table_name, array( 'name' => 'update_delay', 'onoroff' => '' ) );
 	if( !cau_check_if_exists( 'update_delay_days' ) ) $wpdb->insert( $table_name, array( 'name' => 'update_delay_days', 'onoroff' => '' ) );
+	if( !cau_check_if_exists( 'plugin_links_emails' ) ) $wpdb->insert( $table_name, array( 'name' => 'plugin_links_emails', 'onoroff' => '' ) );
 
 }
 register_activation_hook( __FILE__, 'cau_install' );

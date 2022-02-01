@@ -14,6 +14,7 @@ use RankMath\Helper;
 use RankMath\Paper\Paper;
 use RankMath\Traits\Hooker;
 use RankMath\Traits\Shortcode;
+use MyThemeShop\Helpers\Arr;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -61,7 +62,7 @@ class Shortcodes {
 	 * @return string
 	 */
 	public function breadcrumb( $args ) {
-		if ( ! Helper::get_settings( 'general.breadcrumbs' ) ) {
+		if ( ! Helper::is_breadcrumbs_enabled() ) {
 			return;
 		}
 		return Breadcrumbs::get()->get_breadcrumb( $args );
@@ -121,7 +122,7 @@ class Shortcodes {
 		: [ 'name', 'email', 'address', 'hours', 'phone', 'map' ];
 
 		if ( ! empty( $args['show'] ) && 'all' !== $args['show'] ) {
-			$allowed = array_intersect( array_map( 'trim', explode( ',', $args['show'] ) ), $allowed );
+			$allowed = array_intersect( Arr::from_string( $args['show'] ), $allowed );
 		}
 
 		return $allowed;
@@ -270,13 +271,16 @@ class Shortcodes {
 	 */
 	private function display_phone() {
 		$phones = Helper::get_settings( 'titles.phone_numbers' );
-		if ( ! isset( $phones[0]['number'] ) ) {
+		if ( empty( $phones ) ) {
 			return;
 		}
 
 		$choices = Helper::choices_phone_types();
-
 		foreach ( $phones as $phone ) :
+			if ( empty( $phone['number'] ) ) {
+				continue;
+			}
+
 			$number = esc_html( $phone['number'] );
 			$label  = isset( $choices[ $phone['type'] ] ) ? $choices[ $phone['type'] ] : ''
 			?>
@@ -308,6 +312,11 @@ class Shortcodes {
 	 * Output google map.
 	 */
 	private function display_map() {
+		$api_key = Helper::get_settings( 'titles.maps_api_key' );
+		if ( ! $api_key ) {
+			return;
+		}
+
 		$address = Helper::get_settings( 'titles.local_address' );
 		if ( false === $address ) {
 			return;
@@ -319,7 +328,7 @@ class Shortcodes {
 		 * @param string $address
 		 */
 		$address = $this->do_filter( 'shortcode/contact/map_address', implode( ' ', $address ) );
-		$address = $this->do_filter( 'shortcode/contact/map_iframe_src', '//maps.google.com/maps?q=' . rawurlencode( $address ) . '&z=15&output=embed&key=' . rawurlencode( Helper::get_settings( 'titles.maps_api_key' ) ) );
+		$address = $this->do_filter( 'shortcode/contact/map_iframe_src', '//maps.google.com/maps?q=' . rawurlencode( $address ) . '&z=15&output=embed&key=' . rawurlencode( $api_key ) );
 		?>
 		<iframe src="<?php echo esc_url( $address ); ?>"></iframe>
 		<?php
@@ -338,7 +347,7 @@ class Shortcodes {
 		?>
 		<h4 class="rank-math-name">
 			<a href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $name ); ?></a>
-		</h3>
+		</h4>
 		<?php
 	}
 

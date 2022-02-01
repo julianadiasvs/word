@@ -12,6 +12,8 @@ namespace Automattic\WooCommerce\Admin\Composer;
 defined( 'ABSPATH' ) || exit;
 
 use Automattic\WooCommerce\Admin\Notes\DeactivatePlugin;
+use Automattic\WooCommerce\Admin\Notes\Notes;
+use Automattic\WooCommerce\Admin\Notes\NotesUnavailableException;
 use Automattic\WooCommerce\Admin\FeaturePlugin;
 
 /**
@@ -24,7 +26,7 @@ class Package {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.9.0';
+	const VERSION = '3.0.3';
 
 	/**
 	 * Package active.
@@ -49,14 +51,9 @@ class Package {
 		// Avoid double initialization when the feature plugin is in use.
 		if ( defined( 'WC_ADMIN_VERSION_NUMBER' ) ) {
 			self::$active_version = WC_ADMIN_VERSION_NUMBER;
-			$update_version       = new DeactivatePlugin();
-			if ( version_compare( WC_ADMIN_VERSION_NUMBER, self::VERSION, '<' ) ) {
-				if ( method_exists( $update_version, 'possibly_add_note' ) ) {
-					$update_version::possibly_add_note();
-				}
-			} else {
-				$update_version::delete_note();
-			}
+
+			// Check version after WooCommerce is initialized.
+			add_action( 'woocommerce_init', array( __CLASS__, 'check_outdated_wca_plugin' ) );
 
 			// Register a deactivation hook for the feature plugin.
 			register_deactivation_hook( WC_ADMIN_PLUGIN_FILE, array( __CLASS__, 'on_deactivation' ) );
@@ -123,7 +120,44 @@ class Package {
 	 * Add deactivation hook for versions of the plugin that don't have the deactivation note.
 	 */
 	public static function on_deactivation() {
+		if ( ! self::is_notes_initialized() ) {
+			return;
+		}
+
 		$update_version = new DeactivatePlugin();
 		$update_version::delete_note();
+	}
+
+	/**
+	 * Checks if embedded WCA version is newer than standalone WCA
+	 * and adds/removes DeactivatePlugin note as necessary.
+	 */
+	public static function check_outdated_wca_plugin() {
+
+		if ( ! self::is_notes_initialized() ) {
+			return;
+		}
+
+		$update_version = new DeactivatePlugin();
+
+		if ( version_compare( WC_ADMIN_VERSION_NUMBER, self::VERSION, '<' ) ) {
+			if ( method_exists( $update_version, 'possibly_add_note' ) ) {
+				$update_version::possibly_add_note();
+			}
+		} else {
+			$update_version::delete_note();
+		}
+	}
+
+	/**
+	 * Checks if notes have been initialized.
+	 */
+	private static function is_notes_initialized() {
+		try {
+			Notes::load_data_store();
+		} catch ( NotesUnavailableException $e ) {
+			return false;
+		}
+		return true;
 	}
 }

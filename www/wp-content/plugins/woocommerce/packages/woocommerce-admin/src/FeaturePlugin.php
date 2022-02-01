@@ -7,8 +7,7 @@ namespace Automattic\WooCommerce\Admin;
 
 defined( 'ABSPATH' ) || exit;
 
-use \Automattic\WooCommerce\Admin\Notes\ChoosingTheme;
-use \Automattic\WooCommerce\Admin\Notes\InsightFirstProductAndPayment;
+use \Automattic\WooCommerce\Admin\Notes\LearnMoreAboutVariableProducts;
 use \Automattic\WooCommerce\Admin\Notes\Notes;
 use \Automattic\WooCommerce\Admin\Notes\OrderMilestones;
 use \Automattic\WooCommerce\Admin\Notes\WooSubscriptionsNotes;
@@ -16,14 +15,14 @@ use \Automattic\WooCommerce\Admin\Notes\TrackingOptIn;
 use \Automattic\WooCommerce\Admin\Notes\WooCommercePayments;
 use \Automattic\WooCommerce\Admin\Notes\InstallJPAndWCSPlugins;
 use \Automattic\WooCommerce\Admin\Notes\DrawAttention;
-use \Automattic\WooCommerce\Admin\Notes\CouponPageMoved;
-use \Automattic\WooCommerce\Admin\RemoteInboxNotifications\RemoteInboxNotificationsEngine;
 use \Automattic\WooCommerce\Admin\Notes\SetUpAdditionalPaymentTypes;
 use \Automattic\WooCommerce\Admin\Notes\TestCheckout;
 use \Automattic\WooCommerce\Admin\Notes\SellingOnlineCourses;
 use \Automattic\WooCommerce\Admin\Notes\MerchantEmailNotifications\MerchantEmailNotifications;
 use \Automattic\WooCommerce\Admin\Notes\WelcomeToWooCommerceForStoreUsers;
 use \Automattic\WooCommerce\Admin\Notes\ManageStoreActivityFromHomeScreen;
+use \Automattic\WooCommerce\Admin\Notes\NavigationNudge;
+use Automattic\WooCommerce\Admin\Features\Features;
 
 /**
  * Feature plugin main class.
@@ -62,22 +61,14 @@ class FeaturePlugin {
 	 * Init the feature plugin, only if we can detect both Gutenberg and WooCommerce.
 	 */
 	public function init() {
-		/**
-		 * Filter allowing WooCommerce Admin to be disabled.
-		 *
-		 * @param bool $disabled False.
-		 */
-		if ( apply_filters( 'woocommerce_admin_disabled', false ) ) {
-			return;
-		}
-
+		// Load the page controller functions file first to prevent fatal errors when disabling WooCommerce Admin.
 		$this->define_constants();
-
+		require_once WC_ADMIN_ABSPATH . '/includes/page-controller-functions.php';
 		require_once WC_ADMIN_ABSPATH . '/src/Notes/DeprecatedNotes.php';
 		require_once WC_ADMIN_ABSPATH . '/includes/core-functions.php';
 		require_once WC_ADMIN_ABSPATH . '/includes/feature-config.php';
-		require_once WC_ADMIN_ABSPATH . '/includes/page-controller-functions.php';
 		require_once WC_ADMIN_ABSPATH . '/includes/wc-admin-update-functions.php';
+		require_once WC_ADMIN_ABSPATH . '/includes/class-experimental-abtest.php';
 
 		register_activation_hook( WC_ADMIN_PLUGIN_FILE, array( $this, 'on_activation' ) );
 		register_deactivation_hook( WC_ADMIN_PLUGIN_FILE, array( $this, 'on_deactivation' ) );
@@ -141,8 +132,8 @@ class FeaturePlugin {
 			return;
 		}
 
-		$this->includes();
 		$this->hooks();
+		$this->includes();
 	}
 
 	/**
@@ -156,7 +147,7 @@ class FeaturePlugin {
 		$this->define( 'WC_ADMIN_PLUGIN_FILE', WC_ADMIN_ABSPATH . 'woocommerce-admin.php' );
 		// WARNING: Do not directly edit this version number constant.
 		// It is updated as part of the prebuild process from the package.json value.
-		$this->define( 'WC_ADMIN_VERSION_NUMBER', '1.9.0' );
+		$this->define( 'WC_ADMIN_VERSION_NUMBER', '3.0.3' );
 	}
 
 	/**
@@ -170,18 +161,25 @@ class FeaturePlugin {
 	 * Include WC Admin classes.
 	 */
 	public function includes() {
-		// Initialize the WC API extensions.
-		ReportsSync::init();
+		// Initialize Database updates, option migrations, and Notes.
 		Install::init();
 		Events::instance()->init();
-		API\Init::instance();
-		ReportExporter::init();
-
-		// CRUD classes.
 		Notes::init();
 
-		// Initialize category lookup.
-		CategoryLookup::instance()->init();
+		// Initialize Plugins Installer.
+		PluginsInstaller::init();
+
+		// Initialize API.
+		API\Init::instance();
+
+		if ( Features::is_enabled( 'analytics' ) ) {
+			// Initialize Reports syncing.
+			ReportsSync::init();
+			CategoryLookup::instance()->init();
+
+			// Initialize Reports exporter.
+			ReportExporter::init();
+		}
 
 		// Admin note providers.
 		// @todo These should be bundled in the features/ folder, but loading them from there currently has a load order issue.
@@ -194,11 +192,10 @@ class FeaturePlugin {
 		new SetUpAdditionalPaymentTypes();
 		new TestCheckout();
 		new SellingOnlineCourses();
+		new LearnMoreAboutVariableProducts();
 		new WelcomeToWooCommerceForStoreUsers();
 		new ManageStoreActivityFromHomeScreen();
-
-		// Initialize RemoteInboxNotificationsEngine.
-		RemoteInboxNotificationsEngine::init();
+		new NavigationNudge();
 
 		// Initialize MerchantEmailNotifications.
 		MerchantEmailNotifications::init();
@@ -221,8 +218,8 @@ class FeaturePlugin {
 	protected function get_dependency_errors() {
 		$errors                      = array();
 		$wordpress_version           = get_bloginfo( 'version' );
-		$minimum_wordpress_version   = '5.3';
-		$minimum_woocommerce_version = '3.6';
+		$minimum_wordpress_version   = '5.4';
+		$minimum_woocommerce_version = '4.8';
 		$wordpress_minimum_met       = version_compare( $wordpress_version, $minimum_wordpress_version, '>=' );
 		$woocommerce_minimum_met     = class_exists( 'WooCommerce' ) && version_compare( WC_VERSION, $minimum_woocommerce_version, '>=' );
 

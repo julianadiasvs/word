@@ -100,7 +100,7 @@ class MonsterInsights_Notification_Event_Runner {
 	 */
 	public function save_last_runs() {
 		if ( $this->changed ) {
-			update_option( $this->last_run_key, $this->last_run );
+			update_option( $this->last_run_key, $this->last_run, false );
 		}
 	}
 
@@ -133,11 +133,15 @@ class MonsterInsights_Notification_Event_Runner {
 				$time_now   = time();
 				if ( $time_since < $time_now ) {
 					// Interval passed since it ran so let's add this one.
-					$notification->add_notification();
-					// Update the last run date as right now.
-					$this->update_last_run( $notification->notification_id );
-					// Let's not add multiple notifications at the same time.
-					break;
+
+					$added_notification = $notification->add_notification();
+
+					if ($added_notification) {
+                        // Update the last run date as right now.
+                        $this->update_last_run($notification->notification_id);
+                        // Let's not add multiple notifications at the same time.
+                        break;
+                    }
 				}
 			}
 		}
@@ -168,6 +172,13 @@ class MonsterInsights_Notification_Event_Runner {
 			self::$notifications[ $notification_id ] = $notification;
 		}
 
+	}
+
+	/**
+	 * Delete the data on uninstall.
+	 */
+	public function delete_data() {
+		delete_option( $this->last_run_key );
 	}
 
 }

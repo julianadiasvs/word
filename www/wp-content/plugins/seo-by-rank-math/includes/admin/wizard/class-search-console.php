@@ -11,6 +11,8 @@
 namespace RankMath\Wizard;
 
 use RankMath\KB;
+use RankMath\Helper;
+use MyThemeShop\Helpers\Param;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -33,7 +35,7 @@ class Search_Console implements Wizard_Step {
 			<p>
 				<?php
 				/* translators: Link to How to Setup Google Search Console KB article */
-				printf( esc_html__( 'Rank Math automates everything, use below button to connect your site with Google Search Console and Google Analytics. It will verify your site and submit sitemaps automatically. %s', 'rank-math' ), '<a href="' . KB::get( 'analytics' ) . '" target="_blank">' . esc_html__( 'Read more about it here.', 'rank-math' ) . '</a>' );
+				printf( esc_html__( 'Rank Math automates everything, use below button to connect your site with Google Search Console and Google Analytics. It will verify your site and submit sitemaps automatically. %s', 'rank-math' ), '<a href="' . esc_url( KB::get( 'sw-analytics-kb' ) ) . '" target="_blank">' . esc_html__( 'Read more about it here.', 'rank-math' ) . '</a>' );
 				?>
 			</p>
 		</header>
@@ -73,6 +75,12 @@ class Search_Console implements Wizard_Step {
 	 * @return bool
 	 */
 	public function save( $values, $wizard ) {
+		$settings = rank_math()->settings->all_raw();
+
+		$settings['general']['console_email_reports'] = Param::post( 'console_email_reports' );
+
+		Helper::update_all_settings( $settings['general'], null, null );
+
 		return true;
 	}
 }

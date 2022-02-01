@@ -85,19 +85,108 @@
 			 */
 			UAGBAjaxQueue.run()
 
-			$( document ).delegate( ".uagb-activate-widget", "click", UAGBAdmin._activate_widget )
-			$( document ).delegate( ".uagb-deactivate-widget", "click", UAGBAdmin._deactivate_widget )
+			$( document ).on( "click",".uagb-activate-widget", UAGBAdmin._activate_widget )
+			$( document ).on( "click",".uagb-deactivate-widget", UAGBAdmin._deactivate_widget )
 
-			$( document ).delegate( ".uagb-activate-all", "click", UAGBAdmin._bulk_activate_widgets )
-			$( document ).delegate( ".uagb-deactivate-all", "click", UAGBAdmin._bulk_deactivate_widgets )
+			$( document ).on( "click",".uagb-activate-all", UAGBAdmin._bulk_activate_widgets )
+			$( document ).on( "click",".uagb-deactivate-all", UAGBAdmin._bulk_deactivate_widgets )
 
-			$( document ).delegate( ".uag-install-theme", "click", UAGBAdmin._installNow )
-			$( document ).delegate( ".uag-activate-theme", "click", UAGBAdmin._activateTheme)
+			$( document ).on( "click",".uag-install-theme", UAGBAdmin._installNow )
+			$( document ).on( "click",".uag-activate-theme", UAGBAdmin._activateTheme)
 
-			$( document ).delegate( ".uag-file-generation", "click", UAGBAdmin._fileGeneration )
+			$( document ).on( "click",".uag-file-generation", UAGBAdmin._fileGeneration )
+
+			$( document ).on( "click",".uag-file-regeneration", UAGBAdmin._fileReGeneration )
+
+			$( document ).on( "click",".uag-beta-updates", UAGBAdmin._betaUpdates )
+
+			$( document ).on( "change",".uagb-rollback-select", UAGBAdmin._selectRollbackVersion ).trigger('change');
+
+			$( document ).on( "click",".uagb-rollback-button", UAGBAdmin._onRollbackClick )
+
+			$( document ).on( "click",".uagb-confirm-rollback-popup-button.confirm-ok", UAGBAdmin._onConfirmClick )
+
+			$( document ).on( "click",".uagb-confirm-rollback-popup-button.confirm-cancel", UAGBAdmin._closeRollbackPopup )
+
+			$( document ).on( "keyup", UAGBAdmin._onEscPressed )
+
+			$( document ).on( "click", UAGBAdmin._onOutsidePopupClick )
 
 		},
+		_onRollbackClick: function ( e ) {
+			
+			e.preventDefault();
 
+			$( '.uagb-confirm-rollback-popup' ).addClass('show');
+		},
+		_onConfirmClick: function ( e ) {
+			
+			e.preventDefault();
+
+			location.href = $( '.uagb-rollback-button' ).attr('href');
+
+			UAGBAdmin._closeRollbackPopup( e );
+		},
+		_onEscPressed: function ( e ) {
+			
+			// 27 is keymap for esc key.
+			if ( e.keyCode === 27 ) {
+
+				UAGBAdmin._closeRollbackPopup( e );
+			}
+			
+		},
+		_onOutsidePopupClick: function ( e ) {
+			var target = e.target,
+			    popup = $( '.uagb-confirm-rollback-popup.show' );
+			
+			if ( target === popup[0] ) {
+				UAGBAdmin._closeRollbackPopup( e );
+			}
+		},
+		_closeRollbackPopup: function ( e ) {
+			e.preventDefault();
+			$( '.uagb-confirm-rollback-popup' ).removeClass('show');
+		},		
+		_selectRollbackVersion: function ( e ) {
+
+			var $this = $( this ),
+				rollbackButton = $this.next('.uagb-rollback-button'),
+				placeholderText = rollbackButton.data('placeholder-text'),
+				placeholderUrl = rollbackButton.data('placeholder-url');
+
+			rollbackButton.html(placeholderText.replace('{VERSION}', $this.val()));
+			rollbackButton.attr('href', placeholderUrl.replace('VERSION', $this.val()));
+		},
+		_betaUpdates: function( e ) {
+			
+			e.preventDefault();
+
+			var button = $( this ),
+				value  = button.data("value")
+
+			var data = {
+				value : value,
+				action: "uagb_beta_updates",
+				nonce: uagb.ajax_nonce,
+			}
+
+			if ( button.hasClass( "updating-message" ) ) {
+				return
+			}
+
+			$( button ).addClass("updating-message")
+
+			UAGBAjaxQueue.add({
+				url: ajaxurl,
+				type: "POST",
+				data: data,
+				success: function(data){
+					console.log(data);
+					location.reload();
+				}
+			})
+		},
 		_fileGeneration: function( e ) {
 
 			e.preventDefault()
@@ -107,6 +196,35 @@
 			var data = {
 				value : value,
 				action: "uagb_file_generation",
+				nonce: uagb.ajax_nonce,
+			}
+
+			if ( button.hasClass( "updating-message" ) ) {
+				return
+			}
+
+			$( button ).addClass("updating-message")
+
+			UAGBAjaxQueue.add({
+				url: ajaxurl,
+				type: "POST",
+				data: data,
+				success: function(data){
+					console.log(data);
+					location.reload();
+				}
+			})
+
+		},
+
+		_fileReGeneration: function( e ) {
+
+			e.preventDefault();
+
+			var button = $( this );
+
+			var data = {
+				action: "uagb_file_regeneration",
 				nonce: uagb.ajax_nonce,
 			}
 
@@ -224,15 +342,19 @@
 				type: "POST",
 				data: data,
 				success: function(data){
-
-					// Add active class.
-					$( "#" + id ).addClass("activate").removeClass( "deactivate" )
-					// Change button classes & text.
-					$( "#" + id ).find(".uagb-activate-widget")
-						.addClass("uagb-deactivate-widget")
-						.text(uagb.deactivate)
-						.removeClass("uagb-activate-widget")
-						.removeClass("updating-message")
+					
+					if ( data.success ) {
+						// Add active class.
+						$( "#" + id ).addClass("activate").removeClass( "deactivate" )
+						// Change button classes & text.
+						$( "#" + id ).find(".uagb-activate-widget")
+							.addClass("uagb-deactivate-widget")
+							.text(uagb.deactivate)
+							.removeClass("uagb-activate-widget")
+							.removeClass("updating-message")
+					} else {
+						$( "#" + id ).find(".uagb-activate-widget").removeClass("updating-message")
+					}
 				}
 			})
 
@@ -254,7 +376,7 @@
 			if ( button.hasClass( "updating-message" ) ) {
 				return
 			}
-
+			
 			$( button ).addClass("updating-message")
 
 			UAGBAjaxQueue.add({
@@ -263,20 +385,24 @@
 				data: data,
 				success: function(data){
 
-					// Remove active class.
-					$( "#" + id ).addClass( "deactivate" ).removeClass("activate")
+					if ( data.success ) {
+						// Remove active class.
+						$( "#" + id ).addClass( "deactivate" ).removeClass("activate")
 
-					// Change button classes & text.
-					$( "#" + id ).find(".uagb-deactivate-widget")
-						.addClass("uagb-activate-widget")
-						.text(uagb.activate)
-						.removeClass("uagb-deactivate-widget")
-						.removeClass("updating-message")
+						// Change button classes & text.
+						$( "#" + id ).find(".uagb-deactivate-widget")
+							.addClass("uagb-activate-widget")
+							.text(uagb.activate)
+							.removeClass("uagb-deactivate-widget")
+							.removeClass("updating-message")
+					} else {
+						$( "#" + id ).find(".uagb-deactivate-widget").removeClass("updating-message")
+					}
 				}
 			})
+			
 			e.preventDefault()
 		},
-
 
 		/**
 		 * Activate Success

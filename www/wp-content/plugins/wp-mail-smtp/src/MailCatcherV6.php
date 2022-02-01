@@ -2,6 +2,9 @@
 
 namespace WPMailSMTP;
 
+use WPMailSMTP\Admin\DebugEvents\DebugEvents;
+use WPMailSMTP\Providers\MailerAbstract;
+
 /**
  * Class MailCatcher replaces the \PHPMailer\PHPMailer\PHPMailer introduced in WP 5.5 and
  * modifies the email sending logic. Thus, we can use other mailers API to do what we need, or stop emails completely.
@@ -33,7 +36,7 @@ class MailCatcherV6 extends \PHPMailer\PHPMailer\PHPMailer implements MailCatche
 	 *
 	 * @return bool
 	 */
-	public function send() { // phpcs:ignore
+	public function send() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
 
 		$options     = new Options();
 		$mail_mailer = sanitize_key( $options->get( 'mail', 'mailer' ) );
@@ -62,7 +65,7 @@ class MailCatcherV6 extends \PHPMailer\PHPMailer\PHPMailer implements MailCatche
 		}
 
 		// Define a custom header, that will be used to identify the plugin and the mailer.
-		$this->XMailer = 'WPMailSMTP/Mailer/' . $mail_mailer . ' ' . WPMS_PLUGIN_VER; // phpcs:ignore
+		$this->XMailer = 'WPMailSMTP/Mailer/' . $mail_mailer . ' ' . WPMS_PLUGIN_VER; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 		// Use the default PHPMailer, as we inject our settings there for certain providers.
 		if (
@@ -71,7 +74,16 @@ class MailCatcherV6 extends \PHPMailer\PHPMailer\PHPMailer implements MailCatche
 			$mail_mailer === 'pepipost'
 		) {
 			try {
-				// Allow to hook early to catch any early failed emails.
+
+				/**
+				 * Fires before email pre send via SMTP.
+				 *
+				 * Allow to hook early to catch any early failed emails.
+				 *
+				 * @since 2.9.0
+				 *
+				 * @param MailCatcherInterface $mailcatcher The MailCatcher object.
+				 */
 				do_action( 'wp_mail_smtp_mailcatcher_smtp_pre_send_before', $this );
 
 				// Prepare all the headers.
@@ -79,12 +91,26 @@ class MailCatcherV6 extends \PHPMailer\PHPMailer\PHPMailer implements MailCatche
 					return false;
 				}
 
-				// Allow to hook after all the preparation before the actual sending.
+				/**
+				 * Fires before email send via SMTP.
+				 *
+				 * Allow to hook after all the preparation before the actual sending.
+				 *
+				 * @since 2.9.0
+				 *
+				 * @param MailCatcherInterface $mailcatcher The MailCatcher object.
+				 */
 				do_action( 'wp_mail_smtp_mailcatcher_smtp_send_before', $this );
 
-				return $this->postSend();
+				$post_send = $this->postSend();
+
+				DebugEvents::add_debug(
+					esc_html__( 'An email request was sent.' )
+				);
+
+				return $post_send;
 			} catch ( \PHPMailer\PHPMailer\Exception $e ) {
-				$this->mailHeader = ''; // phpcs:ignore
+				$this->mailHeader = ''; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				$this->setError( $e->getMessage() );
 
 				// Set the debug error, but not for default PHP mailer.
@@ -104,7 +130,18 @@ class MailCatcherV6 extends \PHPMailer\PHPMailer\PHPMailer implements MailCatche
 		}
 
 		// We need this so that the PHPMailer class will correctly prepare all the headers.
-		$this->Mailer = 'mail'; // phpcs:ignore
+		$this->Mailer = 'mail'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
+		/**
+		 * Fires before email pre send.
+		 *
+		 * Allow to hook early to catch any early failed emails.
+		 *
+		 * @since 2.9.0
+		 *
+		 * @param MailCatcherInterface $mailcatcher The MailCatcher object.
+		 */
+		do_action( 'wp_mail_smtp_mailcatcher_pre_send_before', $this );
 
 		// Prepare everything (including the message) for sending.
 		if ( ! $this->preSend() ) {
@@ -129,7 +166,38 @@ class MailCatcherV6 extends \PHPMailer\PHPMailer\PHPMailer implements MailCatche
 
 		$is_sent = $mailer->is_email_sent();
 
-		// Allow to perform any actions with the data.
+		if ( ! $is_sent ) {
+			$error = $mailer->get_response_error();
+
+			if ( ! empty( $error ) ) {
+
+				// Add mailer to the beginning and save to display later.
+				$message = 'Mailer: ' . esc_html( wp_mail_smtp()->get_providers()->get_options( $mailer->get_mailer_name() )->get_title() ) . "\r\n";
+
+				$conflicts = new Conflicts();
+
+				if ( $conflicts->is_detected() ) {
+					$message .= 'Conflicts: ' . esc_html( $conflicts->get_conflict_name() ) . "\r\n";
+				}
+
+				Debug::set( $message . $error );
+			}
+		} else {
+
+			// Clear debug messages if email is successfully sent.
+			Debug::clear();
+		}
+
+		/**
+		 * Fires after email send.
+		 *
+		 * Allow to perform any actions with the data.
+		 *
+		 * @since  {VERSION}
+		 *
+		 * @param MailerAbstract       $mailer      The Mailer object.
+		 * @param MailCatcherInterface $mailcatcher The MailCatcher object.
+		 */
 		do_action( 'wp_mail_smtp_mailcatcher_send_after', $mailer, $this );
 
 		return $is_sent;

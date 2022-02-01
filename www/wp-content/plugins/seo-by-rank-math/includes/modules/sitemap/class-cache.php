@@ -45,7 +45,7 @@ class Cache {
 	const STORAGE_KEY_PREFIX = 'rank_math_';
 
 	/**
-	 * The Constructor
+	 * The constructor.
 	 */
 	public function __construct() {
 		$this->wp_filesystem = WordPress::get_filesystem();
@@ -58,6 +58,10 @@ class Cache {
 	 * @return bool
 	 */
 	public function is_writable() {
+		if ( is_null( $this->wp_filesystem ) || ! Helper::is_filesystem_direct() ) {
+			return false;
+		}
+
 		$directory_separator = '/';
 		$folder_path         = $this->get_cache_directory();
 		$test_file           = $folder_path . $this->get_storage_key();
@@ -90,7 +94,7 @@ class Cache {
 	 */
 	public function get_sitemap( $type, $page ) {
 		$filename = $this->get_storage_key( $type, $page );
-		if ( false === $filename ) {
+		if ( false === $filename || is_null( $this->wp_filesystem ) ) {
 			return false;
 		}
 
@@ -113,7 +117,7 @@ class Cache {
 	 */
 	public function store_sitemap( $type, $page, $sitemap ) {
 		$filename = $this->get_storage_key( $type, $page );
-		if ( false === $filename ) {
+		if ( false === $filename || is_null( $this->wp_filesystem ) ) {
 			return false;
 		}
 
@@ -130,7 +134,7 @@ class Cache {
 	}
 
 	/**
-	 * Get filename for sitemap
+	 * Get filename for sitemap.
 	 *
 	 * @param  null|string $type The type to get the key for. Null or '1' for index cache.
 	 * @param  int         $page The page of cache to get the key for.
@@ -145,7 +149,7 @@ class Cache {
 	}
 
 	/**
-	 * Get cache directory
+	 * Get cache directory.
 	 *
 	 * @return string
 	 */
@@ -192,8 +196,12 @@ class Cache {
 	 * @param null|string $type The type to get the key for. Null for all caches.
 	 */
 	public static function invalidate_storage( $type = null ) {
-		$directory     = self::get_cache_directory();
 		$wp_filesystem = WordPress::get_filesystem();
+		if ( is_null( $wp_filesystem ) ) {
+			return;
+		}
+
+		$directory = self::get_cache_directory();
 
 		if ( is_null( $type ) ) {
 			$wp_filesystem->delete( $directory, true );

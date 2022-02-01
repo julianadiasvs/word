@@ -5,7 +5,8 @@
 
 namespace Automattic\WooCommerce\Admin\Notes;
 
-use Automattic\WooCommerce\Admin\Loader;
+use Automattic\WooCommerce\Admin\Features\Features;
+use Automattic\WooCommerce\Admin\Survey;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -24,17 +25,24 @@ class NavigationFeedbackFollowUp {
 	const NOTE_NAME = 'wc-admin-navigation-feedback-follow-up';
 
 	/**
+	 * Should this note exist? (The navigation feature should exist.)
+	 */
+	public static function is_applicable() {
+		return Features::exists( 'navigation' );
+	}
+
+	/**
 	 * Get the note.
 	 *
 	 * @return Note
 	 */
 	public static function get_note() {
-		if ( ! Loader::is_feature_enabled( 'navigation' ) ) {
+		if ( ! Features::is_enabled( 'navigation' ) ) {
 			return;
 		}
 
 		// Check that the first note was created.
-		$data_store = \WC_Data_Store::load( 'admin-note' );
+		$data_store = Notes::load_data_store();
 		$note_ids   = $data_store->get_notes_with_name( 'wc-admin-navigation-feedback' );
 		if ( empty( $note_ids ) ) {
 			return;
@@ -56,7 +64,7 @@ class NavigationFeedbackFollowUp {
 		$note->set_type( Note::E_WC_ADMIN_NOTE_INFORMATIONAL );
 		$note->set_name( self::NOTE_NAME );
 		$note->set_source( 'woocommerce-admin' );
-		$note->add_action( 'share-feedback', __( 'Share feedback', 'woocommerce' ), 'https://automattic.survey.fm/new-navigation' );
+		$note->add_action( 'share-feedback', __( 'Share feedback', 'woocommerce' ), Survey::get_url( '/new-navigation' ) );
 		return $note;
 	}
 }

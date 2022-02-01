@@ -5,7 +5,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { SearchListControl } from '@woocommerce/components';
 import PropTypes from 'prop-types';
 import { withSearchedProducts } from '@woocommerce/block-hocs';
-import ErrorMessage from '@woocommerce/editor-components/error-placeholder/error-message.js';
+import ErrorMessage from '@woocommerce/editor-components/error-placeholder/error-message';
 
 /**
  * The products control exposes a custom selector for searching and selecting
@@ -18,6 +18,7 @@ import ErrorMessage from '@woocommerce/editor-components/error-placeholder/error
  * @param {Array}    props.selected  An array of selected products.
  * @param {Array}    props.products  An array of products to select from.
  * @param {boolean}  props.isLoading Whether or not the products are being loaded.
+ * @param {boolean}  props.isCompact Whether or not the control should have compact styles.
  *
  * @return {Function} A functional component.
  */
@@ -28,6 +29,7 @@ const ProductsControl = ( {
 	selected,
 	products,
 	isLoading,
+	isCompact,
 } ) => {
 	const messages = {
 		clear: __( 'Clear all products', 'woocommerce' ),
@@ -42,7 +44,7 @@ const ProductsControl = ( {
 		),
 		selected: ( n ) =>
 			sprintf(
-				// Translators: %d is the number of selected products.
+				/* translators: %d is the number of selected products. */
 				_n(
 					'%d product selected',
 					'%d products selected',
@@ -64,7 +66,16 @@ const ProductsControl = ( {
 	return (
 		<SearchListControl
 			className="woocommerce-products"
-			list={ products }
+			list={ products.map( ( product ) => {
+				const formattedSku = product.sku
+					? ' (' + product.sku + ')'
+					: '';
+				return {
+					...product,
+					name: `${ product.name }${ formattedSku }`,
+				};
+			} ) }
+			isCompact={ isCompact }
 			isLoading={ isLoading }
 			selected={ products.filter( ( { id } ) =>
 				selected.includes( id )
@@ -81,12 +92,14 @@ ProductsControl.propTypes = {
 	onSearch: PropTypes.func,
 	selected: PropTypes.array,
 	products: PropTypes.array,
+	isCompact: PropTypes.bool,
 	isLoading: PropTypes.bool,
 };
 
 ProductsControl.defaultProps = {
 	selected: [],
 	products: [],
+	isCompact: false,
 	isLoading: true,
 };
 

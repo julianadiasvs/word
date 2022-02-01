@@ -87,6 +87,21 @@ class AdminBarMenu {
 			[],
 			WPFORMS_VERSION
 		);
+
+		// Apply WordPress pre/post 5.7 accent color, only when admin bar is displayed on the frontend or we're
+		// inside the Form Builder - it does not load some WP core admin styles, including themes.
+		if ( wpforms_is_admin_page( 'builder' ) || ! is_admin() ) {
+			wp_add_inline_style(
+				'wpforms-admin-bar',
+				sprintf(
+					'#wpadminbar .wpforms-menu-notification-counter, #wpadminbar .wpforms-menu-notification-indicator { 
+						background-color: %s !important;
+						color: #ffffff !important; 
+					}',
+					version_compare( get_bloginfo( 'version' ), '5.7', '<' ) ? '#ca4a1f' : '#d63638'
+				)
+			);
+		}
 	}
 
 	/**
@@ -110,6 +125,11 @@ class AdminBarMenu {
 
 					if ( ! notifications ) {
 						var menu = document.getElementById( 'wp-admin-bar-wpforms-menu-default' );
+
+						if ( ! menu ) {
+							return;
+						}
+
 						menu.insertAdjacentHTML( 'afterBegin', template.innerHTML );
 					} else {
 						notifications.insertAdjacentHTML( 'afterend', template.innerHTML );
@@ -167,7 +187,7 @@ class AdminBarMenu {
 
 		if ( $notifications ) {
 			$count     = $notifications < 10 ? $notifications : '!';
-			$indicator = ' <div class="wpforms-menu-notification-counter"><span>' . $count . '</span></div>';
+			$indicator = ' <div class="wp-core-ui wp-ui-notification wpforms-menu-notification-counter">' . $count . '</div>';
 		}
 
 		$wp_admin_bar->add_menu(
@@ -196,7 +216,7 @@ class AdminBarMenu {
 			[
 				'parent' => 'wpforms-menu',
 				'id'     => 'wpforms-notifications',
-				'title'  => esc_html__( 'Notifications', 'wpforms-lite' ) . ' <div class="wpforms-menu-notification-indicator"></div>',
+				'title'  => esc_html__( 'Notifications', 'wpforms-lite' ) . ' <div class="wp-core-ui wp-ui-notification wpforms-menu-notification-indicator"></div>',
 				'href'   => admin_url( 'admin.php?page=wpforms-overview' ),
 			]
 		);
@@ -307,6 +327,10 @@ class AdminBarMenu {
 
 		foreach ( $forms as $form ) {
 			$form_id = absint( $form['id'] );
+
+			if ( empty( $form_id ) ) {
+				continue;
+			}
 
 			/* translators: %d - Form ID */
 			$form_title = sprintf( esc_html__( 'Form ID: %d', 'wpforms-lite' ), $form_id );

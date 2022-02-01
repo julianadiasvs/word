@@ -143,7 +143,7 @@ function monsterinsights_admin_scripts() {
 	// Our Common Admin JS.
 	$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-	wp_register_script( 'monsterinsights-admin-common-script', plugins_url( 'assets/js/admin-common' . $suffix . '.js', MONSTERINSIGHTS_PLUGIN_FILE ), array( 'jquery' ), monsterinsights_get_asset_version() );
+	wp_register_script( 'monsterinsights-admin-common-script', plugins_url( 'assets/js/admin-common' . $suffix . '.js', MONSTERINSIGHTS_PLUGIN_FILE ), array( 'jquery' ), monsterinsights_get_asset_version(), true );
 
 	wp_enqueue_script( 'monsterinsights-admin-common-script' );
 
@@ -233,6 +233,9 @@ function monsterinsights_admin_scripts() {
 				'shareasale_id'                   => monsterinsights_get_shareasale_id(),
 				'shareasale_url'                  => monsterinsights_get_shareasale_url( monsterinsights_get_shareasale_id(), '' ),
 				'addons_url'                      => is_multisite() ? network_admin_url( 'admin.php?page=monsterinsights_network#/addons' ) : admin_url( 'admin.php?page=monsterinsights_settings#/addons' ),
+				'seo_settings_page_url'           => is_multisite() ? network_admin_url( 'admin.php?page=monsterinsights_network#/seo' ) : admin_url( 'admin.php?page=monsterinsights_settings#/seo' ),
+				'aioseo_dashboard_url'            => is_multisite() ? network_admin_url( 'admin.php?page=aioseo' ) : admin_url( 'admin.php?page=aioseo' ),
+				'wp_plugins_page_url'             => is_multisite() ? network_admin_url( 'plugins.php' ) : admin_url( 'plugins.php' ),
 				'email_summary_url'               => admin_url( 'admin.php?monsterinsights_email_preview&monsterinsights_email_template=summary' ),
 				'install_amp_url'                 => $install_amp_url,
 				'install_fbia_url'                => $install_fbia_url,
@@ -251,6 +254,8 @@ function monsterinsights_admin_scripts() {
 				'admin_email'                     => get_option( 'admin_email' ),
 				'site_url'                        => get_site_url(),
 				'reports_url'                     => add_query_arg( 'page', 'monsterinsights_reports', admin_url( 'admin.php' ) ),
+				'ecommerce_report_url'            => add_query_arg( 'page', 'monsterinsights_reports#/ecommerce', admin_url( 'admin.php' ) ),
+				'ecommerce_settings_tab_url'      => add_query_arg( 'page', 'monsterinsights_settings#/ecommerce', admin_url( 'admin.php' ) ),
 				'first_run_notice'                => apply_filters( 'monsterinsights_settings_first_time_notice_hide', monsterinsights_get_option( 'monsterinsights_first_run_notice' ) ),
 				'getting_started_url'             => is_network_admin() ? network_admin_url( 'admin.php?page=monsterinsights_network#/about' ) : admin_url( 'admin.php?page=monsterinsights_settings#/about/getting-started' ),
 				'authed'                          => $is_authed,
@@ -278,8 +283,9 @@ function monsterinsights_admin_scripts() {
 		wp_enqueue_script( 'monsterinsights-vue-reports' );
 
 		// We do not have a current auth.
-		$site_auth = MonsterInsights()->auth->get_viewname();
-		$ms_auth   = is_multisite() && MonsterInsights()->auth->get_network_viewname();
+		$auth = MonsterInsights()->auth;
+		$site_auth = $auth->get_viewname();
+		$ms_auth   = is_multisite() && $auth->get_network_viewname();
 
 		wp_localize_script(
 			'monsterinsights-vue-reports',
@@ -295,6 +301,7 @@ function monsterinsights_admin_scripts() {
 				'addons_url'       => is_multisite() ? network_admin_url( 'admin.php?page=monsterinsights_network#/addons' ) : admin_url( 'admin.php?page=monsterinsights_settings#/addons' ),
 				'timezone'         => date( 'e' ),
 				'authed'           => $site_auth || $ms_auth,
+				'auth_connected_type' => $auth->get_connected_type(),
 				'settings_url'     => add_query_arg( 'page', 'monsterinsights_settings', admin_url( 'admin.php' ) ),
 				// Used to add notices for future deprecations.
 				'versions'         => monsterinsights_get_php_wp_version_warning_data(),
@@ -313,6 +320,7 @@ function monsterinsights_admin_scripts() {
 
 		return;
 	}
+	
 	// ublock notice
 	add_action( 'admin_print_footer_scripts', 'monsterinsights_settings_ublock_error_js', 9999999 );
 }
@@ -838,14 +846,17 @@ add_filter( 'style_loader_src', 'monsterinsights_prevent_version_number_removal'
 function monsterinsights_get_php_wp_version_warning_data() {
 	global $wp_version;
 
+	$compatible_php_version = apply_filters( 'monsterinsights_compatible_php_version', false );
+	$compatible_wp_version  = apply_filters( 'monsterinsights_compatible_wp_version', false );
+
 	return array(
 		'php_version'          => phpversion(),
-		'php_version_below_54' => apply_filters( 'monsterinsights_temporarily_hide_php_under_56_upgrade_warnings', version_compare( phpversion(), '5.6', '<' ) ),
-		'php_version_below_56' => apply_filters( 'monsterinsights_temporarily_hide_php_56_upgrade_warnings', version_compare( phpversion(), '5.6', '>=' ) && version_compare( phpversion(), '7', '<' ) ),
+		'php_version_below_54' => apply_filters( 'monsterinsights_temporarily_hide_php_under_56_upgrade_warnings', version_compare( phpversion(), $compatible_php_version['warning'], '<' ) ),
+		'php_version_below_56' => apply_filters( 'monsterinsights_temporarily_hide_php_56_upgrade_warnings', version_compare( phpversion(), $compatible_php_version['warning'], '>=' ) && version_compare( phpversion(), $compatible_php_version['recommended'], '<' ) ),
 		'php_update_link'      => monsterinsights_get_url( 'settings-notice', 'settings-page', 'https://www.monsterinsights.com/docs/update-php/' ),
 		'wp_version'           => $wp_version,
-		'wp_version_below_46'  => version_compare( $wp_version, '4.9', '<' ),
-		'wp_version_below_49'  => version_compare( $wp_version, '5.3', '<' ),
+		'wp_version_below_46'  => version_compare( $wp_version, $compatible_wp_version['warning'], '<' ),
+		'wp_version_below_49'  => version_compare( $wp_version, $compatible_wp_version['recommended'], '<' ),
 		'wp_update_link'       => monsterinsights_get_url( 'settings-notice', 'settings-page', 'https://www.monsterinsights.com/docs/update-wordpress/' ),
 	);
 }
@@ -929,15 +940,15 @@ add_action( 'admin_init', 'monsterinsights_maybe_add_wp_php_version_notification
  */
 function monsterinsights_year_in_review_notification() {
 
-	// Check if dates are between Jan 1st 2021 & 13th Jan 2021.
-	if ( monsterinsights_date_is_between( '2021-01-01', '2021-01-14' ) ) {
+	// Check if dates are between Jan 1st 2022 & 13th Jan 2022.
+	if ( monsterinsights_date_is_between( '2022-01-01', '2022-01-14' ) ) {
 
 		$notification['id']      = 'monsterinsights_notification_year_in_review';
 		$notification['type']    = array( 'basic', 'lite', 'master', 'plus', 'pro' );
-		$notification['start']   = '2021-01-01';
-		$notification['end']     = '2021-01-14';
-		$notification['title']   = esc_html__( 'View 2020 Year in Review report!', 'google-analytics-for-wordpress' );
-		$notification['content'] = esc_html__( 'See how your website performed this year and find tips along the way to help grow even more in 2021!', 'google-analytics-for-wordpress' );
+		$notification['start']   = '2022-01-01';
+		$notification['end']     = '2022-01-14';
+		$notification['title']   = esc_html__( 'View 2021 Year in Review report!', 'google-analytics-for-wordpress' );
+		$notification['content'] = esc_html__( 'See how your website performed this year and find tips along the way to help grow even more in 2022!', 'google-analytics-for-wordpress' );
 		$notification['btns']    = array(
 			'learn_more' => array(
 				'url'  => esc_url( admin_url( 'admin.php?page=monsterinsights_reports#/year-in-review' ) ),

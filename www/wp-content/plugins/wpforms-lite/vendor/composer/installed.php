@@ -6,19 +6,19 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'ec00731e906723780c44abcfc9c74f31bb24e780',
-    'name' => '__root__',
+    'reference' => '41605f9be7500a5deac47f9cd2548e0a5c1522f6',
+    'name' => 'awesomemotive/wpforms',
   ),
   'versions' => 
   array (
-    '__root__' => 
+    'awesomemotive/wpforms' => 
     array (
       'pretty_version' => 'dev-develop',
       'version' => 'dev-develop',
       'aliases' => 
       array (
       ),
-      'reference' => 'ec00731e906723780c44abcfc9c74f31bb24e780',
+      'reference' => '41605f9be7500a5deac47f9cd2548e0a5c1522f6',
     ),
     'goodby/csv' => 
     array (
@@ -29,14 +29,24 @@
       ),
       'reference' => 'e71217b8d6110f3d1ac3784ef9b8a2383c3398b9',
     ),
-    'roave/security-advisories' => 
+    'mk-j/php_xlsxwriter' => 
     array (
-      'pretty_version' => 'dev-master',
-      'version' => 'dev-master',
+      'pretty_version' => '0.38',
+      'version' => '0.38.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'a9e4cf90fc47b0ffbb90ee79f24be1b7c5ce82dc',
+      'reference' => '00579529fea072851789505b2dec0d14cdfffe60',
+    ),
+    'roave/security-advisories' => 
+    array (
+      'pretty_version' => 'dev-latest',
+      'version' => 'dev-latest',
+      'aliases' => 
+      array (
+        0 => '9999999-dev',
+      ),
+      'reference' => '07314cf15422b2e162d591fe8ef2b850612b808f',
     ),
     'symfony/css-selector' => 
     array (
@@ -74,14 +84,23 @@
       ),
       'reference' => 'b43b05cf43c1b6d849478965062b6ef73e223bb5',
     ),
-    'woocommerce/action-scheduler' => 
+    'true/punycode' => 
     array (
-      'pretty_version' => '3.1.6',
-      'version' => '3.1.6.0',
+      'pretty_version' => 'v2.1.1',
+      'version' => '2.1.1.0',
       'aliases' => 
       array (
       ),
-      'reference' => '275d0ba54b1c263dfc62688de2fa9a25a373edf8',
+      'reference' => 'a4d0c11a36dd7f4e7cd7096076cab6d3378a071e',
+    ),
+    'woocommerce/action-scheduler' => 
+    array (
+      'pretty_version' => '3.2.1',
+      'version' => '3.2.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '3c24064f115cd55e972d73d5d48f14133ac60b0d',
     ),
   ),
 );

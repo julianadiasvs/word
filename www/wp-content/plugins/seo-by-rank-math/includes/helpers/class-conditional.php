@@ -12,6 +12,7 @@ namespace RankMath\Helpers;
 
 use RankMath\Helper;
 use RankMath\Admin\Admin_Helper;
+use MyThemeShop\Helpers\Param;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -37,16 +38,26 @@ trait Conditional {
 	/**
 	 * Check if module is active.
 	 *
-	 * @param  string $id Module ID.
+	 * @param  string  $id               Module ID.
+	 * @param  boolean $check_registered Whether to check if module is among registered modules or not.
 	 * @return boolean
 	 */
-	public static function is_module_active( $id ) {
+	public static function is_module_active( $id, $check_registered = true ) {
 		$active_modules = get_option( 'rank_math_modules', [] );
-		if ( ! is_array( $active_modules ) || ! isset( rank_math()->manager ) || is_null( rank_math()->manager ) ) {
+		if ( ! is_array( $active_modules ) || ( $check_registered && ! self::is_plugin_ready() ) ) {
 			return false;
 		}
 
-		return in_array( $id, $active_modules, true ) && array_key_exists( $id, rank_math()->manager->modules );
+		return in_array( $id, $active_modules, true ) && ( ! $check_registered || array_key_exists( $id, rank_math()->manager->modules ) );
+	}
+
+	/**
+	 * Check if Rank Math manager is ready.
+	 *
+	 * @return boolean
+	 */
+	public static function is_plugin_ready() {
+		return ( isset( rank_math()->manager ) && ! is_null( rank_math()->manager ) );
 	}
 
 	/**
@@ -161,7 +172,60 @@ trait Conditional {
 	 * @return boolean
 	 */
 	public static function is_elementor_editor() {
-		return 'elementor' === \MyThemeShop\Helpers\Param::get( 'action' );
+		return 'elementor' === Param::get( 'action' );
+	}
+
+	/**
+	 * Is UX Builder (used in Flatsome theme).
+	 *
+	 * @since 1.0.60
+	 *
+	 * @return boolean
+	 */
+	public static function is_ux_builder() {
+		return 'uxbuilder' === Param::get( 'app' ) && ! empty( Param::get( 'type' ) );
+	}
+
+	/**
+	 * Is on Divi frontend editor.
+	 *
+	 * @since 1.0.63
+	 *
+	 * @return boolean
+	 */
+	public static function is_divi_frontend_editor() {
+		return function_exists( 'et_core_is_fb_enabled' ) && et_core_is_fb_enabled();
+	}
+
+	/**
+	 * Get current editor, or false if we're not editing.
+	 *
+	 * @since 1.0.67
+	 *
+	 * @return mixed
+	 */
+	public static function get_current_editor() {
+		if ( self::is_elementor_editor() ) {
+			return 'elementor';
+		}
+
+		if ( self::is_divi_frontend_editor() ) {
+			return 'divi';
+		}
+
+		if ( self::is_block_editor() && \rank_math_is_gutenberg() ) {
+			return 'gutenberg';
+		}
+
+		if ( self::is_ux_builder() ) {
+			return 'uxbuilder';
+		}
+
+		if ( Admin_Helper::is_post_edit() ) {
+			return 'classic';
+		}
+
+		return false;
 	}
 
 	/**
@@ -173,5 +237,42 @@ trait Conditional {
 	 */
 	public static function is_advanced_mode() {
 		return 'advanced' === apply_filters( 'rank_math/setup_mode', Helper::get_settings( 'general.setup_mode', 'advanced' ) );
+	}
+
+	/**
+	 * Is Breadcrumbs Enabled.
+	 *
+	 * @since 1.0.64
+	 *
+	 * @return boolean
+	 */
+	public static function is_breadcrumbs_enabled() {
+		return \current_theme_supports( 'rank-math-breadcrumbs' ) || Helper::get_settings( 'general.breadcrumbs' );
+	}
+
+	/**
+	 * Is Wizard page.
+	 *
+	 * @since 1.0.64
+	 *
+	 * @return boolean
+	 */
+	public static function is_wizard() {
+		return ( filter_input( INPUT_GET, 'page' ) === 'rank-math-wizard' || filter_input( INPUT_POST, 'action' ) === 'rank_math_save_wizard' );
+	}
+
+	/**
+	 * Is filesystem method direct.
+	 *
+	 * @since 1.0.71.1
+	 *
+	 * @return boolean
+	 */
+	public static function is_filesystem_direct() {
+		if ( ! function_exists( 'get_filesystem_method' ) ) {
+			require_once ABSPATH . '/wp-admin/includes/file.php';
+		}
+
+		return 'direct' === get_filesystem_method();
 	}
 }

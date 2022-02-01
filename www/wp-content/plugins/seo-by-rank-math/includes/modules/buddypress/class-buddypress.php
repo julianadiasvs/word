@@ -1,6 +1,6 @@
 <?php
 /**
- * The BuddyPress Module
+ * The BuddyPress Module.
  *
  * @since      1.0.32
  * @package    RankMath
@@ -31,7 +31,21 @@ class BuddyPress {
 
 		$this->filter( 'rank_math/paper/hash', 'paper' );
 		$this->action( 'rank_math/vars/register_extra_replacements', 'register_replacements' );
-		$this->filter( 'rank_math/json_ld', 'json_ld', 11, 2 );
+		$this->filter( 'rank_math/json_ld', 'json_ld', 11 );
+		$this->filter( 'rank_math/frontend/title', 'change_activate_title' );
+	}
+
+	/**
+	 * Filter to change the Activate page title.
+	 *
+	 * @param string $title Page title.
+	 */
+	public function change_activate_title( $title ) {
+		if ( function_exists( 'bp_is_current_component' ) && bp_is_current_component( 'activate' ) ) {
+			return false;
+		}
+
+		return $title;
 	}
 
 	/**
@@ -51,10 +65,9 @@ class BuddyPress {
 	/**
 	 * Collect data to output in JSON-LD.
 	 *
-	 * @param array  $data An array of data to output in JSON-LD.
-	 * @param JsonLD $json JsonLD instance.
+	 * @param array $data An array of data to output in JSON-LD.
 	 */
-	public function json_ld( $data, $json ) {
+	public function json_ld( $data ) {
 		if ( ! bp_is_user() ) {
 			return $data;
 		}
@@ -85,7 +98,7 @@ class BuddyPress {
 	}
 
 	/**
-	 * Registers variable replacements for WooCommerce products.
+	 * Register variable replacements for BuddyPress groups.
 	 */
 	public function register_replacements() {
 		rank_math_register_var_replacement(

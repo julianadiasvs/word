@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'aa6c4524d0a8b679d3abf85e664a71fe4a0108df',
+    'reference' => '87e8930fa65b779f0c2fa9958e4cfcc3e3dfcc29',
     'name' => 'rankmath/seo-by-rank-math',
   ),
   'versions' => 
@@ -22,30 +22,30 @@
     ),
     'cmb2/cmb2' => 
     array (
-      'pretty_version' => 'v2.8.0',
-      'version' => '2.8.0.0',
+      'pretty_version' => 'v2.9.0',
+      'version' => '2.9.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '8391c9ab88a564ca7c7b380e20152ca8554d5166',
+      'reference' => 'cacbc8cedbfdf8ffe0e840858e6860f9333c33f2',
     ),
     'donatj/phpuseragentparser' => 
     array (
-      'pretty_version' => 'v1.2.0',
-      'version' => '1.2.0.0',
+      'pretty_version' => 'v1.5.0',
+      'version' => '1.5.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '978e66786bc392a09b24b152a8a695dadd230e60',
+      'reference' => 'cc9d872cddfc180c52d084d0dff1e4aad653d37f',
     ),
     'mythemeshop/wordpress-helpers' => 
     array (
-      'pretty_version' => '1.1.7',
-      'version' => '1.1.7.0',
+      'pretty_version' => 'v1.1.18',
+      'version' => '1.1.18.0',
       'aliases' => 
       array (
       ),
-      'reference' => '12d11a823828a16c03c3c67a58bd21d151f327ba',
+      'reference' => '6294c995e9365bee25fcfa8f3c045800620a5278',
     ),
     'rankmath/seo-by-rank-math' => 
     array (
@@ -54,16 +54,16 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'aa6c4524d0a8b679d3abf85e664a71fe4a0108df',
+      'reference' => '87e8930fa65b779f0c2fa9958e4cfcc3e3dfcc29',
     ),
     'woocommerce/action-scheduler' => 
     array (
-      'pretty_version' => '3.1.6',
-      'version' => '3.1.6.0',
+      'pretty_version' => '3.4.0',
+      'version' => '3.4.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '275d0ba54b1c263dfc62688de2fa9a25a373edf8',
+      'reference' => '3218a33ff14b968f8cb05de9656c2efa1eeb1330',
     ),
   ),
 );

@@ -179,7 +179,7 @@ class Setup_Wizard {
 		 * @param CMB2 $cmb CMB2 object.
 		 */
 		$this->do_action( 'wizard/settings/' . $this->step, $this->cmb );
-		
+
 		CMB2::pre_init( $this->cmb );
 	}
 
@@ -192,7 +192,7 @@ class Setup_Wizard {
 	 */
 	public function change_label( $label ) {
 		if ( $this->is_advance() ) {
-			return esc_html__( 'Advance Options', 'rank-math' );
+			return esc_html__( 'Advanced Options', 'rank-math' );
 		}
 
 		return $label;
@@ -223,7 +223,7 @@ class Setup_Wizard {
 		// If no form submission, bail!
 		$referer = Param::post( '_wp_http_referer' );
 		if ( empty( $_POST ) ) {
-			return wp_safe_redirect( $referer );
+			return Helper::redirect( $referer );
 		}
 
 		check_admin_referer( 'rank-math-wizard', 'security' );
@@ -238,7 +238,7 @@ class Setup_Wizard {
 		if ( is_string( $show_content ) ) {
 			$redirect = $show_content;
 		}
-		wp_safe_redirect( $redirect );
+		Helper::redirect( $redirect );
 		exit;
 	}
 

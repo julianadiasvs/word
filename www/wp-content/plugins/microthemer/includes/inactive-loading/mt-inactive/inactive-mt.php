@@ -1,0 +1,75 @@
+<?php
+
+/**
+ * Plugin Name: MT Inactive
+ * Description: Load CSS without MT being active.
+ * Author: Sebastian
+ * Version: 1
+ */
+
+// Stop direct call
+if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
+	die('Please do not call this page directly.');
+}
+
+/* Begin Microthemer Code */
+if (!defined('MT_IS_ACTIVE')) {
+	$MT_prefs = get_option('preferences_themer_loader');
+	function mt_enqueue_or_add($add, $handle, $url, $in_footer = false, $data_key = false, $data_val = false){
+		global $wp_styles;
+		if ($add){
+			$wp_styles->add($handle, $url); $wp_styles->enqueue(array($handle));
+			if ($data_key){
+				$wp_styles->add_data($handle, $data_key, $data_val);
+			}
+			$wp_styles->do_items();
+		} else {
+			wp_register_style($handle, $url, false); wp_enqueue_style($handle);
+		}
+	}
+	function add_microthemer_css() {
+		global $MT_prefs; $p = $MT_prefs;
+		$mtv = '?mtv=' . (!empty($p['version']) ? $p['version'] : 7);
+		$mts = '?mts=' . (!empty($p['num_saves']) ? $p['num_saves'] : 0);
+		$add = !empty($p['stylesheet_order']);
+		if (!empty($p['g_fonts_used'])){
+			$google_url = !empty($p['g_url_with_subsets']) ? $p['g_url_with_subsets']
+				: (!empty($p['gfont_subset']) ? $p['g_url'].$p['gfont_subset'] : $p['g_url']);
+			mt_enqueue_or_add($add, 'microthemer_g_font', $google_url);
+		}
+		$r = content_url() . '/micro-themes/'; $css_min = !empty($p['minify_css']) ? 'min.' : '';
+		mt_enqueue_or_add($add, 'microthemer', $r.$css_min.'active-styles.css'.$mts);
+		$deps = !empty($p['active_scripts_deps']) ? preg_split("/[\s,]+/", $p['active_scripts_deps']) : array();
+		if (!empty($p['enq_js']) and is_array($p['enq_js'])){
+			foreach ($p['enq_js'] as $k => $arr){
+				if (empty($arr['disabled'])){
+					wp_enqueue_script($arr['display_name']); $deps[] = $arr['display_name'];
+				}
+			}
+		} if (!empty($p['load_js'])) {
+			$h = 'mt_user_js'; wp_register_script($h, $r.'active-scripts.js'.$mts);
+			wp_enqueue_script($h, false, $deps, null, !empty($p['active_scripts_footer']));
+		} if (!empty($p['active_events'])) {
+			$h = 'mt_animation_events'; wp_register_script($h, $r.'animation-events.js'.$mtv, array('jquery')); wp_enqueue_script($h);
+			wp_localize_script( $h, 'MT_Events_Data', json_decode($p['active_events']) );
+		}
+	}
+	function add_microthemer_body_classes($classes){
+		global $post, $MT_prefs; if (isset($post)) {
+			$pfx = !empty($MT_prefs['page_class_prefix']) ? $MT_prefs['page_class_prefix'] : 'mt';
+			$classes[] = $pfx.'-'.$post->ID; $classes[] = $pfx.'-'.$post->post_type.'-'.$post->post_name;
+		}
+		return $classes;
+	}
+	if (!empty($MT_prefs['stylesheet_order']) || !empty($MT_prefs['stylesheet_in_footer'])){
+		$action = !empty($MT_prefs['stylesheet_in_footer']) ? 'wp_footer' : 'wp_head';
+		add_action('wp_head', 'add_microthemer_css', intval($MT_prefs['stylesheet_order']));
+	} else {
+		$action = !empty($MT_prefs['stylesheet_in_footer']) ? 'wp_footer' : 'wp_enqueue_scripts';
+		add_action('wp_enqueue_scripts', 'add_microthemer_css', 999999);
+	}
+	add_filter( 'body_class', 'add_microthemer_body_classes');
+}
+/* End Microthemer Code */
+
+?>

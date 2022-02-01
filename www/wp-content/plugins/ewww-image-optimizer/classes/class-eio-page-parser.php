@@ -29,6 +29,7 @@ if ( ! class_exists( 'EIO_Page_Parser' ) ) {
 			'jpe',
 			'png',
 			'svg',
+			'webp',
 		);
 
 		/**
@@ -49,15 +50,15 @@ if ( ! class_exists( 'EIO_Page_Parser' ) ) {
 			$unquoted_images = array();
 
 			$unquoted_pattern = '';
-			$search_pattern   = '#(?P<img_tag><img\s[^>]*?>)#is';
+			$search_pattern   = '#(?P<img_tag><img\s[^\\\\>]*?>)#is';
 			if ( $hyperlinks ) {
-				$this->debug_message( 'using figure+hyperlink(a) patterns with src required' );
-				$search_pattern   = '#(?:<figure[^>]*?\s+?class\s*=\s*["\'](?P<figure_class>[\w\s-]+?)["\'][^>]*?>\s*)?(?:<a[^>]*?\s+?href\s*=\s*["\'](?P<link_url>[^\s]+?)["\'][^>]*?>\s*)?(?P<img_tag><img[^>]*?\s+?src\s*=\s*("|\')(?P<img_url>(?!\4).+?)\4[^>]*?>){1}(?:\s*</a>)?#is';
-				$unquoted_pattern = '#(?:<figure[^>]*?\s+?class\s*=\s*(?P<figure_class>[\w-]+)[^>]*?>\s*)?(?:<a[^>]*?\s+?href\s*=\s*(?P<link_url>[^"\'\\\\][^\s>]+)[^>]*?>\s*)?(?P<img_tag><img[^>]*?\s+?src\s*=\s*(?P<img_url>[^"\'\\\\][^\s>]+)[^>]*?>){1}(?:\s*</a>)?#is';
+				$this->debug_message( 'using div/figure+hyperlink(a) patterns with src required' );
+				$search_pattern   = '#(?:<div[^>]*?\s+?class\s*=\s*["\'](?P<div_class>[\w\s-]+?)["\'][^>]*?>\s*(?:<span[^>]*?></span>)?)?(?:<figure[^>]*?\s+?class\s*=\s*["\'](?P<figure_class>[\w\s-]+?)["\'][^>]*?>\s*)?(?:<a[^>]*?\s+?href\s*=\s*["\'](?P<link_url>[^\s]+?)["\'][^>]*?>\s*)?(?P<img_tag><img[^>]*?\s+?src\s*=\s*("|\')(?P<img_url>(?!\5)[^\\\\]+?)\5[^>]*?>){1}(?:\s*</a>)?#is';
+				$unquoted_pattern = '#(?:<div[^>]*?\s+?class\s*=\s*(?P<div_class>[\w-]+?)[^>]*?>\s*(?:<span[^>]*?></span>)?)?(?:<figure[^>]*?\s+?class\s*=\s*(?P<figure_class>[\w-]+?)[^>]*?>\s*)?(?:<a[^>]*?\s+?href\s*=\s*(?P<link_url>[^"\'\\\\<>][^\s<>]+)[^>]*?>\s*)?(?P<img_tag><img[^>]*?\s+?src\s*=\s*(?P<img_url>[^"\'\\\\<>][^\s\\\\<>]+)(?:\s[^>]*?)?>){1}(?:\s*</a>)?#is';
 			} elseif ( $src_required ) {
 				$this->debug_message( 'using plain img pattern, src still required' );
-				$search_pattern   = '#(?P<img_tag><img[^>]*?\s+?src\s*=\s*("|\')(?P<img_url>(?!\2).+?)\2[^>]*?>)#is';
-				$unquoted_pattern = '#(?P<img_tag><img[^>]*?\s+?src\s*=\s*(?P<img_url>[^"\'\\\\][^\s>]+)[^>]*?>)#is';
+				$search_pattern   = '#(?P<img_tag><img[^>]*?\s+?src\s*=\s*("|\')(?P<img_url>(?!\2)[^\\\\]+?)\2[^>]*?>)#is';
+				$unquoted_pattern = '#(?P<img_tag><img[^>]*?\s+?src\s*=\s*(?P<img_url>[^"\'\\\\<>][^\s\\\\<>]+)(?:\s[^>]*?)?>)#is';
 			}
 			if ( preg_match_all( $search_pattern, $content, $images ) ) {
 				$this->debug_message( 'found ' . count( $images[0] ) . ' image elements with quoted pattern' );
@@ -222,6 +223,36 @@ if ( ! class_exists( 'EIO_Page_Parser' ) ) {
 		}
 
 		/**
+		 * Get dimensions of a file from the URL.
+		 *
+		 * @param string $url The URL of the image.
+		 * @return array The width and height, in pixels.
+		 */
+		function get_image_dimensions_by_url( $url ) {
+			$this->debug_message( '<b>' . __METHOD__ . '()</b>' );
+			$this->debug_message( "getting dimensions for $url" );
+
+			list( $width, $height ) = $this->get_dimensions_from_filename( $url, ! empty( $this->parsing_exactdn ) );
+			if ( empty( $width ) || empty( $height ) ) {
+				// Couldn't get it from the URL directly, see if we can get the actual filename.
+				$file = false;
+				if ( $this->allowed_urls && $this->allowed_domains ) {
+					$file = $this->cdn_to_local( $url );
+				}
+				if ( ! $file ) {
+					$file = $this->url_to_path_exists( $url );
+				}
+				if ( $file && $this->is_file( $file ) ) {
+					list( $width, $height ) = wp_getimagesize( $file );
+				}
+			}
+			$width  = $width && is_numeric( $width ) ? (int) $width : false;
+			$height = $height && is_numeric( $height ) ? (int) $height : false;
+
+			return array( $width, $height );
+		}
+
+		/**
 		 * Get the width from an image element.
 		 *
 		 * @param string $img The full image element.
@@ -328,16 +359,21 @@ if ( ! class_exists( 'EIO_Page_Parser' ) ) {
 			if ( 'class' === $name ) {
 				$element = preg_replace( "#\s$name\s+([^=])#", ' $1', $element );
 			}
+			// Remove empty attributes first.
 			$element = preg_replace( "#\s$name=\"\"#", ' ', $element );
-			$value   = trim( $value );
+			// Remove/escape double-quotes with the encoded version, so that we can safely enclose the value in double-quotes.
+			$value = str_replace( '"', '&#34;', $value );
+			$value = trim( $value );
 			if ( $replace ) {
 				// Don't forget, back references cannot be used in character classes.
-				$new_element = preg_replace( '#\s' . $name . '\s*=\s*("|\')(?!\1).*?\1#is', " $name=$1$value$1", $element );
+				$new_element = preg_replace( '#\s' . $name . '\s*=\s*("|\')(?!\1).*?\1#is', ' ' . $name . '="' . $value . '"', $element );
 				if ( strpos( $new_element, "$name=" ) && $new_element !== $element ) {
 					$element = $new_element;
 					return;
 				}
+				// Purge un-quoted attribute patterns, so the new value can be inserted further down.
 				$new_element = preg_replace( '#\s' . $name . '\s*=\s*[^"\'][^\s>]+#is', ' ', $element );
+				// But if we couldn't purge the attribute, then bail out.
 				if ( preg_match( '#\s' . $name . '\s*=\s*#', $new_element ) && $new_element === $element ) {
 					$this->debug_message( "$name replacement failed, still exists in $element" );
 					return;
@@ -348,10 +384,11 @@ if ( ! class_exists( 'EIO_Page_Parser' ) ) {
 			if ( false === strpos( $element, '/>' ) ) {
 				$closing = '>';
 			}
-			if ( false === strpos( $value, '"' ) ) {
+			if ( false === strpos( $value, '"' ) ) { // This should always be true, since we escape double-quotes above.
 				$element = rtrim( $element, $closing ) . " $name=\"$value\"$closing";
 				return;
 			}
+			// If we get here, something is kind of weird, since double-quotes were supposed to be escaped.
 			$element = rtrim( $element, $closing ) . " $name='$value'$closing";
 		}
 

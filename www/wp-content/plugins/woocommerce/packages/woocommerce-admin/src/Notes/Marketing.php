@@ -30,6 +30,11 @@ class Marketing {
 	 * @return Note
 	 */
 	public static function get_note() {
+		// Don't show the note unless the store has been active at least 5 days.
+		if ( ! self::is_wc_admin_active_in_date_range( 'week-1-4', 5 * DAY_IN_SECONDS ) ) {
+			return;
+		}
+
 		$note = new Note();
 		$note->set_title( __( 'Connect with your audience', 'woocommerce' ) );
 		$note->set_content( __( 'Grow your customer base and increase your sales with marketing tools built for WooCommerce.', 'woocommerce' ) );

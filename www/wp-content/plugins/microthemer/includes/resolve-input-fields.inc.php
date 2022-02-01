@@ -7,8 +7,12 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
 // just use for image URL fields
 $disable_spellcheck = '';
 
+$data_atts = '';
+
 // save prop data in smaller var
 $prop_data = $this->propertyoptions[$property_group_name][$property];
+
+$cssf = str_replace('_', '-', $property);
 
 // is it a custom editor
 $is_editor = false;
@@ -94,7 +98,7 @@ if (
 	!empty($prop_data['type']) and
 	$prop_data['type'] == 'combobox') {
 	$combo_class = 'combobox has-arrows';
-	$combo_arrow = '<span class="combo-arrow"></span>';
+	$combo_arrow = '<span class="combo-arrow tvr-field-arrow"></span>';
 } else {
 	// numerical field
 	if (!$is_picker){
@@ -116,8 +120,13 @@ if (
 	}
 
 	// 3 dots dropdown
-	$combo_class = 'combobox has-suggestions';
-	$combo_arrow = '<span class="combo-arrow combo-dots"></span>';
+	$combo_class = 'combobox';
+
+	if (!$is_picker){
+		$combo_class.= ' has-suggestions';
+	}
+
+	$combo_arrow = '<span class="combo-arrow combo-dots tvr-field-arrow"></span>';
 }
 
 // have 'x' clear for input fields now that slider makes clear in select proplematic
@@ -129,7 +138,7 @@ if (!$is_picker){
 
 // determine if the user has applied a value for this field, adjust comp class accordingly
 
-$comp_class = 'comp-style cprop-' . str_replace('_', '-', $property);
+$comp_class = 'comp-style cprop-' . $cssf;
 if (!empty($value) or $value === 0 or $value === '0') {
 	$man_class = ' manual-val';
 
@@ -141,6 +150,7 @@ if (!empty($value) or $value === 0 or $value === '0') {
 }
 
 if ($is_picker) {
+	$data_atts.= 'data-forpopup="picker"';
 	$comp_class.= ' comp-for-picker';
 }
 
@@ -162,20 +172,25 @@ $variable_line = !empty($prop_data['variable_line']);
 $array_values = !empty($prop_data['array_values']);
 
 // css property icon
-$option_icon = '<span class="o-icon-wrap"><span class="tvr-icon option-icon option-icon-'.$property.'"></span></span>';
+$icon_name = !empty($prop_data['icon-name']) ? $prop_data['icon-name'] : $cssf;
+$option_icon = '<span class="option-icon option-icon-'.$property.
+               ' '.$this->iconFont($icon_name, array('onlyClass' => 1)).'"></span>';
 
 /** Deal with property exceptions */
 $extra_icon = '';
 
 // add image insert button for bg image
 if ($property == 'background_image' or $property == 'list_style_image' or $property == 'url_function') {
-	$extra_icon = ' <span class="tvr-icon tvr-image-upload"></span>';
+	//$extra_icon = ' <span class="tvr-image-upload"></span>';
+	$extra_icon = $this->iconFont('cloud-upload-alt', array(
+		'class' => 'tvr-image-upload'
+	));
 	$disable_spellcheck = 'spellcheck="false"';
 }
 
 // add an 'Add' button for add template area
 if ($property == 'grid_template_areas_add') {
-	$extra_icon = ' <span class="tvr-button tvr-add-template-area">'.esc_html__('Add area', 'microthemer').'</span>';
+	$extra_icon = ' <span class="tvr-button tvr-add-template-area">'.esc_html__('Add', 'microthemer').'</span>';
 }
 
 // strip font-family custom quotes for legacy reasons
@@ -184,7 +199,13 @@ if ($property == 'font_family') {
 }
 // allow user to edit their google fonts with a link
 if ($property == 'google_font') {
-	$extra_icon = '<span class="g-font tvr-icon show-dialog" rel="google-fonts" title="Set Google Font"></span>';
+	//$extra_icon = '<span class="g-font show-dialog" rel="google-fonts" title="Set Google Font"></span>';
+	$extra_icon = $this->iconFont('search', array(
+		'class' => 'g-font show-dialog',
+		'rel' => 'google-fonts',
+		'title' => esc_attr('Browse Google fonts', 'Microthemer'),
+	));
+
 	// hide if font-family isn't set to Google Font
 	if ($property_group_array['font_family'] != 'Google Font...') {
 		$field_class.= ' hidden';
@@ -195,7 +216,7 @@ if ($property == 'google_font') {
 if (!empty($property_group_array['event'])){
 	$property_group_array['event'] = trim($property_group_array['event']);
 }
-if ($property == 'event_target' and
+/*if ($property == 'event_target' and
     ( empty($property_group_array['event'])
       or $property_group_array['event'] == ':hover'
       or $property_group_array['event'] == ':focus') ) {
@@ -204,7 +225,7 @@ if ($property == 'event_target' and
 // hide event value if no event is set
 if ($property == 'event_value' and empty($property_group_array['event'])) {
 	$field_class.= ' hidden';
-}
+}*/
 
 // get the property label
 $prop_label = $prop_data['label'];
@@ -212,7 +233,7 @@ $prop_label = $prop_data['label'];
 // adjust for lang
 if ($this->preferences['tooltip_en_prop']){
 
-	$valid_syntax = str_replace('_', '-', $property);
+	$valid_syntax = $cssf;
 
 	// adjust for any alias
 	$valid_syntax = !empty($this->propAliases[$valid_syntax])
@@ -266,7 +287,7 @@ if ( !empty($prop_data['pg_controls']) ){
 			case 'icon':
 				$control_icon = '<span class="'.$item['class'].'" title="'.$item['title'].'"></span>';
 				$controls.= !empty($item['wrapper'])
-					? '<span class="control-wrapper '.$item['wrapper'].'">' . $control_icon . '</span>'
+					? '<span class="pg-control-wrapper '.$item['wrapper'].'">' . $control_icon . '</span>'
 					: $control_icon;
 				break;
 
@@ -360,15 +381,15 @@ if (!empty($prop_data['sub_label'])){
 	$colon = ':';
 	if ($is_editor){
 		$mode_icon = $this->preferences['allow_scss'] ? 'scss' : 'css';
-		$subgroup_label = '<span class="'.$mode_icon.'-icon tvr-icon">'.$prop_data['sub_label'].'</span>';
-		$info_icon = '<span class="tvr-icon info-icon css-info" rel="program-docs"
+		$subgroup_label = '<span class="'.$mode_icon.'-icon">'.$prop_data['sub_label'].'</span>';
+		$info_icon = '<span class="info-icon css-info" rel="program-docs"
 		title="'.esc_attr__('Click for info', 'microthemer').'"
 				data-prop-group="'.$property_group_name.'" data-prop="'.$property.'"></span>';
 		$colon = '';
 	}
 
 	// manual resize icon
-	$manual_resize_icon = $this->manual_resize_icon('inline-editor');
+	//$manual_resize_icon = $this->manual_resize_icon('inline-editor');
 
 	// dynamic fields toggle
 	$dyn_fields_toggle = empty( $prop_data['dynamic_fields'] ) ? ''
@@ -389,14 +410,12 @@ if (!empty($prop_data['sub_label'])){
 	$sub_label_html = $opening_sub_label;
 
 		$sub_label_html.= '
-		<span class="quick-opts-wrap tvr-fade-in'.$dis_class.'">
-			<span class="subgroup-label">'. $subgroup_label .  $colon. '</span>' . '
+		<span class="quick-opts-wrap tvr-transition-in'.$dis_class.' tvr-field-quick-opts-wrap tvr-sub-quick-opts">
+			<span class="subgroup-label">'. $subgroup_label .  '</span>' . '
 			<span class="quick-opts">
-				<div class="quick-opts-inner">'
-				. ($is_editor ? $this->save_icon() : '')
+				<div class="quick-opts-inner mt-icon-line">'
 				. $sub_dis_icon
 				. $sub_clear_icon
-				. ($is_editor ? $this->manual_resize_icon('inline-code') : '')
 				. $info_icon
 				. '
 				</div>
@@ -448,23 +467,38 @@ if (!empty( $prop_data['tabs_before'] )){
 
 		foreach($prop_data['tabs_before'] as $tab_class => $tab_label) {
 			$html.= '
-			<span class="pg-tab '.$property_group_name.'-tab mt-tab '.$property_group_name.'-tab-'.$tab_class.' quick-opts-wrap" rel="'.$tab_class.'" data-pg="'.$property_group_name.'">
-				 <span class="mt-tab-txt pg-tab-text '.$property_group_name.'-tab-txt ">' . $tab_label. '</span>
-                 <span class="quick-opts tvr-dots dots-above">
-                    <div class="quick-opts-inner">'
-						. $this->icon_control(false,'disabled', false, 'pgtab', '', '', '', '', '', '', 'tvr_mcth', $tab_class)
-						. $this->clear_icon('pgtab', array(
-							'key' => 'tab-group',
-							'value' => $tab_class,
-						)). '
-                    </div>
+			<span class="pg-tab '.$property_group_name.'-tab mt-tab '.$property_group_name.'-tab-'.$tab_class.' quick-opts-wrap opts-show-above" rel="'.$tab_class.'" data-pg="'.$property_group_name.'">
+				 <span class="mt-tab-txt pg-tab-text '.$property_group_name.'-tab-txt ">' . $tab_label. '</span>';
+
+					// CSS grid has options for clearing whole tabs, transform doesn't need this as sub-labels cover all
+					if (!empty($prop_data['tabs_has_options'])){
+						$html.=
+						'<span class="quick-opts tvr-dots dots-above">
+						'.
+						$this->iconFont('dots-horizontal', array(
+							//'onlyClass' => 1,
+						))
+						.'
+						
+	                    <div class="quick-opts-inner mt-icon-line">'
+								. $this->icon_control(false,'disabled', false, 'pgtab', '', '', '', '', '', '', 'tvr_mcth', $tab_class)
+								. $this->clear_icon('pgtab', array(
+									'key' => 'tab-group',
+									'value' => $tab_class,
+								)). '
+	                    </div>';
+					}
+
+					$html.= '
                  </span>
             </span>';
 		}
 
 		// tabs label
 		if (!empty($prop_data['tabs_label'] )){
-			$html.= '<span class="property-text-label pg-tabs-label">'.$prop_data['tabs_label'].'</span>';
+			$html.= '<span class="mt-property-label pg-tabs-label">
+				'.$prop_data['tabs_label'].'
+			</span>';
 		}
 
 	$html.= '
@@ -483,7 +517,7 @@ $gridTemplateProp = ($property === 'grid_template_rows' || $property === 'grid_t
 
 // opening field wrap html
 $field_wrap_html = '<div id="opts-'.$section_name.'-'.$css_selector.'-'.$property_group_name.'-'.$this->subgroup.'-'.$property. $mq_extr_class. '"
- class="property-tag field-wrap tvr-clearfix subgroup-'.$this->subgroup.' '.$field_class
+ class="property-tag field-wrap subgroup-'.$this->subgroup.' '.$field_class
 	. ' field-'.$property_group_name.'-'.$property.'" '.$tab_control_data.'>';
 
 
@@ -521,13 +555,26 @@ $field_wrap_html = '<div id="opts-'.$section_name.'-'.$css_selector.'-'.$propert
 		$html.= $field_wrap_html;
 
 		// css property text label
-		$html.= '<span class="property-text-label">'
-		              . $prop_data['short_label'] //$valid_syntax
-		              . '</span>';
+		/*$html.= '
+		<div class="tvr-input-top">';
+
+
+
+			$html.=	'<span class="mt-property-label">'. $prop_data['short_label'] .'</span>
+ 			'. $this->icon_control(false, 'important', $important_val, 'property', $section_name,
+				        $css_selector, $key, $property_group_name, $this->subgroup, $property).'
+		</div>';*/
+
+		$html.=	'
+		<span class="mt-property-label">
+			<span class="mt-property-text-label">'. $prop_data['short_label'] .'</span>
+			<span class="mt-prop-unit" data-forpopup="units"></span>
+		</span>';
+
 
 		// show the property icon, with quick options
 		$html.= '
-		<label class="quick-opts-wrap tvr-fade-in">';
+			<label class="quick-opts-wrap tvr-transition-in tvr-field-quick-opts-wrap tvr-property-quick-opts">';
 
 		$html.= $option_icon; // . $text_label;
 
@@ -535,7 +582,7 @@ $field_wrap_html = '<div id="opts-'.$section_name.'-'.$css_selector.'-'.$propert
 
 		// explain why computed value not reported for transform functions
 		$isFunc = (isset($prop_data['css_func']) and
-		                    ($property_group_name === 'transform' or $property_group_name === 'filter' ));
+		           ($property_group_name === 'transform' or $property_group_name === 'filter' ));
 		if ($isFunc){
 
 			// removing '_function'
@@ -558,40 +605,38 @@ $field_wrap_html = '<div id="opts-'.$section_name.'-'.$css_selector.'-'.$propert
 		}
 
 		$html.= '
-		<span class="quick-opts">
-			<div class="quick-opts-inner">
-				<span class="option-label css-info link" rel="program-docs"
-				data-prop-group="'.$property_group_name.'" data-prop="'.$property.'">'.$prop_label.'</span>
-				<span class="option-value"'.$comp_value_hint.'></span>
-				<div class="comp-mixed-wrap">
-					<table class="comp-mixed-table">
-					<table class="comp-mixed-table">
-						<tbody></tbody>
-					</table>
+			<span class="quick-opts">
+				<div class="quick-opts-inner">
+					<span class="option-label css-info" rel="program-docs"
+					data-prop-group="'.$property_group_name.'" data-prop="'.$property.'">'.$prop_label.'</span>
+					<span class="option-value"'.$comp_value_hint.'></span>
+					<div class="comp-mixed-wrap">
+						<table class="comp-mixed-table">
+							<tbody></tbody>
+						</table>
+					</div>
 				</div>
-			</div>
-		</span>';
+			</span>';
 
 		$html.= '
-		</label>';
+			</label>';
 
 		// start variable line fields wrap
-		$html.= $variable_line ? '<div class="mt-variable-line">
-		<div class="mt-vl-inner">' : '';
+		$html.= $variable_line ? '<div class="mt-variable-line"><div class="mt-vl-inner">' : '';
 
 		$input_wrap_html = '';
 
-		$input_wrap_html.= '<span class="tvr-input-wrap '.$man_class . '">';
+		$input_wrap_html.= '<span class="tvr-input-wrap tvr-field-input-wrap '.$man_class . '">';
 
 			// if a variable input field, provide a color picker too
 			if ($property === 'event_value'){
-				$hidden_suppl =
+				/*$hidden_suppl =
 					(strpos($property_group_array['transition_property'], 'color') !== false or
 					strpos($property_group_array['transition_property'], 'shadow') !== false) ? '' : 'hidden';
-				$picker_value = $hidden_suppl ? '' : $value;
+				$picker_value = $hidden_suppl ? '' : $value;*/
 
-				$input_wrap_html.= '<span class="suppl-picker-wrap '.$hidden_suppl.'">
-				<input class="color mt-supplementary-picker mt-color-picker" name="mt_sup_picker" value="'.$picker_value.'" />
+				$input_wrap_html.= '<span class="suppl-picker-wrap">
+				<input class="color mt-supplementary-picker mt-color-picker" name="mt_sup_picker" value="" />
 				</span>';
 			}
 
@@ -615,7 +660,7 @@ $field_wrap_html = '<div id="opts-'.$section_name.'-'.$css_selector.'-'.$propert
 
 			$property_input = '<input type="text" 
 			autocomplete="off" rel="'.$property.'" data-autofill="'.$autofill_rel.'" '.$disable_spellcheck.'
-			data-appto="#style-components" 
+			data-appto="#style-components" '.$data_atts.'
 			class="property-input '.$combo_class.' '.$input_class . ' ' . $autofill_class  .'"
 			name="tvr_mcth'.$mq_stem.'['.$section_name.']['.$css_selector.'][styles]['.$property_group_name.']['. $property.']'.$name_suffix.'" value="'.$value.'" />';
 
@@ -671,11 +716,20 @@ $field_wrap_html = '<div id="opts-'.$section_name.'-'.$css_selector.'-'.$propert
 		// end variable line fields wrap
 		$html.= $variable_line ? '
 			</div>
-		</div><div class="add-variable-field add-icon tvr-icon" title="Add field">Add</div>' : '';
+		</div>'. $this->iconFont('add', array(
+			'class' => 'add-variable-field',
+			'title' => 'Add field',
+			)) : '';
 
-		// important
 		$html.= $this->icon_control(false, 'important', $important_val, 'property', $section_name,
 			$css_selector, $key, $property_group_name, $this->subgroup, $property);
+
+		// CSS unit
+		//$html.= '<span class="input-unit-right">px</span>';
+
+		// important
+		/*$html.= $this->icon_control(false, 'important', $important_val, 'property', $section_name,
+			$css_selector, $key, $property_group_name, $this->subgroup, $property);*/
 
 		$html.= '</div><!-- end field-wrap -->';
 	}
@@ -688,12 +742,12 @@ if (!empty($prop_data['linebreak']) and $prop_data['linebreak'] == '1') {
 }
 
 // global UI toggle for grid highlight
-if (!empty($prop_data['highlight_grid_toggle'])) {
+/*if (!empty($prop_data['highlight_grid_toggle'])) {
 
 
 
 
-	$html .= '<div class="grid-options-wrap">';
+	$html .= '<div class="grid-option-icons">';
 
 	// toggle grid highlight
 	$html.= $this->ui_toggle(
@@ -728,7 +782,7 @@ if (!empty($prop_data['highlight_grid_toggle'])) {
 	.'
     </div>';
 
-}
+}*/
 
 // include interactive grid for css grid
 /*if (!empty($prop_data['grid_control'] )){

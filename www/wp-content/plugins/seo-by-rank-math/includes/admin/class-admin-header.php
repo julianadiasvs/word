@@ -41,10 +41,13 @@ class Admin_Header {
 			<div class="rank-math-logo">
 				<?php echo $logo_url; // phpcs:ignore ?>
 			</div>
-			<h1 class="rank-math-logo-text">Rank Math SEO <?php if ( defined( 'RANK_MATH_PRO_FILE' ) ) echo '<span class="rank-math-pro-badge">PRO</span>'; ?></h1>
+			<h1 class="rank-math-logo-text">
+				Rank Math SEO
+				<?php do_action( 'rank_math/pro_badge' ); ?>
+			</h1>
 			<?php $this->get_search_options(); ?>
 			<?php $this->get_mode_selector(); ?>
-			<a href="<?php echo esc_url( $this->get_help_link() ); ?>" target="_blank" class="button rank-math-help"><i class="rm-icon rm-icon-help"></i></a>
+			<a href="<?php echo esc_url( $this->get_help_link() ); ?>" title="<?php esc_attr_e( 'Rank Math Knowledge Base', 'rank-math' ); ?>" target="_blank" class="button rank-math-help"><i class="rm-icon rm-icon-help"></i></a>
 		</div>
 		<?php
 

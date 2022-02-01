@@ -1,6 +1,6 @@
 <?php
 /**
- * The robots txt module.
+ * The robots.txt editor module.
  *
  * @since      0.9.0
  * @package    RankMath
@@ -79,21 +79,14 @@ class Robots_Txt {
 	}
 
 	/**
-	 * Get robots.txt related data.
+	 * Get robots.txt related data: whether the file exists, the contents
+	 * of the file, and the "Search engine visibility" setting for the site.
 	 *
 	 * @return array
 	 */
 	public static function get_robots_data() {
 		$wp_filesystem = WordPress::get_filesystem();
 		$public        = absint( get_option( 'blog_public' ) );
-
-		if ( $wp_filesystem->exists( ABSPATH . 'robots.txt' ) ) {
-			return [
-				'exists'  => true,
-				'default' => $wp_filesystem->get_contents( ABSPATH . 'robots.txt' ),
-				'public'  => $public,
-			];
-		}
 
 		$default  = '# This file is automatically added by Rank Math SEO plugin to help a website index better';
 		$default .= "\n# More info: https://s.rankmath.com/home\n";
@@ -104,10 +97,28 @@ class Robots_Txt {
 			$default .= "Disallow: /wp-admin/\n";
 			$default .= "Allow: /wp-admin/admin-ajax.php\n";
 		}
+		$default = apply_filters( 'robots_txt', $default, $public );
+
+		if ( empty( $wp_filesystem ) || ! Helper::is_filesystem_direct() ) {
+			return [
+				'exists'   => false,
+				'default'  => $default,
+				'public'   => $public,
+				'writable' => false,
+			];
+		}
+
+		if ( $wp_filesystem->exists( ABSPATH . 'robots.txt' ) ) {
+			return [
+				'exists'  => true,
+				'default' => $wp_filesystem->get_contents( ABSPATH . 'robots.txt' ),
+				'public'  => $public,
+			];
+		}
 
 		return [
 			'exists'  => false,
-			'default' => apply_filters( 'robots_txt', $default, $public ),
+			'default' => $default,
 			'public'  => $public,
 		];
 	}

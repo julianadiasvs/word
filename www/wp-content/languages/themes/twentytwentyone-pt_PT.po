@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Themes - Twenty Twenty-One package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-01-13 15:53:40+0000\n"
+"PO-Revision-Date: 2021-05-06 15:23:58+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -120,10 +120,10 @@ msgstr "Cor de fundo"
 msgid "This theme requires WordPress 5.3 or newer. You are running version %s. Please upgrade."
 msgstr "Este tema requer o WordPress 5.3 ou superior. Está a utilizar a versão %s. Por favor actualize."
 
-#. translators: %: page number.
-#: image.php:46 template-parts/content/content-page.php:36
+#. translators: %: Page number.
 #: template-parts/content/content.php:36
-#: template-parts/content/content-single.php:30
+#: template-parts/content/content-page.php:36
+#: template-parts/content/content-single.php:30 image.php:46
 msgid "Page %"
 msgstr "Página %"
 
@@ -166,7 +166,7 @@ msgstr "XS"
 msgid "Leave a comment"
 msgstr "Deixe um comentário"
 
-#. translators: %s: comment count number.
+#. translators: %s: Comment count number.
 #: comments.php:40
 msgctxt "Comments title"
 msgid "%s comment"
@@ -211,10 +211,10 @@ msgstr "&#8220;Auto-retracto&#8221; por Berthe Morisot"
 msgid "&#8220;Daffodils&#8221; by Berthe Morisot"
 msgstr "&#8220;Daffodils&#8221; por Berthe Morisot"
 
-#: inc/starter-content.php:43 inc/block-patterns.php:72
-#: inc/block-patterns.php:107
-msgid "&#8220;Roses Tremieres&#8221; by Berthe Morisot"
-msgstr "&#8220;Roses Tremieres&#8221; por Berthe Morisot"
+#: inc/block-patterns.php:72 inc/block-patterns.php:107
+#: inc/starter-content.php:43
+msgid "&#8220;Roses Trémières&#8221; by Berthe Morisot"
+msgstr "&#8220;Roses Trémières&#8221; por Berthe Morisot"
 
 #: inc/template-functions.php:399
 msgctxt "Post password form"
@@ -292,8 +292,8 @@ msgid "Villa with Orange Trees, Nice"
 msgstr "Villa with Orange Trees, Nice"
 
 #: inc/block-patterns.php:107
-msgid "Roses Tremieres"
-msgstr "Roses Tremieres"
+msgid "Roses Trémières"
+msgstr "Roses Trémières"
 
 #: inc/block-patterns.php:96
 msgid "&#8220;Villa with Orange Trees, Nice&#8221; by Berthe Morisot"
@@ -307,13 +307,13 @@ msgstr "Jardins pintados por Berthe Morisot no final do século XIX"
 msgid "&#8220;The Garden at Bougival&#8221; by Berthe Morisot"
 msgstr "&#8220;The Garden at Bougival&#8221; por Berthe Morisot"
 
-#: inc/starter-content.php:61 inc/block-patterns.php:72
-#: inc/block-patterns.php:107
+#: inc/block-patterns.php:72 inc/block-patterns.php:107
+#: inc/starter-content.php:61
 msgid "&#8220;Young Woman in Mauve&#8221; by Berthe Morisot"
 msgstr "&#8220;Young Woman in Mauve&#8221; por Berthe Morisot"
 
-#: inc/starter-content.php:51 inc/block-patterns.php:72
-#: inc/block-patterns.php:107
+#: inc/block-patterns.php:72 inc/block-patterns.php:107
+#: inc/starter-content.php:51
 msgid "&#8220;In the Bois de Boulogne&#8221; by Berthe Morisot"
 msgstr "&#8220;In the Bois de Boulogne&#8221; por Berthe Morisot"
 
@@ -329,7 +329,7 @@ msgstr "Playing in the Sand"
 msgid "&#8220;Playing in the Sand&#8221; by Berthe Morisot"
 msgstr "&#8220;Playing in the Sand&#8221; por Berthe Morisot"
 
-#. translators: %s: parent post.
+#. translators: %s: Parent post.
 #: image.php:59
 msgid "Published in %s"
 msgstr "Publicado em %s"
@@ -350,14 +350,13 @@ msgstr "Grosso"
 msgid "On Archive Pages, posts show:"
 msgstr "Em páginas de arquivo, os artigos mostram:"
 
-#. translators: 1: Link to authors posts. 2: Author name.
-#: template-parts/post/author-bio.php:20
-msgid "View all of %2$s's posts."
-msgstr "Ver todos os artigos de %2$s."
+#. translators: %s: Author name.
+#: template-parts/post/author-bio.php:31
+msgid "View all of %s's posts."
+msgstr "Ver todos os artigos de %s."
 
-#. translators: 1: Author name.
-#. translators: %s author name.
-#: template-parts/post/author-bio.php:15 inc/template-tags.php:49
+#. translators: %s: Author name.
+#: template-parts/post/author-bio.php:19 inc/template-tags.php:49
 msgid "By %s"
 msgstr "Por %s"
 
@@ -369,10 +368,10 @@ msgstr "Parece que não foi possível encontrar o que procura. Talvez uma pesqui
 msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
 msgstr "Não foi possível encontrar nada com os termos da sua pesquisa. Por favor, tente com palavras-chave diferentes."
 
-#. translators: 1: link to WP admin new post page.
+#. translators: %s: Link to WP admin new post page.
 #: template-parts/content/content-none.php:43
-msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
-msgstr "Pronto para publicar o seu primeiro artigo? <a href=\"%1$s\">Comece aqui</a>."
+msgid "Ready to publish your first post? <a href=\"%s\">Get started here</a>."
+msgstr "Pronto para publicar o seu primeiro artigo? <a href=\"%s\">Comece aqui</a>."
 
 #: single.php:40
 msgid "Previous post"
@@ -382,7 +381,7 @@ msgstr "Artigo anterior"
 msgid "Next post"
 msgstr "Artigo seguinte"
 
-#. translators: %s: parent post link.
+#. translators: %s: Parent post link.
 #: single.php:25
 msgid "<span class=\"meta-nav\">Published in</span><span class=\"post-title\">%s</span>"
 msgstr "<span class=\"meta-nav\">Publicado em</span><span class=\"post-title\">%s</span>"
@@ -396,36 +395,36 @@ msgstr "Pesquisar"
 msgid "Search&hellip;"
 msgstr "Pesquisar&hellip;"
 
-#. translators: %d: the number of search results.
+#. translators: %d: The number of search results.
 #: search.php:33
 msgid "We found %d result for your search."
 msgid_plural "We found %d results for your search."
 msgstr[0] "Foi encontrado %d resultado para a sua pesquisa."
 msgstr[1] "Foram encontrados %d resultados para a sua pesquisa."
 
-#. translators: %s: search term.
+#. translators: %s: Search term.
 #: template-parts/content/content-none.php:22 search.php:21
 msgid "Results for \"%s\""
 msgstr "Resultados para \"%s\""
 
-#. translators: %s: list of tags.
+#. translators: %s: List of tags.
 #: inc/template-tags.php:118 inc/template-tags.php:162
 msgid "Tagged %s"
 msgstr "Etiquetas: %s"
 
-#. translators: %s: list of categories.
+#. translators: %s: List of categories.
 #: inc/template-tags.php:108 inc/template-tags.php:152
 msgid "Categorized as %s"
 msgstr "Categorizado como %s"
 
-#. translators: used between list items, there is a space after the comma.
+#. translators: Used between list items, there is a space after the comma.
 #: inc/template-tags.php:104 inc/template-tags.php:114
 #: inc/template-tags.php:148 inc/template-tags.php:158
 msgid ", "
 msgstr ", "
 
 #. translators: %s: Name of current post. Only visible to screen readers.
-#: image.php:68 image.php:93 template-parts/content/content-page.php:48
+#: template-parts/content/content-page.php:48 image.php:68 image.php:93
 #: inc/template-tags.php:92 inc/template-tags.php:135
 msgid "Edit %s"
 msgstr "Editar %s"
@@ -548,15 +547,15 @@ msgctxt "Used before full size attachment link."
 msgid "Full size"
 msgstr "Tamanho original"
 
-#. translators: %s: publish date.
+#. translators: %s: Publish date.
 #: inc/template-tags.php:29
 msgid "Published %s"
 msgstr "Publicado em %s"
 
-#: image.php:43 template-parts/content/content-page.php:33
 #: template-parts/content/content.php:33
-#: template-parts/content/content-single.php:27 inc/template-tags.php:228
-#: comments.php:62
+#: template-parts/content/content-page.php:33
+#: template-parts/content/content-single.php:27 comments.php:62 image.php:43
+#: inc/template-tags.php:228
 msgid "Page"
 msgstr "Página"
 
@@ -568,7 +567,7 @@ msgstr "Fechar"
 msgid "Menu"
 msgstr "Menu"
 
-#: functions.php:76 template-parts/header/site-nav.php:13
+#: template-parts/header/site-nav.php:13 functions.php:76
 #: inc/starter-content.php:154
 msgid "Primary menu"
 msgstr "Menu principal"
@@ -718,7 +717,7 @@ msgstr "Mostrar título e descrição do site"
 msgid "It looks like nothing was found at this location. Maybe try a search?"
 msgstr "Parece que não foi encontrado nada aqui. Que tal tentar uma pesquisa?"
 
-#: 404.php:16 template-parts/content/content-none.php:30
+#: template-parts/content/content-none.php:30 404.php:16
 msgid "Nothing here"
 msgstr "Não há nada aqui"
 

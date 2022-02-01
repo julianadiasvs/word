@@ -25,7 +25,7 @@ $this->display_log();
 	action="admin.php?page=<?php echo $page_context;?>" >
 	<?php //wp_nonce_field('tvr_preferences_submit'); ?>
 	<input type="hidden" name="tvr_preferences_form" value="1" />
-	<?php echo $this->start_dialog('display-preferences', esc_html__('Edit your Microthemer preferences', 'microthemer'), 'medium-dialog',
+	<?php echo $this->start_dialog('display-preferences', esc_html__('Edit Preferences', 'microthemer'), 'medium-dialog',
 		array(
 			esc_html_x('General', '(General Preferences)', 'microthemer' ),
 			esc_html__('Units', 'microthemer'),
@@ -107,17 +107,35 @@ $this->display_log();
 	            'items' => array(
 		            'gfont_subset' => array(
 			            'is_text' => 1,
+			            //'one_line' => 1,
 			            'label' => __('Google Font subset URL parameter', 'microthemer'),
 			            'explain' => __('You can instruct Google Fonts to include a font subset by entering an URL parameter here. For example "&subset=latin,latin-ext" (without the quotes). Note: Microthemer only generates a Google Font URL if it detects that you have applied Google Fonts in your design.', 'microthemer'),
 		            ),
 	            )
             ),
             'integrations' => array(
-	            'label' => __('Integrations', 'microthemer'),
+	            'label' => __('Stylesheet', 'microthemer'),
 	            'items' => array(
-		            'after_oxy_css' => array(
-			            'label' => __('Load Microthemer CSS after Oxygen CSS', 'microthemer'),
-			            'explain' => __("Ensure Microthemer's active-styles.css stylesheet loads after Oxygen stylesheets", 'microthemer'),
+		            'stylesheet_in_footer' => array(
+			            'label' => __('Load the Stylesheet in the footer', 'microthemer'),
+			            'explain' => __("Load Microthemer's stylesheet in the footer (if just for 'below the fold' content)", 'microthemer'),
+
+		            ),
+		            'stylesheet_order' => array(
+			            'is_text' => 1,
+			            'one_line' => 1,
+			            'combobox' => 'stylesheet_order_options',
+			            'label' => __('Stylesheet loading order', 'microthemer'),
+			            'explain' => __("Set the order Microthemer's active-styles.css stylesheet loads with respect to other stylesheets", 'microthemer'),
+
+		            ),
+		            'page_class_prefix' => array(
+			            'is_text' => 1,
+			            'one_line' => 1,
+			            'combobox' => 'page_class_prefix_options',
+			            'label' => __('Prefix for page-specific body element classes', 'microthemer'),
+			            'explain' => __("Change this value if the default clashes with a utility library like Bootstrap or Tailwind", 'microthemer'),
+
 		            )
 	            )
             ),
@@ -148,10 +166,10 @@ $this->display_log();
 			            'explain' => __('The numbers in the tape measure design may be helpful, but it involves dragging left to increase values, which may feel unintuitive', 'microthemer'),
 
 		            ),
-		            'dark_editor' => array(
+		           /* 'mt_dark_mode' => array(
 			            'label' => __('Use a dark theme for the custom code editor', 'microthemer'),
 			            'explain' => __('If you prefer a dark background when writing CSS code in the custom code editor, set this to yes.' , 'microthemer')
-		            ),
+		            ),*/
 		            /*'tooltip_en_prop' => array(
 			            'label' => __('Show CSS syntax in property tooltips (english code)', 'microthemer'),
 			            'explain' => __("If you want learn valid CSS syntax while you work in Microthemer, set this option to Yes. Seeing the actual CSS property may be particularly useful if you're using a non-english translation", 'microthemer'),
@@ -342,7 +360,7 @@ $this->display_log();
 
 	<!-- Tab 3 (Inactive) -->
 	<div class="dialog-tab-field dialog-tab-field-<?php echo ++$tab_count; ?> hidden">
-		<ul class="form-field-list css_units">
+		<ul class="form-field-list delete-upon-install">
 			<?php
 			// yes no options
 			$yes_no = array(
@@ -359,7 +377,7 @@ $this->display_log();
 		<div id="functions-php">
 			<div class="heading"><?php echo esc_html__('Manually Load Microthemer Styles', 'microthemer'); ?></div>
 			<p class="instruction-text"><?php echo esc_html__('As long as you don\'t set the above option to Yes, you can uninstall Microthemer and still use the customisations you made with it. Simply copy and paste the code below at the bottom of your child theme\'s functions.php file. The code will not cause any problems when Microthemer is active. It simply won\'t run. So you can safely paste and forget.', 'microthemer'); ?></p>
-			<textarea><?php
+			<textarea spellcheck="false"><?php
 				echo esc_html(
 					file_get_contents(
 						$this->thisplugindir . '/includes/inactive-loading/functions.php-code.txt',
@@ -371,7 +389,7 @@ $this->display_log();
             <div class="heading"><?php echo esc_html__('Alternatively, use a plugin', 'microthemer'); ?></div>
             <p class="instruction-text"><?php echo esc_html__('If you are not familiar with editing PHP theme files, or you are using Oxygen Builder, you can also run the above code in the form of a simple plugin. 
             This approach is necessary for Oxygen users because Oxygen disables the theme.', 'microthemer'); ?></p>
-            <p><a class="tvr-button" href="<?php echo $this->thispluginurl . '/includes/inactive-loading/mt-inactive.zip'; ?>"><?php echo esc_html__('Download plugin', 'microthemer'); ?></a></p>
+            <p><a class="tvr-button" href="<?php echo $this->thispluginurl . 'includes/inactive-loading/mt-inactive.zip'; ?>"><?php echo esc_html__('Download plugin', 'microthemer'); ?></a></p>
 
             <p class="instruction-text"><?php echo esc_html__('Simply install and activate the "mt-inactive.zip" plugin, and then you can uninstall Microthemer - the CSS will still apply.', 'microthemer'); ?></p>
             <br /><br />
@@ -383,12 +401,23 @@ $this->display_log();
         <ul class="form-field-list compatibility-settings">
 			<?php
 
+            // ensure this setting is off by default
+			$this->preferences['remove_all_bricks_container_hacks'] = 0;
+
 			// yes no options
 			$yes_no = array(
 				'wp55_jquery_version' => array(
 					'label' => __('Load a legacy version of jQuery', 'microthemer'),
 					'explain' => __('This is a temporary setting to fix issues some sites may have with the new version of jQuery and jQueryUI WordPress 5.6+ uses', 'microthemer'),
-				)
+				),
+				'bricks_container_hack' => array(
+					'label' => __('Enable Bricks grid workaround (BGW)', 'microthemer'),
+					'explain' => __('Ensure styles applied to Bricks container elements also work when Bricks is active - by creating special selectors that will be tagged with [BGW]', 'microthemer'),
+				),
+				'remove_all_bricks_container_hacks' => array(
+					'label' => __('Remove all Bricks grid workarounds (BGW)', 'microthemer'),
+					'explain' => __('Automatically update all BGW selectors to remove the workaround that may not be necessary anymore', 'microthemer'),
+				),
 			);
 
 			$this->output_radio_input_lis($yes_no);

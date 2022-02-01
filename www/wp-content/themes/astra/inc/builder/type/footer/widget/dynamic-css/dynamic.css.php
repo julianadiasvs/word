@@ -16,6 +16,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_filter( 'astra_dynamic_theme_css', 'astra_fb_widget_dynamic_css' );
 
 /**
+ * Whether to fix the footer right-margin space not working case or not.
+ *
+ * As this affects the frontend, added this backward compatibility for existing users.
+ *
+ * @since 3.6.7
+ * @return boolean false if it is an existing user, true if not.
+ */
+function astra_support_footer_widget_right_margin() {
+	$astra_settings                                       = get_option( ASTRA_THEME_SETTINGS );
+	$astra_settings['support-footer-widget-right-margin'] = isset( $astra_settings['support-footer-widget-right-margin'] ) ? false : true;
+	return apply_filters( 'astra_apply_right_margin_footer_widget_css', $astra_settings['support-footer-widget-right-margin'] );
+}
+
+/**
  * Dynamic CSS
  *
  * @param  string $dynamic_css          Astra Dynamic CSS.
@@ -32,7 +46,6 @@ function astra_fb_widget_dynamic_css( $dynamic_css, $dynamic_css_filtered = '' )
 			continue;
 		}
 
-		$_section = 'sidebar-widgets-footer-widget-' . $index;
 		$selector = '.footer-widget-area[data-section="sidebar-widgets-footer-widget-' . $index . '"]';
 
 		$alignment = astra_get_option( 'footer-widget-alignment-' . $index );
@@ -44,24 +57,32 @@ function astra_fb_widget_dynamic_css( $dynamic_css, $dynamic_css_filtered = '' )
 		/**
 		 * Widget CSS.
 		 */
+		if ( Astra_Builder_Helper::apply_flex_based_css() ) {
+			$footer_widget_selector = $selector . '.footer-widget-area-inner';
+		} else {
+			$footer_widget_selector = $selector . ' .footer-widget-area-inner';
+		}
 		$css_output_desktop = array(
-
-			$selector . ' .footer-widget-area-inner' => array(
+			$footer_widget_selector => array(
 				'text-align' => $desktop_alignment,
 			),
 		);
-
-		$css_output_tablet = array(
-			$selector . ' .footer-widget-area-inner' => array(
+		$css_output_tablet  = array(
+			$footer_widget_selector => array(
 				'text-align' => $tablet_alignment,
 			),
 		);
-
-		$css_output_mobile = array(
-			$selector . ' .footer-widget-area-inner' => array(
+		$css_output_mobile  = array(
+			$footer_widget_selector => array(
 				'text-align' => $mobile_alignment,
 			),
 		);
+
+		if ( astra_support_footer_widget_right_margin() ) {
+			$css_output_desktop['.footer-widget-area.widget-area.site-footer-focus-item'] = array(
+				'width' => 'auto',
+			);
+		}
 
 		/* Parse CSS from array() */
 		$css_output  = astra_parse_css( $css_output_desktop );

@@ -2,10 +2,10 @@
  * External dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Component, Fragment } from '@wordpress/element';
+import { Component } from '@wordpress/element';
 import { Disabled, PanelBody, Placeholder } from '@wordpress/components';
 import { InspectorControls } from '@wordpress/block-editor';
-import { ServerSideRender } from '@wordpress/editor';
+import ServerSideRender from '@wordpress/server-side-render';
 import PropTypes from 'prop-types';
 import GridContentControl from '@woocommerce/editor-components/grid-content-control';
 import GridLayoutControl from '@woocommerce/editor-components/grid-layout-control';
@@ -13,6 +13,7 @@ import ProductCategoryControl from '@woocommerce/editor-components/product-categ
 import ProductOrderbyControl from '@woocommerce/editor-components/product-orderby-control';
 import { gridBlockPreview } from '@woocommerce/resource-previews';
 import { Icon, tag } from '@woocommerce/icons';
+import { getSetting } from '@woocommerce/settings';
 
 const EmptyPlaceholder = () => (
 	<Placeholder
@@ -54,6 +55,10 @@ class ProductOnSaleBlock extends Component {
 						rows={ rows }
 						alignButtons={ alignButtons }
 						setAttributes={ setAttributes }
+						minColumns={ getSetting( 'min_columns', 1 ) }
+						maxColumns={ getSetting( 'max_columns', 6 ) }
+						minRows={ getSetting( 'min_rows', 1 ) }
+						maxRows={ getSetting( 'max_rows', 6 ) }
 					/>
 				</PanelBody>
 				<PanelBody
@@ -107,7 +112,7 @@ class ProductOnSaleBlock extends Component {
 		}
 
 		return (
-			<Fragment>
+			<>
 				{ this.getInspectorControls() }
 				<Disabled>
 					<ServerSideRender
@@ -116,7 +121,7 @@ class ProductOnSaleBlock extends Component {
 						EmptyResponsePlaceholder={ EmptyPlaceholder }
 					/>
 				</Disabled>
-			</Fragment>
+			</>
 		);
 	}
 }

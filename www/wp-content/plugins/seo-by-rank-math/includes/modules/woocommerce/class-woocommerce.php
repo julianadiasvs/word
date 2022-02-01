@@ -1,6 +1,6 @@
 <?php
 /**
- * The WooCommerce Module
+ * The WooCommerce module.
  *
  * @since      0.9.0
  * @package    RankMath
@@ -25,7 +25,7 @@ class WooCommerce extends WC_Vars {
 	use Hooker;
 
 	/**
-	 * Hold product.
+	 * Holds the product object.
 	 *
 	 * @var WC_Product
 	 */
@@ -78,7 +78,7 @@ class WooCommerce extends WC_Vars {
 	}
 
 	/**
-	 * Replace request if product found.
+	 * Replace request if product was found.
 	 *
 	 * @param array $request Current request.
 	 *
@@ -111,6 +111,11 @@ class WooCommerce extends WC_Vars {
 			$slug             = array_pop( $url );
 		}
 
+		if ( 0 === strpos( $slug, 'schema-preview' ) ) {
+			$replace['schema-preview'] = '';
+			$slug                      = array_pop( $url );
+		}
+
 		$query = "SELECT COUNT(ID) as count_id FROM {$wpdb->posts} WHERE post_name = %s AND post_type = %s";
 		$num   = intval( $wpdb->get_var( $wpdb->prepare( $query, [ $slug, 'product' ] ) ) ); // phpcs:ignore
 		if ( $num > 0 ) {
@@ -126,7 +131,7 @@ class WooCommerce extends WC_Vars {
 	}
 
 	/**
-	 * Change robots for WooCommerce pages according to settings
+	 * Change robots for WooCommerce pages according to the settings.
 	 *
 	 * @param array $robots Array of robots to sanitize.
 	 *
@@ -248,15 +253,8 @@ class WooCommerce extends WC_Vars {
 		$brand    = '';
 		$taxonomy = Helper::get_settings( 'general.product_brand' );
 		if ( $taxonomy && taxonomy_exists( $taxonomy ) ) {
-			$brands = wp_get_post_terms(
-				$product_id,
-				$taxonomy,
-				[
-					'number' => 1,
-					'fields' => 'names',
-				]
-			);
-			$brand  = empty( $brands[0] ) || is_wp_error( $brands ) ? '' : $brands[0];
+			$brands = get_the_terms( $product_id, $taxonomy );
+			$brand  = is_wp_error( $brands ) || empty( $brands[0] ) ? '' : $brands[0]->name;
 		}
 
 		return apply_filters( 'rank_math/woocommerce/product_brand', $brand );

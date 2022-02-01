@@ -45,6 +45,7 @@ class WPForms_Fields {
 				'radio',
 				'checkbox',
 				'divider',
+				'entry-preview',
 				'email',
 				'url',
 				'hidden',
@@ -65,6 +66,7 @@ class WPForms_Fields {
 				'payment-credit-card',
 				'payment-total',
 				'number-slider',
+				'richtext',
 			)
 		);
 

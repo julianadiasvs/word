@@ -212,7 +212,7 @@ if ( ! class_exists( 'Astra_Customizer_Sanitizes' ) ) {
 		 *
 		 * @param  int|string $value Value of variable.
 		 * @return string|int Return empty if $value is not integer.
-		 * 
+		 *
 		 * @since 2.5.4
 		 */
 		public static function check_numberic_values( $value ) {
@@ -409,6 +409,11 @@ if ( ! class_exists( 'Astra_Customizer_Sanitizes' ) ) {
 				return '';
 			}
 
+			// CSS variable value sanitize.
+			if ( 0 === strpos( $color, 'var(--' ) ) {
+				return preg_replace( '/[^A-Za-z0-9_)(\-,.]/', '', $color );
+			}
+
 			if ( false === strpos( $color, 'rgba' ) ) {
 				/* Hex sanitize */
 				return self::sanitize_hex_color( $color );
@@ -593,10 +598,10 @@ if ( ! class_exists( 'Astra_Customizer_Sanitizes' ) ) {
 		 * @return Array
 		 */
 		public static function sanitize_customizer_links( $val ) {
-			$val['linked']    = sanitize_text_field( $val['linked'] );
-			$val['link_text'] = esc_html( $val['link_text'] );
-			$val['link_type'] = esc_html( $val['link_type'] );
-
+			$val['linked']         = sanitize_text_field( $val['linked'] );
+			$val['link_text']      = esc_html( $val['link_text'] );
+			$val['link_type']      = esc_html( $val['link_type'] );
+			$val['is_button_link'] = esc_html( isset( $val['is_button_link'] ) ? $val['is_button_link'] : '#' );
 			return $val;
 		}
 
@@ -649,7 +654,8 @@ if ( ! class_exists( 'Astra_Customizer_Sanitizes' ) ) {
 				foreach ( $bg as $key => $value ) {
 					if ( 'background-image' === $key ) {
 						$out_bg_obj[ $device ] [ $key ] = esc_url_raw( $value );
-					} if ( 'background-media' === $key ) {
+					}
+					if ( 'background-media' === $key ) {
 						$out_bg_obj[ $device ] [ $key ] = floatval( $value );
 					} else {
 						$out_bg_obj[ $device ] [ $key ] = esc_attr( $value );
@@ -657,6 +663,20 @@ if ( ! class_exists( 'Astra_Customizer_Sanitizes' ) ) {
 				}
 			}
 			return $out_bg_obj;
+		}
+
+		/**
+		 * Sanitize Toggle Control param.
+		 *
+		 * @param bool $val for True|False.
+		 *
+		 * @since 3.1.0
+		 *
+		 * @return bool True|False
+		 */
+		public static function sanitize_toggle_control( $val ) {
+			// returns true if checkbox is checked.
+			return ( isset( $val ) && is_bool( $val ) ? $val : '' );
 		}
 	}
 }

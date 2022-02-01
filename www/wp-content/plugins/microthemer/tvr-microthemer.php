@@ -5,7 +5,7 @@ Plugin URI: https://themeover.com/microthemer
 Text Domain: microthemer
 Domain Path: /languages
 Description: Microthemer is a feature-rich visual design plugin for customizing the appearance of ANY WordPress Theme or Plugin Content (e.g. posts, pages, contact forms, headers, footers, sidebars) down to the smallest detail. For CSS coders, Microthemer is a proficiency tool that allows them to rapidly restyle a WordPress theme or plugin. For non-coders, Microthemer's intuitive point and click editing opens the door to advanced theme and plugin customization.
-Version: 6.3.6.2
+Version: 7.1.1.3
 Author: Themeover
 Author URI: https://themeover.com
 */
@@ -47,43 +47,17 @@ if (!class_exists('tvr_common')) {
 	class tvr_common {
 
 		public static function get_protocol(){
-			$isSSL = (!empty($_SERVER["HTTPS"]) and $_SERVER["HTTPS"] == "on");
+			$isSSL = is_ssl(); // (!empty($_SERVER["HTTPS"]) and $_SERVER["HTTPS"] == "on");
 			return 'http' . ($isSSL ? 's' : '') . '://';
 		}
 
-	    public static function get_custom_code(){
+		public static function get_custom_code(){
 			return array(
 				'hand_coded_css' => array (
 					'tab-key' => 'all-browsers',
-					'label' => esc_html__('All Browsers', 'microthemer'),
+					'label' => esc_html__('CSS', 'microthemer'),
 					//'label' => esc_html__('CSS', 'microthemer'),
 					'type' => 'css'
-				),
-				'ie_css' => array(
-					'all' => array (
-						'tab-key' => 'all',
-						'label' => esc_html__('All versions of IE', 'microthemer'),
-						'cond' => 'IE',
-						'type' => 'css'
-					),
-					'nine' => array (
-						'tab-key' => 'nine',
-						'label' => esc_html__('IE9 and below', 'microthemer'),
-						'cond' => 'lte IE 9',
-						'type' => 'css'
-					),
-					'eight' => array (
-						'tab-key' => 'eight',
-						'label' => esc_html__('IE8 and below', 'microthemer'),
-						'cond' => 'lte IE 8',
-						'type' => 'css'
-					),
-					'seven' => array (
-						'tab-key' => 'seven',
-						'label' => esc_html__('IE7 and below', 'microthemer'),
-						'cond' => 'lte IE 7',
-						'type' => 'css'
-					),
 				),
 				'js' => array (
 					'tab-key' => 'js',
@@ -94,23 +68,23 @@ if (!class_exists('tvr_common')) {
 		}
 
 		// add a param to an existing url if it doesn't exist, using the correct joining char
-        public static function append_url_param($url, $param, $val = false){
+		public static function append_url_param($url, $param, $val = false){
 
-            // bail if already present
-            if (strpos($url, $param) !== false){
-                return $url;
-            }
+			// bail if already present
+			if (strpos($url, $param) !== false){
+				return $url;
+			}
 
-            // we do need to add param, so determine joiner
-            $joiner = strpos($url, '?') !== false ? '&': '?';
+			// we do need to add param, so determine joiner
+			$joiner = strpos($url, '?') !== false ? '&': '?';
 
-            // is there param val?
-	        $param = $val ? $param.'='.$val : $param;
+			// is there param val?
+			$param = $val ? $param.'='.$val : $param;
 
-            // return new url
-            return $url . $joiner . $param;
+			// return new url
+			return $url . $joiner . $param;
 
-        }
+		}
 
 		// strip a single parameter from an url (adapted from JS function)
 		public static function strip_url_param($url, $param, $withVal = true){
@@ -137,14 +111,21 @@ if (!class_exists('tvr_common')) {
 
 		public static function params_to_strip(){
 			return array(
+
+				// wordpress params
 				array(
 					'param' => '_wpnonce',
 					'withVal' => true,
 				),
-			    array(
-                    'param' => 'mt_nonlog',
-                    'withVal' => false,
-                ),
+				array(
+					'param' => 'ver',
+					'withVal' => true,
+				),
+
+				array(
+					'param' => 'mt_nonlog',
+					'withVal' => false,
+				),
 				array(
 					'param' => 'mto2_edit_link',
 					'withVal' => true,
@@ -153,23 +134,23 @@ if (!class_exists('tvr_common')) {
 					'param' => 'elementor-preview',
 					'withVal' => true,
 				),
-                array(
-				     'param' => 'brizy-edit-iframe', // strip brizy
-				     'withVal' => false,
-			     ),
-                array(
-	                'param' => 'et_fb', // strip Divi param which causes iframe to break out of parent
-	                'withVal' => true,
-                ),
-                array(
-	                'param' => 'fl_builder', // strip beaver builder
-	                'withVal' => false,
-                ),
+				array(
+					'param' => 'brizy-edit-iframe', // strip brizy
+					'withVal' => false,
+				),
+				array(
+					'param' => 'et_fb', // strip Divi param which causes iframe to break out of parent
+					'withVal' => true,
+				),
+				array(
+					'param' => 'fl_builder', // strip beaver builder
+					'withVal' => false,
+				),
 				// oxygen params
 				array(
 					'param' => 'ct_builder',
 					'withVal' => true,
-                    'unless' => array('ct_template') // ct_template also requires ct_builder to work
+					'unless' => array('ct_template') // ct_template also requires ct_builder to work
 				),
 				array(
 					'param' => 'ct_inner',
@@ -185,7 +166,7 @@ if (!class_exists('tvr_common')) {
 					'withVal' => true,
 				),
 
-               // elementor doesn't pass a parameter to the frontend it runs on the admin side
+				// elementor doesn't pass a parameter to the frontend it runs on the admin side
 
 			);
 		}
@@ -208,20 +189,20 @@ if (!class_exists('tvr_common')) {
 		// strip preview= and page builder parameters
 		public static function strip_page_builder_and_other_params($url, $strip_preview = true){
 
-		    // strip preview params (regular and elementor)
+			// strip preview params (regular and elementor)
 			//$url = tvr_common::strip_preview_params($url); // test what happens
 
 			$other_params = tvr_common::params_to_strip();
 
 			foreach ($other_params as $key => $array){
 
-			    // we don't strip params that are required when another param is present
-                if (tvr_common::has_excluded_param($url, $array)){
-                    continue;
-                }
+				// we don't strip params that are required when another param is present
+				if (tvr_common::has_excluded_param($url, $array)){
+					continue;
+				}
 
 				$url = tvr_common::strip_url_param($url, $array['param'], $array['withVal']);
-            }
+			}
 
 			// strip brizy
 			/*$url = tvr_common::strip_url_param($url, 'brizy-edit-iframe', false);
@@ -239,7 +220,7 @@ if (!class_exists('tvr_common')) {
 		// we are adding user google fonts on admin side too so they can be shown in UI (todo)
 		public static function add_user_google_fonts($p){
 
-            // use g_url_with_subsets value generated when writing stylesheet
+			// use g_url_with_subsets value generated when writing stylesheet
 			$google_url = !empty($p['g_url_with_subsets'])
 				? $p['g_url_with_subsets']
 
@@ -247,12 +228,12 @@ if (!class_exists('tvr_common')) {
 				: (!empty($p['gfont_subset']) ? $p['g_url'].$p['gfont_subset'] : $p['g_url']);
 
 			if (!empty($google_url)){
-				tvr_common::mt_enqueue_or_add(!empty($p['after_oxy_css']), 'microthemer_g_font', $google_url);
+				tvr_common::mt_enqueue_or_add(!empty($p['stylesheet_order']), 'microthemer_g_font', $google_url);
 			}
 
 		}
 
-		public static function mt_enqueue_or_add($add, $handle, $url, $data_key = false, $data_val = false){
+		public static function mt_enqueue_or_add($add, $handle, $url, $in_footer = false, $data_key = false, $data_val = false){
 
 			global $wp_styles;
 
@@ -267,15 +248,15 @@ if (!class_exists('tvr_common')) {
 				}
 
 				// allow CSS to load in footer if O2 is active so MT comes after O2 even when O2 active without O2
-                // Note this didn't work on my local install, but did on a customer who reported issue with Agency Tools
-                // so better to use a more deliberate action hook e.g. wp_footer
-                // Ideally, O2 would enqueue a placeholder stylesheet and replace rather than append to head
+				// Note this didn't work on my local install, but did on a customer who reported issue with Agency Tools
+				// so better to use a more deliberate action hook e.g. wp_footer
+				// Ideally, O2 would enqueue a placeholder stylesheet and replace rather than append to head
 				/*if ( !defined( 'SHOW_CT_BUILDER' ) ) {
 					$wp_styles->do_items($handle);
 				}*/
 
 				// (feels a bit risky, but can add if MT loading before O2 when active by itself causes issue for people)
-                $wp_styles->do_items($handle);
+				$wp_styles->do_items($handle);
 			}
 
 			else {
@@ -298,7 +279,22 @@ if (!class_exists('tvr_common')) {
 				'ma_admin_mobile_css',
 				'custom_wp_admin_css',
 				'ma_admin_media_css',
+
+				// for UIPress
+				'uip-app',
+                'uip-app-rtl',
+                'uip-icons',
+                'uip-font'
+
+
 			);
+
+			// for UIPress
+			/*if ( class_exists('uipress') ){
+				$conflict_styles = array_merge($conflict_styles, array(
+
+                ));
+			}*/
 
 			foreach ($conflict_styles as $style_handle){
 				wp_dequeue_style($style_handle);
@@ -318,8 +314,8 @@ if ( is_admin() ) {
 		// define
 		class tvr_microthemer_admin {
 
-			var $version = '6.3.6.2';
-			var $db_chg_in_ver = '6.0.6.5';
+			var $version = '7.1.1.3';
+			var $db_chg_in_ver = '7.0.5.0';
 
 			var $locale = ''; // current language
 			var $lang = array(); // lang strings
@@ -339,6 +335,8 @@ if ( is_admin() ) {
 			var $globalmessage = array();
 			var $outdatedTabIssue = 0;
 			var $outdatedTabDebug = '';
+			var $forcePublish = false;
+			var $innoFirewall = false;
 			var $ei = 0; // error index
 			var $permissionshelp;
 			var $microthemeruipage = 'tvr-microthemer.php';
@@ -348,6 +346,7 @@ if ( is_admin() ) {
 			var $detachedpreviewpage = 'tvr-microthemer-preview-wrap.php';
 			var $docspage = 'tvr-docs.php';
 			var $fontspage = 'tvr-fonts.php';
+			//var $placeholderpage = 'tvr-placeholder.php';
 			var $demo_video = 'https://themeover.com/videos/?name=gettingStarted';
 			var $targeting_video = 'https://themeover.com/videos/?name=targeting';
 			var $mt_admin_nonce = '';
@@ -358,7 +357,7 @@ if ( is_admin() ) {
 			var $sel_count = 0;
 			var $sel_option_count = 0;
 			var $group_spacer_count = 0;
-			var $sel_lookup = array();
+			//var $sel_lookup = array();
 			var $trial = true;
 			var $initial_options_html = array();
 			var $imported_images = array();
@@ -370,10 +369,12 @@ if ( is_admin() ) {
 			var $all_pages = array();
 			// @var array $css_units Stores all the possible CSS units
 			var $css_units = array();
+			var $folder_item_types = array();
 			//var $css_unit_sets = array();
 			var $default_my_props = array();
 			// @var array $options Stores the ui options for this plugin
 			var $options = array();
+			//var $placeholderURLs = array();
 			var $serialised_post = array();
 			var $propertyoptions = array();
 			var $en_propertyoptions = array();
@@ -386,6 +387,10 @@ if ( is_admin() ) {
 			var $propAliases = array();
 			var $cssFuncAliases = array();
 			var $input_wrap_templates = array();
+			var $suggested_screen_layouts = array();
+			var $selector_variations = array();
+			var $stylesheet_order_options = array();
+			var $page_class_prefix_options = array();
 			// @var array $options Stores the "to be merged" options in
 			var $to_be_merged = array();
 			var $dis_text = '';
@@ -410,9 +415,8 @@ if ( is_admin() ) {
 			var $unq_base = '';
 			var $builder_sync_tabs = array();
 			var $default_folders = array();
-			var $default_m_queries = array();
-			var $mobile_first_mqs = array();
-			var $mobile_first_semantic_mqs = array();
+			var $legacy_m_queries = array();
+			var $default_mqs = array();
 			var $bb_mqs = array();
 			var $elementor_mqs = array();
 			var $elementor_breakpoints = false;
@@ -510,8 +514,8 @@ if ( is_admin() ) {
 				add_filter( 'site_transient_update_plugins', array( $this, 'site_transient_update_plugins' ) );
 				add_filter( 'plugins_api_result', array( &$this, 'plugins_api_result' ), 99, 3 );
 				add_action( 'in_plugin_update_message-microthemer/' . $this->microthemeruipage,
-                    array( &$this, 'plugin_update_message' ), 1, 2
-                );
+					array( &$this, 'plugin_update_message' ), 1, 2
+				);
 
 
 				/***
@@ -527,15 +531,17 @@ if ( is_admin() ) {
 					$this->docspage,
 					$this->fontspage,
 					$this->preferencespage,
-                    $this->detachedpreviewpage
+					$this->detachedpreviewpage
 				);
 				$page = isset($_GET['page']) ? $_GET['page'] : false;
 
 				// use quick method of getting preferences at this stage (maybe shift code around another time)
 				$this->preferences = get_option($this->preferencesName);
 
+				//$this->show_me.= 'Prefs set 1: ' . $this->preferences['allow_scss'] . ',';
+
 				// compare if new version
-                $this->new_version = (empty($this->preferences['version']) || $this->preferences['version'] != $this->version);
+				$this->new_version = (empty($this->preferences['version']) || $this->preferences['version'] != $this->version);
 
 				// add shortcut to Microthemer if preference
 				if ( !empty($this->preferences['admin_bar_shortcut']) ) {
@@ -548,21 +554,24 @@ if ( is_admin() ) {
 				// only initialize on plugin admin pages
 				if ( is_admin() and in_array($page, $this->all_pages) ) {
 
-				    // if it's a new version, run the activation/upgrade function (if not done at activation hook)
-                    // this will update the translations in the JS cached HTML
-                    // and ensures the pre-update settings are saved in the history table
-                    if ($this->new_version && !$this->activation_function_ran){
-                        $this->microthemer_activated_or_updated();
-                    }
+					// if it's a new version, run the activation/upgrade function (if not done at activation hook)
+					// this will update the translations in the JS cached HTML
+					// and ensures the pre-update settings are saved in the history table
+					if ($this->new_version && !$this->activation_function_ran){
+						$this->microthemer_activated_or_updated();
+					}
 
 					// check if integratable plugins are active
 					add_action( 'admin_init', array(&$this, 'check_integrations'));
 
-				    // setup vars that depend on WP being fully loaded
+					// setup vars that depend on WP being fully loaded
 					add_action( 'admin_init', array(&$this, 'setup_wp_dependent_vars'));
 
 					// we don't want the WP admin bar on any Microthemer pages
 					add_filter('show_admin_bar', '__return_false');
+
+					// loading URL for iframe
+					//$this->placeholderURLs = $this->get_placeholder_urls();
 
 					/* this may need work, ocassionally breaks: http://stackoverflow.com/questions/5441784/why-does-ob-startob-gzhandler-break-this-website
 					 * $this->show_me = 'zlib.output_compression config: ('
@@ -574,7 +583,7 @@ if ( is_admin() ) {
 					// enable gzipping on UI page if defined
 					if ( $_GET['page'] == basename(__FILE__) and $this->preferences['gzip'] == 1) {
 						if (!empty($_SERVER['HTTP_ACCEPT_ENCODING']) and
-                            substr_count($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip'))
+						    substr_count($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip'))
 							ob_start("ob_gzhandler");
 						else
 							ob_start();
@@ -585,12 +594,18 @@ if ( is_admin() ) {
 					if ( empty($_GET['action']) or $_GET['action'] != 'mtui'){
 
 						add_action('admin_init', array(&$this, 'add_no_cache_headers'), 1);
-					    add_action('admin_init', array(&$this, 'add_css'));
-                        add_action('admin_head', array(&$this, 'add_dyn_inline_css'));
-                        add_action('admin_init', array(&$this, 'add_js'));
+						add_action('admin_enqueue_scripts', array(&$this, 'add_css'), PHP_INT_MAX);
+						add_action('admin_head', array(&$this, 'add_dyn_inline_css'));
+						add_action('admin_head', array(&$this, 'load_icon_font')); // icon font and layout
+						add_action('admin_enqueue_scripts', array(&$this, 'add_js'), PHP_INT_MAX);
+						//add_action( 'wp_body_open', array(&$this, 'add_svg_sprite') );
 
 						// fix compatibility issues due to a plugin loading scripts or styles on MT interface pages
 						add_action('admin_enqueue_scripts', array('tvr_common', 'dequeue_rogue_assets'), 1000);
+						add_action('wp_enqueue_media', array('tvr_common', 'dequeue_rogue_assets'), 1000);
+
+
+
 
 					} else {
 						//echo 'it is an ajax request';
@@ -604,9 +619,9 @@ if ( is_admin() ) {
 				global $wpdb;
 
 				$exists = !empty(
-				    $wpdb->get_var(
-					    $wpdb->prepare("SHOW TABLES LIKE %s", $table_name)
-				    )
+				$wpdb->get_var(
+					$wpdb->prepare("SHOW TABLES LIKE %s", $table_name)
+				)
 				);
 
 				if (!$exists || !$also_populated){
@@ -620,45 +635,45 @@ if ( is_admin() ) {
 
 			// user's subscription has expired and they are capped at a version
 			function is_capped_version(){
-			   return !empty($this->preferences['buyer_validated']) and !empty($this->preferences['subscription']['capped_version']);
-            }
+				return !empty($this->preferences['buyer_validated']) and !empty($this->preferences['subscription']['capped_version']);
+			}
 
 			// maybe sets 'Automatic update is unavailable for this plugin'
 			function site_transient_update_plugins($transient){
-			    if ($this->is_capped_version()){
-				    global $pagenow;
-				    $plugin = 'microthemer/' . $this->microthemeruipage;
-				    if ( ('plugins.php' == $pagenow && is_multisite()) or empty($transient->response[$plugin]) ) {
-					    return $transient;
-				    }
-				    $transient->response[$plugin]->package = false;
-				    $transient->response[$plugin]->upgrade_notice = 'UPDATE UNAVAILABLE. Please renew your subscription to enable updates.';
-                }
+				if ($this->is_capped_version()){
+					global $pagenow;
+					$plugin = 'microthemer/' . $this->microthemeruipage;
+					if ( ('plugins.php' == $pagenow && is_multisite()) or empty($transient->response[$plugin]) ) {
+						return $transient;
+					}
+					$transient->response[$plugin]->package = false;
+					$transient->response[$plugin]->upgrade_notice = 'UPDATE UNAVAILABLE. Please renew your subscription to enable updates.';
+				}
 				return $transient;
-            }
+			}
 
 			// maybe removes download button from plugin details popup
-            function plugins_api_result($res, $action, $args){
-	            if ($this->is_capped_version()){
-		            $res->download_link = false;
-	            }
+			function plugins_api_result($res, $action, $args){
+				if ($this->is_capped_version()){
+					$res->download_link = false;
+				}
 				return $res;
 			}
 
 			// prompts renewal & unlock if version is capped
-            // thanks to Beaver Builder for lighting the way here: https://www.wpbeaverbuilder.com/
+			// thanks to Beaver Builder for lighting the way here: https://www.wpbeaverbuilder.com/
 			function plugin_update_message($plugin_data, $response){
 
-                if ( empty( $response->package ) ) {
+				if ( empty( $response->package ) ) {
 
-                    $message  = '<span style="display:block;padding:10px 20px;margin:10px 0; background: #d54e21; color: #fff;">';
-	                $message .= '<strong>' . __( 'UPDATE UNAVAILABLE!', 'microthemer' ) . '</strong>';
-	                $message .= '&nbsp;&nbsp;&nbsp;';
-	                $message .= 'Please renew your subscription to enable updates.';
-	                $message .= ' ' . sprintf( '<a href="%s" target="_blank" style="color: #fff; text-decoration: underline;">%s </a>', admin_url( '/admin.php?page='.$this->microthemeruipage.'&launch_unlock=1'), __( 'Renew subscription', 'microthemer' ) );
-	                $message .= '</span>';
+					$message  = '<span style="display:block;padding:10px 20px;margin:10px 0; background: #d54e21; color: #fff;">';
+					$message .= '<strong>' . __( 'UPDATE UNAVAILABLE!', 'microthemer' ) . '</strong>';
+					$message .= '&nbsp;&nbsp;&nbsp;';
+					$message .= 'Please renew your subscription to enable updates.';
+					$message .= ' ' . sprintf( '<a href="%s" target="_blank" style="color: #fff; text-decoration: underline;">%s </a>', admin_url( '/admin.php?page='.$this->microthemeruipage.'&launch_unlock=1'), __( 'Renew subscription', 'microthemer' ) );
+					$message .= '</span>';
 
-	                echo  $message;
+					echo  $message;
 				}
 			}
 
@@ -668,8 +683,8 @@ if ( is_admin() ) {
 				$pd_context = 'microthemer_activated_or_updated';
 
 				// setup program data arrays
-                // calls getPreferences() which also sets if nothing to get yet
-                // and creates a backup of the settings and preferences if a new version
+				// calls getPreferences() which also sets if nothing to get yet
+				// and creates a backup of the settings and preferences if a new version
 				include dirname(__FILE__) .'/includes/program-data.php';
 
 				// if non-english, we need to write to program-data.js in current language
@@ -699,7 +714,7 @@ if ( is_admin() ) {
 			// add a link to the WP Toolbar (this was copied from frontend class - use better method later)
 			function custom_toolbar_link($wp_admin_bar) {
 
-			    if (!current_user_can('administrator')){
+				if (!current_user_can('administrator')){
 					return false;
 				}
 
@@ -717,16 +732,16 @@ if ( is_admin() ) {
 
 				if ($front){
 
-				    $href.= '&mt_preview_url=' . rawurlencode($front['url'])
+					$href.= '&mt_preview_url=' . rawurlencode($front['url'])
 					        . '&_wpnonce=' . wp_create_nonce( 'mt-preview-nonce' );
 
 					// not sure how to make a post
-				    if ($front['post_status'] === 'auto-draft'){
+					if ($front['post_status'] === 'auto-draft'){
 						$href.= '&auto_save_draft='.$front['postID'];
-                    }
+					}
 
 					//wp_die('<pre>'.print_r($front, true).'</pre>');
-                }
+				}
 
 				$args = array(
 					'id' => 'wp-mcr-shortcut',
@@ -746,80 +761,80 @@ if ( is_admin() ) {
 
 				global $post;
 
-			    if ($post && function_exists('get_current_screen')) {
+				if ($post && function_exists('get_current_screen')) {
 
-			        $current_screen = get_current_screen();
-			        $post_type = $current_screen->post_type;
-			        $isPostOrPage = ($post_type === 'post' || $post_type === 'page');
-                    $isEditScreen = $isPostOrPage && isset($_GET['action']) && $_GET['action'] === 'edit'
-                                    && !empty($_GET['post']);
-				    $isAddScreen = $isPostOrPage && $current_screen->action === 'add';
+					$current_screen = get_current_screen();
+					$post_type = $current_screen->post_type;
+					$isPostOrPage = ($post_type === 'post' || $post_type === 'page');
+					$isEditScreen = $isPostOrPage && isset($_GET['action']) && $_GET['action'] === 'edit'
+					                && !empty($_GET['post']);
+					$isAddScreen = $isPostOrPage && $current_screen->action === 'add';
 
-				    //wp_die('<pre>'.print_r($post, true).'</pre>');
+					//wp_die('<pre>'.print_r($post, true).'</pre>');
 
-			        // if add new or saved draft use preview URL
-				    if ($isAddScreen || $post->post_status !== 'publish'){
+					// if add new or saved draft use preview URL
+					if ($isAddScreen || $post->post_status !== 'publish'){
 
-					    if ( $url = get_preview_post_link($post->ID) ){
-						    return array(
-                                'url' => $url,
-                                'post_status' => $post->post_status,
-                                'postID' => $post->ID
-                            );
-					    }
-                    }
+						if ( $url = get_preview_post_link($post->ID) ){
+							return array(
+								'url' => $url,
+								'post_status' => $post->post_status,
+								'postID' => $post->ID
+							);
+						}
+					}
 
-                    // get link for published post
-                    else if ($isEditScreen){
-					    if ( $url = get_permalink( intval($_GET['post']) ) ){
-						    return array(
-							    'url' => $url,
-							    'post_status' => $post->post_status
-						    );
-					    }
-                    }
+					// get link for published post
+					else if ($isEditScreen){
+						if ( $url = get_permalink( intval($_GET['post']) ) ){
+							return array(
+								'url' => $url,
+								'post_status' => $post->post_status
+							);
+						}
+					}
 
 					//wp_die('<pre>'.print_r(get_current_screen()->id, true).'</pre>');
 				}
 
 				return false;
-            }
+			}
 
 			function log_subscription_check(){
 
 				$s = $this->preferences['subscription'];
 				$checks = $this->preferences['subscription_checks'];
-			    $pref_array['subscription_checks'] = $checks;
+				$pref_array['subscription_checks'] = $checks;
 				$pref_array['subscription_checks']['num']++;
 
 				// last try, max attempts reached
-                // could add a condition for max 3 days after renewal date, but holding off for now
+				// could add a condition for max 3 days after renewal date, but holding off for now
 				if ($pref_array['subscription_checks']['num'] >= $pref_array['subscription_checks']['max']){
 					$pref_array['subscription_checks']['stop_attempts'] = true;
 					$this->savePreferences($pref_array);
 					return 'subscription check failed';
-                }
+				}
 
-                // add some time before next check
-                else {
-				    $extra_seconds = 12 * 60 * 60; // 12 hours
-	                //$extra_seconds = 10;
+				// add some time before next check
+				else {
+					$extra_seconds = 12 * 60 * 60; // 12 hours
+					//$extra_seconds = 10;
 
-	                $inital_time = !empty($checks['next_time']) ? $checks['next_time'] : $this->time;
-	                $pref_array['subscription_checks']['next_time'] =
-                        $inital_time + ($pref_array['subscription_checks']['num'] * $extra_seconds);
-	                $this->savePreferences($pref_array);
-	                return 'defer';
-                }
+					$inital_time = !empty($checks['next_time']) ? $checks['next_time'] : $this->time;
+					$pref_array['subscription_checks']['next_time'] =
+						$inital_time + ($pref_array['subscription_checks']['num'] * $extra_seconds);
+					$this->savePreferences($pref_array);
+					return 'defer';
+				}
 
-            }
+			}
 
 			// check subscription if past renewal_check date
 			function maybe_check_subscription(){
 
-			    $p = $this->preferences;
-			    $s = $p['subscription'];
-			    $checks = $p['subscription_checks'];
+				$p = $this->preferences;
+				$s = $p['subscription'];
+				$checks = $p['subscription_checks'];
 
 				// Note: renewal_check is 2 days after their subscription expires (to safely allow for timezone diffs)
 				$renewal_time = !empty($checks['next_time']) ? $checks['next_time'] : strtotime($s['renewal_check']);
@@ -827,33 +842,33 @@ if ( is_admin() ) {
 				// remote check conditions
 				$after_renewal_check = (!empty($s['renewal_check']) and $this->time > $renewal_time);
 				$higher_than_capped = (!empty($s['capped_version']) and
-                                       version_compare($s['capped_version'], $this->version) < 0);
+				                       version_compare($s['capped_version'], $this->version) < 0);
 				$retro_check_needed = empty($p['retro_sub_check_done']);
 
 				// if subscription check needed
-			    if (
-			         ($after_renewal_check or $higher_than_capped or $retro_check_needed) and
-                     !empty($p['buyer_email']) and
-                     !empty($p['buyer_validated']) and
-                     empty($checks['stop_attempts'])
-                ){
-			        //$this->show_me.= 'doing auto remote check';
-				    // check if subscription is still active
-                    $this->get_validation_response($p['buyer_email'], 'scheduled');
-                } else {
-				    //$this->show_me.= 'NOT doing auto remote check';
-                }
-            }
+				if (
+					($after_renewal_check or $higher_than_capped or $retro_check_needed) and
+					!empty($p['buyer_email']) and
+					!empty($p['buyer_validated']) and
+					empty($checks['stop_attempts'])
+				){
+					//$this->show_me.= 'doing auto remote check';
+					// check if subscription is still active
+					$this->get_validation_response($p['buyer_email'], 'scheduled');
+				} else {
+					//$this->show_me.= 'NOT doing auto remote check';
+				}
+			}
 
 
 
 			function themeover_connection_url($email, $proxy = false){
 
-			    $test_domain = false;
+				$test_domain = false;
 
 				$domain =  $test_domain ? $test_domain : $this->home_url;
 
-				$base_url = $proxy
+				$base_url = ($proxy) // || 1 to force proxy
 					? 'https://validate.themeover.com/'
 					: 'https://themeover.com/wp-content/tvr-auto-update/validate.php';
 
@@ -861,7 +876,13 @@ if ( is_admin() ) {
 				          .'&domain='.$domain
 				          .'&mt_version='.$this->version;
 
+				/* Get local URL
+				* $this->show_me = 'https://tvrdev.themeover.com/wp-content/tvr-auto-update/validate.php'.'?'.$params;
+				return 'https://tvrdev.themeover.com/wp-content/tvr-auto-update/validate.php'.'?'.$params;*/
+
 				return $base_url.'?'.$params;
+
+
 
 			}
 
@@ -873,26 +894,33 @@ if ( is_admin() ) {
 			 * @param $email
 			 * @param bool $proxy
 			 *
-			 * @return false|string
+			 * @return array
 			 */
 			function connect_to_themeover($url, $email, $proxy = false){
 
 				//$url = $this->themeover_connection_url($email, $proxy);
-				$responseString = wp_remote_fopen($url);
+				//$responseString = wp_remote_fopen($url);
+				$result = $this->wp_remote_fopen($url);
+				$responseString = $result['body'];
+				$responseCode = $result['code'];
 				$response = json_decode($responseString, true);
 
 				//$this->show_me.= 'The response from '. $url . ': '. $responseString;
 
 				// if we have a valid result or we have already tried the fallback proxy script, return result
 				if (!empty($response['message']) or $proxy){
-					return $responseString;
+					return array(
+					    'responseString' => $responseString,
+                        'url' => $url,
+                        'code' => $responseCode
+                    );
 				}
 
 				// the initial connection was unsuccessful, possibly due to firewall rules, attempt proxy connection
 				else {
 					return $this->connect_to_themeover(
-					        $this->themeover_connection_url($email, true), $email, true
-                    );
+						$this->themeover_connection_url($email, true), $email, true
+					);
 				}
 
 			}
@@ -905,9 +933,29 @@ if ( is_admin() ) {
 				);
 				$was_capped_version = $this->is_capped_version();
 				$response = false;
-				$url = $this->themeover_connection_url($email);
-				$responseString = $this->connect_to_themeover($url, $email);
-				//$this->show_me.= $responseString;
+				//$url = $this->themeover_connection_url($email);
+				//$responseString = $this->connect_to_themeover($url, $email);
+
+				$connection_details = $this->connect_to_themeover(
+				        $this->themeover_connection_url($email),
+                        $email
+                );
+
+				//wp_die('<pre>$connection_details: ' . print_r($connection_details, true) . '</pre>');
+
+				$responseString = $connection_details['responseString'];
+				$response_code = $connection_details['code'];
+				$url = $connection_details['url'];
+
+				//$this->show_me.= '<pre>$connection_details: ' . print_r($connection_details, true) . '</pre>';
+
+				/*$this->innoFirewall = array_merge($connection_details, array(
+					'debug' => array(
+						'responseString' => $responseString,
+						'decodedResponse' => json_decode($responseString, true),
+						'altDecoded' => $this->json('decode', $responseString)
+					)
+				));*/
 
 				// accommodate new json response format
 				if ( strpos($responseString, '{') !== false ){
@@ -920,13 +968,27 @@ if ( is_admin() ) {
 
 				// if no valid response, check for http issue
 				if (empty($response['message'])){
-					$response_code = wp_remote_retrieve_response_code( wp_remote_get($url) );
+
+				    //$response_code = wp_remote_retrieve_response_code( wp_remote_get($url) ); // now collected in first request
+
 					if ($response_code != 200){
 						$response['message'] = 'connection error';
 						if (empty($response_code) && !empty($responseString)){
 							$response_code  = esc_html($responseString);
 						}
 					}
+
+					// we may have got a HTML captcha page response, display this
+					else {
+						$response['message'] = 'possible firewall issue';
+					    $this->innoFirewall = array_merge($connection_details, array(
+					            'debug' => array(
+					                'responseString' => $responseString,
+                                    'decodedResponse' => $response,
+                                    'altDecoded' => $this->json('decode', $responseString)
+                                )
+                        ));
+                    }
 
 					$response['code'] = $response_code;
 
@@ -958,141 +1020,141 @@ if ( is_admin() ) {
 			}
 
 
-            function change_unlock_status($context, $validation, $pref_array, $response, $was_capped_version){
+			function change_unlock_status($context, $validation, $pref_array, $response, $was_capped_version){
 
-                // regardless of unlock/lock no further need for retrospectively checking their subscription renewal
-	            $pref_array['retro_sub_check_done'] = 1;
+				// regardless of unlock/lock no further need for retrospectively checking their subscription renewal
+				$pref_array['retro_sub_check_done'] = 1;
 
-	            /* validation success */
-	            if ($validation) {
+				/* validation success */
+				if ($validation) {
 
-		            $pref_array['buyer_validated'] = 1;
+					$pref_array['buyer_validated'] = 1;
 
-		            if ($context == 'unlock'){
-			            if (!$this->preferences['buyer_validated']) { // not already validated
-				            $this->log(
-					            esc_html__('Full program unlocked!', 'microthemer'),
-					            '<p>' . esc_html__('Your email address has been successfully validated. Microthemer\'s full program features have been unlocked!', 'microthemer') . '</p>',
-					            'notice'
-				            );
-			            } else {
+					if ($context == 'unlock'){
+						if (!$this->preferences['buyer_validated']) { // not already validated
+							$this->log(
+								esc_html__('Full program unlocked!', 'microthemer'),
+								'<p>' . esc_html__('Your license has been successfully validated. Microthemer\'s full program features have been unlocked!', 'microthemer') . '</p>',
+								'notice'
+							);
+						} else {
 
-				            if ($was_capped_version){
-					            if (empty($response['capped_version'])){
-						            $this->log(
-							            esc_html__('Updates enabled', 'microthemer'),
-							            '<p>' . esc_html__('You can now update Microthemer to the latest version.', 'microthemer') . '</p>',
-							            'notice'
-						            );
-					            } else {
-						            $this->log(
-							            esc_html__('Version is still limited ', 'microthemer'),
-							            '<p>' . esc_html__('Your subscription must be renewed on themeover.com to enable Microthemer updates.', 'microthemer') . '</p>',
-							            'warning'
-						            );
-					            }
-				            }
+							if ($was_capped_version){
+								if (empty($response['capped_version'])){
+									$this->log(
+										esc_html__('Updates enabled', 'microthemer'),
+										'<p>' . esc_html__('You can now update Microthemer to the latest version.', 'microthemer') . '</p>',
+										'notice'
+									);
+								} else {
+									$this->log(
+										esc_html__('Version is still limited ', 'microthemer'),
+										'<p>' . esc_html__('Your subscription must be renewed on themeover.com to enable Microthemer updates.', 'microthemer') . '</p>',
+										'warning'
+									);
+								}
+							}
 
-				            else {
-					            $this->log(
-						            esc_html__('Already validated', 'microthemer'),
-						            '<p>' . esc_html__('Your email address has already been validated. The full program is currently active.', 'microthemer') . '</p>',
-						            'notice'
-					            );
-				            }
-
-
-			            }
+							else {
+								$this->log(
+									esc_html__('Already validated', 'microthemer'),
+									'<p>' . esc_html__('Your license has already been validated. The full program is currently active.', 'microthemer') . '</p>',
+									'notice'
+								);
+							}
 
 
-		            }
-
-	            }
+						}
 
 
-	            /* validation fail */
-	            else {
+					}
 
-		            // do checks on why validation failed here and report to user
-		            $pref_array['buyer_validated'] = 0;
+				}
 
-		            // prevent future subscription checks as we're already in free trial mode
-		            $pref_array['subscription']['renewal_check'] = false;
 
-		            $explain = '';
-		            $title_prefix = ($context == 'unlock') ? 'Unlock failed' : 'Notice';
+				/* validation fail */
+				else {
 
-		            // check for returned message to give clue about problem
-		            if (!empty($response['message'])){
+					// do checks on why validation failed here and report to user
+					$pref_array['buyer_validated'] = 0;
 
-			            $title = $title_prefix . ' - ' . $response['message'];
+					// prevent future subscription checks as we're already in free trial mode
+					$pref_array['subscription']['renewal_check'] = false;
 
-			            switch ($response['message']) {
+					$explain = '';
+					$title_prefix = ($context == 'unlock') ? 'Unlock failed' : 'Notice';
 
-				            case "missing info":
-					            $explain = "<p>The required unlock credentials were not provided.</p>";
-					            break;
+					// check for returned message to give clue about problem
+					if (!empty($response['message'])){
 
-				            case "invalid credentials":
-					            $explain = '<p>The unlock credentials were invalid. Make sure you are entering 
-                                        the email address shown on 
+						$title = $title_prefix . ' - ' . $response['message'];
+
+						switch ($response['message']) {
+
+							case "missing info":
+								$explain = "<p>The required unlock credentials were not provided.</p>";
+								break;
+
+							case "invalid credentials":
+								$explain = '<p>The unlock credentials were invalid. Make sure you are entering 
+                                        the unlock code shown in 
                                         <a target="_blank" href="https://themeover.com/my-account/">My Downloads</a></p>';
-					            break;
+								break;
 
-				            case "subscription expired":
-					            $explain = '<p>Your subscription has expired. This means you can only  
+							case "subscription expired":
+								$explain = '<p>Your subscription has expired. This means you can only  
                                         use Microthemer in free trial mode. To continue using Microthemer in 
                                         full capacity please renew or upgrade via  
                                         <a target="_blank" href="https://themeover.com/my-account/">My Downloads</a></p>';
-					            break;
+								break;
 
-				            case "incorrect version":
-					            $explain = '<p>Your expired subscription does not allow you to use this version 
+							case "incorrect version":
+								$explain = '<p>Your expired subscription does not allow you to use this version 
                                         ('.$this->version.') of Microthemer. You are eligible to use version '
-					                       .$response['capped_version'].', which you can download from  
+								           .$response['capped_version'].', which you can download from  
                                         <a target="_blank" href="https://themeover.com/my-account/">My Downloads</a>. 
                                         You can also renew or upgrade your subscription from there if you want to 
                                         use this version of Microthemer.</p>';
-					            break;
+								break;
 
-				            case "please upgrade":
+							case "please upgrade":
 
-					            $explain = '<p>Domain limit (3) reached. The standard license permits 
-                                        installing Microthemer on 3 domains in total, not 3 domains at any one time.</p>';
+								$explain = '<p>Domain limit ('.intval($response['limit']).') reached. Your license permits 
+                                        installing Microthemer on '.intval($response['limit']).' domains in total, not '.intval($response['limit']).' domains at any one time.</p>';
 
-					            // extra text if they have already exceeded their limit
-					            if (count($response['domains']) > 3){
-						            $explain.= '<p>We started enforcing this restriction after learning that a 
+								// extra text if they have already exceeded their limit
+								/*if (count($response['domains']) > 3){
+									$explain.= '<p>We started enforcing this restriction after learning that a 
                                             few people have been unclear about the terms 
                                             of the standard license. No worries if this includes you.</p>';
-					            }
+								}*/
 
-					            $explain.= '<p><a class="tvr-button" target="_blank" 
+								$explain.= '<p><a class="tvr-button" target="_blank" 
                                         href="https://themeover.com/my-account/">Please upgrade 
                                         to a developer license</a></p>
                                         
                                         <h3>Domains you have installed Microthemer on</h3>';
 
-					            // display domains
-					            $domains = '';
-					            foreach ($response['domains'] as $key => $arr){
-						            $domains.= '
+								// display domains
+								$domains = '';
+								foreach ($response['domains'] as $key => $arr){
+									$domains.= '
                                             <li>
                                                 <span class="domain-name">' . $arr['domain'] . '</span>
                                                 <span class="install-date">' . $arr['date'] . '</span>
                                             </li>';
-					            }
+								}
 
-					            $explain.= '<ol>' . $domains . '</ol>';
+								$explain.= '<ol>' . $domains . '</ol>';
 
-					            break;
+								break;
 
 
-				            case "connection error":
-				            case "proxy connection error":
-				            case "subscription check failed":
-					            $code_message = !empty($response_code) ? 'HTTP response code: '.$response_code : '';
-					            $explain = '<p>The connection to themeover.com was unsuccessful. 
+							case "connection error":
+							case "proxy connection error":
+							case "subscription check failed":
+								$code_message = !empty($response_code) ? 'HTTP response code: '.$response_code : '';
+								$explain = '<p>The connection to themeover.com was unsuccessful. 
                                 '.$code_message.'</p>
                             
                                 <p>The connection to Themeover\'s server may have failed due to an 
@@ -1108,79 +1170,80 @@ if ( is_admin() ) {
                                 <p>Finally, security settings on your server may block all outgoing PHP 
                                 connections to domains not on a trusted whitelist (e.g. sites that are not 
                                 wordpress.org). Ask your web host about temporarily unblocking themeover.com.</p>';
-					            break;
+								break;
 
-			            }
+						}
 
-		            }
+					}
 
-		            // unknown error
-		            else {
-			            $title = $title_prefix;
-			            $explain = '<p>Your email address could not be validated. Make sure you are entering 
-                                 the email address shown on <a target="_blank" href="https://themeover.com/my-account/">
+					// unknown error
+					else {
+						$title = $title_prefix;
+						$explain = '<p>Your license could not be validated. Make sure you are entering 
+                                 the unlock code shown in <a target="_blank" href="https://themeover.com/my-account/">
                                  My Downloads</a>. If you are still stuck,  
                                 <a target="_blank" href="https://themeover.com/support/contact/">please contact 
                                 support for assistance</a></p>';
-		            }
+					}
 
-		            $this->log($title, $explain);
-	            }
+					$this->log($title, $explain);
+				}
 
 
-	            if (!$this->savePreferences($pref_array)) {
-		            $this->log(
-			            esc_html__('Unlock status not saved', 'microthemer'),
-			            '<p>' . esc_html__('Your validation status could not be saved. The program may need to be unlocked again.', 'microthemer') . '</p>'
-		            );
-	            }
+				if (!$this->savePreferences($pref_array)) {
+					$this->log(
+						esc_html__('Unlock status not saved', 'microthemer'),
+						'<p>' . esc_html__('Your validation status could not be saved. The program may need to be unlocked again.', 'microthemer') . '</p>'
+					);
+				}
 
-	            return $pref_array['subscription'];
-            }
+				return $pref_array['subscription'];
+			}
 
-            function invalidLic(){
+			function invalidLic(){
 
-			    $invalid = array(
-                    'c9f79e3d1874f6cc044513ab5357c63d'
-                );
+				$invalid = array(
+					'c9f79e3d1874f6cc044513ab5357c63d'
+				);
 
-			    $current = md5($this->preferences['buyer_email']);
+				$current = md5($this->preferences['buyer_email']);
 
-			    if ( in_array($current, $invalid) ){
+				if ( in_array($current, $invalid) ){
 
-			        $pref_array = array(
-					    'buyer_email' => '',
-					    'buyer_validated' => 0,
-					    'used_invalid' => 1,
-                        'subscription' => array(
-	                        'unlock' => false,
-	                        'renewal_check' => false,
-	                        'message' => ''
-                        )
-				    );
+					$pref_array = array(
+						'buyer_email' => '',
+						'buyer_validated' => 0,
+						'used_invalid' => 1,
+						'subscription' => array(
+							'unlock' => false,
+							'renewal_check' => false,
+							'message' => ''
+						)
+					);
 
-				    $this->savePreferences($pref_array);
+					$this->savePreferences($pref_array);
 
-				    return true;
-                }
+					return true;
+				}
 
-			    return false;
-            }
+				return false;
+			}
 
 			// set defaults for user's property preferences (this runs on every page load)
 			function maybe_set_my_props_defaults(){
 
 				$log = array(
-				   'update2' => false
-                );
+					'update2' => false
+				);
 
 				// for resetting during development
-				/*$this->preferences['my_props'] = array();
+				/*unset($this->preferences['layout']);
+				$this->preferences['my_props'] = array();
 				$this->preferences['default_sug_values_set'] = 0;*/
 
 				foreach ($this->propertyoptions as $prop_group => $array){
 
-				    foreach ($array as $prop => $meta) {
+					foreach ($array as $prop => $meta) {
 
 						// we're only interested in props with default units or suggested values
 						if ( !isset($meta['default_unit']) and empty($meta['sug_values']) ){
@@ -1191,7 +1254,7 @@ if ( is_admin() ) {
 						if (isset($meta['default_unit']) and
 						    (!isset($this->preferences['my_props'][$prop_group]['pg_props'][$prop]['default_unit']) or
 						     $this->preferences['my_props'][$prop_group]['pg_props'][$prop]['default_unit'] === 'px (implicit)') // legacy system default
-                        ){
+						){
 							$log['update2'] = true;
 							$default_unit = $meta['default_unit']; //$this->is_time_prop($prop) ? 's' : 'px (implicit)';
 							$this->preferences['my_props'][$prop_group]['pg_props'][$prop]['default_unit'] = $default_unit;
@@ -1204,17 +1267,17 @@ if ( is_admin() ) {
 				}
 
 				// Save if changes were made to my_props
-                if ($log['update2']){
+				if ($log['update2']){
 
-	                $this->savePreferences(
-	                    array(
-                            'my_props' =>  $this->preferences['my_props'],
-                            'units_added_to_suggestions' => $this->preferences['units_added_to_suggestions']
-                        )
-                    );
+					$this->savePreferences(
+						array(
+							'my_props' =>  $this->preferences['my_props'],
+							'units_added_to_suggestions' => $this->preferences['units_added_to_suggestions']
+						)
+					);
 
-	                return true;
-                }
+					return true;
+				}
 
 				return false;
 			}
@@ -1224,28 +1287,28 @@ if ( is_admin() ) {
 				$isTimeUnit = ($unit === 's' || $unit === 'ms');
 
 				return ( $isTimeUnit || ($value != 0 && $value !== '0') ) && is_numeric($value);
-            }
+			}
 
 			// Apply the default unit as set in MT to the suggestions (before we mostly had pixels and no unit)
-            function ensureSuggestionsHaveUnits(&$suggestions, $meta){
+			function ensureSuggestionsHaveUnits(&$suggestions, $meta){
 
-                // if property supports units
+				// if property supports units
 				if (isset($meta['default_unit'])){
 
-				    $factoryDefaultUnit = $meta['default_unit'];
+					$factoryDefaultUnit = $meta['default_unit'];
 
-				    foreach ($suggestions as $i => $value){
+					foreach ($suggestions as $i => $value){
 
-                        if ( $this->unitCouldBeAdded($value, $factoryDefaultUnit) ){
-	                        $suggestions[$i] = $value . $factoryDefaultUnit;
-                        }
+						if ( $this->unitCouldBeAdded($value, $factoryDefaultUnit) ){
+							$suggestions[$i] = $value . $factoryDefaultUnit;
+						}
 					}
-                }
-            }
+				}
+			}
 
 			function prepare_sug_values($log, $meta, $prop, $extra = ''){
 
-			    if ( !empty($meta['sug_values'.$extra]) ){
+				if ( !empty($meta['sug_values'.$extra]) ){
 
 					// empty arrays by default
 					$recent = $sampled = $saved = array();
@@ -1325,7 +1388,7 @@ if ( is_admin() ) {
 						else {
 
 							// set copiedSrc if not already
-						    if (!isset($this->preferences['my_props']['sug_values'][$root_cat]['copiedSrc']) ){
+							if (!isset($this->preferences['my_props']['sug_values'][$root_cat]['copiedSrc']) ){
 								$this->preferences['my_props']['sug_values'][$root_cat]['copiedSrc'] = $copiedSrc;
 								$log['update2'] = true;
 							}
@@ -1340,19 +1403,19 @@ if ( is_admin() ) {
 
 										$this->ensureSuggestionsHaveUnits(
 											$this->preferences['my_props']['sug_values'][$root_cat][$sug_key], $meta
-                                        );
+										);
 									}
 								}
 
 								$this->preferences['units_added_to_suggestions'] = 1;
 								$log['update2'] = true;
 							}
-                        }
+						}
 					}
 				}
 
 				return $log;
-            }
+			}
 
 
 			// check if an url is valid
@@ -1385,28 +1448,32 @@ if ( is_admin() ) {
 
 				$first_in_group_val = '';
 
-                foreach ($this->preferences['my_props'] as $prop_group => $array){
+				foreach ($this->preferences['my_props'] as $prop_group => $array){
 
-					if ($prop_group == 'sug_values') continue;
+					if ($prop_group == 'sug_values' ||
+                        empty($this->preferences['my_props'][$prop_group]['pg_props'])
+                    ) {
+					    continue;
+					}
 
 					foreach ($this->preferences['my_props'][$prop_group]['pg_props'] as $prop => $arr){
 
-					    // skip props with no default unit
+						// skip props with no default unit
 						if (!isset($this->propertyoptions[$prop_group][$prop]['default_unit'])
-                            or $this->is_non_length_unit($this->propertyoptions[$prop_group][$prop]['default_unit'], $prop)
-                        ){
+						    or $this->is_non_length_unit($this->propertyoptions[$prop_group][$prop]['default_unit'], $prop)
+						){
 							continue;
 						}
 
 						// get unit
 						$new_unit = isset($new_css_units[$prop_group][$prop])
-                            ? $new_css_units[$prop_group][$prop]
-                            : '';
+							? $new_css_units[$prop_group][$prop]
+							: '';
 
 						// correct for line-height
 						if ($new_unit == 'none'){
 							$new_unit = '';
-                        }
+						}
 
 						// set all related the same
 						$box_model_rel = false;
@@ -1434,24 +1501,28 @@ if ( is_admin() ) {
 
 					}
 				}
+
 				return $this->preferences['my_props'];
 			}
 
 			// ensure all preferences are defined
 			function ensure_defined_preferences($full_preferences, $pd_context){
 
+				//$this->preferences = array();
+
 				// copy previous preferences for history backup
 				$this->pre_update_preferences = $this->preferences;
 
 				// backup previous version settings as special history entry if new version
-                if ($this->new_version && $pd_context == 'microthemer_activated_or_updated'){
-	                $this->pre_upgrade_backup();
-                }
+				if ($this->new_version && $pd_context == 'microthemer_activated_or_updated'){
+					$this->pre_upgrade_backup();
+				}
 
-			    // check if all preference are defined
-			    $pref_array = array();
-			    $update = false;
-			    foreach ($full_preferences as $key => $value){
+				// check if all preference are defined
+				//unset($this->preferences['layout']); // for debugging
+				$pref_array = array();
+				$update = false;
+				foreach ($full_preferences as $key => $value){
 					if (!isset($this->preferences[$key])){
 						$pref_array[$key] = $value;
 						$update = true;
@@ -1461,13 +1532,13 @@ if ( is_admin() ) {
 				// save new preference definitions if found
 				if ($update) {
 					$this->savePreferences($pref_array);
-                }
+				}
 
 				// new CSS props will be added over time and the default unit etc must be assigned.
 				$this->maybe_set_my_props_defaults();
 
 				// convert user's non_section config to modern format with meta holding little values
-                // meta always gets sent in ajax save
+				// meta always gets sent in ajax save
 				$this->maybe_do_data_conversions_for_update();
 
 				// ensure view_import_stylesheets list has current theme style.css (saves preferences too)
@@ -1484,8 +1555,8 @@ if ( is_admin() ) {
 
 
 				$previous_version = !empty($this->preferences['previous_version'])
-                    ? $this->preferences['previous_version']
-                    : 'Previous version';
+					? $this->preferences['previous_version']
+					: 'Previous version';
 
 				if ($wpdb->num_rows > 0){
 
@@ -1495,47 +1566,47 @@ if ( is_admin() ) {
 						$this->json_format_ua(
 							'display-preferences lg-icon',
 							esc_html__($previous_version.' settings (before updating to '.$this->version.')',
-                                'microthemer')
+								'microthemer')
 						),
 						true, // otherwise error on new installs
 						$this->preferences, //$backup_preferences,
-                        true
+						true
 					)) {
 						$this->log('','','error', 'revisions');
 					}
 
-                    // clean any pre-update packs MT created when it using that system
-                    $this->clean_pre_upgrade_backup_packs();
+					// clean any pre-update packs MT created when it using that system
+					$this->clean_pre_upgrade_backup_packs();
 
 					// export the old settings too, to ensure history doesn't get wiped
-                    // no, history will suffice as pre_upgrade only gets cleared when another upgrade happens
-                    // also this was creating mulitple packs as $alt_name was preventing overwrite
+					// no, history will suffice as pre_upgrade only gets cleared when another upgrade happens
+					// also this was creating mulitple packs as $alt_name was preventing overwrite
 					//$this->update_json_file('Pre-upgrade backup settings', 'new', true, $this->preferences);
 				}
 
 			}
 
-		    // clean any pre-update packs MT created when it using that system
+			// clean any pre-update packs MT created when it using that system
 			function clean_pre_upgrade_backup_packs(){
 
-			    $pattern = '/pre-upgrade-backup-settings(?:-\d)?/';
+				$pattern = '/pre-upgrade-backup-settings(?:-\d)?/';
 
-			    // loop packs
+				// loop packs
 				foreach ($this->file_structure as $dir => $array) {
 
 					// delete matches
-				    if (preg_match($pattern, $dir)) {
+					if (preg_match($pattern, $dir)) {
 						$this->tvr_delete_micro_theme($dir);
 					}
 				}
-            }
+			}
 
 
 			// run data structure updates
 			function maybe_do_data_conversions_for_update(){
 
 				// a few minor data format changes were made for the speed version. This runs once.
-			    if (empty($this->preferences['speed_conversion_done'])){
+				if (empty($this->preferences['speed_conversion_done'])){
 
 					// create backup
 					//$this->pre_upgrade_backup(); - this happens on every update
@@ -1614,14 +1685,14 @@ if ( is_admin() ) {
 					$m_queries = $this->preferences['m_queries'];
 
 					$map = array(
-					     "bb1" => "builder.FLBuilder.medium",
-                         "bb2" => "builder.FLBuilder.small",
-                         "elem2" => "builder.elementor.tablet",
-					     "elem3" => "builder.elementor.mobile",
-                         "oxy_page_width" => "builder.oxygen.page-width",
-					     "oxy_tablet" => "builder.oxygen.tablet",
-					     "oxy_phone_landscape" => "builder.oxygen.phone-landscape",
-					     "oxy_phone_portrait" => "builder.oxygen.phone-portrait",
+						"bb1" => "builder.FLBuilder.medium",
+						"bb2" => "builder.FLBuilder.small",
+						"elem2" => "builder.elementor.tablet",
+						"elem3" => "builder.elementor.mobile",
+						"oxy_page_width" => "builder.oxygen.page-width",
+						"oxy_tablet" => "builder.oxygen.tablet",
+						"oxy_phone_landscape" => "builder.oxygen.phone-landscape",
+						"oxy_phone_portrait" => "builder.oxygen.phone-portrait",
 					);
 
 					// remove keys that were hack for non-queued settings save
@@ -1629,7 +1700,7 @@ if ( is_admin() ) {
 
 						foreach ($map as $key_suffix => $site_preview_width){
 
-						    if ( preg_match('/'.$key_suffix.'$/', $mq_key) ){
+							if ( preg_match('/'.$key_suffix.'$/', $mq_key) ){
 								$m_queries[$mq_key]['site_preview_width'] = $site_preview_width;
 							}
 						}
@@ -1642,14 +1713,14 @@ if ( is_admin() ) {
 					$this->savePreferences(
 						array(
 							'builder_site_preview_width_conversion_done' => true,
-                            'm_queries' => $m_queries
+							'm_queries' => $m_queries
 						)
 					);
 
 				}
 
 				// there were some errors with recently viewed pages being badly formatted
-                // including an Oxygen issue that could cause data loss, so reset custom_paths if not done already
+				// including an Oxygen issue that could cause data loss, so reset custom_paths if not done already
 				if (empty($this->preferences['custom_paths_reset'])){
 					$this->savePreferences(
 						array(
@@ -1657,7 +1728,50 @@ if ( is_admin() ) {
 							'custom_paths' =>  array('/')
 						)
 					);
-                }
+				}
+
+				// we previously had dock_styles_left which did both styles and editor
+				if (empty($this->preferences['dock_left_conversion_done'])){
+					$this->savePreferences(
+						array(
+							'dock_editor_left' => 1,
+							'dock_styles_left' => 1,
+							'dock_left_conversion_done' =>  1
+						)
+					);
+				}
+
+
+				// min_widths for resizable panels are stored alongside user custom sizes
+                // but this may need to be refined at various intervals
+                $layout_adjust_version = 2;// increase this number when
+				if (
+				        empty($this->preferences['layout_adjust_version'])
+                        || $this->preferences['layout_adjust_version'] !== $layout_adjust_version
+                ){
+
+					// set new value - note array_merge had strange affect, so be careful with that
+                    // simpler to just set new values
+				    $this->preferences['layout']['inspection_columns']['min_column_sizes'] = array(300, 310);
+
+				    $this->savePreferences(
+						array(
+							'layout' => $this->preferences['layout'],
+							'layout_adjust_version' =>  $layout_adjust_version
+						)
+					);
+				}
+
+				// ensure draft mode is always on, and wizard dock right setting is off
+				if (empty($this->preferences['always_draft_conversion_done'])){
+					$this->savePreferences(
+						array(
+							'draft_mode' => 1,
+							'dock_wizard_right' => 0, // this is never docked right in 7.0 release (may be supported again)
+							'always_draft_conversion_done' =>  1
+						)
+					);
+				}
 
 			}
 
@@ -1673,9 +1787,8 @@ if ( is_admin() ) {
 					$update_prefs = true;
 				}
 
-				// we released 5 beta with system for remembering targeting mode on page load,
-				// but decided against this, have this hard set for a while to fix for beta testers
-				$this->preferences['hover_inspect'] = 0; // simple fix
+				// Version 7 has targeting enabled by default, but this used to be hard set to 0. So now we hard set to 'on';
+				$this->preferences['hover_inspect'] = 1;
 
 				if ($update_prefs){
 					$this->savePreferences($this->preferences);
@@ -1823,11 +1936,14 @@ if ( is_admin() ) {
 
 			// add js
 			function add_js() {
-				if (TVR_MICRO_VARIANT == 'themer') {
+
+			    if (TVR_MICRO_VARIANT == 'themer') {
 
 					if (!$this->optimisation_test){
 						wp_enqueue_media(); // adds over 1000 lines of code to footer
 					}
+
+
 
 					// Run pre-wordPress 5.6 jQuery and jQuery UI (temp fix for users with sites that still have issues)
 					$runLegacyJquery = !empty($this->preferences['wp55_jquery_version']);
@@ -1923,23 +2039,30 @@ if ( is_admin() ) {
 
 						// mt core namespace
 						array('h' => 'tvr_core', 'f' => 'mt-core.js'),
+						array('h' => 'tvr_mcth_cssprops', 'f' => 'data/program-data.js'), // this will be dyn soon
 
 						// js libraries (prefix name with mt- if I've edited the library)
 						// use ace2, ace4 and have /ace as sub dir for easy globs in gulp file
 						array('h' => 'tvr_ace', 'f' => 'lib/ace4/ace/ace.js'),
 						array('h' => 'tvr_ace_lang', 'f' => 'lib/ace4/ace/ext-language_tools.js'),
 						array('h' => 'tvr_ace_search', 'f' => 'lib/ace4/ace/ext-searchbox.js'),
+
+						// conditionally load emmet in build version as it's quite big - come back to this
+						//array('h' => 'tvr_emmet', 'f' => 'lib/emmet/emmet.js'),
+						//array('h' => 'tvr_ace_emmet', 'f' => 'lib/ace4/ace/ext-emmet.js'),
+
 						array('h' => 'tvr_gsap', 'f' => 'lib/gsap/gsap.min.js'),
 						/*array('h' => 'tvr_widget', 'f' => '../src/js/mt-widget.js'),
 						array('h' => 'tvr_transform', 'f' => '../src/js/mt-transform.js'),*/
 						array('h' => 'tvr_gridstack', 'f' => 'lib/gridstack/gridstack.js'),
 						array('h' => 'tvr_gridstack_ui', 'f' => 'lib/gridstack/gridstack.jQueryUI.js'),
 						array('h' => 'tvr_extend_regexp', 'f' => 'lib/extend-native-regexp.js'),
-						array('h' => 'tvr_mcth_colorbox', 'f' => 'lib/colorbox/1.6.4/jquery.colorbox-min.js'),
+						//array('h' => 'tvr_mcth_colorbox', 'f' => 'lib/colorbox/1.6.4/jquery.colorbox-min.js'),
 						array('h' => 'tvr_spectrum', 'f' => 'lib/colorpicker/mt-spectrum.js', 'dep' => array( 'jquery' )),
 
 						// https://github.com/beautify-web/js-beautify
 						array('h' => 'tvr_html_beautify', 'f' => 'lib/beautify-html.min.js'),
+						array('h' => 'tvr_css_beautify', 'f' => 'lib/js-beautify/beautify-css.js'),
 						array('h' => 'tvr_sprintf', 'f' => 'lib/sprintf/sprintf.min.js'),
 						array('h' => 'tvr_parser', 'f' => 'lib/parser.js'),
 						//array('h' => 'tvr_ast_query', 'f' => 'lib/query-ast.js'), // doesn't play well with gonz
@@ -1948,12 +2071,16 @@ if ( is_admin() ) {
 						//array('h' => 'tvr_cssutilities', 'f' => 'lib/CSSUtilities.js'), // for comparing customised
 
 						// try out a new sortable library as jquery seems buggy when there are lots of selectors
-						array('h' => 'tvr_sortable', 'f' => 'lib/sortable/mt-sortable.js'),
+						//array('h' => 'tvr_sortable', 'f' => 'lib/sortable/mt-sortable.js'),
+						array('h' => 'tvr_sortable', 'f' => 'lib/sortable/mt-sortable-1.13.js'),
 
 						// custom modules
-						array('h' => 'tvr_mcth_cssprops', 'f' => 'data/program-data.js'), // this will be dyn soon
+
 						array('h' => 'tvr_utilities', 'f' => 'mod/mt-utilities.js'),
 						array('h' => 'tvr_widget', 'f' => 'mod/mt-widget.js'),
+						array('h' => 'tvr_layout', 'f' => 'mod/mt-layout.js', 'page' => array(
+							$this->microthemeruipage
+						)),
 						//array('h' => 'tvr_transform', 'f' => '../src/js/mt-transform.js'),
 						array('h' => 'tvr_init', 'f' => 'mod/mt-init.js'),
 						array('h' => 'tvr_mod_ace', 'f' => 'mod/mt-ace.js'),
@@ -1986,8 +2113,7 @@ if ( is_admin() ) {
 						array('h' => 'tvr_deps', 'f' => '../js-min/deps.js', 'min' => 1),
 						array('h' => 'tvr_mcth_cssprops', 'f' => '../js-min/program-data.js', 'min' => 1,
 						      'skipScript' => !empty($this->preferences['inlineJsProgData']) ),
-						array('h' => 'tvr_main_ui', 'f' => '../js-min/microthemer.js', 'min' => 1,
-						      'page' => array($this->microthemeruipage)),
+						array('h' => 'tvr_main_ui', 'f' => '../js-min/microthemer.js', 'min' => 1, 'page' => array($this->microthemeruipage)),
 						array('h' => 'tvr_man', 'f' => '../js-min/packs.js', 'min' => 1, 'page' => 'other'),
 						array('h' => 'tvr_fonts', 'f' => '../js-min/fonts.js', 'min' => 1, 'page' => array($this->fontspage)),
 						array('h' => 'tvr_detached', 'f' => '../js-min/detached-preview.js', 'min' => 1, 'page' => array($this->detachedpreviewpage)),
@@ -2054,36 +2180,36 @@ if ( is_admin() ) {
 					}
 
 
-/*// for article
-$jqueryUIScripts = array(
-    'core',
-    'widget',
-    'mouse',
-    'sortable',
-    'menu',
-    'autocomplete',
-);
+					/*// for article
+					$jqueryUIScripts = array(
+						'core',
+						'widget',
+						'mouse',
+						'sortable',
+						'menu',
+						'autocomplete',
+					);
 
-$prevScript = false;
+					$prevScript = false;
 
-foreach ($jqueryUIScripts as $scriptName){
+					foreach ($jqueryUIScripts as $scriptName){
 
-    $jqueryUIDeps = array('jquery', 'jquery-migrate');
+						$jqueryUIDeps = array('jquery', 'jquery-migrate');
 
-    if (!empty($prevScript)){
-        $jqueryUIDeps[] = 'jquery-ui-core';
-        $jqueryUIDeps[] = 'jquery-ui-'.$prevScript;
-    }
+						if (!empty($prevScript)){
+							$jqueryUIDeps[] = 'jquery-ui-core';
+							$jqueryUIDeps[] = 'jquery-ui-'.$prevScript;
+						}
 
-    wp_scripts()->remove( $scriptName );
+						wp_scripts()->remove( $scriptName );
 
-    wp_enqueue_script(
-        $scriptName, '/wp-content/themes/my-theme/js/temp-fix/'.$scriptName.'.js',
-        $jqueryUIDeps
-    );
+						wp_enqueue_script(
+							$scriptName, '/wp-content/themes/my-theme/js/temp-fix/'.$scriptName.'.js',
+							$jqueryUIDeps
+						);
 
-    $prevScript = $scriptName;
-}*/
+						$prevScript = $scriptName;
+					}*/
 
 
 					// load js strings for translation
@@ -2127,7 +2253,7 @@ foreach ($jqueryUIScripts as $scriptName){
 				foreach ($check as $key => $plugin){
 					if ( is_plugin_active( $plugin ) ) {
 
-					    // two versions of BB, try using same key
+						// two versions of BB, try using same key
 						$key = ($key === 'FLBuilder_lite') ? 'FLBuilder' : $key;
 
 						$this->integrations[$key] = 1;
@@ -2167,19 +2293,19 @@ foreach ($jqueryUIScripts as $scriptName){
 
 					if (method_exists('Elementor\Core\Responsive\Responsive', 'get_breakpoints')){
 
-					    $this->elementor_breakpoints = Elementor\Core\Responsive\Responsive::get_breakpoints();
+						$this->elementor_breakpoints = Elementor\Core\Responsive\Responsive::get_breakpoints();
 
 						// elementor breakpoints to not match the preview screen. They are calculated from lg and md minus 1.
-					    $tablet_max = $this->elementor_breakpoints['lg'] - 1;
+						$tablet_max = $this->elementor_breakpoints['lg'] - 1;
 						$mobile_max = $this->elementor_breakpoints['md'] - 1;
 
 						// Elementor media query option
 						$this->elementor_mqs = array(
-							 /*// Not using Desktop label as Elmentor has that for full width. Yet 1025 is a custom setting.
-							 $this->unq_base.'elem1' => array(
-								"label" => __('Max: '.$breakpoints['lg'], 'microthemer'),
-								"query" => "@media (max-width: {$breakpoints['lg']}px)",
-							),*/
+							/*// Not using Desktop label as Elmentor has that for full width. Yet 1025 is a custom setting.
+							$this->unq_base.'elem1' => array(
+							   "label" => __('Max: '.$breakpoints['lg'], 'microthemer'),
+							   "query" => "@media (max-width: {$breakpoints['lg']}px)",
+						   ),*/
 							$this->unq_base.'elem2' => array(
 								"label" => __('Elementor Tablet', 'microthemer'),
 								"query" => "@media (max-width: {$tablet_max}px)",
@@ -2209,13 +2335,13 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				// if Oxygen, provide way to load an Oxygen breakpoint set
 				if ( !empty($this->integrations['oxygen']) ){
 
-				    global $media_queries_list, $media_queries_list_above;
+					global $media_queries_list, $media_queries_list_above;
 
 					// get a copy of Oxygen global media query array so we don't update global instance
-                    // when setting maxSize on page-width key using $global_page_width
-                    // this is unset because oxygen allows different page widths
-                    // but MT doesn't support dynamic MQ tabs
-				    $mq_copy = $this->array_clone($media_queries_list);
+					// when setting maxSize on page-width key using $global_page_width
+					// this is unset because oxygen allows different page widths
+					// but MT doesn't support dynamic MQ tabs
+					$mq_copy = $this->array_clone($media_queries_list);
 					$mq_above_copy = $this->array_clone($media_queries_list_above);
 
 					if ( isset($mq_copy) && function_exists('oxygen_vsb_get_page_width') ){
@@ -2234,7 +2360,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 							$this->unq_base.'_oxy_page_width' => array(
 								"label" => $page_container_label, //.' ('.$global_page_width.'px) '.$and_below_label,
 								"query" => "@media (max-width: {$global_page_width}px)",
-                                "site_preview_width" => "builder.oxygen.page-width"
+								"site_preview_width" => "builder.oxygen.page-width"
 							),
 							$this->unq_base.'_oxy_tablet' => array(
 								"label" => $mq_copy['tablet']['title'],
@@ -2273,10 +2399,10 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 			function concat_builder_sync_options($mqs){
 
-			    foreach ($mqs as $array){
-				    $this->builder_sync_tabs[] = $array['site_preview_width'];
-                }
-            }
+				foreach ($mqs as $array){
+					$this->builder_sync_tabs[] = $array['site_preview_width'];
+				}
+			}
 
 			// clone an array - useful if we want to edit global array only locally
 			function array_clone($array) {
@@ -2297,25 +2423,59 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 				header("Cache-Control: post-check=0, pre-check=0", false);
 				header("Pragma: no-cache");
-            }
+			}
 
+			// color variables and customisable panel sizes for left and right sidebars
 			function add_dyn_inline_css(){
 
-                // color variables
-				if (!empty($this->preferences['mt_color_variables_css'])){
+				$layout = $this->preferences['layout'];
+				$inspCols = $layout['inspection_columns']['column_sizes'];
 
-				    $ruleSet = '.sp-container, .tvr-input-wrap { '.strip_tags($this->preferences['mt_color_variables_css']).' }';
-
-                    echo '<style id="mt_color_variables">'.$ruleSet.'</style>';
+				// MT side columns are customisable, default to saved widths on load
+				// Note, left and right columns are have position absolutes so resizing isn't jerky
+				$column_sizes = $layout['left']['column_sizes'];
+				/*$min_column_sizes = $this->preferences['layout']['left']['min_column_sizes'];
+				minmax('.$min_column_sizes[$i].'px, */
+				$gridColumns = '';
+				foreach ($column_sizes as $i => $size) {
+					$gridColumns.= ''.$size.'px ';
 				}
 
-            }
+				// add column size for main area and right column
+				$gridColumns.= '1fr '
+				               .''.$layout['right']['column_sizes'][0].'px '
+				               .''.$layout['right']['column_sizes'][1].'px';
+
+				// color variables
+				$colorVariablesRuleSet = !empty($this->preferences['mt_color_variables_css'])
+					? '.sp-container .tile-color, .tvr-input-wrap .var-color-box { '.strip_tags($this->preferences['mt_color_variables_css']).' }'
+					: '';
+
+				echo '
+                <style id="mt_color_variables">'.$colorVariablesRuleSet.' </style>
+                <style id="main-interface-columns">
+                    .visual-view {
+                        grid-template-columns: '.$gridColumns.';
+                    }
+                </style>
+                <style id="inspection-columns">
+                    .wizard-panes { 
+                        grid-template-columns: 1fr minmax(auto, '.$inspCols[0].'px) minmax(auto, '.$inspCols[1].'px);
+                    }
+                </style>';
+
+			}
+
+			/* function add_svg_sprite(){
+				 echo $this->svg('sprite', array('id' => 'mt-svg-sprite', 'style' => 'display: none'), false);
+			 }*/
 
 			// add css
 			function add_css() {
 
 				// Google fonts
-				wp_register_style('tvrGFonts', '//fonts.googleapis.com/css?family=Open+Sans:400,700,700italic,400italic');
+				//wp_register_style('tvrGFonts', '//fonts.googleapis.com/css2?family=Fira+Code:wght@600;700&family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400;1,700&display=swap');
+				wp_register_style('tvrGFonts', $this->thispluginurl.'local-google-font/load-mt-gf.css?v='.$this->version);
 				wp_enqueue_style( 'tvrGFonts');
 
 				// if dev mode, enqueue css libraries separately
@@ -2324,9 +2484,9 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					// color picker, colorbox, jquery ui styling
 					wp_enqueue_style( 'spectrum-colorpicker',
 						$this->thispluginurl . 'js/lib/colorpicker/spectrum.css?v=' . $this->version );
-					wp_register_style( 'tvr_mcth_colorbox_styles',
+					/*wp_register_style( 'tvr_mcth_colorbox_styles',
 						$this->thispluginurl.'css/colorbox.css?v='.$this->version );
-					wp_enqueue_style( 'tvr_mcth_colorbox_styles' );
+					wp_enqueue_style( 'tvr_mcth_colorbox_styles' );*/
 					wp_register_style( 'tvr_jqui_styles', $this->thispluginurl.'css/jquery-ui1.11.4.css?v='.$this->version );
 					wp_enqueue_style( 'tvr_jqui_styles' );
 
@@ -2339,7 +2499,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					//$this->thispluginurl.'js/lib/colorbox/1.3.19/colorbox.css?v='.$this->version );
 					//wp_enqueue_style( 'tvr_mcth_colorbox_styles' );
 
-					// in production, all css will be minified and concatenated to style.css
+					// in production, all css will be minified and concatenated to concat-styles.min.css
 					$main_css_file = $this->thispluginurl.'css/concat-styles.min.css';
 					$fonts_css_file = 'fonts.min.css';
 				}
@@ -2363,6 +2523,48 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					wp_add_inline_style( 'tvr_mcth_styles', $custom_css );
 				}
 
+			}
+
+			// preload icon font and have @font-face inline to ensure $this->version preloads correct file
+			function load_icon_font($return = false){
+
+				//$dir = $this->root_rel($this->thispluginurl, false, true). 'images/icon-font/';
+				//$dir = $this->thispluginurl . 'images/icon-font/';
+
+                $rel_path = 'images/icon-font/';
+
+				// we use root rel so that this works with browser sync
+				// and actual path = true so it works on local sub-dir install e.g. /wp-versions/really-fresh/
+				//$dir = $this->root_rel($this->thispluginurl, false, true, true).$rel_path;
+
+				// but if the user has a strange setup, stick to simple path
+                /*$test_url = $this->site_url . $dir. 'microthemer.woff2';
+				if (filter_var($test_url, FILTER_VALIDATE_URL) === FALSE) {
+					$dir = $this->thispluginurl . $rel_path;
+					//die('Not a valid URL ' . $dir. 'microthemer.woff2');
+				}*/
+
+
+                // the above options caused issues - and it seems to work with browser sync...
+                $dir = $this->thispluginurl . $rel_path;
+
+				$preload = '<link rel="preload" as="font" crossorigin="anonymous" href="'.$dir.'microthemer.woff2?v='.$this->version.'" />';
+				$fontFace = "
+                <style>
+                     @font-face {
+                      font-family: 'microthemer';
+                      src: url(".$dir . 'microthemer.woff2?v='.$this->version.") format('woff2'),
+                           url(".$dir . 'microthemer.woff?v='.$this->version.") format('woff');
+                      font-weight: normal;
+                      font-style: normal;
+                    }   
+                </style>";
+
+				if ($return){
+					return $fontFace;
+				} else {
+					echo $preload . "\n" . $fontFace;
+				}
 			}
 
 			// build array for property/value input fields
@@ -2958,8 +3160,8 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$length_units[$unit_types['other']] = $this->css_units[$unit_types['other']];
 				$combo['css_length_units'] = $this->to_autocomplete_arr($length_units);
 
-
-
+				// empty array for all sel suggestions
+				$combo['all_sel_suggestions'] = array();
 
 				// num history saves
 				$combo['num_history_points'] = array(
@@ -2973,6 +3175,12 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					$this->builder_sync_tabs
 				);
 
+				// options for choosing the  stylesheet loading order
+				$combo['stylesheet_order_options'] = $this->stylesheet_order_options;
+
+				// customisable page prefix
+				$combo['page_class_prefix_options'] = $this->page_class_prefix_options;
+
 				// example scripts for enqueuing
 				$combo['enq_js'] = array( 'jquery', 'jquery-form', 'jquery-color', 'jquery-masonry', 'masonry', 'jquery-ui-core', 'jquery-ui-widget', 'jquery-ui-accordion', 'jquery-ui-autocomplete', 'jquery-ui-button', 'jquery-ui-datepicker', 'jquery-ui-dialog', 'jquery-ui-draggable', 'jquery-ui-droppable', 'jquery-ui-menu', 'jquery-ui-mouse', 'jquery-ui-position', 'jquery-ui-progressbar', 'jquery-ui-selectable', 'jquery-ui-resizable', 'jquery-ui-selectmenu', 'jquery-ui-sortable', 'jquery-ui-slider', 'jquery-ui-spinner', 'jquery-ui-tooltip', 'jquery-ui-tabs', 'jquery-effects-core', 'jquery-effects-blind', 'jquery-effects-bounce', 'jquery-effects-clip', 'jquery-effects-drop', 'jquery-effects-explode', 'jquery-effects-fade', 'jquery-effects-fold', 'jquery-effects-highlight', 'jquery-effects-pulsate', 'jquery-effects-scale', 'jquery-effects-shake', 'jquery-effects-slide', 'jquery-effects-transfer', 'wp-mediaelement', 'schedule', 'suggest', 'thickbox', 'hoverIntent', 'jquery-hotkeys', 'sack', 'quicktags', 'iris', 'json2', 'plupload', 'plupload-all', 'plupload-html4', 'plupload-html5', 'plupload-flash', 'plupload-silverlight', 'underscore', 'backbone' );
 				sort($combo['enq_js']);
@@ -2982,6 +3190,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$prog = array(
 					'CSSUnits' =>  $this->css_units,
 					'browser_event_keys' =>  $this->browser_event_keys,
+					'selector_variations' => $this->selector_variations,
 					'propExc' =>  $exceptions,
 					'propAliases' =>  $this->propAliases,
 					'cssFuncAliases' =>  $this->cssFuncAliases,
@@ -3003,6 +3212,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					'css_func_map' =>  $css_func_map,
 					'unsupported_css_func_map' =>  $unsupported_css_func_map,
 					'params_to_strip' =>  $this->params_to_strip,
+					'suggested_screen_layouts' => $this->suggested_screen_layouts
 				);
 
 				$data.= 'TvrMT.data.prog = ' . json_encode($prog) . ';' . "\n\n";
@@ -3025,110 +3235,283 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// HTML TEMPLATES
 			function html_templates(){
 
-			    // full set of templates
-			    $templates = array(
+				// full set of templates
+				$templates = array(
 
-                     'notice' =>
-                         '<div id="notice-template" class="tvr-message tvr-template-notice tvr-warning test-class">
+					'notice' =>
+						'<div id="notice-template" class="tvr-message tvr-template-notice tvr-warning test-class">
                             <span class="mt-notice-icon"></span>
                             <span class="mt-notice-text"></span>
                          </div>',
 
-                     'loaders' => $this->loaders_template(),
+					'loaders' => $this->loaders_template(),
 
-                     'log_item' => $this->log_item_template(),
+					'log_item' => $this->log_item_template(),
 
-                     'enq_js_menu_item' => $this->dyn_item($this->enq_js_structure, 'item', array('display_name' => 'item')),
+					'enq_js_menu_item' => $this->dyn_item($this->enq_js_structure, 'item', array('display_name' => 'item')),
 
-                     'mqs_menu_item' => $this->dyn_item($this->mq_structure, 'item', array('label' => 'item')),
+					'mqs_menu_item' => $this->dyn_item($this->mq_structure, 'item', array('label' => 'item')),
 
-                     'sectionM' => $this->menu_section_html('selector_section', 'section_label'),
+					'sectionM' => $this->menu_section_html('selector_section', 'section_label'),
 
-                     'section' => $this->section_html('selector_section', array()),
+					'section' => $this->section_html('selector_section', array()),
 
-                     'selectorM' => $this->menu_selector_html('selector_section', 'selector_css', array('selector_code', 'selector_label'), 1),
+					'selectorM' => $this->menu_selector_html('selector_section', 'selector_css', array('selector_code', 'selector_label'), 1),
 
-                     'selector' => $this->single_selector_html('selector_section', 'selector_css', '', true),
+					'selector' => $this->single_selector_html('selector_section', 'selector_css', '', true),
 
-                     'property_groups' => $this->property_group_templates(),
+					'property_groups' => $this->property_group_templates(),
 
-                     'icon_inputs' => $this->icon_inputs(),
+					'icon_inputs' => $this->icon_inputs(),
 
-                     'add_selector_form' => '',
+					'history_shortcut' => $this->iconFont('undo', array(
+						'title' => esc_attr__('View history', 'microthemer'),
+						'class' => 'short-status-icon display-revisions show-dialog',
+						'rel' => 'display-revisions'
+					)),
 
-                     'edit_selector_form' => '',
+					'add_selector_form' => '',
 
-                     'input_wraps' => $this->input_wrap_templates
+					'edit_selector_form' => '',
+
+					'input_wraps' => $this->input_wrap_templates, // var
+
+					'frontend_markup' => $this->frontend_markup_template(),
+
+					'frontend_overlay_template' => $this->frontend_overlay_template(),
+
+					'icon_classes' => $this->iconFont('iconName', array('onlyClass' => 1)),
+
+					'new_sel_radio' => $this->targeting_radio(),
+
+					'existing_sel_radio' => $this->targeting_radio(true),
+
+					'variation_radio' => $this->variation_radio(),
+
+					'key_computed_info' => $this->key_computed_info(true),
+
+					'svg_chev_right' => $this->svg_chev_right()
+
+					//'primary_context_menu_trigger' => $this->element_meta_template('primary'),
+
+					//'oncanvas_feedback_template' =>$this->oncanvas_feedback_template()
 
 
-                );
+				);
 
-			    return $templates; //$this->strip_tabs_and_line_breaks($templates);
+				return $templates; //$this->strip_tabs_and_line_breaks($templates); // not working but could be fixed maybe?
 
-			    //$templates = $this->strip_tabs_and_line_breaks($templates);
+			}
 
-				// print templates to JS object
-				//$data = 'TvrMT.data.templates = ' . $this->strip_tabs_and_line_breaks(json_encode($templates)) . ';' . "\n\n";
+			function targeting_radio($existing = false){
 
-			    //return $data;
+				$title = esc_html__('Choose suggestion', 'microthemer');
+				$extra_class = '';
+
+				if ($existing){
+					$title = esc_html__('Choose selector', 'microthemer');
+					$extra_class = ' existsel-radio';
+				}
+
+				return '
+                 <span class="sugsel-radio targeting-sel-radio'. $extra_class . ' '.
+				       $this->iconFont('radio-btn-unchecked', array('onlyClass' => 1)).'" 
+                        title="'.$title.'">
+                 </span>';
+
+			}
+
+
+			function variation_radio(){
+
+				//  <input name="sel_variation" type="radio" value="1" />
+
+				return '
+				
+                 <span class="alt-radio sel-variation-radio mt-variation-option '.
+				       $this->iconFont('radio-btn-unchecked', array('onlyClass' => 1)).'" 
+                        title="'.esc_html__('Choose variation', 'microthemer').'">
+                 </span>';
+			}
+
+			function svg_chev_right(){
+			    return '<svg data-icon="BreadcrumbPartRight" aria-hidden="true" focusable="false" width="7" height="28" viewBox="0 0 7 28" class="bem-Svg left notch" style="display: block; color: rgb(235, 235, 235);"><path fill="currentColor" d="M6.5 14L.5 0H0v28h.5z"></path><path fill="#858585" d="M1 0H0l6 14-6 14h1l6-14z"></path></svg>';
             }
 
-            function strip_tabs_and_line_breaks($string){
-			    // this does not work - not sure why.
-			    //preg_replace('/[\\t\\r\\n\n\t\r]+/g', "", $string);
-	            return $string;
-            }
+			function key_computed_info(){
 
-            function icon_inputs(){
+				// define layers from outside going in
+				$layers = array('margin', 'border-width', 'padding', 'content');
 
-			    return array(
-			        'section' => array(
-				        'disabled'  => $this->icon_control(true, 'disabled', true, 'section', 'selector_section')
-                    ),
-			        'selector' => array(
-				        'disabled'  => $this->icon_control(true, 'disabled', true, 'selector', 'selector_section',
-                            'selector_css')
-                    ),
-			        'tab-input' => array(
-				        'disabled'  => $this->icon_control(true, 'disabled', true, 'tab-input', 'selector_section',
-					        'selector_css', 'all-devices')
-			        ),
-			        'group' => array(
-				        'pgtab_disabled'  => $this->icon_control(true, 'disabled', true,
-                            'group', 'selector_section', 'selector_css',
-                            'all-devices', 'group_slug', 'subgroup_slug', 'property_slug',
-                            'tvr_mcth', 'pgtab_slug'),
+				// define side in order or grid-auto flow to make CSS simple
+				$sides = array('top', 'left', 'right', 'bottom');
 
-				        'disabled'  => $this->icon_control(true, 'disabled', true, 'group', 'selector_section',
-					        'selector_css', 'all-devices', 'group_slug', 'subgroup_slug'),
+				// return the template which gets updated by JS in one DOM write
+				return
+					'<div id="box-model-layers">
+                    '.$this->box_model_layers(0, 'margin', $layers, $sides).'
+                </div>'
+					.
+					$this->key_computed_other();
 
-                        'flexitem'  => $this->icon_control(true, 'flexitem', true, 'group',
-                            'selector_section','selector_css', 'all-devices', 'group_slug'),
+			}
 
-                        'griditem'  => $this->icon_control(true, 'griditem', true, 'group',
-					        'selector_section','selector_css', 'all-devices', 'group_slug'),
+			function key_computed_other(){
 
-                        'nth_option' => '<li class="nth-item-option nth-item-option-0" data-nth="0">
+				$info = array(
+					'display' => array(
+						'label' => 'display',
+						'value' => '{display}'
+					),
+					'position' => array(
+						'label' => 'position',
+						'value' => '{position}'
+					),
+					'color' => array(
+						'label' => 'color',
+						'value' => '{color}'
+					),
+					'background-color' => array(
+						'label' => 'background-color',
+						'value' => '{background-color}'
+					),
+					'font-size' => array(
+						'label' => 'font-size',
+						'value' => '{font-size}'
+					),
+					'line-height' => array(
+						'label' => 'line-height',
+						'value' => '{line-height}'
+					),
+					'font-family' => array(
+						'label' =>'font-family',
+						'value' => '{font-family}'
+					),
+					// position
+				);
+
+				$html = '
+	            <div id="key-element-info">
+	                <div class="key-info-heading mt-expandable-heading expanded">'.esc_html__('Key information', 'microthemer').'</div>
+                    <div class="key-element-info-inner mt-expandable-panel">';
+
+				foreach ($info as $key => $array){
+					$html.=
+						'<span class="info-label '.$key.'-info-label">'.$array['label'].': </span>
+                         <span class="info-value '.$key.'-info-value">'.$array['value'].'</span>';
+				}
+
+				$html.= '
+                    </div>
+                </div>';
+
+				return $html;
+			}
+
+			function box_model_layers($i, $layer, $layers, $sides){
+
+				$item = '<div class="mt-bm-layer mt-'.$layer.'-layer">';
+
+				// inside content
+				if ($layer === 'content'){
+					$item.= '{width} x {height}';
+				}
+
+				// outer layer
+				else {
+
+					// color mask
+					$item.= '<div class="tvr-mask"></div>';
+
+					// label
+					$layer_label = $layer === 'border-width' ? 'border' : $layer;
+					$item.= '<div class="layer-label">'.$layer_label.'</div>';
+
+					foreach($sides as $side) {
+
+						$cssf = $layer === 'border-width'
+							? 'border-' . $side . '-width'
+							: $layer . '-' . $side;
+
+						$item .= '<div class="mt-bm-cell mt-bm-' . $side . '-cell">{' . $cssf . '}</div>';
+
+
+						// recursively call layer function if we have a next layer inside
+						if ($side === 'left') {
+
+							$i++;
+							$next_layer = !empty($layers[$i]) ? $layers[$i] : false;
+
+							if ($next_layer){
+								$item.= $this->box_model_layers($i, $next_layer, $layers, $sides);
+							}
+
+						}
+
+					}
+				}
+
+				$item.= '</div>';
+
+				return $item;
+			}
+
+			function strip_tabs_and_line_breaks($string){
+				// this does not work - not sure why.
+				//preg_replace('/[\\t\\r\\n\n\t\r]+/g', "", $string);
+				return $string;
+			}
+
+			function icon_inputs(){
+
+				return array(
+					'section' => array(
+						'disabled'  => $this->icon_control(true, 'disabled', true, 'section', 'selector_section')
+					),
+					'selector' => array(
+						'disabled'  => $this->icon_control(true, 'disabled', true, 'selector', 'selector_section',
+							'selector_css')
+					),
+					'tab-input' => array(
+						'tab_disabled'  => $this->icon_control(true, 'disabled', true, 'tab-input', 'selector_section',
+							'selector_css', 'all-devices')
+					),
+					'group' => array(
+						'pgtab_disabled'  => $this->icon_control(true, 'disabled', true,
+							'group', 'selector_section', 'selector_css',
+							'all-devices', 'group_slug', 'subgroup_slug', 'property_slug',
+							'tvr_mcth', 'pgtab_slug'),
+
+						'disabled'  => $this->icon_control(true, 'disabled', true, 'group', 'selector_section',
+							'selector_css', 'all-devices', 'group_slug', 'subgroup_slug'),
+
+						'flexitem'  => $this->icon_control(true, 'flexitem', true, 'group',
+							'selector_section','selector_css', 'all-devices', 'group_slug'),
+
+						'griditem'  => $this->icon_control(true, 'griditem', true, 'group',
+							'selector_section','selector_css', 'all-devices', 'group_slug'),
+
+						'nth_option' => '<li class="nth-item-option nth-item-option-0" data-nth="0">
                             <input class="nth-item-radio" type="radio" name="name_placeholder" value="0" />
-                            <span class="fake-radio nth-radio-control"></span>
+                            '.$this->iconFont('radio-btn-unchecked', array('class' => 'fake-radio nth-radio-control')).'
                             <span class="nth-item-label">0</span>
                         </li>'
-			        ),
-			        'subgroup' => array(
-				        'chained'  => $this->icon_control(true, 'chained', true, 'subgroup', 'selector_section',
-					        'selector_css', 'all-devices', 'group_slug', 'subgroup_slug')
-			        ),
-			        'property' => array(
-				        'important'  => $this->icon_control(true, 'important', true, 'group', 'selector_section',
-					        'selector_css', 'all-devices', 'group_slug', 'subgroup_slug', 'property_slug'),
-                        'css_unit' => $this->icon_control(true, 'css_unit', true, 'property', 'selector_section',
-					        'selector_css', 'all-devices', 'group_slug', 'subgroup_slug', 'property_slug')
-                    )
+					),
+					'subgroup' => array(
+						'chained'  => $this->icon_control(true, 'chained', true, 'subgroup', 'selector_section',
+							'selector_css', 'all-devices', 'group_slug', 'subgroup_slug')
+					),
+					'property' => array(
+						'important'  => $this->icon_control(true, 'important', true, 'group', 'selector_section',
+							'selector_css', 'all-devices', 'group_slug', 'subgroup_slug', 'property_slug'),
+						'css_unit' => $this->icon_control(true, 'css_unit', true, 'property', 'selector_section',
+							'selector_css', 'all-devices', 'group_slug', 'subgroup_slug', 'property_slug')
+					)
 
-			    );
+				);
 
 
-            }
+			}
 
 			function loaders_template(){
 
@@ -3170,39 +3553,188 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				);
 			}
 
-            function property_group_templates(){
+			function property_group_templates(){
 
-	            $pg_templates = array();
+				$pg_templates = array();
 
-	            // add property group templates
-	            foreach ($this->propertyoptions as $property_group_name => $property_group_array) {
+				// add property group templates
+				foreach ($this->propertyoptions as $property_group_name => $property_group_array) {
 
-		            // we want root keys only for $property_group_array, to match propertyOptions format
-		            $array_keys = array_keys($property_group_array);
-		            $property_group_array_root = array();
-		            foreach($array_keys as $prop_slug){
-			            $property_group_array_root[$prop_slug] = '';
-		            }
+					// we want root keys only for $property_group_array, to match propertyOptions format
+					$array_keys = array_keys($property_group_array);
+					$property_group_array_root = array();
+					foreach($array_keys as $prop_slug){
+						$property_group_array_root[$prop_slug] = '';
+					}
 
-		            $pg_templates[$property_group_name] = $this->single_option_fields(
-			            'selector_section',
-			            'selector_css',
-			            array(),
-			            $property_group_array_root,
-			            $property_group_name,
-			            '',
-			            true
-		            );
-	            }
+					$pg_templates[$property_group_name] = $this->single_option_fields(
+						'selector_section',
+						'selector_css',
+						array(),
+						$property_group_array_root,
+						$property_group_name,
+						'',
+						true
+					);
+				}
 
-	            return $pg_templates;
-            }
+				return $pg_templates;
+			}
+
+			// frontend templates
+
+			function frontend_markup_template(){
+
+				// highlighting elements live on the frontend because we want them to be constrained by the frontend HTML boundary
+				// but context menus live in the main UI window so avoid CSS conflicts and allow for overlap with the toolbars
+
+				return '
+				<div id="mt-stuff-ignore">
+                   
+                    <div id="mt-grid-highlight">
+                        '.$this->oncanvas_grid().'
+                    </div>
+              
+                    <div id="over-cont-hover">'.$this->element_meta_template('hover').'</div>
+                        
+                    <div id="mt-el-overlays"></div>'.
+
+				       $this->frontend_overlay_template('primary').'
+                    
+                </div>';
+			}
+
+			// the breadcrumb label and options for triggering the context menu are in thr iframe dom
+			// so they move when the user scrolls. The actual context menu displays in the parent frame.
+			function element_meta_template($forElementSelection){
+
+				$suggestionsTrigger = $this->ui_toggle(
+					'show_suggestions_menu',
+					esc_attr__('Show targeting options', 'microthemer'),
+					esc_attr__('Close targeting options', 'microthemer'),
+					false,
+					'show-suggestions-icon mt-ui-element mtif',
+					false,
+					array(
+						'dataAtts' => array(
+							'fhtml' => 1,
+							'no-save' => 1,
+							'forpopup' => 'contextMenu',
+						),
+						'inlineSVG' => 1
+					)
+				);
+
+				//$suggestionsTrigger = $this->icon('');
+
+				$onCanvasTrigger = $this->ui_toggle(
+					'show_visual_controls_menu',
+					esc_attr__('Enable visual controls', 'microthemer'),
+					esc_attr__('Disable visual controls', 'microthemer'),
+					true, // visual controls are on by default - but can be customised
+					'show-visual-controls-icon mt-ui-element mtif',
+					false,
+					array(
+						'dataAtts' => array(
+							'fhtml' => 1,
+							'no-save' => 1
+						)
+					)
+				);
+
+				$breadcrumbLabel = '';
+
+				if ($forElementSelection === 'hover'){
+					$breadcrumbLabel = '<span class="mt-breadcrumb-label mt-ui-element"></span>';
+				}
+
+				else if ($forElementSelection === 'primary'){
+					$breadcrumbLabel = '<div id="mt-nested-els" class="mt-breadcrumb-nav mt-ui-element"></div>';
+				}
+
+
+				return '
+				<div id="'.$forElementSelection.'-element-meta" class="mt-element-metas mt-ui-element">
+			        '. $suggestionsTrigger . $onCanvasTrigger . $breadcrumbLabel .'
+			    </div>';
+			}
+
+			function oncanvas_grid(){
+
+				$gridlines = '';
+
+				for ($x = 0; $x <= 24; $x++) {
+					$gridlines.= '<div class="mtoc-line"></div>';
+				}
+
+				return '<div class="mt-oncanvas-grid">'.$gridlines.'</div>';
+			}
+
+			function oncanvas_feedback_template(){
+
+				return '
+				<div id="tvr-oncanvas-feedback">
+                    <div class="tvr-adjusted-property">
+                        <span class="tvr-adjusted-property-label"></span>
+                        <span class="tvr-adjusted-property-value"></span>
+                    </div>
+                </div>';
+			}
+
+			function frontend_overlay_template($forElementSelection = false){
+
+				// for normal overlays
+				$id = 'over-cont-%s';
+				$class = 'tvr-overlay tvr-container-overlay';
+				$style = 'style="%s"';
+				$elementMeta = '';
+				$onCanvasControls = '';
+
+				// inner padding/margin/border divs
+				$inner = $this->frontend_overlay_template_inner($forElementSelection, $style);
+
+				// for the fixed trigger el overlay with context menu and on-canvas controls
+				if ($forElementSelection === 'primary'){
+					$id = 'over-cont-'.$forElementSelection;
+					$class = '';
+					$elementMeta = $this->element_meta_template($forElementSelection);
+					$inner = '<div id="mt-bm-shading">'.$inner.'</div>';
+
+					// todo add controls for size and spacing, transform, position (grid adapt canvas, not tied to selected element),
+					$onCanvasControls = $this->oncanvas_feedback_template($forElementSelection);
+				}
+
+
+
+				return
+					'<div id="'.$id.'" class="'.$class.'">'.
+					$inner . $onCanvasControls . $elementMeta
+					.'</div>';
+			}
+
+			function frontend_overlay_template_inner($forElementSelection, $style){
+				return '
+			    <div class="tvr-overlay tvr-margin-overlay" '.$style.'>
+                    <div class="tvr-mask"></div>
+                </div>
+                <div class="tvr-overlay tvr-border-overlay" '.$style.'>
+                    <div class="tvr-mask"></div>
+                </div>
+                <div class="tvr-overlay tvr-padding-overlay" '.$style.'>
+                    <div class="tvr-mask"></div>
+                </div>
+                <div class="tvr-overlay tvr-content-overlay" '.$style.'>
+                    <div class="tvr-mask"></div>
+                </div>';
+			}
 
 			// display the css filters
 			function display_css_filters(){
-				$html = '
+				/*$html = '
 				<div class="quick-opts first-quick-opts">
-					<div class="quick-opts-inner">';
+					<div class="quick-opts-inner">';*/
+
+				$html = '';
 
 				$i = 0;
 				foreach ($this->css_filters as $key => $arr){
@@ -3228,18 +3760,112 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 							</div>';
 				}
 
-				$clear_text = esc_html__('Clear all', 'microthemer');
+
+				$html.= $this->iconFont('eraser', array(
+					'class' => 'clear-css-filters',
+					'innerHTML' => esc_html__('Clear all', 'microthemer'),
+					'title' => esc_attr__('Clear all modifiers', 'microthemer'),
+				));
+
+
+				/*$clear_text = esc_html__('Clear all', 'microthemer');
+
 				$html.= '
 						<span class="clear-filters-wrap"
 							  title="'.esc_html__('Clear all selector adjustments', 'microthemer').'">
-							<span class="clear-icon tvr-icon clear-css-filters clear-css-filters-icon"></span>
+							<span class="clear-icon clear-css-filters clear-css-filters-icon"></span>
 							<span class="clear-css-filters clear-css-filters-text">'.$clear_text.'</span>
 						</span>
 
-					</div>
-				</div>';
+					';*/
 
 				return $html;
+
+			}
+
+			// display the targeting suggestions menu todo - use classes and id with -pane or -menu as only difference
+			function targeting_suggestions($context){
+
+				ob_start();
+				?>
+
+                <div id="mt-suggestions-<?php echo $context; ?>" class="scrollable-area mt-suggestions radio-set-container">
+
+                    <div class="mt-panel-header existing-selector-heading">
+                        <div class="mt-panel-title"><?php echo esc_html__('Resume an existing selector', 'microthemer'); ?></div>
+                        <span class="mtif mtif-times-circle-regular close-context-menu"></span>
+                    </div>
+
+                    <div class="mt-existing-selectors"></div>
+
+
+                    <div class="mt-panel-header create-new-selector-heading">
+                        <div class="mt-panel-title">
+
+                            <span class="new-selector-text">
+                                 <?php echo esc_html__('Create a new selector', 'microthemer'); ?>
+                            </span>
+
+                            <span class="edit-selector-targeting-text">
+                                <?php echo esc_html__('Edit selector targeting', 'microthemer'); ?>
+                            </span>
+
+                        </div>
+                        <span class="mtif mtif-times-circle-regular close-context-menu"></span>
+                    </div>
+
+                    <div class="mt-panel-header additional-selector-heading">
+                        <div class="mt-ui-toggle uit-par mt-panel-title additional-selector-toggle"
+                             data-aspect="create_additional_selector" data-no-save="1">
+							<?php echo esc_html__('Create an additional selector', 'microthemer'); ?>
+                        </div>
+                    </div>
+
+                    <div class="new-selector-suggestions">
+
+                        <div class="mt-selector-adjustments">
+
+                            <ul class="fav-filters css-filter-list">
+								<?php echo $this->fav_css_filters; ?>
+                            </ul>
+
+							<?php
+							$specificity_high = !empty($this->preferences['specificity_preference']) ? ' on' : '';
+							?>
+                            <div class="mt-ui-toggle uit-par specificity-preference<?php echo $specificity_high; ?>" data-aspect="specificity_preference">
+                                    <span class="specificity-label"
+                                          title="<?php esc_attr_e('Sort by CSS specificity', 'microthemer'); ?>">
+                                        <?php esc_html_e('Specificity', 'microthemer'); ?>:
+                                    </span>
+                                <span class="specificity-low mt-ui-toggle"
+                                      title="<?php esc_attr_e('low CSS specificity (favor classes)', 'microthemer'); ?>">
+                                        <?php esc_html_e('low', 'microthemer'); ?>
+                                    </span>
+                                <span class="specificity-high mt-ui-toggle"
+                                      title="<?php esc_attr_e('high CSS specificity (favor ids)', 'microthemer'); ?>">
+                                        <?php esc_html_e('high', 'microthemer'); ?>
+                                    </span>
+                            </div>
+                        </div>
+
+                        <div class="code-suggestions mt-selector-suggestions"></div>
+
+                        <div class="code-suggestions-cta">
+
+                            <span><?php esc_html_e('Apply a new style change or', 'microthemer'); ?></span>
+                            <span class="tvr-button save-draft-selector"><?php esc_html_e('Save selector', 'microthemer'); ?></span>
+                            <div class="wizard-update-cur tvr-button">
+								<?php esc_html_e('Update selector', 'microthemer'); ?>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+				<?php
+
+				return ob_get_clean();
 
 			}
 
@@ -3289,24 +3915,16 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 										'no-save' => $type === 'page_specific' ? 0 : 1
 									),
 									'text' => $text,
-									'inner_icon' => $this->ui_toggle(
-										'favourite_filter',
-										esc_attr__('Favorite this filter', 'microthemer'),
-										esc_attr__('Unfavorite this filter', 'microthemer'),
-										!empty($this->preferences['favourite_filter'][$key]),
-										'tvr-icon star-icon fav-filter ui-toggle ui-par',
-										false,
-										array(
-											'pref_sub_key' => $key
-										)
-									),
+									'inner_icon' => $this->iconFont('tick-box-unchecked', array(
+										'class' => 'alt-checkbox mt-ui-toggle'
+									)),
 									'pref_sub_key' => $text,
 									'css_filter' => $arr
 								)
 							);
 						$html.= $li;
 						// save for favs list if required
-						if (!empty($this->preferences['favourite_filter'][$key])){
+						if (!empty($arr['common'])){
 							// the title is a bit annoying on favourites.
 							$this->fav_css_filters.= preg_replace('/title=\"([^"]*)\"/i', '', $li, 1);
 						}
@@ -3345,25 +3963,32 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				// default preferences
 				if (!$thePreferences = get_option($this->preferencesName)) {
 
-				    $thePreferences = $full_preferences;
+					$thePreferences = $full_preferences;
 
 					// add_option rather than update_option (so autoload can be set to no)
 					add_option($this->preferencesName, $thePreferences, '', 'no');
 				}
+
+				// hard set this as version 7 is always in draft mode with manual publish
+				// more formal conversion in DB pending
+				$thePreferences['draft_mode'] = 1;
+
+				// hard set this off as we're trialing not supporting this
+				$thePreferences['dock_wizard_right'] = 0;
 
 				$this->preferences = $thePreferences;
 
 				// checks we only need to do once when this function is first called
 				if ($special_checks){
 
-				    /*wp_die('the special '. !empty($this->preferences['version']) . ' '.$this->preferences['version']. ' '.$this->version. ' '.($this->preferences['version'] != $this->version));*/
+					/*wp_die('the special '. !empty($this->preferences['version']) . ' '.$this->preferences['version']. ' '.$this->version. ' '.($this->preferences['version'] != $this->version));*/
 
-				    // check if this is a new version of Microthemer
+					// check if this is a new version of Microthemer
 					if ($this->new_version){ // empty($this->preferences['version']) || $this->preferences['version'] != $this->version){
 
-					    //$this->new_version = true;
+						//$this->new_version = true;
 
-					    // maybe update revisions table
+						// maybe update revisions table
 						$this->maybeCreateOrUpdateRevsTable();
 
 						// signal that all selectors should be recompiled (to ensure latest data structure)
@@ -3375,7 +4000,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 					// manually override user preferences after code changes
 					$this->maybe_manually_override_preferences();
-                }
+				}
 
 
 
@@ -3401,7 +4026,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 				// we released 5 beta with system for remembering targeting mode on page load,
 				// but decided against this, have this hard set for a while to fix in DB for beta testers
-				$thePreferences['hover_inspect'] = 0;
+				//$thePreferences['hover_inspect'] = 0;
 
 				// save in DB and go to relevant page
 				// don't do deep escape here as it can run more than once
@@ -3417,8 +4042,8 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 			// common function for outputting yes/no radios
 			function preferences_grid($pref_cats, $settings_class){
-                
-                // labels
+
+				// labels
 				$yes_label = __('Yes', 'microthemer' );
 				$no_label = __('No', 'microthemer' );
 
@@ -3429,134 +4054,135 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$html = '
                 <ul id="'.$settings_class.'" class="mt-form-settings '.$settings_class.'">';
 
-                    foreach ($pref_cats as $cat_key => $cat_array){
-        
-                        $html.= '
+				foreach ($pref_cats as $cat_key => $cat_array){
+
+					$html.= '
                         <li class="empty-cell empty-before-'.$cat_key.'"></li>
                         <li class="preference-category pref-cat-'.$cat_key.'">'.$cat_array['label'].'</li>';
 
-                        $opts = $cat_array['items'];
+					$opts = $cat_array['items'];
 
-                        foreach ($opts as $key => $array) {
+					foreach ($opts as $key => $array) {
 
-                            // skip edge mode if not available
-                            if ($key == 'edge_mode' and !$this->edge_mode['available']){
-                                continue;
-                            }
+						// skip edge mode if not available
+						if ($key == 'edge_mode' and !$this->edge_mode['available']){
+							continue;
+						}
 
-                            // common
-                            $input_name = 'tvr_preferences['.$key.']';
-                            $array['link'] = ( !empty($array['link']) ) ? $array['link'] : '';
+						// common
+						$input_name = 'tvr_preferences['.$key.']';
+						$array['link'] = ( !empty($array['link']) ) ? $array['link'] : '';
 
-                            // if radio
-                            if (empty($array['is_text'])){
+						// if radio
+						if (empty($array['is_text'])){
 
-                                // ensure various vars are defined
-                                $li_class = 'fake-radio-parent';
-                                $array['label_no'] = ( !empty($array['label_no']) ) ? $array['label_no'] : '';
-                                $yes_val = ($key == 'draft_mode') ? $this->current_user_id : 1;
-                                $no_val = 0;
+							// ensure various vars are defined
+							$li_class = 'fake-radio-parent';
+							$array['label_no'] = ( !empty($array['label_no']) ) ? $array['label_no'] : '';
+							$yes_val = ($key == 'draft_mode') ? $this->current_user_id : 1;
+							$no_val = 0;
 
-                                if (!empty($this->preferences[$key])) {
-                                    $yes_checked = 'checked="checked"';
-                                    $yes_on = 'on';
-                                    $no_checked = $no_on = '';
-                                } else {
-                                    $no_checked = 'checked="checked"';
-                                    $no_on = 'on';
-                                    $yes_checked = $yes_on = '';
-                                }
+							if (!empty($this->preferences[$key])) {
+								$yes_checked = 'checked="checked"';
+								$yes_on = 'on';
+								$no_checked = $no_on = '';
+							} else {
+								$no_checked = 'checked="checked"';
+								$no_on = 'on';
+								$yes_checked = $yes_on = '';
+							}
 
-                                $form_options = '
+							$form_options = '
                                 <span class="yes-wrap p-option-wrap">
                                     <input type="radio" autocomplete="off" class="radio"
                                        name="'.$input_name.'" value="'.$yes_val.'" '.$yes_checked.' />
-                                    <span class="fake-radio '.$yes_on.'"></span>
+                                       '.$this->iconFont('radio-btn-unchecked', array('class' => 'fake-radio '.$yes_on)).'
+                                 
                                     <span class="ef-label">'.$yes_label.'</span>
                                 </span>
                                  <span class="no-wrap p-option-wrap">
                                     <input type="radio" autocomplete="off" class="radio"
                                        name="'.$input_name.'" value="'.$no_val.'" '.$no_checked.' />
-                                    <span class="fake-radio '.$no_on.'"></span>
+                                     '.$this->iconFont('radio-btn-unchecked', array('class' => 'fake-radio '.$no_on)).'
                                     <span class="ef-label">'.$no_label.'</span>
                                 </span>';
 
-                            }
+						}
 
-                            // else if input
-                            else {
-                                $li_class = 'mt-text-option';
+						// else if input
+						else {
+							$li_class = 'mt-text-option';
 
-	                            if (!empty($array['one_line'])){
-		                            $li_class.= ' one-line';
-	                            }
+							if (!empty($array['one_line'])){
+								$li_class.= ' one-line';
+							}
 
-                                $input_id = $input_class = $arrow_class = $class = $rel = $arrow = '';
-                                $input_value = ( !empty($this->preferences[$key]) ) ? $this->preferences[$key] : '';
-                                $extra_info = '';
+							$input_id = $input_class = $arrow_class = $class = $rel = $arrow = '';
+							$input_value = ( !empty($this->preferences[$key]) ) ? $this->preferences[$key] : '';
+							$extra_info = '';
 
-                                // does it need a custom id?
-                                if (!empty($array['input_id'])){
-                                    $input_id = $array['input_id'];
-                                }
-                                // does it need a custom input class?
-                                if (!empty($array['input_class'])){
-                                    $input_class = $array['input_class'];
-                                }
-                                // does it need a custom arrow class?
-                                if (!empty($array['arrow_class'])){
-                                    $arrow_class = $array['arrow_class'];
-                                }
-                                // does it need a custom input name?
-                                if (!empty($array['input_name'])){
-                                    $input_name = $array['input_name'];
-                                }
-                                // does it need a custom input value?
-                                if (!empty($array['input_value'])){
-                                    $input_value = $array['input_value'];
-                                }
-                                // do we want to add a data attribute (quick and dirty way to support one att)
-                                if (!empty($array['extra_info'])){
-                                    $extra_info = ' data-info="'. $array['extra_info'].'"';
-                                }
+							// does it need a custom id?
+							if (!empty($array['input_id'])){
+								$input_id = $array['input_id'];
+							}
+							// does it need a custom input class?
+							if (!empty($array['input_class'])){
+								$input_class = $array['input_class'];
+							}
+							// does it need a custom arrow class?
+							if (!empty($array['arrow_class'])){
+								$arrow_class = $array['arrow_class'];
+							}
+							// does it need a custom input name?
+							if (!empty($array['input_name'])){
+								$input_name = $array['input_name'];
+							}
+							// does it need a custom input value?
+							if (!empty($array['input_value'])){
+								$input_value = $array['input_value'];
+							}
+							// do we want to add a data attribute (quick and dirty way to support one att)
+							if (!empty($array['extra_info'])){
+								$extra_info = ' data-info="'. $array['extra_info'].'"';
+							}
 
-	                            if (!empty($array['prop'])){
-		                            $extra_info.= ' data-prop="'. $array['prop'].'"';
-	                            }
+							if (!empty($array['prop'])){
+								$extra_info.= ' data-prop="'. $array['prop'].'"';
+							}
 
-                                // exception for css unit set (keep blank)
-                                if ($input_id == 'css_unit_set'){
-                                    $input_value = '';
-                                }
+							// exception for css unit set (keep blank)
+							if ($input_id == 'css_unit_set'){
+								$input_value = '';
+							}
 
-                                // is it a combobox?
-                                if (!empty($array['combobox'])){
-                                    $class = 'combobox has-arrows';
-                                    $rel = 'rel="'.$array['combobox'].'"';
-                                    $arrow = '<span class="combo-arrow '.$arrow_class.'"></span>';
-                                }
+							// is it a combobox?
+							if (!empty($array['combobox'])){
+								$class = 'combobox has-arrows';
+								$rel = 'rel="'.$array['combobox'].'"';
+								$arrow = '<span class="combo-arrow '.$arrow_class.'"></span>';
+							}
 
-                                if (!empty($input_id)){
-                                    $input_id = 'id="'.$input_id.'"';
-                                }
+							if (!empty($input_id)){
+								$input_id = 'id="'.$input_id.'"';
+							}
 
-                                $form_options = '
+							$form_options = '
                                 <span class="tvr-input-wrap">
                                     <input '.$input_id.' type="text" autocomplete="off" name="'.$input_name.'"  
                                     class="'.$class . ' ' . $input_class.'" '.$rel . $extra_info.'
                                     value="'. esc_attr($input_value).'" />'
-                                    .$arrow .
-                                '</span>';
-                            }
+							                .$arrow .
+							                '</span>';
+						}
 
-	                        // sometimes we use empty cell after
-	                        if (!empty($array['empty_before'])){
-		                        $html.= '<li class="empty-cell empty-before-'.$key.'"></li>';
-	                        }
+						// sometimes we use empty cell after
+						if (!empty($array['empty_before'])){
+							$html.= '<li class="empty-cell empty-before-'.$key.'"></li>';
+						}
 
 
-                            // the option
-                            $html.= '
+						// the option
+						$html.= '
                             <li class="'.$li_class.'">
                                 <label>
                                     <span title="'.esc_attr($array['explain']).'">
@@ -3567,18 +4193,18 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
                             </li>';
 
 
-                            // sometimes we use empty cell after
-	                        if (!empty($array['empty_after'])){
-		                        $html.= '<li class="empty-cell empty-after-'.$key.'"></li>';
-	                        }
-                        }
+						// sometimes we use empty cell after
+						if (!empty($array['empty_after'])){
+							$html.= '<li class="empty-cell empty-after-'.$key.'"></li>';
+						}
+					}
 
-                    }
-                    
-                $html.= '
+				}
+
+				$html.= '
                 </ul>';
-                    
-                return $html;
+
+				return $html;
 
 			}
 
@@ -3621,7 +4247,10 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 								}
 								?>
                             />
-							<span class="fake-radio <?php echo $on; ?>"></span>
+                            <?php
+                            echo $this->iconFont('radio-btn-unchecked', array('class' => 'fake-radio '.$on))
+                            ?>
+
 							<span class="ef-label"><?php esc_html_e('Yes', 'microthemer'); ?></span>
 						</span>
                         <span class="no-wrap p-option-wrap">
@@ -3638,7 +4267,9 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 								}
 								?>
                             />
-							<span class="fake-radio <?php echo $on; ?>"></span>
+                             <?php
+                             echo $this->iconFont('radio-btn-unchecked', array('class' => 'fake-radio '.$on))
+                             ?>
 							<span class="ef-label"><?php esc_html_e('No', 'microthemer'); ?></span>
 						</span>
                     </li>
@@ -3693,7 +4324,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 					if (!empty($input_id)){
 						$input_id = 'id="'.$input_id.'"';
-                    }
+					}
 
 					?>
                     <li class="tvr-input-wrap <?php echo $hidden; ?>">
@@ -3703,7 +4334,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 							</span>
                         </label>
                         <input type='text' autocomplete="off" name='<?php echo esc_attr($input_name); ?>'
-                               <?php echo $input_id; ?>
+							<?php echo $input_id; ?>
                                class="<?php echo $class . ' ' . $input_class; ?>" <?php echo $rel . $extra_info; ?>
                                value='<?php echo esc_attr($input_value); ?>' />
 						<?php echo $arrow; ?>
@@ -3725,10 +4356,14 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				// But table version num shouldn't be updated with current plugin version if it already exists
 				if( $wpdb->get_var( "SHOW TABLES LIKE '$table_name'" ) != $table_name or
 				    $micro_ver_num < $this->db_chg_in_ver) {
-					if ( ! empty( $wpdb->charset ) )
+
+
+				    if ( ! empty( $wpdb->charset ) )
 						$charset_collate = "DEFAULT CHARACTER SET $wpdb->charset";
 					if ( ! empty( $wpdb->collate ) )
 						$charset_collate .= " COLLATE $wpdb->collate";
+
+
 					$sql = "CREATE TABLE $table_name (
 						id mediumint(9) NOT NULL AUTO_INCREMENT,
 						time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
@@ -3779,17 +4414,20 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 			// Update the Revisions Table
 			function updateRevisions(
-			        $save_data, $user_action = '', $tryCreate = true, $preferences = false, $upgrade_backup = false
-            ) {
+				$save_data, $user_action = '', $tryCreate = true, $preferences = false, $upgrade_backup = false
+			) {
 
-			    // sometimes we don't want to log an action e.g. if editing a selector's code via the editor
-                // the change will be shown in the code editor change history entry
-                // and we don't want them to restore one without the other (selector code and editor content)
-			    if (is_null($user_action) or $user_action === 'null'){
-			       return true; // false would generate an error message
-			    }
+				//debug_print_backtrace();
+			    //wp_die('user_action_debug: '. $user_action);
 
-			    $user_action = html_entity_decode($user_action);
+				// sometimes we don't want to log an action e.g. if editing a selector's code via the editor
+				// the change will be shown in the code editor change history entry
+				// and we don't want them to restore one without the other (selector code and editor content)
+				if (is_null($user_action) or $user_action === 'null' or $user_action === 'false' or $user_action === false){
+					return true; // false would generate an error message
+				}
+
+				$user_action = html_entity_decode($user_action);
 
 				// create/update revisions table if it doesn't already exist or is out of date
 				if ($tryCreate){
@@ -3806,19 +4444,19 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$data_size = round(strlen($serialized_data)/1000).'KB';
 				// $wpdb->insert (columns and data should not be SQL escaped): https://developer.wordpress.org/reference/classes/wpdb/insert/
 				$rows_affected = $wpdb->insert( $table_name, array(
-						'time' => current_time('mysql', false), // use blogs local time - doesn't work on Nelson's site
-						//'time' => $this->adjust_unix_timestamp_for_local(time(), 'mysql'), // nor does this
-						//'time' => date_i18n('Y-m-d H:i:s'), // or this
+					'time' => current_time('mysql', false), // use blogs local time - doesn't work on Nelson's site
+					//'time' => $this->adjust_unix_timestamp_for_local(time(), 'mysql'), // nor does this
+					//'time' => date_i18n('Y-m-d H:i:s'), // or this
 
-						'user_action' => $user_action,
-						'data_size' => $data_size,
-						'settings' => $serialized_data,
+					'user_action' => $user_action,
+					'data_size' => $data_size,
+					'settings' => $serialized_data,
 
-						// pass in preferences when a revision should revert to workspace settings
-                        // adding this so users can rollback to a pre-speed version of MT in case of an upgrade issue
-						'preferences' => ($preferences ? serialize($preferences) : false),
-						'upgrade_backup' => $upgrade_backup,
-                ));
+					// pass in preferences when a revision should revert to workspace settings
+					// adding this so users can rollback to a pre-speed version of MT in case of an upgrade issue
+					'preferences' => ($preferences ? serialize($preferences) : false),
+					'upgrade_backup' => $upgrade_backup,
+				));
 
 				/*$this->log(
 					esc_html__('$rows_affected: '.$rows_affected, 'microthemer'),
@@ -3827,15 +4465,15 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 				//$this->show_me.= '<pre>$rows_affected:  '.$rows_affected.'</pre>';
 
-                $default_num_revs = 50;
-                $max_revisions = !empty($this->preferences['num_history_points'])
-                        ? intval($this->preferences['num_history_points'])
-                        : $default_num_revs;
+				$default_num_revs = 50;
+				$max_revisions = !empty($this->preferences['num_history_points'])
+					? intval($this->preferences['num_history_points'])
+					: $default_num_revs;
 
-                // cap lowest and highest number of revisions
-                if ($max_revisions > 300){
-                    $max_revisions = 300;
-                } if ($max_revisions < 1){
+				// cap lowest and highest number of revisions
+				if ($max_revisions > 300){
+					$max_revisions = 300;
+				} if ($max_revisions < 1){
 					$max_revisions = 1;
 				}
 
@@ -3847,10 +4485,10 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 				if ($wpdb->num_rows > $max_revisions) {
 
-				    $excess_rows = intval($wpdb->num_rows - $max_revisions);
+					$excess_rows = intval($wpdb->num_rows - $max_revisions);
 
-                    // this will not delete saved or backups for regular saves. And wont delete saved backups ever.
-                    $sql = "delete from $table_name 
+					// this will not delete saved or backups for regular saves. And wont delete saved backups ever.
+					$sql = "delete from $table_name 
                     where saved != 1 $maybe_exclude_backups order by id asc limit $excess_rows";
 					$wpdb->query($sql);
 
@@ -3859,22 +4497,22 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			}
 
 			function updateRevisionSaveStatus($rev_id, $rev_save_status){
-			    global $wpdb;
+				global $wpdb;
 				$table_name = $wpdb->prefix . "micro_revisions";
 				$wpdb->query(
 					$wpdb->prepare(
-					    "update $table_name set saved = %d where id = %d",
-                        $rev_save_status, $rev_id
-                    )
+						"update $table_name set saved = %d where id = %d",
+						$rev_save_status, $rev_id
+					)
 				);
-            }
+			}
 
 			// adjust unix time stamp for local time
 			function adjust_unix_timestamp_for_local($unix_timestamp, $format = 'timestamp'){
-			    $mysql_format = get_date_from_gmt( date( 'Y-m-d H:i:s', $unix_timestamp ) );
-			    return $format === 'timesptamp'
-                    ? strtotime($mysql_format)
-                    : $mysql_format;
+				$mysql_format = get_date_from_gmt( date( 'Y-m-d H:i:s', $unix_timestamp ) );
+				return $format === 'timesptamp'
+					? strtotime($mysql_format)
+					: $mysql_format;
 				//return strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $unix_timestamp ) ));
 			}
 
@@ -3926,47 +4564,52 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			}
 
 			// Get Revisions for displaying in table
-			function getRevisions() {
+			function getRevisions($summary = false) {
+
+				$rev_table = '';
 
 				// create/update revisions table if it doesn't already exist or is out of date
 				$this->maybeCreateOrUpdateRevsTable();
 
 				// get the full array of revisions
+
 				global $wpdb;
 				$table_name = $wpdb->prefix . "micro_revisions";
+				$limit = $summary ? ' limit 10' : '';
 				//$revs = $wpdb->get_results("select id, user_action, data_size, date_format(time, '%D %b %Y %H:%i') as datetime
 				/*$revs = $wpdb->get_results("select id, user_action, data_size, unix_timestamp(time) as unix_timestamp
 				from $table_name order by id desc");*/
-				$revs = $wpdb->get_results("select id, user_action, data_size, time, saved from $table_name order by id desc");
+				$revs = $wpdb->get_results("select id, user_action, data_size, time, saved from $table_name order by id desc".$limit);
 				$total_rows = $wpdb->num_rows;
 				// if no revisions, explain
 				if ($total_rows == 0) {
-					return '<span id="revisions-table">' .
+					return '<span class="no-revisions-table">' .
 					       esc_html__('No Revisions have been created yet. This will happen after your next save.', 'microthemer') .
 					       '</span>';
 				}
-				// if one revision, it's the same as the current settings, explain
-				//if ($total_rows == 1) {
-				//return '<span id="revisions-table">' .
-				//esc_html__('The only revision is a copy of your current settings.', 'microthemer') .
-				//'</span>';
-				//}
-				//<th> | ' . esc_html__('Save', 'microthemer') . '</th>
-				//<!--<td class="rev-save">Save</td>-->
-				// revisions exist so prepare table
-				//<th>' . esc_html__('Num', 'microthemer') . '</th>
-				//<th>' . esc_html__('Size', 'microthemer') . '</th>
-				$rev_table =
+
+				$summary_class = '';
+
+				if ($summary){
+					$summary_class = ' summary-revisions-table';
+					$rev_table.= '
+                    <div class="lastest-revisions-heading new-set-heading">'
+					             .esc_html__('Latest revisions', 'microthemer')
+					             .'</div>';
+				}
+
+
+				$rev_table.=
 					'
-				<table id="revisions-table">
+				<table class="revisions-table'.$summary_class.'">
 				<thead>
 				<tr>
-					<th>' . esc_html__('Size', 'microthemer') . '</th>
-					<th>' . esc_html__('Time', 'microthemer') . '</th>
-					<th colspan="2">' . esc_html__('User Action', 'microthemer') . '</th>
-					<th>' . esc_html__('Restore', 'microthemer') . '</th>
-					<th>' . esc_html__('Save', 'microthemer') . '</th>
-					
+					<th class="rev-size">' . esc_html__('Size', 'microthemer') . '</th>
+					<th class="rev-time">' . esc_html__('Time', 'microthemer') . '</th>
+					<th class="rev-action" colspan="2">' . esc_html__('User Action', 'microthemer') . '</th>
+					<th class="rev-restore">' . esc_html__('Restore', 'microthemer') . '</th>
+					<th class="rev-save">' . esc_html__('Save', 'microthemer') . '</th>
+				
 				</tr>
 				</thead>';
 
@@ -3995,7 +4638,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					}
 
 					// saved lock icon
-                    $rev_is_saved = !empty($rev->saved);
+					$rev_is_saved = !empty($rev->saved);
 					$save_rev_pos = esc_html__('Permanently save restore point', 'microthemer');
 					$save_rev_neg = esc_html__('Unsave restore point', 'microthemer');
 					$rev_is_saved_class = $rev_is_saved ? ' revision-is-saved' : '';
@@ -4005,32 +4648,67 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					rel="'.$rev->id.'"></span>';
 
 					$niceDate = date('l jS \of F Y H:i:s', $local_timestamp);
+					$timeOutput = $summary
+						? $niceDate
+						: sprintf(esc_html__('%s ago', 'microthemer'), $time_ago);
+
+					// todo need to have live JS time ago
+
+					//$timeOutput = sprintf(esc_html__('%s ago', 'microthemer'), $time_ago);
 
 					//<td class="rev-num">'.$total_rows.'</td>
 					//<td class="rev-size">'.$rev->data_size.'</td>
 					$rev_table.= '
 					<tr class="'.$legacy_new_class.$rev_is_saved_class.'">
 						<td class="rev-size">'.$rev->data_size.'</td>
-						<td class="rev-time tvr-help" title="'.$niceDate.'">'.
-					             sprintf(esc_html__('%s ago', 'microthemer'), $time_ago).'</td>
-						<td class="rev-icon '.$main_class.'">'.$rev_icon.'</td>
+						<td class="rev-time tvr-help" title="'.$niceDate.'">'.$timeOutput.'</td>
+						<td class="rev-icon '.$main_class.'" title="'.$timeOutput.'">'.$rev_icon.'</td>
 						<td class="rev-action '.$main_class.'">'.$user_action.'</td>
-						<td>
-					
-						';
+						<td class="rev-restore">';
+
+					// current item
 					if ($i == 0) {
-						$rev_table.= esc_html__('Current', 'microthemer');
+						$restoreActionText = esc_html__('Current', 'microthemer');
+						$rev_table.= $summary
+							? $this->iconFont('check-circle', array(
+								'class' => 'current-revision-tick mt-fixed-color',
+								'title' => $restoreActionText
+
+							))
+							: $restoreActionText;
 					}
+
+					// restorable item
 					else {
-						$rev_table.='<span class="link restore-link" rel="mt_action=restore_rev&tvr_rev='.$rev->id.'">' . esc_html__('Restore', 'microthemer') . '</span>';
+
+						$restoreClass = 'restore-link';
+						$restoreRel = 'mt_action=restore_rev&tvr_rev='.$rev->id;
+						$restoreText = esc_html__('Restore', 'microthemer');
+
+						if ($summary){
+							$rev_table.= $this->iconFont('undo', array(
+								'class' => $restoreClass,
+								'title' => $restoreText,
+								'rel' => $restoreRel
+							));
+						} else {
+							$rev_table.='<span class="'.$restoreClass.' link" rel="'.$restoreRel.'">'.$restoreText.'</span>';
+						}
 					}
-					$rev_table.='</td>
+
+					$rev_table.='
+					    </td>
                          <td class="rev-save">'.$saved_icon.'</td>
 					</tr>';
 					--$total_rows;
 					++$i;
 				}
 				$rev_table.= '</table>';
+
+				/*if ($summary){
+					$rev_table.= '<div class="show-dialog view-older-revisions link" rel="display-revisions">'.esc_html__('Older revisions', 'microthemer').'</div>';
+				}*/
+
 				return $rev_table;
 			}
 
@@ -4039,7 +4717,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$pref_array = array();
 				$pref_array[$key] = $value;
 				$this->savePreferences($pref_array);
-            }
+			}
 
 			// Restore a revision
 			function restoreRevision($rev_key) {
@@ -4055,12 +4733,12 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 
 				// if special revision that also has preferences, restore those too
-                if (!empty($rev->preferences)){
-	                update_option($this->preferencesName, unserialize($rev->preferences));
-                }
+				if (!empty($rev->preferences)){
+					update_option($this->preferencesName, unserialize($rev->preferences));
+				}
 
-                // signal that all selectors should be recompiled (to ensure latest data structure)
-                $this->update_preference('manual_recompile_all_css', 1);
+				// signal that all selectors should be recompiled (to ensure latest data structure)
+				$this->update_preference('manual_recompile_all_css', 1);
 
 				// restore to options DB field
 				update_option($this->optionsName, $filtered_json);
@@ -4069,41 +4747,41 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			}
 
 			function css_sass_comment_regex(){
-			    $commentSingle      = '\/\/';
+				$commentSingle      = '\/\/';
 				$commentMultiLeft   = '\/\*';
 				$commentMultiRight  = '\*\/';
 				$commentPattern = $commentMultiLeft . '.*?' . $commentMultiRight;
 				return '/' . $commentSingle . '[^\n]*\s*|(' . $commentPattern . ')/isu';
-            }
+			}
 
 			function css_sass_import_regex(){
 				return '/@import\s+(?:"|\')([\w\-.\/ ]+)(?:"|\');/';
 			}
 
-            function get_css_sass_comments($content){
+			function get_css_sass_comments($content){
 
-			    preg_match_all(
-		            $this->css_sass_comment_regex(),
-		            $content,
-		            $matches,
-		            PREG_PATTERN_ORDER
-	            );
+				preg_match_all(
+					$this->css_sass_comment_regex(),
+					$content,
+					$matches,
+					PREG_PATTERN_ORDER
+				);
 
-	            return $matches ? $matches[0] : false;
-            }
+				return $matches ? $matches[0] : false;
+			}
 
 			function strip_css_sass_comments($content, $onlyImportComments = false){
 
 				if ($matches = $this->get_css_sass_comments($content)){
 
-				    foreach ($matches as $comment){
+					foreach ($matches as $comment){
 
-				        if (!$onlyImportComments || preg_match($this->css_sass_import_regex(), $comment) ){
-					        $content = str_replace($comment, '', $content);
-                        }
+						if (!$onlyImportComments || preg_match($this->css_sass_import_regex(), $comment) ){
+							$content = str_replace($comment, '', $content);
+						}
 
-                    }
-                }
+					}
+				}
 
 				return $content;
 			}
@@ -4121,17 +4799,17 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				);
 
 				if (!$matches){
-				    return false;
-                }
+					return false;
+				}
 
-                $formatted = array();
+				$formatted = array();
 
 				// sometimes root path has ./ when it should be a blank string
 				$cur_path = preg_replace('/^\.\//', '', $cur_path);
 
 				foreach ($matches[0] as $i => $rule){
 
-				    $path = $matches[1][$i];
+					$path = $matches[1][$i];
 					$resolved_path = $this->normalize_path($cur_path . $path);
 					$valid_path = $this->check_sass_file_exists($resolved_path);
 
@@ -4143,26 +4821,26 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 							'cur_path' => $cur_path,
 							'resolved_path' => $valid_path
 						);
-                    }
+					}
 
 
-                }
+				}
 
-                return $formatted;
+				return $formatted;
 			}
 
 			// convert import file and sub imports into long strings
 			function recursively_scan_import_files($config, $cur_path = ''){
 
 				$rule = $config['import']['rule'];
-			    $file_content = $rule; // default to rule as it will not be possible to replace if file path is wrong
+				$file_content = $rule; // default to rule as it will not be possible to replace if file path is wrong
 				$resolved_path = $config['import']['resolved_path']; // relative path from root with extension
 				$abs_path = $this->micro_root_dir . $resolved_path;
 
 				if (file_exists($abs_path)){
 
 					// get file content
-				    $file_content = file_get_contents($abs_path);
+					$file_content = file_get_contents($abs_path);
 
 					// strip commented out @import paths
 					$file_content = $this->strip_css_sass_comments($file_content, true);
@@ -4219,8 +4897,8 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// convert e.g. /path/piece/section/../file.txt to /path/piece/
 			function get_real_dirname($path){
 				$pathinfo = pathinfo($this->normalize_path($path));
-                return !empty($pathinfo['dirname']) ? trailingslashit($pathinfo['dirname']) : '';
-            }
+				return !empty($pathinfo['dirname']) ? trailingslashit($pathinfo['dirname']) : '';
+			}
 
 			// generate sass content for replacing @import rules with then compiling sass on the frontend
 			function get_sass_import_content(){
@@ -4232,12 +4910,12 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				    $imports = $this->get_sass_import_paths($this->options['non_section']['hand_coded_css'], '')
 				){
 
-				    // recursively import the content so there is one long string of SASS for each @import
+					// recursively import the content so there is one long string of SASS for each @import
 					foreach ($imports as $i => $arr){
 						$preloaded_sass[$arr['resolved_path']] = $this->recursively_scan_import_files(
 							array(
-                                'import' => $arr
-                            )
+								'import' => $arr
+							)
 						);
 					}
 				}
@@ -4246,117 +4924,117 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			}
 
 			function client_scss(){
-			    return $this->preferences['allow_scss'] && empty($this->preferences['server_scss']);
-            }
+				return !empty($this->preferences['allow_scss']); // && empty($this->preferences['server_scss'])
+			}
 
 			function server_scss(){
-				return $this->preferences['allow_scss'] && !empty($this->preferences['server_scss']);
+				return  false; //$this->preferences['allow_scss'] && !empty($this->preferences['server_scss']);
 			}
 
 			// check if a file exists in /micro-themes dir (various different paths are valid with SASS @imports)
-		    function check_sass_file_exists($path){
+			function check_sass_file_exists($path){
 
-			    $files = $this->file_structure;
+				$files = $this->file_structure;
 				$parts = explode('/', $path);
 				$partsFinalIndex = count($parts)-1;
 
-			    // check for user specified file extension
-			    $path_parts = pathinfo($path);
-			    $definedExt = !empty($path_parts['extension']) ? $path_parts['extension'] : '';
-			    $noExt =  ltrim($path_parts['filename'], '_');
+				// check for user specified file extension
+				$path_parts = pathinfo($path);
+				$definedExt = !empty($path_parts['extension']) ? $path_parts['extension'] : '';
+				$noExt =  ltrim($path_parts['filename'], '_');
 
-			    // variation dimensions
+				// variation dimensions
 				$extensions = $definedExt ? array($definedExt) : ['scss', 'sass', 'css'];
 				$names = array($noExt, '_'.$noExt);
 
 				// create variations
 				$variations = array();
-			    foreach ($extensions as $e) {
-				    foreach ($names as $n) {
+				foreach ($extensions as $e) {
+					foreach ($names as $n) {
 						$partsClone = $parts;
-					    $partsClone[$partsFinalIndex] = $n.'.'.$e;
+						$partsClone[$partsFinalIndex] = $n.'.'.$e;
 						$variations[] = $partsClone;
-				    }
-			    }
+					}
+				}
 
-                // loop through variations
-			    foreach ($variations as $variation) {
+				// loop through variations
+				foreach ($variations as $variation) {
 
-				    if ($this->get_item(
-					    $files,
-					    $variation
-				    )){
-				        return implode('/', $variation); // bingo
-                    }
-			    }
+					if ($this->get_item(
+						$files,
+						$variation
+					)){
+						return implode('/', $variation); // bingo
+					}
+				}
 
-                return false;
-		    }
+				return false;
+			}
 
 			// simple wrapper getting data // todo test it works
 			function &get_item(&$data, $trail, $startIndex = 0){
 
 				$item = &$this->get_or_update_item(
-                            $data, array(
-                                'action' => 'get',
-                                'trail' => $trail,
-                            ), $startIndex
-                        );
+					$data, array(
+					'action' => 'get',
+					'trail' => $trail,
+				), $startIndex
+				);
 
 				return $item;
 			}
 
 			// (optionally) update a multidimensional array item using array trail e.g. ['non_section', 'meta'].
-            // Returns a reference to the target item. Note '&' must proceed function call for ref rather than copy.
+			// Returns a reference to the target item. Note '&' must proceed function call for ref rather than copy.
 			function &get_or_update_item(&$data, $config, $startIndex = 0){
 
-                $item = &$data;
-                $trail = !empty($config['trail']) ? $config['trail'] : array();
-                $trail_length = count($trail);
+				$item = &$data;
+				$trail = !empty($config['trail']) ? $config['trail'] : array();
+				$trail_length = count($trail);
 
-                // to get round PHP error: Only variable references should be returned by reference
-                $false = false;
+				// to get round PHP error: Only variable references should be returned by reference
+				$false = false;
 
-			    for ($x = $startIndex; $x < $trail_length; $x++) {
-				    $key = $trail[$x];
+				for ($x = $startIndex; $x < $trail_length; $x++) {
+					$key = $trail[$x];
 
-				    // if item doesn't exist
-				    if (!isset($data[$key])){
+					// if item doesn't exist
+					if (!isset($data[$key])){
 
-				        // bail if we're trying to get an item that doesn't exist
-				        if ($config['action'] === 'get'){
+						// bail if we're trying to get an item that doesn't exist
+						if ($config['action'] === 'get'){
 
-				           /* $this->log(
-						        esc_html__('Trail lead to undefined item: '.$key, 'microthemer'),
-						        '<pre>parent: '  . print_r($data, true) . '</pre>'
-						        //'notice'
-					        );*/
+							/* $this->log(
+								 esc_html__('Trail lead to undefined item: '.$key, 'microthemer'),
+								 '<pre>parent: '  . print_r($data, true) . '</pre>'
+								 //'notice'
+							 );*/
 
-					        return $false;
-                        }
+							return $false;
+						}
 
-                        // create trail is we're trying to perform an action on a non_existant item
-                        else {
+						// create trail is we're trying to perform an action on a non_existant item
+						else {
 
-				            $data[$key] = array();
+							$data[$key] = array();
 
-	                        /*$this->log(
-		                        esc_html__('Previously undefined item added: '.$key, 'microthemer'),
-		                        '<pre>parent: '  . print_r($data, true) . '</pre>'
-		                        //'notice'
-	                        );*/
-                        }
+							/*$this->log(
+								esc_html__('Previously undefined item added: '.$key, 'microthemer'),
+								'<pre>parent: '  . print_r($data, true) . '</pre>'
+								//'notice'
+							);*/
+						}
 
-                    }
+					}
 
-				    $item = &$data[$key];
-				    $next_index = $x+1;
+					$item = &$data[$key];
+					$next_index = $x+1;
 
-				    //$this->show_me.= '<pre>loop key: '.$key. ' $x: '.$x. ' $trail_length: '.$trail_length. ' $item: '.$item.'</pre>';
+					//$this->show_me.= '<pre>loop key: '.$key. ' $x: '.$x. ' $trail_length: '.$trail_length. ' $item: '.$item.'</pre>';
 
 					if ($next_index < $trail_length){
-                        return $this->get_or_update_item($item, $config, $next_index);
-                    }
+						return $this->get_or_update_item($item, $config, $next_index);
+					}
 				}
 
 				// optionally update item
@@ -4378,7 +5056,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						unset($item[$config['key']]);
 						break;
 					case 'rename':
-					    $this->order_item_properties($item, $config['order'], $config['key'], $config['new_key']);
+						$this->order_item_properties($item, $config['order'], $config['key'], $config['new_key']);
 						break;
 					case 'reorder':
 						$this->order_item_properties($item, $config['order']);
@@ -4391,16 +5069,16 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						break;
 					case 'array_merge_recursive_distinct':
 
-					    // tip for myself, this causes 500 error otherwise
-					    if (!is_array($config['data'])){
-						    $this->log(
-							    esc_html__('Merge data is not an array: ', 'microthemer'),
-							    '<pre>Update package: '  . print_r($config, true) . '</pre>'
-						    );
-						    return $false;
-                        }
+						// tip for myself, this causes 500 error otherwise
+						if (!is_array($config['data'])){
+							$this->log(
+								esc_html__('Merge data is not an array: ', 'microthemer'),
+								'<pre>Update package: '  . print_r($config, true) . '</pre>'
+							);
+							return $false;
+						}
 
-					    $item = $this->array_merge_recursive_distinct($item, $config['data']);
+						$item = $this->array_merge_recursive_distinct($item, $config['data']);
 						break;
 					/* unlikely to ned this
 					 * array_merge_recursive is a bit weird http://php.net/manual/en/function.array-merge-recursive.php
@@ -4410,27 +5088,27 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						break;*/
 				}
 
-                // return the updated item
+				// return the updated item
 				return $item;
-            }
+			}
 
-            function order_item_properties(&$item, $order, $old_key = false, $new_key = false){
-			    $new_item = array();
-	            foreach ($order as $i => $key){
+			function order_item_properties(&$item, $order, $old_key = false, $new_key = false){
+				$new_item = array();
+				foreach ($order as $i => $key){
 
-	                // don't add undefined keys
-	                if (isset($item[$key])){
-		                $new_item[(($key == $old_key) ? $new_key : $key)] = $item[$key];
-                    } else {
-		                /* for debugging
-		                 * $this->log(
-			                esc_html__('Order key was undefined: '.$key, 'microthemer'),
-			                '<pre>parent: '  . print_r($item, true) . '</pre>'
-		                );*/
-                    }
-	            }
-	            $item = $new_item;
-            }
+					// don't add undefined keys
+					if (isset($item[$key])){
+						$new_item[(($key == $old_key) ? $new_key : $key)] = $item[$key];
+					} else {
+						/* for debugging
+						 * $this->log(
+							esc_html__('Order key was undefined: '.$key, 'microthemer'),
+							'<pre>parent: '  . print_r($item, true) . '</pre>'
+						);*/
+					}
+				}
+				$item = $new_item;
+			}
 
 
 
@@ -4441,14 +5119,14 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 				foreach($savePackage as $update){
 
-				    if ($update['action'] === 'debug'){
-					    if ($this->debug_save_package) {
-						    $before_after[] = $update['data'];
-					    }
-					    continue;
-                    } elseif ($update['action'] === 'no_new_data'){
-					    continue;
-				    }
+					if ($update['action'] === 'debug'){
+						if ($this->debug_save_package) {
+							$before_after[] = $update['data'];
+						}
+						continue;
+					} elseif ($update['action'] === 'no_new_data'){
+						continue;
+					}
 
 					$before = false;
 					if ($this->debug_save_package) {
@@ -4478,11 +5156,11 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 			}
 
-            // check the last save time
+			// check the last save time
 			function check_last_save_time($last_save_time){
 
-			    // if we have no last_save_time to compare, set it for future reference
-			    if (!isset($this->options['non_section']['last_save_time'])){
+				// if we have no last_save_time to compare, set it for future reference
+				if (!isset($this->options['non_section']['last_save_time'])){
 					$this->options['non_section']['last_save_time'] = time();
 				}
 
@@ -4513,7 +5191,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						                          'Stored save time: '.$this->options['non_section']['last_save_time'] . ", \n" .
 						                          'Difference: ' . (intval($last_save_time) - intval($this->options['non_section']['last_save_time']));
 
-					    // update last save time
+						// update last save time
 						$this->options['non_section']['last_save_time'] = time();
 
 
@@ -4522,34 +5200,48 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 
 
-                }
+				}
 
-                return true;
-            }
+				return true;
+			}
+
+			function publishSettings(){
+
+				$this->forcePublish = 1;
+
+				$this->update_active_styles2('customised');
+
+				$this->savePreferences(array('num_unpublished_saves' => 0));
+
+				return json_encode(array(
+					'num_unpublished_saves' => 0
+				));
+
+			}
 
 			// Save the UI styles to the database - from full or partial save package
 			function saveUiOptions2($savePackage, $partial = false, $last_save_time = false){
 
-			    // check last save time
-                if (!$this->check_last_save_time($last_save_time)){
-                    return false;
-                }
+				// check last save time
+				if (!$this->check_last_save_time($last_save_time)){
+					return false;
+				}
 
-			    // plain save if no save package
-			    if (!$partial){
-				    $this->options = $savePackage;
-                }
+				// plain save if no save package
+				if (!$partial){
+					$this->options = $savePackage;
+				}
 
-                // loop through update items making adjustments to $this->options
-                else {
-                    $this->apply_save_package($savePackage, $this->options);
-                }
+				// loop through update items making adjustments to $this->options
+				else {
+					$this->apply_save_package($savePackage, $this->options);
+				}
 
-                // tag version the settings were saved at so e.g. css units can be imported correctly for legacy data
-                $this->options['non_section']['mt_version'] = $this->version;
+				// tag version the settings were saved at so e.g. css units can be imported correctly for legacy data
+				$this->options['non_section']['mt_version'] = $this->version;
 
 				// update DB
-                update_option($this->optionsName, $this->options);
+				update_option($this->optionsName, $this->options);
 
 				return true;
 
@@ -4566,6 +5258,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$pref_array['g_fonts_used'] = false;
 				$pref_array['g_url'] = '';
 				$pref_array['g_url_with_subsets'] = '';
+				$pref_array['hover_inspect'] = 1;
 				$this->savePreferences($pref_array);
 				return true;
 			}
@@ -4589,10 +5282,10 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				}
 				// clear the custom code
 				$this->options['non_section']['hand_coded_css'] = '';
-				$this->options['non_section']['ie_css']['all'] = '';
+				/*$this->options['non_section']['ie_css']['all'] = '';
 				$this->options['non_section']['ie_css']['nine'] = '';
 				$this->options['non_section']['ie_css']['eight'] = '';
-				$this->options['non_section']['ie_css']['seven'] = '';
+				$this->options['non_section']['ie_css']['seven'] = '';*/
 				$this->options['non_section']['js'] = '';
 				// clear all media query settings
 				$this->options['non_section']['m_query'] = array();
@@ -4672,7 +5365,9 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						$html .= $this->display_log_item($log['type'], $log, $key);
 					}
 					$html .= '</ul><span id="data-msg-pending" rel="1"></span>';
-				} else {
+				}
+
+				else {
 					$html.= '<ul class="logs"></ul><span id="data-msg-pending" rel="0"></span>';
 				}
 				return $html;
@@ -4681,7 +5376,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// display log item - used as template so need as function to keep html consistent
 			function display_log_item($type, $log, $key, $id = ''){
 				$html = '
-				<li '.$id.' class="tvr-'.$type.' tvr-message row-'.($key+1).'">
+				<li '.$id.' class="tvr-'.$type.' tvr-message mt-fixed-opacity mt-fixed-color row-'.($key+1).'">
 					<span class="short">'.$log['short'].'</span>
 					<div class="long">'.$log['long'].'</div>
 				</li>';
@@ -4739,20 +5434,24 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// if global !important preference changes MT needs to do full recompile
 			function preference_settings_changed($keys, $orig, $new){
 
-			    foreach($keys as $key){
-			        if (intval($orig[$key]) !== intval($new[$key])){
-			            return true;
-                    }
-                }
+				foreach($keys as $key){
+					if (intval($orig[$key]) !== intval($new[$key])){
+						return true;
+					}
+				}
 
-			    return false;
-            }
+				return false;
+			}
 
 			// process preferences form
 			function process_preferences_form(){
 
 				$pref_array = $this->deep_unescape($_POST['tvr_preferences'], 0, 1, 1);
 				$pref_array['num_saves'] = ++$this->preferences['num_saves'];
+
+				if (empty($this->preferences['auto_publish_mode'])){
+					$pref_array['num_unpublished_saves'] = ++$this->preferences['num_unpublished_saves'];
+				}
 
 				// CSS units need saving in a different way (as my_props is more than just css units)
 				$pref_array = $this->update_default_css_units($pref_array);
@@ -4762,7 +5461,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					$this->g_url_with_subsets(false, false, $pref_array['gfont_subset']);
 
 				// if they changed !important or SCSS settings do full recompile
-				if ($this->preference_settings_changed(['css_important', 'allow_scss', 'server_scss'],
+				if ($this->preference_settings_changed(['css_important', 'allow_scss'],
 					$this->preferences, $_POST['tvr_preferences'])){
 					$pref_array['manual_recompile_all_css'] = 1;
 				}
@@ -4817,32 +5516,33 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				return $url;
 			}*/
 
-            // check if we're on the demo site
+			// check if we're on the demo site
 			function is_demo_site(){
-				return strpos($this->site_url, 'livedemo.themeover') !== false;
+				return strpos($this->site_url, 'livedemo.themeover') !== false
+                    || strpos($this->site_url, 'beta.themeover') !== false;
 			}
 
 			// prevent errors when admin or frontend doesn't use SSL, but the other does
 			function ensure_iframe_protocol_matches_admin(){
 
-			    $preview_url = $this->preferences['preview_url'];
+				$preview_url = $this->preferences['preview_url'];
 				$preview_plain = strpos($preview_url,'http:') !== false;
-			    $admin_ssl = tvr_common::get_protocol() === 'https://';
+				$admin_ssl = tvr_common::get_protocol() === 'https://';
 
-			    $update = false;
+				$update = false;
 
-                // SSL alteration
-			    if ($admin_ssl and $preview_plain){
-	                $preview_url = str_replace('http:', 'https:', $preview_url);
-	                $update = true;
-                }
+				// SSL alteration
+				if ($admin_ssl and $preview_plain){
+					$preview_url = str_replace('http:', 'https:', $preview_url);
+					$update = true;
+				}
 
-                // maybe strip Oxygen template URL
+				// maybe strip Oxygen template URL
 
 
-                if ($update){
-	                $this->savePreferences(array('preview_url' => $preview_url));
-                }
+				if ($update){
+					$this->savePreferences(array('preview_url' => $preview_url));
+				}
 
 			}
 
@@ -4882,6 +5582,18 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						array_splice($this->preferences['custom_paths'], $existingKey,1);
 					}
 
+					// sometimes the page title might have a different URL e.g. /?p=1, /, /home-page/
+					// so we should remove any with the same name,
+					// as the user probably just wants to most recent URL e.g. /home-page/ for the title
+					for ($i = count($this->preferences['custom_paths'])-1; $i  >= 0; $i --) {
+
+					    if (!isset($this->preferences['custom_paths'][$i]['label'])
+                            || $this->preferences['custom_paths'][$i]['label'] === $label){
+							unset($this->preferences['custom_paths'][$i]);
+						}
+
+					}
+
 					// insert url at start of custom_paths array
 					array_unshift($this->preferences['custom_paths'], array(
 						'value' => $path,
@@ -4916,193 +5628,201 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// check an array based on nested property with option to search base array for value
 			function in_array_column($item, $array, $column = false, $checkFlat = false){
 
-			    if ( $foundWithColumn = array_search( $item, array_column($array, $column) ) ){
-			        return $foundWithColumn;
-                }
+				if ( $foundWithColumn = array_search( $item, array_column($array, $column) ) ){
+					return $foundWithColumn;
+				}
 
-			    if ($checkFlat){
-				    return array_search($item, $array);
-                }
+				if ($checkFlat){
+					return array_search($item, $array);
+				}
 
-			    return false;
-            }
+				return false;
+			}
 
-            function microthemer_ajax_actions(){
+			function microthemer_ajax_actions(){
 
-	            if ( !current_user_can('administrator') ){
-		            wp_die( 'Access denied' );
-	            }
+				if ( !current_user_can('administrator') ){
+					wp_die( 'Access denied' );
+				}
 
-	            // simple ajax operations that can be executed from any page, pointing to ui page
-	            if (isset($_GET['mcth_simple_ajax'])) {
+				// simple ajax operations that can be executed from any page, pointing to ui page
+				if (isset($_GET['mcth_simple_ajax'])) {
 
-		            check_ajax_referer( 'mcth_simple_ajax', '_wpnonce' );
+					check_ajax_referer( 'mcth_simple_ajax', '_wpnonce' );
 
-		            // workspace preferences
-		            if (isset($_POST['tvr_preferences_form'])) {
-			            $this->process_preferences_form();
-			            wp_die();
-		            }
+					// workspace preferences
+					if (isset($_POST['tvr_preferences_form'])) {
+						$this->process_preferences_form();
+						wp_die();
+					}
 
-		            // if it's an options save request
-		            if (isset($_GET['mt_action']) and $_GET['mt_action'] === 'mt_save_interface') {
+					// if it's an options save request
+					if (isset($_GET['mt_action']) and $_GET['mt_action'] === 'mt_save_interface') {
 
-			            // remove slashes and custom escaping so that DB data is clean
-			            $this->serialised_post =
-				            $this->deep_unescape($_POST, 1, 1, 1);
+						// remove slashes and custom escaping so that DB data is clean
+						$this->serialised_post =
+							$this->deep_unescape($_POST, 1, 1, 1);
 
-			            if (!empty($this->serialised_post['serialise'])){
-				            $this->serialised_post['tvr_mcth'] = $this->json('decode', $this->serialised_post['tvr_mcth']);
-                            //json_decode($this->serialised_post['tvr_mcth'], true);
-				            /*echo 'show_me from tvr_mcth: <pre> ';
+						if (!empty($this->serialised_post['serialise'])){
+							$this->serialised_post['tvr_mcth'] = $this->json('decode', $this->serialised_post['tvr_mcth']);
+							//json_decode($this->serialised_post['tvr_mcth'], true);
+							/*echo 'show_me from tvr_mcth: <pre> ';
 							print_r($_POST);
 							echo '</pre>';*/
-			            }
+						}
 
-			            // bail if no save data was successfully decoded
-			            if (empty($this->serialised_post['tvr_mcth'])) {
-				            return false;
-			            }
+						// bail if no save data was successfully decoded
+						if (empty($this->serialised_post['tvr_mcth'])) {
+							return false;
+						}
 
-			            // strange Kinsta error prompted this but might have been a fleeting issue
-			            $partial = !empty($this->serialised_post['partial_data'])
-				            ? $this->serialised_post['partial_data']
-				            : false;
-			            $last_save_time = !empty($this->serialised_post['last_save_time'])
-				            ? $this->serialised_post['last_save_time']
-				            : false;
+						// strange Kinsta error prompted this but might have been a fleeting issue
+						$partial = !empty($this->serialised_post['partial_data'])
+							? $this->serialised_post['partial_data']
+							: false;
+						$last_save_time = !empty($this->serialised_post['last_save_time'])
+							? $this->serialised_post['last_save_time']
+							: false;
 
 
-			            /*$debug = true;
+						/*$debug = true;
 						if ($debug){
 							echo 'show_me from ajax save (before): <pre> ';
 							print_r($this->serialised_post);
 							echo '</pre>';
 						}*/
 
-			            // save settings in DB
-			            if (!$this->saveUiOptions2(
-				            $this->serialised_post['tvr_mcth'],
-				            $partial,
-				            $last_save_time
-			            )) {
+						// save settings in DB
+						if (!$this->saveUiOptions2(
+							$this->serialised_post['tvr_mcth'],
+							$partial,
+							$last_save_time
+						)) {
 
-				            // save error
-				            $this->log(
-					            esc_html__('Settings failed to save', 'microthemer'),
-					            '<p>' . esc_html__('Saving your setting to the database failed.', 'microthemer') . '</p>'
-				            );
-			            }
+							// save error
+							$this->log(
+								esc_html__('Settings failed to save', 'microthemer'),
+								'<p>' . esc_html__('Saving your setting to the database failed.', 'microthemer') . '</p>'
+							);
+						}
 
-			            // save successful
-			            else {
+						// save successful
+						else {
 
-				            $saveOk = esc_html__('Settings saved', 'microthemer');
-				            $this->log(
-					            $saveOk,
-					            '<p>' . esc_html__('The UI interface settings were successfully saved.', 'microthemer') . '</p>',
-					            'notice'
-				            );
+							$saveOk = empty($this->preferences['auto_publish_mode'])
+                                ? esc_html__('Draft saved', 'microthemer')
+							    : esc_html__('Settings saved and published', 'microthemer');
 
-				            $new_select_option = '';
+							$this->log(
+								$saveOk,
+								'<p>' . esc_html__('The UI interface settings were successfully saved.', 'microthemer') . '</p>',
+								'notice'
+							);
 
-				            // check if settings need to be exported to a design pack
-				            if (!empty($this->serialised_post['export_to_pack'])
-				                && $this->serialised_post['export_to_pack'] == 1) {
-					            $theme = htmlentities($this->serialised_post['export_pack_name']);
-					            $context = 'existing';
-					            $do_option_insert = false;
-					            if ($this->serialised_post['new_pack'] == 1){
-						            $context = 'new';
-						            $do_option_insert = true;
-					            }
-					            // function return sanitised theme name
-					            $theme = $this->update_json_file($theme, $context);
-					            // save new sanitised theme in span for updating select menu via jQuery
-					            if ($do_option_insert) {
-						            $new_select_option = $theme;
-					            }
-					            //$user_action.= sprintf( esc_html__(' & Export to %s', 'microthemer'), '<i>'. $this->readable_name($theme). '</i>');
-				            }
+							$new_select_option = '';
 
-				            // else its a standard save of custom settings
-				            else {
-					            $theme = 'customised';
-					            //$user_action.= esc_html__(' (regular)', 'microthemer');
-				            }
+							// check if settings need to be exported to a design pack
+							if (!empty($this->serialised_post['export_to_pack'])
+							    && $this->serialised_post['export_to_pack'] == 1) {
+								$theme = htmlentities($this->serialised_post['export_pack_name']);
+								$context = 'existing';
+								$do_option_insert = false;
+								if ($this->serialised_post['new_pack'] == 1){
+									$context = 'new';
+									$do_option_insert = true;
+								}
+								// function return sanitised theme name
+								$theme = $this->update_json_file($theme, $context);
+								// save new sanitised theme in span for updating select menu via jQuery
+								if ($do_option_insert) {
+									$new_select_option = $theme;
+								}
+								//$user_action.= sprintf( esc_html__(' & Export to %s', 'microthemer'), '<i>'. $this->readable_name($theme). '</i>');
+							}
 
-				            // update active-styles.css
-				            $this->update_active_styles2($theme);
+							// else its a standard save of custom settings
+							else {
+								$theme = 'customised';
+								//$user_action.= esc_html__(' (regular)', 'microthemer');
+							}
 
-
-				            // update the revisions DB field
-				            if (!$this->updateRevisions($this->options, json_encode($this->serialised_post['user_action']))) {
-					            $this->log('','','error', 'revisions');
-				            }
-			            }
+							// update active-styles.css
+							$this->update_active_styles2($theme);
 
 
+							// update the revisions DB field
+							$user_action = !empty($this->serialised_post['user_action'])
+								? json_encode($this->serialised_post['user_action'])
+								: null;
 
-			            //echo 'carrots!';
-			            //wp_die();
+							if (!$this->updateRevisions($this->options, $user_action)) {
+								$this->log('','','error', 'revisions');
+							}
+						}
 
-			            // return the globalmessage and then kill the program - this action is always requested via ajax
-			            // also fullUIData as an interim way to keep JS ui data up to date (post V5 will have new system with less http)
-			            $html = '<div id="microthemer-notice">' . $this->display_log() . '<div class="script-feedback">
-								
-									<span id="outdated-tab-issue">'.$this->outdatedTabIssue.'</span>
-									<span id="returned-save-time">'.$this->options['non_section']['last_save_time'].'</span>
-								</div>
-							</div>';
 
-			            // we're returning a JSON obejct here, the HTML is added as a property of the object
-			            $response = array(
-				            //'prefs' => $this->preferences,
-				            'html'=> $html,
-				            'outdatedTab'=> $this->outdatedTabIssue,
-				            'outdatedTabDebug'=> $this->outdatedTabDebug,
-				            'returnedSaveTime'=> $this->options['non_section']['last_save_time'],
-				            'exportName' => $new_select_option
-				            //'uiData'=> $this->options
-				            //'uiData'=> array()
-			            );
 
-			            echo json_encode($response); //$html;
+						//echo 'carrots!';
+						//wp_die();
 
-			            wp_die();
-		            }
+						// return the globalmessage and then kill the program - this action is always requested via ajax
+						// also fullUIData as an interim way to keep JS ui data up to date (post V5 will have new system with less http)
+						$html = '<div id="microthemer-notice">' . $this->display_log() . '</div>';
 
-		            // if it's a silent save request for updating ui options (e.g. last viewed selector)
-		            if (isset($_GET['mt_action']) and $_GET['mt_action'] == 'mt_silent_save_interface') {
-			            $savePackage = $this->deep_unescape($_POST['savePackage'], 1, 1, 1);
-			            /*echo 'show_me from ajax save (before): <pre> ';
+						/*<span id="outdated-tab-issue">'.$this->outdatedTabIssue.'</span>
+									<span id="returned-save-time">'.$this->options['non_section']['last_save_time'].'</span>*/
+
+						// we're returning a JSON obejct here, the HTML is added as a property of the object
+						$response = array(
+							//'prefs' => $this->preferences,
+							'html'=> $html,
+							'outdatedTab'=> $this->outdatedTabIssue,
+							'outdatedTabDebug'=> $this->outdatedTabDebug,
+							'returnedSaveTime'=> $this->options['non_section']['last_save_time'],
+							'returnedRevisions' => $this->getRevisions(true),
+							'exportName' => $new_select_option,
+							'num_saves' => $this->preferences['num_saves'],
+							'num_unpublished_saves' => $this->preferences['num_unpublished_saves']
+							//'uiData'=> $this->options
+							//'uiData'=> array()
+						);
+
+						echo json_encode($response); //$html;
+
+						wp_die();
+					}
+
+					// if it's a silent save request for updating ui options (e.g. last viewed selector)
+					if (isset($_GET['mt_action']) and $_GET['mt_action'] == 'mt_silent_save_interface') {
+						$savePackage = $this->deep_unescape($_POST['savePackage'], 1, 1, 1);
+						/*echo 'show_me from ajax save (before): <pre> ';
 						print_r($savePackage);
 						echo '</pre>';
 						return false;*/
-			            $this->apply_save_package($savePackage, $this->options);
-			            update_option($this->optionsName, $this->options);
-			            wp_die();
-		            }
+						$this->apply_save_package($savePackage, $this->options);
+						update_option($this->optionsName, $this->options);
+						wp_die();
+					}
 
 
-		            // $this->get_site_pages();
-		            if (isset($_GET['get_site_pages'])) {
+					// $this->get_site_pages();
+					if (isset($_GET['get_site_pages'])) {
 
-			            // MT posts search should only check title or slug so we get precise results (that appear in top 10 limit)
-			            // And because MT will filter out results with no title match on JS side anyway
-			            add_filter( 'posts_search', array(&$this, 'search_by_title_or_slug'), 10, 2 );
+						// MT posts search should only check title or slug so we get precise results (that appear in top 10 limit)
+						// And because MT will filter out results with no title match on JS side anyway
+						add_filter( 'posts_search', array(&$this, 'search_by_title_or_slug'), 10, 2 );
 
-			            $searchTerm = isset($_GET['search_term'])
-				            ? htmlentities($_GET['search_term'])
-				            : null;
+						$searchTerm = isset($_GET['search_term'])
+							? htmlentities($_GET['search_term'])
+							: null;
 
-			            echo json_encode($this->get_site_pages($searchTerm));
+						echo json_encode($this->get_site_pages($searchTerm));
 
-			            wp_die();
-		            }
+						wp_die();
+					}
 
-		            // ajax - load selectors and/or selector options
-		            /*if ( isset($_GET['mt_action']) and $_GET['mt_action'] == 'tvr_microthemer_ui_load_styles') {
+					// ajax - load selectors and/or selector options
+					/*if ( isset($_GET['mt_action']) and $_GET['mt_action'] == 'tvr_microthemer_ui_load_styles') {
 						//check_admin_referer('tvr_microthemer_ui_load_styles');
 						$section_name = strip_tags($_GET['tvr_load_section']);
 						$css_selector = strip_tags($_GET['tvr_load_selector']);
@@ -5126,383 +5846,495 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						wp_die();
 					}*/
 
-		            // ajax - toggle draft mode
-		            if (isset($_GET['draft_mode'])) {
+					// ajax - toggle draft mode
+					if (isset($_GET['draft_mode'])) {
 
-			            $pref_array['draft_mode'] = intval($_GET['draft_mode']);
+						$pref_array['draft_mode'] = intval($_GET['draft_mode']);
 
-			            // ned to get current user id again as $this->current_user_id won't be set in ajax request
-			            $current_user_id = get_current_user_id();
+						// ned to get current user id again as $this->current_user_id won't be set in ajax request
+						$current_user_id = get_current_user_id();
 
-			            // save current user in array
-			            if ($pref_array['draft_mode']){
-				            $pref_array['draft_mode_uids'][$current_user_id] = $current_user_id;
-			            } else {
-				            // reset if draft mode is off
-				            $pref_array['draft_mode_uids'] = array();
-			            }
-			            $this->savePreferences($pref_array);
-			            wp_die();
-		            }
+						// save current user in array
+						if ($pref_array['draft_mode']){
+							$pref_array['draft_mode_uids'][$current_user_id] = $current_user_id;
+						} else {
+							// reset if draft mode is off
+							$pref_array['draft_mode_uids'] = array();
+						}
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
 
-		            // selname_code_synced
-		            if (isset($_GET['load_sass_import'])) {
+					if (isset($_GET['mt_publish_settings'])) {
+						echo $this->publishSettings();
+						wp_die();
+					}
 
-			            $path = htmlentities(rawurldecode($_GET['load_sass_import']));
-			            $imports = $this->get_sass_import_paths('@import "'.$path.'";', '');
-			            $content = false;
+					// selname_code_synced
+					if (isset($_GET['load_sass_import'])) {
 
-			            if ($imports){
-				            $content = $this->recursively_scan_import_files(
-					            array(
-						            'import' => $imports[0]
-					            )
-				            );
-			            }
+						$path = htmlentities(rawurldecode($_GET['load_sass_import']));
+						$imports = $this->get_sass_import_paths('@import "'.$path.'";', '');
+						$content = false;
 
-			            $response = array(
-				            'error' => !$content,
-				            'content' => $content
-			            );
+						if ($imports){
+							$content = $this->recursively_scan_import_files(
+								array(
+									'import' => $imports[0]
+								)
+							);
+						}
 
-			            echo json_encode($response);
-			            wp_die();
-		            }
+						$response = array(
+							'error' => !$content,
+							'content' => $content
+						);
 
-		            // selname_code_synced
-		            if (isset($_GET['selname_code_synced'])) {
-			            $pref_array['selname_code_synced'] = intval($_GET['selname_code_synced']);
-			            $this->savePreferences($pref_array);
-			            wp_die();
-		            }
+						echo json_encode($response);
+						wp_die();
+					}
 
-		            // code_manual_resize
-		            if (isset($_GET['code_manual_resize'])) {
-			            $pref_array['code_manual_resize'] = intval($_GET['code_manual_resize']);
-			            $this->savePreferences($pref_array);
-			            wp_die();
-		            }
+					// selname_code_synced
+					if (isset($_GET['selname_code_synced'])) {
+						$pref_array['selname_code_synced'] = intval($_GET['selname_code_synced']);
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
 
-		            // ace full page html
-		            if (isset($_GET['wizard_expanded'])) {
-			            $pref_array['wizard_expanded'] = intval($_GET['wizard_expanded']);
-			            $this->savePreferences($pref_array);
-			            wp_die();
-		            }
+					// code_manual_resize
+					if (isset($_GET['code_manual_resize'])) {
+						$pref_array['code_manual_resize'] = intval($_GET['code_manual_resize']);
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
 
-		            // remember the state of the extra icons in the selectors menu
-		            if (isset($_GET['show_extra_actions'])) {
-			            $pref_array['show_extra_actions'] = intval($_GET['show_extra_actions']);
-			            $this->savePreferences($pref_array);
-			            wp_die();
-		            }
+					// ace full page html
+					if (isset($_GET['wizard_expanded'])) {
+						$pref_array['wizard_expanded'] = intval($_GET['wizard_expanded']);
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
 
-		            // remember the grid highlight status
-		            if (isset($_GET['grid_highlight'])) {
-			            $pref_array['grid_highlight'] = intval($_GET['grid_highlight']);
-			            $this->savePreferences($pref_array);
-			            wp_die();
-		            }
+					// remember the state of the extra icons in the selectors menu
+					if (isset($_GET['show_extra_actions'])) {
+						$pref_array['show_extra_actions'] = intval($_GET['show_extra_actions']);
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
 
-		            // remember show_sampled_values
-		            if (isset($_GET['show_sampled_values'])) {
-			            $pref_array['show_sampled_values'] = intval($_GET['show_sampled_values']);
-			            $this->savePreferences($pref_array);
-			            wp_die();
-		            }
+					// remember the grid highlight status
+					if (isset($_GET['grid_highlight'])) {
+						$pref_array['grid_highlight'] = intval($_GET['grid_highlight']);
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
 
-		            // remember show_sampled_variables
-		            if (isset($_GET['show_sampled_variables'])) {
-			            $pref_array['show_sampled_variables'] = intval($_GET['show_sampled_variables']);
-			            $this->savePreferences($pref_array);
-			            wp_die();
-		            }
+					// remember show_sampled_values
+					if (isset($_GET['show_sampled_values'])) {
+						$pref_array['show_sampled_values'] = intval($_GET['show_sampled_values']);
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
 
-		            // mt_color_variables_css
-		            if (isset($_POST['mt_color_variables_css'])) {
-			            $pref_array['mt_color_variables_css'] = strip_tags($_POST['mt_color_variables_css']);
-			            $this->savePreferences($pref_array);
-			            wp_die();
-		            }
+					// remember show_sampled_variables
+					if (isset($_GET['show_sampled_variables'])) {
+						$pref_array['show_sampled_variables'] = intval($_GET['show_sampled_variables']);
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
 
-		            // wizard footer/right dock
-		            if (isset($_GET['dock_wizard_right'])) {
-			            $pref_array['dock_wizard_right'] = intval($_GET['dock_wizard_right']);
-			            $this->savePreferences($pref_array);
-			            wp_die();
-		            }
+					// mt_color_variables_css
+					if (isset($_POST['mt_color_variables_css'])) {
+						$pref_array['mt_color_variables_css'] = strip_tags($_POST['mt_color_variables_css']);
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
 
-		            // instant hover inspection
-		            if (isset($_GET['hover_inspect'])) {
-			            $pref_array['hover_inspect'] = intval($_GET['hover_inspect']);
-			            $this->savePreferences($pref_array);
-			            wp_die();
-		            }
+					// wizard footer/right dock
+					if (isset($_GET['dock_wizard_right'])) {
+						$pref_array['dock_wizard_right'] = intval($_GET['dock_wizard_right']);
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
 
-		            // ajax - update preview url after page navigation
-		            if (isset($_GET['mt_preview_url'])) {
-			            $this->maybe_set_preview_url();
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+					// wizard footer/right dock
+					if (isset($_GET['dock_settings_right'])) {
+						$pref_array['dock_settings_right'] = intval($_GET['dock_settings_right']);
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
 
-		            // ajax - update preview url after page navigation
-		            if (isset($_GET['import_css_url'])) {
-			            // update view_import_stylesheets list with possible new stylesheet
-			            $this->update_css_import_urls(strip_tags(rawurldecode($_GET['import_css_url'])));
-			            wp_die();
-		            }
+					// instant hover inspection
+					if (isset($_GET['hover_inspect'])) {
+						$pref_array['hover_inspect'] = intval($_GET['hover_inspect']);
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
 
-		            // code editor focus
-		            if (isset($_GET['show_code_editor'])) {
-			            $pref_array = array();
-			            $pref_array['show_code_editor'] = intval($_GET['show_code_editor']);
-			            $this->savePreferences($pref_array);
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+					// ajax - update preview url after page navigation
+					if (isset($_GET['mt_preview_url'])) {
+						$this->maybe_set_preview_url();
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
 
-		            // ruler show/hide
-		            if (isset($_GET['show_rulers'])) {
-			            $pref_array = array();
-			            $pref_array['show_rulers'] = intval($_GET['show_rulers']);
-			            $this->savePreferences($pref_array);
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+					// ajax - update preview url after page navigation
+					if (isset($_GET['import_css_url'])) {
+						// update view_import_stylesheets list with possible new stylesheet
+						$this->update_css_import_urls(strip_tags(rawurldecode($_GET['import_css_url'])));
+						wp_die();
+					}
 
-		            // specificity preference
-		            if (isset($_GET['specificity_preference'])) {
-			            $pref_array = array();
-			            $pref_array['specificity_preference'] = intval($_GET['specificity_preference']);
-			            $this->savePreferences($pref_array);
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+					// code editor focus
+					if (isset($_GET['show_code_editor'])) {
+						$pref_array = array();
+						$pref_array['show_code_editor'] = intval($_GET['show_code_editor']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
 
-		            // dock editor left
-		            if (isset($_GET['sidebar_size'])) {
-			            $pref_array = array();
-			            $pref_array['sidebar_size'] = intval($_GET['sidebar_size']);
-			            $pref_array['sidebar_size_category'] = htmlentities($_GET['sidebar_size']);
-			            $this->savePreferences($pref_array);
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+					// ruler show/hide
+					if (isset($_GET['show_rulers'])) {
+						$pref_array = array();
+						$pref_array['show_rulers'] = intval($_GET['show_rulers']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
 
-		            // dock editor left
-		            if (isset($_GET['dock_editor_left'])) {
-			            $pref_array = array();
-			            $pref_array['dock_editor_left'] = intval($_GET['dock_editor_left']);
-			            $this->savePreferences($pref_array);
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+					// dark theme
+					if (isset($_GET['mt_dark_mode'])) {
+						$pref_array = array();
+						$pref_array['mt_dark_mode'] = intval($_GET['mt_dark_mode']);
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
 
-		            // dock editor left
-		            if (isset($_GET['dock_options_left'])) {
-			            $pref_array = array();
-			            $pref_array['dock_options_left'] = intval($_GET['dock_options_left']);
-			            $this->savePreferences($pref_array);
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+					// Auto-publish mode
+					if (isset($_GET['auto_publish_mode'])) {
+						$pref_array = array();
+						$pref_array['auto_publish_mode'] = intval($_GET['auto_publish_mode']);
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
 
-		            // detach preview -
-		            if (isset($_GET['detach_preview'])) {
-			            $pref_array = array();
-			            $pref_array['detach_preview'] = intval($_GET['detach_preview']);
-			            $this->savePreferences($pref_array);
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+					// specificity preference
+					if (isset($_GET['specificity_preference'])) {
+						$pref_array = array();
+						$pref_array['specificity_preference'] = intval($_GET['specificity_preference']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
 
-		            // ruler show/hide
-		            if (isset($_GET['show_text_labels'])) {
-			            $pref_array = array();
-			            $pref_array['show_text_labels'] = intval($_GET['show_text_labels']);
-			            $this->savePreferences($pref_array);
-			            wp_die();
-		            }
+					// sidebar size
+					/* if (isset($_GET['sidebar_size'])) {
+						 $pref_array = array();
+						 $pref_array['sidebar_size'] = intval($_GET['sidebar_size']);
+						 $pref_array['sidebar_size_category'] = htmlentities($_GET['sidebar_size']);
+						 $this->savePreferences($pref_array);
+						 // kill the program - this action is always requested via ajax. no message necessary
+						 wp_die();
+					 }*/
 
-		            // show/hide whole interface
-		            if (isset($_GET['show_interface'])) {
-			            $pref_array = array();
-			            $pref_array['show_interface'] = intval($_GET['show_interface']);
-			            $this->savePreferences($pref_array);
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+					// save new MT layout
+					if (isset($_GET['update_mt_layout'])) {
+						$data = json_decode( stripslashes($_POST['tvr_serialized_data']), true );
+						$this->savePreferences(array(
+							'layout' => $data
+						));
+						wp_die();
+					}
 
-		            // active MQ tab
-		            if (isset($_GET['manual_recompile_all_css'])) {
-			            $pref_array = array();
-			            $pref_array['manual_recompile_all_css'] = htmlentities($_GET['manual_recompile_all_css']);
-			            $this->savePreferences($pref_array);
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+					// dock folders left
+					if (isset($_GET['dock_folders_left'])) {
+						$pref_array = array();
+						$pref_array['dock_folders_left'] = intval($_GET['dock_folders_left']);
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
 
-		            // active MQ tab
-		            if (isset($_GET['mq_device_focus'])) {
-			            $pref_array = array();
-			            $pref_array['mq_device_focus'] = htmlentities($_GET['mq_device_focus']);
-			            $this->savePreferences($pref_array);
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+					// dock styles left
+					if (isset($_GET['dock_styles_left'])) {
+						$pref_array = array();
+						$pref_array['dock_styles_left'] = intval($_GET['dock_styles_left']);
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
 
-		            // active MQ tab
-		            if (isset($_GET['rev_save_status'])) {
-			            $this->updateRevisionSaveStatus(
-				            intval($_GET['rev_id']),
-				            intval($_GET['rev_save_status'])
-			            );
-			            wp_die();
-		            }
+					// dock editor left
+					if (isset($_GET['dock_editor_left'])) {
+						$pref_array = array();
+						$pref_array['dock_editor_left'] = intval($_GET['dock_editor_left']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
 
-		            // active CSS tab
-		            if (isset($_GET['css_focus'])) {
-			            $pref_array = array();
-			            $pref_array['css_focus'] = htmlentities($_GET['css_focus']);
-			            $this->savePreferences($pref_array);
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+					// full_height_left_sidebar
+					if (isset($_GET['full_height_left_sidebar'])) {
+						$pref_array = array();
+						$pref_array['full_height_left_sidebar'] = intval($_GET['full_height_left_sidebar']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
 
-		            // update_default_unit
-                    if (isset($_GET['update_default_unit'])) {
-	                    $data = json_decode( stripslashes($_POST['tvr_serialized_data']), true );
-	                    $this->preferences['my_props'][$data['group']]['pg_props'][$data['prop']]['default_unit'] = $data['unit'];
-	                    $pref_array['my_props'] = $this->preferences['my_props'];
-	                    $this->savePreferences($pref_array);
+					// expand_device_tabs
+					if (isset($_GET['expand_device_tabs'])) {
+						$pref_array = array();
+						$pref_array['expand_device_tabs'] = intval($_GET['expand_device_tabs']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
 
-	                    wp_die();
-                    }
+					// update multiple preferences in one go
+					if (isset($_GET['save_multiple_preferences'])) {
 
-		            // MT may update custom paths array via JS (e.g. path clear) and then post full array to replace current
-		            if (isset($_GET['update_custom_paths'])) {
-			            $pref_array['custom_paths'] = json_decode( stripslashes($_POST['tvr_serialized_data']), true );
-			            $this->savePreferences($pref_array);
-		            }
+						$pref_array = array();
 
-		            // update suggested values
-		            if (isset($_GET['update_sug_values'])) {
+						foreach($_POST['pref_array'] as $key => $value){
+							$pref_array[$key] = is_numeric($value) ? floatval($value) : $value;
+						}
 
-			            $pref_array = array();
-			            $root_cat = $_GET['update_sug_values'];
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
 
-			            // tap into WordPress native JSON functions
-			            /*if( !class_exists('Moxiecode_JSON') ) {
+
+					// dock ALL options left
+					/* if (isset($_GET['dock_styles_left'])) {
+						 $pref_array = array();
+						 $pref_array['dock_styles_left'] = intval($_GET['dock_styles_left']);
+						 $this->savePreferences($pref_array);
+						 // kill the program - this action is always requested via ajax. no message necessary
+						 wp_die();
+					 }*/
+
+					// detach preview -
+					if (isset($_GET['detach_preview'])) {
+						$pref_array = array();
+						$pref_array['detach_preview'] = intval($_GET['detach_preview']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
+
+					// ruler show/hide
+					if (isset($_GET['show_text_labels'])) {
+						$pref_array = array();
+						$pref_array['show_text_labels'] = intval($_GET['show_text_labels']);
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
+
+					// show/hide whole interface
+					if (isset($_GET['hide_interface'])) {
+						$pref_array = array();
+						$pref_array['hide_interface'] = intval($_GET['hide_interface']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
+
+					// active MQ tab
+					if (isset($_GET['manual_recompile_all_css'])) {
+						$pref_array = array();
+						$pref_array['manual_recompile_all_css'] = htmlentities($_GET['manual_recompile_all_css']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
+
+					// remove_all_bricks_container_hacks
+                    if (isset($_GET['remove_all_bricks_container_hacks'])) {
+						$pref_array = array();
+						$pref_array['remove_all_bricks_container_hacks'] = intval($_GET['remove_all_bricks_container_hacks']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
+
+					// initial_view_set
+					if (isset($_GET['initial_view_set'])) {
+						$pref_array = array();
+						$pref_array['initial_view_set'] = intval($_GET['initial_view_set']);
+						$this->savePreferences($pref_array);
+						wp_die();
+					}
+
+					// active MQ tab
+					if (isset($_GET['mq_device_focus'])) {
+						$pref_array = array();
+						$pref_array['mq_device_focus'] = htmlentities($_GET['mq_device_focus']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
+
+					// active MQ tab
+					if (isset($_GET['rev_save_status'])) {
+						$this->updateRevisionSaveStatus(
+							intval($_GET['rev_id']),
+							intval($_GET['rev_save_status'])
+						);
+						wp_die();
+					}
+
+					// active CSS tab
+					if (isset($_GET['css_focus'])) {
+						$pref_array = array();
+						$pref_array['css_focus'] = htmlentities($_GET['css_focus']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
+
+					// update_default_unit
+					if (isset($_GET['update_default_unit'])) {
+						$data = json_decode( stripslashes($_POST['tvr_serialized_data']), true );
+						$this->preferences['my_props'][$data['group']]['pg_props'][$data['prop']]['default_unit'] = $data['unit'];
+						$pref_array['my_props'] = $this->preferences['my_props'];
+						$this->savePreferences($pref_array);
+
+						wp_die();
+					}
+
+					// MT may update custom paths array via JS (e.g. path clear) and then post full array to replace current
+					if (isset($_GET['update_custom_paths'])) {
+						$pref_array['custom_paths'] = json_decode( stripslashes($_POST['tvr_serialized_data']), true );
+						$this->savePreferences($pref_array);
+					}
+
+					// update suggested values
+					if (isset($_GET['update_sug_values'])) {
+
+						$pref_array = array();
+						$root_cat = $_GET['update_sug_values'];
+
+						// tap into WordPress native JSON functions
+						/*if( !class_exists('Moxiecode_JSON') ) {
 							require_once($this->thisplugindir . 'includes/class-json.php');
 						}
 
 						$json_object = new Moxiecode_JSON();*/
 
-			            $data = json_decode( stripslashes($_POST['tvr_serialized_data']), true );
+						$data = json_decode( stripslashes($_POST['tvr_serialized_data']), true );
 
-			            // if we're setting suggested values for all properties
-			            if ($root_cat == 'all'){
-				            $this->preferences['my_props']['sug_values'] = $data['sug_values'];
-				            $this->preferences['my_props']['sug_variables'] = $data['sug_variables'];
-			            }  elseif ($root_cat == 'synced_set') {
-				            // a set of fields in one go e.g. padding
-				            $this->preferences['my_props']['sug_values'] =
-					            array_merge($this->preferences['my_props']['sug_values'], $data['synced_set']);
-			            } else {
-				            // just setting suggestions for a type of property e.g. site_colors
+						// if we're setting suggested values for all properties
+						if ($root_cat == 'all'){
+							$this->preferences['my_props']['sug_values'] = $data['sug_values'];
+							$this->preferences['my_props']['sug_variables'] = $data['sug_variables'];
+						}  elseif ($root_cat == 'synced_set') {
+							// a set of fields in one go e.g. padding
+							$this->preferences['my_props']['sug_values'] =
+								array_merge($this->preferences['my_props']['sug_values'], $data['synced_set']);
+						} else {
+							// just setting suggestions for a type of property e.g. site_colors
 
-				            if (!empty($data['specific'])){
-					            $this->preferences['my_props']['sug_values'][$root_cat] = $data['specific'];
-				            }
-			            }
+							if (!empty($data['specific'])){
+								$this->preferences['my_props']['sug_values'][$root_cat] = $data['specific'];
+							}
+						}
 
-			            // update variable if passed
-			            if (isset($data['sug_variables'])){
-				            $this->preferences['my_props']['sug_variables'] = $data['sug_variables'];
-				            $pref_array['default_sug_variables_set'] = 1;
-			            }
+						// update variable if passed
+						if (isset($data['sug_variables'])){
+							$this->preferences['my_props']['sug_variables'] = $data['sug_variables'];
+							$pref_array['default_sug_variables_set'] = 1;
+						}
 
-			            $pref_array['default_sug_values_set'] = 1;
-			            $pref_array['my_props'] = $this->preferences['my_props'];
-			            $this->savePreferences($pref_array);
+						$pref_array['default_sug_values_set'] = 1;
+						$pref_array['my_props'] = $this->preferences['my_props'];
+						$this->savePreferences($pref_array);
 
-			            //echo '<pre>posted array: '.print_r($data, true).'</pre>';
+						//echo '<pre>posted array: '.print_r($data, true).'</pre>';
 
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
 
-		            // save google/typekit fonts config
-		            if (isset($_GET['save_font_config'])) {
+					// save google/typekit fonts config
+					if (isset($_GET['save_font_config'])) {
 
-			            // tap into WordPress native JSON functions
-			            /*if( !class_exists('Moxiecode_JSON') ) {
+						// tap into WordPress native JSON functions
+						/*if( !class_exists('Moxiecode_JSON') ) {
 							require_once($this->thisplugindir . 'includes/class-json.php');
 						}
 
 						$json_object = new Moxiecode_JSON();*/
 
-			            $data = json_decode( stripslashes($_POST['tvr_serialized_data']), true );
-			            $pref_array = array();
-			            $key = $_GET['save_font_config'] == 'google' ? 'google' : 'typekit';
-			            $pref_array['font_config'][$key] = $data;
+						$data = json_decode( stripslashes($_POST['tvr_serialized_data']), true );
+						$pref_array = array();
+						$key = $_GET['save_font_config'] == 'google' ? 'google' : 'typekit';
+						$pref_array['font_config'][$key] = $data;
 
-			            $this->savePreferences($pref_array);
+						$this->savePreferences($pref_array);
 
-			            //echo '<pre>posted array: '.print_r($data, true).'</pre>';
+						//echo '<pre>posted array: '.print_r($data, true).'</pre>';
 
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
 
-		            // active property group
-		            if (isset($_GET['pg_focus'])) {
-			            $pref_array = array();
-			            $pref_array['pg_focus'] = htmlentities($_GET['pg_focus']);
-			            $this->savePreferences($pref_array);
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+					// active property group
+					if (isset($_GET['pg_focus'])) {
+						$pref_array = array();
+						$pref_array['pg_focus'] = htmlentities($_GET['pg_focus']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
 
-		            // active generated_css_focus
-		            if (isset($_GET['generated_css_focus'])) {
-			            $pref_array = array();
-			            $pref_array['generated_css_focus'] = intval($_GET['generated_css_focus']);
-			            $this->savePreferences($pref_array);
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+					// active generated_css_focus
+					if (isset($_GET['generated_css_focus'])) {
+						$pref_array = array();
+						$pref_array['generated_css_focus'] = intval($_GET['generated_css_focus']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
 
-		            // remember selector wizard tab
-		            if (isset($_GET['adv_wizard_tab'])) {
-			            $pref_array = array();
-			            $pref_array['adv_wizard_tab'] = htmlentities($_GET['adv_wizard_tab']);
-			            $this->savePreferences($pref_array);
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+					// remember selector wizard tab
+					if (isset($_GET['adv_wizard_tab'])) {
+						$pref_array = array();
+						$pref_array['adv_wizard_tab'] = htmlentities($_GET['adv_wizard_tab']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
 
-		            // remember selector wizard tab
-		            if (isset($_GET['grid_focus'])) {
-			            $pref_array = array();
-			            $pref_array['grid_focus'] = htmlentities($_GET['grid_focus']);
-			            $this->savePreferences($pref_array);
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+					// remember the program settings tab
+					if (isset($_GET['program_settings_tab'])) {
+						$pref_array = array();
+						$pref_array['program_settings_tab'] = htmlentities($_GET['program_settings_tab']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
 
-		            // remember transform tab
-		            if (isset($_GET['transform_focus'])) {
-			            $pref_array = array();
-			            $pref_array['transform_focus'] = htmlentities($_GET['transform_focus']);
-			            $this->savePreferences($pref_array);
-			            // kill the program - this action is always requested via ajax. no message necessary
-			            wp_die();
-		            }
+					// remember selector wizard tab
+					if (isset($_GET['grid_focus'])) {
+						$pref_array = array();
+						$pref_array['grid_focus'] = htmlentities($_GET['grid_focus']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
 
-		            // last viewed selector
-		            /*if (isset($_GET['last_viewed_selector'])) {
+					// remember transform tab
+					if (isset($_GET['transform_focus'])) {
+						$pref_array = array();
+						$pref_array['transform_focus'] = htmlentities($_GET['transform_focus']);
+						$this->savePreferences($pref_array);
+						// kill the program - this action is always requested via ajax. no message necessary
+						wp_die();
+					}
+
+					// last viewed selector
+					/*if (isset($_GET['last_viewed_selector'])) {
 						$pref_array = array();
 						$pref_array['last_viewed_selector'] = htmlentities($_GET['last_viewed_selector']);
 						$this->savePreferences($pref_array);
@@ -5510,479 +6342,488 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						wp_die();
 					}*/
 
-		            // download pack
-		            if (!empty($_GET['mt_action']) and
-		                $_GET['mt_action'] == 'tvr_download_pack') {
-			            if (!empty($_GET['dir_name'])) {
-				            // first of all, copy any images from the media library
-				            $pack = $_GET['dir_name'];
-				            $dir = $this->micro_root_dir . $pack;
-				            $json_config_file = $dir . '/config.json';
-				            if ($library_images = $this->get_linked_library_images($json_config_file)){
-					            foreach($library_images as $key => $path){
-						            // strip site_url rather than home_url in this case coz using with ABSPATH
-						            $root_rel_path = $this->root_rel($path, false, true, true);
-						            $basename = basename($root_rel_path);
-						            $orig = rtrim(ABSPATH,"/"). $root_rel_path;
-						            $img_paths[] = $new = $dir . '/' . $basename;
-						            $replacements[$path] = $this->root_rel(
-							            $this->micro_root_url . $pack . '/' . $basename, false, true
-						            );
-						            if (!copy($orig, $new)){
-							            $this->log(
-								            esc_html__('Library image not downloaded', 'microthemer'),
-								            '<p>' . sprintf(esc_html__('%s could not be copied to the zip download file', 'microthemer'), $root_rel_path) . '</p>',
-								            'warning'
-							            );
-							            $download_status = 0;
-						            }
-					            }
-					            // cache original config file data
-					            $orig_json_data = $this->get_file_data($json_config_file);
+					// download pack
+					if (!empty($_GET['mt_action']) and
+					    $_GET['mt_action'] == 'tvr_download_pack') {
+						if (!empty($_GET['dir_name'])) {
+							// first of all, copy any images from the media library
+							$pack = $_GET['dir_name'];
+							$dir = $this->micro_root_dir . $pack;
+							$json_config_file = $dir . '/config.json';
+							if ($library_images = $this->get_linked_library_images($json_config_file)){
+								foreach($library_images as $key => $path){
+									// strip site_url rather than home_url in this case coz using with ABSPATH
+									$root_rel_path = $this->root_rel($path, false, true, true);
+									$basename = basename($root_rel_path);
+									$orig = rtrim(ABSPATH,"/"). $root_rel_path;
+									$img_paths[] = $new = $dir . '/' . $basename;
+									$replacements[$path] = $this->root_rel(
+										$this->micro_root_url . $pack . '/' . $basename, false, true
+									);
+									if (!copy($orig, $new)){
+										$this->log(
+											esc_html__('Library image not downloaded', 'microthemer'),
+											'<p>' . sprintf(esc_html__('%s could not be copied to the zip download file', 'microthemer'), $root_rel_path) . '</p>',
+											'warning'
+										);
+										$download_status = 0;
+									}
+								}
+								// cache original config file data
+								$orig_json_data = $this->get_file_data($json_config_file);
 
-					            // update image paths in config.json for zip only (we'll restore shortly)
-					            $this->replace_json_paths($json_config_file, $replacements, $orig_json_data);
-				            }
+								// update image paths in config.json for zip only (we'll restore shortly)
+								$this->replace_json_paths($json_config_file, $replacements, $orig_json_data);
+							}
 
-				            // now zip the contents
-				            if (
-				            $this->create_zip(
-					            $this->micro_root_dir,
-					            $pack,
-					            $this->thisplugindir.'zip-exports/')
-				            ){
-					            $download_status = 1;
-				            } else {
-					            $download_status = 0;
-				            }
-			            }
-			            else {
-				            $download_status = 0;
-			            }
-			            // delete any media library images temporarily copied to the directory
-			            if ($library_images){
-				            // restore orgin config.json paths
-				            $this->write_file($json_config_file, $orig_json_data);
-				            // delete images
-				            foreach ($img_paths as $key => $path){
-					            if (!unlink($path)){
-						            $this->log(
-							            esc_html__('Temporary image could not be deleted.', 'microthemer'),
-							            '<p>' . sprintf( esc_html__('%s was temporarily copied to your theme pack before download but could not be deleted after the download operation finished.', 'microthemer'), $this->root_rel($root_rel_path) ) . '</p>',
-							            'warning'
-						            );
-					            }
-				            }
-			            }
-			            echo '
+							// now zip the contents
+							if (
+							$this->create_zip(
+								$this->micro_root_dir,
+								$pack,
+								$this->thisplugindir.'zip-exports/')
+							){
+								$download_status = 1;
+							} else {
+								$download_status = 0;
+							}
+						}
+						else {
+							$download_status = 0;
+						}
+						// delete any media library images temporarily copied to the directory
+						if ($library_images){
+							// restore orgin config.json paths
+							$this->write_file($json_config_file, $orig_json_data);
+							// delete images
+							foreach ($img_paths as $key => $path){
+								if (!unlink($path)){
+									$this->log(
+										esc_html__('Temporary image could not be deleted.', 'microthemer'),
+										'<p>' . sprintf( esc_html__('%s was temporarily copied to your theme pack before download but could not be deleted after the download operation finished.', 'microthemer'), $this->root_rel($root_rel_path) ) . '</p>',
+										'warning'
+									);
+								}
+							}
+						}
+						echo '
 							<div id="microthemer-notice">'
-			                 . $this->display_log() . '
+						     . $this->display_log() . '
 								<span id="download-status" rel="'.$download_status.'"></span>
 							</div>';
-			            wp_die();
-		            }
+						wp_die();
+					}
 
-		            // delete pack
-		            if (!empty($_GET['mt_action']) and
-		                $_GET['mt_action'] == 'tvr_delete_micro_theme') {
-			            if (!empty($_GET['dir_name']) and $this->tvr_delete_micro_theme($_GET['dir_name'])){
-				            $delete_status = 1;
-			            } else {
-				            $delete_status = 0;
-			            }
-			            echo '
+					// delete pack
+					if (!empty($_GET['mt_action']) and
+					    $_GET['mt_action'] == 'tvr_delete_micro_theme') {
+						if (!empty($_GET['dir_name']) and $this->tvr_delete_micro_theme($_GET['dir_name'])){
+							$delete_status = 1;
+						} else {
+							$delete_status = 0;
+						}
+						echo '
 							<div id="microthemer-notice">'
-			                 . $this->display_log() . '
+						     . $this->display_log() . '
 								<span id="delete-status" rel="'.$delete_status.'"></span>
 							</div>';
-			            wp_die();
-		            }
+						wp_die();
+					}
 
-		            // download remote css file
-		            if (!empty($_GET['mt_action']) and
-		                $_GET['mt_action'] == 'tvr_get_remote_css') {
-			            $config['allowed_ext'] = array('css');
-			            $r = $this->get_safe_url(rawurldecode($_GET['url']), $config);
-			            echo '
+					// download remote css file
+					if (!empty($_GET['mt_action']) and
+					    $_GET['mt_action'] == 'tvr_get_remote_css') {
+						$config['allowed_ext'] = array('css');
+						$r = $this->get_safe_url(rawurldecode($_GET['url']), $config);
+						echo '
 							<div id="microthemer-notice">'
-			                 . $this->display_log() . '
+						     . $this->display_log() . '
 								<div id="remote-css">'.(!empty($r['content']) ? $r['content'] : 0).'</div>
 							</div>';
-			            wp_die();
-		            }
+						wp_die();
+					}
 
-		            // if it's an import request
-		            if ( !empty($_POST['import_pack_or_css']) ){
+					// if it's an import request
+					if ( !empty($_POST['import_pack_or_css']) ){
 
-			            // if importing raw CSS
-			            if (!empty($_POST['stylesheet_import_json'])){
+						// if importing raw CSS
+						if (!empty($_POST['stylesheet_import_json'])){
 
-				            $context = esc_attr__('Raw CSS', 'microthemer');
-				            $json_str = stripslashes($_POST['stylesheet_import_json']);
-				            $p = $_POST['tvr_preferences'];
+							$context = esc_attr__('Raw CSS', 'microthemer');
+							$json_str = stripslashes($_POST['stylesheet_import_json']);
+							$p = $_POST['tvr_preferences'];
 
-				            // checkbox values must be explicitly evaluated
-				            $p['css_imp_only_selected'] = !empty($p['css_imp_only_selected']) ? 1 : 0;
+							// checkbox values must be explicitly evaluated
+							$p['css_imp_only_selected'] = !empty($p['css_imp_only_selected']) ? 1 : 0;
 
-				            // handle remote image import. See plugins that do this:
-				            // https://premium.wpmudev.org/blog/download-remote-images-into-wordpress/
-				            if (!empty($_POST['get_remote_images'])){
+							// handle remote image import. See plugins that do this:
+							// https://premium.wpmudev.org/blog/download-remote-images-into-wordpress/
+							if (!empty($_POST['get_remote_images'])){
 
-					            $r_images = explode('|', $_POST['get_remote_images']);
-					            $do_copy = false;
-					            $remote_images = array();
-					            $all_r = array();
-					            foreach ($r_images as $i => $both){
-						            $tmp = explode(',', $both);
-						            $path_in_data = $tmp[0];
-						            $full_url = $tmp[1];
-						            // save to temp dir first
-						            $r = $this->get_safe_url($full_url, array(
-							            'allowed_ext' => array('jpg', 'jpeg', 'gif', 'png', 'svg'),
-							            'tmp_file' => 1
-						            ));
+								$r_images = explode('|', $_POST['get_remote_images']);
+								$do_copy = false;
+								$remote_images = array();
+								$all_r = array();
+								foreach ($r_images as $i => $both){
+									$tmp = explode(',', $both);
+									$path_in_data = $tmp[0];
+									$full_url = $tmp[1];
+									// save to temp dir first
+									$r = $this->get_safe_url($full_url, array(
+										'allowed_ext' => array('jpg', 'jpeg', 'gif', 'png', 'svg'),
+										'tmp_file' => 1
+									));
 
-						            if ($r){
-							            $remote_images[$path_in_data] = $r['tmp_file'];
-							            $do_copy = true;
-							            //$all_r[++$i] = $r;
-						            }
+									if ($r){
+										$remote_images[$path_in_data] = $r['tmp_file'];
+										$do_copy = true;
+										//$all_r[++$i] = $r;
+									}
 
-					            }
+								}
 
-					            // do image copy function
-					            if ($do_copy){
+								// do image copy function
+								if ($do_copy){
 
-						            $updated_json_str = $this->import_pack_images_to_library(
-							            false,
-							            'custom',
-							            $json_str,
-							            $remote_images
-						            );
+									$updated_json_str = $this->import_pack_images_to_library(
+										false,
+										'custom',
+										$json_str,
+										$remote_images
+									);
 
-						            $json_str = $updated_json_str ? $updated_json_str : $json_str;
-					            }
+									$json_str = $updated_json_str ? $updated_json_str : $json_str;
+								}
 
-				            }
+							}
 
-				            // load the json file
-				            $this->load_json_file(false, 'custom', $context, $json_str);
+							// load the json file
+							$this->load_json_file(false, 'custom', $context, $json_str);
 
-				            // save the import preferences
-				            $this->savePreferences($p);
-			            }
+							// save the import preferences
+							$this->savePreferences($p);
+						}
 
-			            // if importing an MT design pack
-			            else {
-
-
-				            $theme_name = sanitize_file_name(sanitize_title(htmlentities($_POST['import_from_pack_name'])));
+						// if importing an MT design pack
+						else {
 
 
-				            $json_file = $this->micro_root_dir . $theme_name . '/config.json';
-
-				            $context = $_POST['tvr_import_method'];
-
-				            // import any background images that may need moving to the media library and update json
-				            $this->import_pack_images_to_library($json_file, $theme_name);
-
-				            // load the json file
-				            $this->load_json_file($json_file, $theme_name, $context);
-
-			            }
-
-			            // signal that all selectors should be recompiled (to ensure latest data structure)
-			            $this->update_preference('manual_recompile_all_css', 1);
-
-			            // update the revisions DB field
-			            if (!$this->updateRevisions($this->options, $this->json_format_ua(
-				            'import-from-pack lg-icon',
-				            esc_html__('Import', 'microthemer') . ' ('.$context.'):&nbsp;',
-				            $this->readable_name($theme_name)
-			            ))) {
-				            $this->log('','','error', 'revisions');
-			            }
-
-			            // save last message in database so that it can be displayed on page reload (just once)
-			            $this->cache_global_msg();
-			            wp_die();
-		            }
+							$theme_name = sanitize_file_name(sanitize_title(htmlentities($_POST['import_from_pack_name'])));
 
 
+							$json_file = $this->micro_root_dir . $theme_name . '/config.json';
 
-		            // if it's a reset request
+							$context = $_POST['tvr_import_method'];
+
+							// import any background images that may need moving to the media library and update json
+							$this->import_pack_images_to_library($json_file, $theme_name);
+
+							// load the json file
+							$this->load_json_file($json_file, $theme_name, $context);
+
+						}
+
+						// signal that all selectors should be recompiled (to ensure latest data structure)
+						$this->update_preference('manual_recompile_all_css', 1);
+
+						// update the revisions DB field
+						if (!$this->updateRevisions($this->options, $this->json_format_ua(
+							'import-from-pack lg-icon',
+							esc_html__('Import', 'microthemer') . ' ('.$context.'):&nbsp;',
+							$this->readable_name($theme_name)
+						))) {
+							$this->log('','','error', 'revisions');
+						}
+
+						// save last message in database so that it can be displayed on page reload (just once)
+						$this->cache_global_msg();
+						wp_die();
+					}
+
+
+
+					// if it's a reset request
                     elseif( isset($_GET['mt_action']) and $_GET['mt_action'] == 'tvr_ui_reset'){
-			            if ($this->resetUiOptions()) {
-				            $this->update_active_styles2('customised');
-				            $item = esc_html__('Folders were reset', 'microthemer');
-				            $this->log(
-					            $item,
-					            '<p>' . esc_html__('The default empty folders have been reset.', 'microthemer') . '</p>',
-					            'notice'
-				            );
-				            // update the revisions DB field
-				            if (!$this->updateRevisions($this->options, $this->json_format_ua(
-					            'folder-reset lg-icon',
-					            $item
-				            ))) {
-					            $this->log(
-						            esc_html__('Revision failed to save', 'microthemer'),
-						            '<p>' . esc_html__('The revisions table could not be updated.', 'microthemer') . '</p>',
-						            'notice'
-					            );
-				            }
-			            }
-			            // save last message in database so that it can be displayed on page reload (just once)
-			            $this->cache_global_msg();
-			            wp_die();
-		            }
+						if ($this->resetUiOptions()) {
+							$this->update_active_styles2('customised');
+							$item = esc_html__('Folders were reset', 'microthemer');
+							$this->log(
+								$item,
+								'<p>' . esc_html__('The default empty folders have been reset.', 'microthemer') . '</p>',
+								'notice'
+							);
+							// update the revisions DB field
+							if (!$this->updateRevisions($this->options, $this->json_format_ua(
+								'folder-reset lg-icon',
+								$item
+							))) {
+								$this->log(
+									esc_html__('Revision failed to save', 'microthemer'),
+									'<p>' . esc_html__('The revisions table could not be updated.', 'microthemer') . '</p>',
+									'notice'
+								);
+							}
+						}
+						// save last message in database so that it can be displayed on page reload (just once)
+						$this->cache_global_msg();
+						wp_die();
+					}
 
-		            // if it's a clear styles request
-                    /*elseif(isset($_GET['mt_action']) and $_GET['mt_action'] == 'tvr_clear_styles'){
-			            if ($this->clearUiOptions()) {
-				            $this->update_active_styles2('customised');
-				            $item = esc_html__('Styles were cleared', 'microthemer');
-				            $this->log(
-					            $item,
-					            '<p>' . esc_html__('All styles were cleared, but your folders and selectors remain fully intact.', 'microthemer') . '</p>',
-					            'notice'
-				            );
-				            // update the revisions DB field
-				            if (!$this->updateRevisions($this->options, $item)) {
-					            $this->log('', '', 'error', 'revisions');
-				            }
-			            }
-			            // save last message in database so that it can be displayed on page reload (just once)
-			            $this->cache_global_msg();
-			            wp_die();
-		            }*/
+					// if it's a clear styles request
+					/*elseif(isset($_GET['mt_action']) and $_GET['mt_action'] == 'tvr_clear_styles'){
+						if ($this->clearUiOptions()) {
+							$this->update_active_styles2('customised');
+							$item = esc_html__('Styles were cleared', 'microthemer');
+							$this->log(
+								$item,
+								'<p>' . esc_html__('All styles were cleared, but your folders and selectors remain fully intact.', 'microthemer') . '</p>',
+								'notice'
+							);
+							// update the revisions DB field
+							if (!$this->updateRevisions($this->options, $item)) {
+								$this->log('', '', 'error', 'revisions');
+							}
+						}
+						// save last message in database so that it can be displayed on page reload (just once)
+						$this->cache_global_msg();
+						wp_die();
+					}*/
 
-		            // if it's an email error report request
+					// if it's an email error report request
                     elseif(isset($_GET['mt_action']) and $_GET['mt_action'] == 'tvr_error_email'){
-			            $body = "*** MICROTHEMER ERROR REPORT | ".date('d/m/Y h:i:s a', $this->time)." *** \n\n";
-			            $body .= "PHP ERROR \n" . stripslashes($_POST['tvr_php_error']) . "\n\n";
-			            $body .= "BROWSER INFO \n" . stripslashes($_POST['tvr_browser_info']) . "\n\n";
-			            $body .= "SERIALISED POSTED DATA \n" . stripslashes($_POST['tvr_serialised_data']) . "\n\n";
-			            // An error can occur EITHER when saving to DB OR creating the active-styles.css
-			            // The php error line number will reveal this. If the latter is true, the DB data contains the posted data too (FYI)
-			            $body .= "SERIALISED DATA IN DB \n" . serialize($this->options). "\n\n";
-			            // write file to error-reports dir
-			            $file_path = 'error-reports/error-'.date('Y-m-d').'.txt';
-			            $error_file = $this->thisplugindir . $file_path;
-			            $write_file = @fopen($error_file, 'w');
-			            fwrite($write_file, $body);
-			            fclose($write_file);
-			            // Determine from email address. Try to use validated customer email. Don't contact if not Microthemer customer.
-			            if ( !empty($this->preferences['buyer_email']) ) {
-				            $from_email = $this->preferences['buyer_email'];
-				            $body .= "MICROTHEMER CUSTOMER EMAIL \n" . $from_email;
-			            }
-			            else {
-				            $from_email = get_option('admin_email');
-			            }
-			            // Try to send email (won't work on localhost)
-			            $subject = 'Microthemer Error Report | ' . date('d/m/Y', $this->time);
-			            $to = 'support@themeover.com';
-			            $from = "Microthemer User <$from_email>";
-			            $headers = "From: $from";
-			            if(@mail($to,$subject,$body,$headers)) {
-				            $this->log(
-					            esc_html__('Email successfully sent', 'microthemer'),
-					            '<p>' . esc_html__('Your error report was successfully emailed to Themeover. Thanks, this really does help.', 'microthemer') . '</p>',
-					            'notice'
-				            );
-			            }
-			            else {
-				            $error_url = $this->thispluginurl . $file_path;
-				            $this->log(
-					            esc_html__('Report email failed', 'microthemer'),
-					            '<p>' . esc_html__('Your error report email failed to send (are you on localhost?)', 'microthemer') . '</p>
+						$body = "*** MICROTHEMER ERROR REPORT | ".date('d/m/Y h:i:s a', $this->time)." *** \n\n";
+						$body .= "PHP ERROR \n" . stripslashes($_POST['tvr_php_error']) . "\n\n";
+						$body .= "BROWSER INFO \n" . stripslashes($_POST['tvr_browser_info']) . "\n\n";
+						$body .= "SERIALISED POSTED DATA \n" . stripslashes($_POST['tvr_serialised_data']) . "\n\n";
+						// An error can occur EITHER when saving to DB OR creating the active-styles.css
+						// The php error line number will reveal this. If the latter is true, the DB data contains the posted data too (FYI)
+						$body .= "SERIALISED DATA IN DB \n" . serialize($this->options). "\n\n";
+						// write file to error-reports dir
+						$file_path = 'error-reports/error-'.date('Y-m-d').'.txt';
+						$error_file = $this->thisplugindir . $file_path;
+						$write_file = @fopen($error_file, 'w');
+						fwrite($write_file, $body);
+						fclose($write_file);
+						// Determine from email address. Try to use validated customer email. Don't contact if not Microthemer customer.
+						if ( !empty($this->preferences['buyer_email']) ) {
+							$from_email = $this->preferences['buyer_email'];
+							$body .= "MICROTHEMER CUSTOMER EMAIL \n" . $from_email;
+						}
+						else {
+							$from_email = get_option('admin_email');
+						}
+						// Try to send email (won't work on localhost)
+						$subject = 'Microthemer Error Report | ' . date('d/m/Y', $this->time);
+						$to = 'support@themeover.com';
+						$from = "Microthemer User <$from_email>";
+						$headers = "From: $from";
+						if(@mail($to,$subject,$body,$headers)) {
+							$this->log(
+								esc_html__('Email successfully sent', 'microthemer'),
+								'<p>' . esc_html__('Your error report was successfully emailed to Themeover. Thanks, this really does help.', 'microthemer') . '</p>',
+								'notice'
+							);
+						}
+						else {
+							$error_url = $this->thispluginurl . $file_path;
+							$this->log(
+								esc_html__('Report email failed', 'microthemer'),
+								'<p>' . esc_html__('Your error report email failed to send (are you on localhost?)', 'microthemer') . '</p>
 								<p>' .
-					            wp_kses(
-						            sprintf(
-							            __('Please email <a %1$s>this report</a> to %2$s', 'microthemer'),
-							            'target="_blank" href="' .$error_url . '"',
-							            '<a href="mailto:support@themeover.com">support@themeover.com</a>'
-						            ),
-						            array( 'a' => array( 'href' => array(), 'target' => array() ) )
-					            )
-					            . '</p>'
-				            );
-			            }
-			            echo '
+								wp_kses(
+									sprintf(
+										__('Please email <a %s>this report</a> to %s', 'microthemer'),
+										'target="_blank" href="' .$error_url . '"',
+										'<a href="mailto:support@themeover.com">support@themeover.com</a>'
+									),
+									array( 'a' => array( 'href' => array(), 'target' => array() ) )
+								)
+								. '</p>'
+							);
+						}
+						echo '
 						<div id="microthemer-notice">'. $this->display_log() . '</div>';
-			            wp_die();
-		            }
+						wp_die();
+					}
 
-		            // if it's a restore revision request
-		            if(isset($_GET['mt_action']) and $_GET['mt_action'] == 'restore_rev'){
-			            $rev_key = $_GET['tvr_rev'];
-			            if ($this->restoreRevision($rev_key)) {
-				            $item = esc_html__('Previous settings restored', 'microthemer');
-				            $this->log(
-					            $item,
-					            '<p>' . esc_html__('Your settings were successfully restored from a previous save.', 'microthemer') . '</p>',
-					            'notice'
-				            );
-				            $this->update_active_styles2('customised');
-				            // update the revisions DB field
-				            if (!$this->updateRevisions($this->options, $this->json_format_ua(
-					            'display-revisions lg-icon',
-					            $item
-				            ))) {
-					            $this->log('','','error', 'revisions');
-				            }
-			            }
-			            else {
-				            $this->log(
-					            esc_html__('Settings restore failed', 'microthemer'),
-					            '<p>' . esc_html__('Data could not be restored from a previous save.', 'microthemer') . '</p>'
-				            );
-			            }
-			            // save last message in database so that it can be displayed on page reload (just once)
-			            $this->cache_global_msg();
-			            wp_die();
-		            }
+					// if it's a restore revision request
+					if(isset($_GET['mt_action']) and $_GET['mt_action'] == 'restore_rev'){
+						$rev_key = $_GET['tvr_rev'];
+						if ($this->restoreRevision($rev_key)) {
+							$item = esc_html__('Previous settings restored', 'microthemer');
+							$this->log(
+								$item,
+								'<p>' . esc_html__('Your settings were successfully restored from a previous save.', 'microthemer') . '</p>',
+								'notice'
+							);
+							$this->update_active_styles2('customised');
+							// update the revisions DB field
+							if (!$this->updateRevisions($this->options, $this->json_format_ua(
+								'display-revisions lg-icon',
+								$item
+							))) {
+								$this->log('','','error', 'revisions');
+							}
+						}
+						else {
+							$this->log(
+								esc_html__('Settings restore failed', 'microthemer'),
+								'<p>' . esc_html__('Data could not be restored from a previous save.', 'microthemer') . '</p>'
+							);
+						}
+						// save last message in database so that it can be displayed on page reload (just once)
+						$this->cache_global_msg();
+						wp_die();
+					}
 
-		            // if it's a get revision ajax request
+					// if it's a get revision ajax request
                     elseif(isset($_GET['mt_action']) and $_GET['mt_action'] == 'get_revisions'){
-			            echo '<div id="tmp-wrap">' . $this->getRevisions() . '</div>'; // outputs table
-			            wp_die();
-		            }
+						echo '<div id="tmp-wrap">' . $this->getRevisions() . '</div>'; // outputs table
+						wp_die();
+					}
 
 
-		            /* PREFERENCES FUNCTIONS MOVED TO MAIN UI */
+					/* PREFERENCES FUNCTIONS MOVED TO MAIN UI */
 
-		            // update the MQs
-		            if (isset($_POST['tvr_media_queries_submit'])){
+					// update the MQs
+					if (isset($_POST['tvr_media_queries_submit'])){
 
-			            $orig_media_queries = $this->preferences['m_queries'];
+						$orig_media_queries = $this->preferences['m_queries'];
 
-			            // remove backslashes from $_POST
-			            $_POST = $this->deep_unescape($_POST, 0, 1, 1);
-			            // get the initial scale and default width for the "All Devices" tab
-			            $pref_array['initial_scale'] = $_POST['tvr_preferences']['initial_scale'];
-			            $pref_array['all_devices_default_width'] = $_POST['tvr_preferences']['all_devices_default_width'];
-			            // reset default media queries if all empty
-			            $action = '';
-			            if (empty($_POST['tvr_preferences']['m_queries'])) {
-				            $pref_array['m_queries'] = $this->default_m_queries;
-				            $action = 'reset';
-			            } else {
-				            $pref_array['m_queries'] = $_POST['tvr_preferences']['m_queries'];
-				            $action = 'update';
-			            }
+						// remove backslashes from $_POST
+						$_POST = $this->deep_unescape($_POST, 0, 1, 1);
+						// get the initial scale and default width for the "All Devices" tab
+						$pref_array['initial_scale'] = $_POST['tvr_preferences']['initial_scale'];
+						$pref_array['all_devices_default_width'] = $_POST['tvr_preferences']['all_devices_default_width'];
+						// reset default media queries if all empty
+						$action = '';
+						if (empty($_POST['tvr_preferences']['m_queries'])) {
+							$pref_array['m_queries'] = $this->default_mqs;
+							$action = 'reset';
+						} else {
+							$pref_array['m_queries'] = $_POST['tvr_preferences']['m_queries'];
+							$action = 'update';
+						}
 
-			            // are we merging/overwriting with a new media query set
-			            if (!empty($_POST['tvr_preferences']['load_mq_set'])){
-				            //print_r($this->mq_sets);
-				            $action = 'load_set';
-				            $new_set = $_POST['tvr_preferences']['load_mq_set'];
-				            $new_mq_set = $this->mq_sets[$new_set];
-				            $pref_array['overwrite_existing_mqs'] = $_POST['tvr_preferences']['overwrite_existing_mqs'];
-				            if (!empty($pref_array['overwrite_existing_mqs'])){
-					            $pref_array['m_queries'] = $new_mq_set;
-					            $load_action = esc_html__('replaced', 'microthemer');
-				            } else {
-					            $pref_array['m_queries'] = array_merge($pref_array['m_queries'], $new_mq_set);
-					            $load_action = esc_html__('was merged with', 'microthemer');
-				            }
-			            }
+						// are we merging/overwriting with a new media query set
+						if (!empty($_POST['tvr_preferences']['load_mq_set'])){
+							//print_r($this->mq_sets);
+							$action = 'load_set';
+							$new_set = $_POST['tvr_preferences']['load_mq_set'];
+							$new_mq_set = $this->mq_sets[$new_set];
+							$pref_array['overwrite_existing_mqs'] = $_POST['tvr_preferences']['overwrite_existing_mqs'];
+							if (!empty($pref_array['overwrite_existing_mqs'])){
+								$pref_array['m_queries'] = $new_mq_set;
+								$load_action = esc_html__('replaced', 'microthemer');
+							} else {
+								$pref_array['m_queries'] = array_merge($pref_array['m_queries'], $new_mq_set);
+								$load_action = esc_html__('was merged with', 'microthemer');
+							}
+						}
 
-			            // format media query min/max width (height later) and units
-			            $pref_array['m_queries'] = $this->mq_min_max($pref_array);
+						// format media query min/max width (height later) and units
+						$pref_array['m_queries'] = $this->mq_min_max($pref_array);
 
-			            // save and preset message
-			            $pref_array['num_saves'] = ++$this->preferences['num_saves'];
+						// save and preset message
+						$pref_array['num_saves'] = ++$this->preferences['num_saves'];
 
-			            if ($this->savePreferences($pref_array)) {
+						if (empty($this->preferences['auto_publish_mode'])){
+							$pref_array['num_unpublished_saves'] = ++$this->preferences['num_unpublished_saves'];
+						}
 
-				            switch ($action) {
-					            case 'reset':
-						            $this->log(
-							            esc_html__('Media queries were reset', 'microthemer'),
-							            '<p>' . esc_html__('The default media queries were successfully reset.', 'microthemer') . '</p>',
-							            'notice'
-						            );
-						            break;
-					            case 'update':
-						            $this->log(
-							            esc_html__('Media queries were updated', 'microthemer'),
-							            '<p>' . esc_html__('Your media queries were successfully updated.', 'microthemer') . '</p>',
-							            'notice'
-						            );
-						            break;
-					            case 'load_set':
-						            $this->log(
-							            esc_html__('Media query set loaded', 'microthemer'),
-							            '<p>' . sprintf( esc_html__('A new media query set %1$s your existing media queries: %2$s', 'microthemer'), $load_action, htmlentities($_POST['tvr_preferences']['load_mq_set']) ) . '</p>',
-							            'notice'
-						            );
-						            break;
-				            }
+						if ($this->savePreferences($pref_array)) {
 
-				            // if the user deleted a media query, ensure data is cleaned from the ui data
-				            $this->clean_deleted_media_queries($orig_media_queries, $pref_array['m_queries']);
+							switch ($action) {
+								case 'reset':
+									$this->log(
+										esc_html__('Media queries reset', 'microthemer'),
+										'<p>' . esc_html__('The default media queries were successfully reset.', 'microthemer') . '</p>',
+										'notice'
+									);
+									break;
+								case 'update':
+									$this->log(
+										esc_html__('Media queries updated', 'microthemer'),
+										'<p>' . esc_html__('Your media queries were successfully updated.', 'microthemer') . '</p>',
+										'notice'
+									);
+									break;
+								case 'load_set':
+									$this->log(
+										esc_html__('Media query set loaded', 'microthemer'),
+										'<p>' . sprintf( esc_html__('A new media query set %s your existing media queries: %s', 'microthemer'), $load_action, htmlentities($_POST['tvr_preferences']['load_mq_set']) ) . '</p>',
+										'notice'
+									);
+									break;
+							}
 
-			            }
-			            // save last message in database so that it can be displayed on page reload (just once)
-			            $this->cache_global_msg();
-			            wp_die();
-		            }
+							// if the user deleted a media query, ensure data is cleaned from the ui data
+							$this->clean_deleted_media_queries($orig_media_queries, $pref_array['m_queries']);
 
-		            // update the enqueued JS files
-		            if (isset($_POST['mt_enqueue_js_submit'])){
-			            // remove backslashes from $_POST
-			            $_POST = $this->deep_unescape($_POST, 0, 1, 1);
-			            $pref_array['enq_js'] = $_POST['tvr_preferences']['enq_js'];
-			            $pref_array['num_saves'] = ++$this->preferences['num_saves'];
-			            // save and present message
-			            if ($this->savePreferences($pref_array)) {
-				            $this->log(
-					            esc_html__('Enqueued scripts were updated', 'microthemer'),
-					            '<p>' . esc_html__('Your enqueued scripts were successfully updated.', 'microthemer') . '</p>',
-					            'notice'
-				            );
-			            }
+						}
+						// save last message in database so that it can be displayed on page reload (just once)
+						$this->cache_global_msg();
+						wp_die();
+					}
 
-			            // save last message in database so that it can be displayed on page reload (just once)
-			            $this->cache_global_msg();
-			            wp_die();
-		            }
+					// update the enqueued JS files
+					if (isset($_POST['mt_enqueue_js_submit'])){
+						// remove backslashes from $_POST
+						$_POST = $this->deep_unescape($_POST, 0, 1, 1);
+						$pref_array['enq_js'] = $_POST['tvr_preferences']['enq_js'];
+						$pref_array['num_saves'] = ++$this->preferences['num_saves'];
 
-		            // reset default preferences
-		            if (isset($_POST['tvr_preferences_reset'])) {
-			            check_admin_referer('tvr_preferences_reset');
-			            $pref_array = $this->default_preferences;
-			            if ($this->savePreferences($pref_array)) {
-				            $this->log(
-					            esc_html__('Preferences were reset', 'microthemer'),
-					            '<p>' . esc_html__('The default program preferences were reset.', 'microthemer') . '</p>',
-					            'notice'
-				            );
-			            }
-		            }
+						if (empty($this->preferences['auto_publish_mode'])){
+							$pref_array['num_unpublished_saves'] = ++$this->preferences['num_unpublished_saves'];
+						}
+
+						// save and present message
+						if ($this->savePreferences($pref_array)) {
+							$this->log(
+								esc_html__('Enqueued scripts were updated', 'microthemer'),
+								'<p>' . esc_html__('Your enqueued scripts were successfully updated.', 'microthemer') . '</p>',
+								'notice'
+							);
+						}
+
+						// save last message in database so that it can be displayed on page reload (just once)
+						$this->cache_global_msg();
+						wp_die();
+					}
+
+					// reset default preferences
+					if (isset($_POST['tvr_preferences_reset'])) {
+						check_admin_referer('tvr_preferences_reset');
+						$pref_array = $this->default_preferences;
+						if ($this->savePreferences($pref_array)) {
+							$this->log(
+								esc_html__('Preferences were reset', 'microthemer'),
+								'<p>' . esc_html__('The default program preferences were reset.', 'microthemer') . '</p>',
+								'notice'
+							);
+						}
+					}
 
 
-		            // css filter configs
-		            $filter_types = array('page_specific', 'pseudo_classes', 'pseudo_elements', 'favourite_filter');
-		            foreach ($filter_types as $type){
-			            if (isset($_GET[$type])) {
-				            $this->preferences[$type][$_GET['pref_sub_key']] = intval($_GET[$type]);
-				            $pref_array[$type] = $this->preferences[$type];
-				            $this->savePreferences( $pref_array );
-				            //echo '<pre>'. print_r($this->preferences[$type], true).'</pre>';
-				            wp_die();
-			            }
-		            }
+					// css filter configs
+					$filter_types = array('page_specific', 'pseudo_classes', 'pseudo_elements');
+					foreach ($filter_types as $type){
+						if (isset($_GET[$type])) {
+							$this->preferences[$type][$_GET['pref_sub_key']] = intval($_GET[$type]);
+							$pref_array[$type] = $this->preferences[$type];
+							$this->savePreferences( $pref_array );
+							//echo '<pre>'. print_r($this->preferences[$type], true).'</pre>';
+							wp_die();
+						}
+					}
 
-		            // if we got to hear, the ajax request didn't work as intended, so warn
-		            echo 'Yo! The Ajax call failed to trigger any function. Sort it out.';
-		            wp_die();
+					// if we got to hear, the ajax request didn't work as intended, so warn
+					echo 'Yo! The Ajax call failed to trigger any function. Sort it out.';
+					wp_die();
 
-	            }
+				}
 
-            }
+			}
 
 			// Microthemer UI page
 			function microthemer_ui_page() {
@@ -5997,9 +6838,9 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					// validate email todo make this an ajax request, with user feedback
 					if (isset($_POST['tvr_ui_validate_submit'])) {
 
-						check_ajax_referer( 'tvr_validate_form', '_wpnonce' );
+						check_ajax_referer( 'tvr_validate_form', 'validate_nonce' );
 
-					    // tvr_validate_form
+						// tvr_validate_form
 						$this->get_validation_response($_POST['tvr_preferences']['buyer_email']);
 					}
 
@@ -6008,11 +6849,8 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					// if user navigates from front to MT via toolbar, set previous front page in preview
 					if (isset($_GET['mt_preview_url'])) {
 
-						// if we're on the demo site, skip nonce check (we only allow page to be set, not arbitrary domain)
-						if (!$this->is_demo_site()) {
-							if (!wp_verify_nonce($_REQUEST['_wpnonce'], 'mt-preview-nonce')) {
-								die( 'Security check failed' );
-							}
+						if (!wp_verify_nonce($_REQUEST['_wpnonce'], 'mt-preview-nonce')) {
+							die( 'Security check failed' );
 						}
 
 						$this->maybe_set_preview_url();
@@ -6028,7 +6866,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					}
 
 					// ensure Preview URL matches HTTPS in admin
-                    $this->ensure_iframe_protocol_matches_admin();
+					$this->ensure_iframe_protocol_matches_admin();
 
 					// maybe check valid subscription
 					$this->maybe_check_subscription();
@@ -6056,7 +6894,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// fonts page
 			function microthemer_fonts_page(){
 
-			    // only run code on docs page
+				// only run code on docs page
 				if ($_GET['page'] == $this->fontspage) {
 
 					if (!current_user_can('administrator')){
@@ -6094,21 +6932,41 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
                         class="css-index <?php echo $ul_class; ?> accordion-menu">
 
                         <li class="css-group-heading accordion-heading">
-                            <span class="pg-icon pg-icon-<?php echo $property_group_name; ?> no-click"></span>
-                            <span class="menu-arrow accordion-menu-arrow tvr-icon <?php echo $arrow_cls; ?>" title="Open/close group"></span>
+
+							<?php
+							echo $this->iconFont(str_replace('_', '-', $property_group_name), array(
+								'class' => 'no-click pg-icon',
+							));
+							echo $this->iconFont('chevron-right', array(
+								'class' => 'menu-arrow accordion-menu-arrow '.$arrow_cls,
+								//'title' => 'Open/close group'
+							));
+							?>
+
                             <span class="text-for-group"><?php echo $this->property_option_groups[$property_group_name]; ?></span>
+
+							<?php
+
+							?>
                         </li>
 
 						<?php
 						foreach ($prop_array as $property_id => $array) {
 							$li_class = '';
+							$cssf = str_replace('_', '-', $property_id);
+							$icon_name = !empty($array['icon-name']) ? $array['icon-name'] : $cssf;
 							if ($property_id == $cur_property) { $li_class.= 'current'; }
-							if (!empty($array['field-class'])) { $li_class.= ' '.$array['field-class']; }
+							//if (!empty($array['field-class'])) { $li_class.= ' '.$array['field-class']; }
 							?>
                         <li class="property-item accordion-item <?php echo $li_class; ?>">
                             <a href="<?php echo 'admin.php?page=' . $this->docspage; ?>&prop=<?php echo $property_id; ?>&prop_group=<?php echo $property_group_name; ?>">
-                                <span class="option-icon-<?php echo $property_id; ?> option-icon no-click"></span>
+
                                 <span class="option-text"><?php echo $array['label']; ?></span>
+								<?php
+								echo $this->iconFont($icon_name, array(
+									'class' => 'no-click'
+								));
+								?>
                             </a>
 
                             </li><?php
@@ -6125,7 +6983,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// Manage Micro Themes page
 			function manage_micro_themes_page() {
 
-			    // only run code if it's the manage themes page
+				// only run code if it's the manage themes page
 				if ( $_GET['page'] == $this->microthemespage ) {
 
 					if (!current_user_can('administrator')){
@@ -6316,6 +7174,9 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 					// this is a separate include because it needs to have separate page for changing gzip
 					$page_context = $this->preferencespage;
+
+					require_once('includes/common-inline-assets.php');
+
 					echo '
                     <div id="tvr" class="wrap tvr-wrap">
                         <span id="ajaxUrl" rel="' . $this->wp_ajax_url.'"></span>
@@ -6348,18 +7209,19 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 					// this is a separate include because it needs to have separate page for changing gzip
 					$page_context = $this->detachedpreviewpage;
+
 					$ui_class = '';
-					$this->preferences['show_interface'] ? $ui_class.= ' show_interface' : false;
-					$this->preferences['show_rulers'] ? $ui_class.= ' show_rulers' : false;
+					require_once('includes/common-inline-assets.php');
+
 					echo '
                     <div id="tvr" class="wrap tvr-wrap '.$ui_class.'">
                         <span id="ajaxUrl" rel="'.$this->wp_ajax_url.'"></span>
                         <span id="returnUrl" rel="admin.php?page=' . $this->preferencespage.'"></span>
                         <div id="preview-standalone">';
 
-					        include $this->thisplugindir . 'includes/tvr-microthemer-preview-wrap.php';
+					include $this->thisplugindir . 'includes/tvr-microthemer-preview-wrap.php';
 
-					        echo '
+					echo '
                         </div>
                     </div>';
 
@@ -6391,7 +7253,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
                     <p class='need-help'><b><?php esc_html_e('Need Help?', 'microthemer'); ?></b>
 						<?php echo wp_kses(
 							sprintf(
-								__('Browse Our <span %1$s>Video Guides</span> and <span %2$s>Tutorials</span> or <span %3$s>Search Our Forum</span>', 'microthemer'),
+								__('Browse Our <span %s>Video Guides</span> and <span %s>Tutorials</span> or <span %s>Search Our Forum</span>', 'microthemer'),
 								'class="help-trigger" rel="' . $this->thispluginurl.'includes/help-videos.php',
 								'class="help-trigger" rel="' . $this->thispluginurl.'includes/tutorials.php',
 								'class="help-trigger" rel="' . $this->thispluginurl.'includes/search-forum.php'
@@ -6404,12 +7266,22 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 			/* Simple function to check for the browser
 			For checking chrome faster notice and FF bug if $.browser is deprecated soon
+			// may not be 100% reliable, initially only using to correct sub-pixel alignment of frontend context menu
+			// in Chrome and Edge - haven't tested Safari yet
 			http://php.net/manual/en/function.get-browser.php */
 			function check_browser(){
 				$u_agent = $_SERVER['HTTP_USER_AGENT'];
-				$ub = 'unknown-browser';
+				$ub = $u_agent; //'unknown-browser';
+
+				//return $ub;
 				if(preg_match('/(MSIE|Trident)/i',$u_agent) && !preg_match('/Opera/i',$u_agent)){
 					$ub = "MSIE";
+				}
+                elseif(preg_match('/Opera/i',$u_agent) || preg_match('/OPR/',$u_agent)){
+					$ub = "Opera";
+				}
+                elseif(preg_match('/Edg/i',$u_agent)){
+					$ub = "Edge";
 				}
                 elseif(preg_match('/Firefox/i',$u_agent)){
 					$ub = "Firefox";
@@ -6419,9 +7291,6 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				}
                 elseif(preg_match('/Safari/i',$u_agent)){
 					$ub = "Safari";
-				}
-                elseif(preg_match('/Opera/i',$u_agent)){
-					$ub = "Opera";
 				}
                 elseif(preg_match('/Netscape/i',$u_agent)){
 					$ub = "Netscape";
@@ -6438,7 +7307,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						esc_html__('Chrome Is Faster', 'microthemer'),
 						'<p>' .
 						sprintf(
-							esc_html__('We\'ve noticed that Microthemer runs considerably faster in Chrome than other browsers. Actions like switching tabs, property groups, and accessing preferences are instant in Chrome but can incur a half second delay on other browsers. Speed improvements will be a major focus in our next phase of development. But for now, you can avoid these issues simply by using Microthemer with %1$s. Internet Explorer 9 and below isn\'t supported at all.', 'microthemer'),
+							esc_html__('We\'ve noticed that Microthemer runs considerably faster in Chrome than other browsers. Actions like switching tabs, property groups, and accessing preferences are instant in Chrome but can incur a half second delay on other browsers. Speed improvements will be a major focus in our next phase of development. But for now, you can avoid these issues simply by using Microthemer with %s. Internet Explorer 9 and below isn\'t supported at all.', 'microthemer'),
 							'<a target="_blank" href="http://www.google.com/intl/' . esc_attr_x('en-US', 'Chrome URL slug: https://www.google.com/intl/en-US/chrome/browser/welcome.html', 'microthemer') . '/chrome/browser/welcome.html">Google Chrome</a>'
 						)
 						. '</p><p>' .
@@ -6449,32 +7318,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				}
 			}*/
 
-			// tell them to get validated
-			function validate_reminder() {
-				if (!$this->preferences['buyer_validated'] and TVR_MICRO_VARIANT == 'themer') {
-					?>
-                    <div id='validate-reminder' class="error">
-                        <p><b><?php esc_html_e('IMPORTANT - Free Trial Mode is Active', 'microthemer'); ?></b><br /> <br />
-							<?php echo wp_kses(
-								sprintf( __('Please <a %s>validate your purchase to unlock the full program</a>.', 'microthemer'),
-									'href="admin.php?page=tvr-microthemer-preferences.php#validate"' ),
-								array( 'a' => array( 'href' => array() ) ) ); ?>
-                            <br />
-							<?php esc_html_e('The Free Trial limits you to editing or creating 15 Selectors.', 'microthemer'); ?>
-                        </p>
-                        <p><?php echo wp_kses(
-								sprintf( __('Purchase a <a %1$s>Standard</a> ($45) or <a %1$s>Developer</a> ($90) License Now!', 'microthemer'),
-									'target="_blank" href="http://themeover.com/microthemer/"'),
-								array( 'a' => array( 'href' => array(), 'target' => array() ) ) ); ?></p>
-                        <p><?php echo wp_kses(
-								sprintf( __('<b>This Plugin is Supported!</b> Themeover provides the <a %s>best forum support</a> you\'ll get any where (and it\'s free of course)',
-									'microthemer'),
-									'target="_blank" href="http://themeover.com/forum/"' ),
-								array( 'a' => array( 'href' => array(), 'target' => array() ), 'b' => array() ) ); ?></p>
-                    </div>
-					<?php
-				}
-			}
+
 
 			/*// show server info
 			function server_info() {
@@ -6502,7 +7346,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			function combined_devices(){
 				$comb_devs['all-devices'] = array(
 					'label' => esc_html__('All Devices', 'microthemer'),
-					'query' => esc_html__('General CSS that will apply to all devices', 'microthemer'),
+					'query' => esc_html__('CSS that applies to all devices', 'microthemer'),
 					'min' => 0,
 					'max' => 0
 				);
@@ -6726,6 +7570,141 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				return $rel_path;
 			}
 
+			// extract valid HTML attributes from a config array
+			function array_to_html_atts($config){
+
+				$atts_string = '';
+
+				foreach ($config as $key => $value) {
+
+					// to make adding atts and non-atts easier when calling function
+					// compare atts against a white list (rather than atts =>)
+					$attPattern = '/^(id|class|style|title|href|target|data-.+?|rel|preserveAspectRatio)$/';
+					if (!is_null($value) && preg_match($attPattern, $key)){
+						$atts_string.= $key . '="'.$value.'" ';
+					}
+				}
+
+				return $atts_string;
+			}
+
+			// output an inline svg file, svg symbol, or a font icon
+			function icon($name, $config = array()){
+
+				// default icon type is "f" (font) unless svg or sym is set
+				$type = !empty($config['type']) ? $config['type'] : 'f'; // for font
+				$dir = isset($config['dir']) ? $config['dir'] : 'svg-min/';
+
+				// base class for icon for settings global and type based defaults,
+				// as well as the individual icon class
+				//$base_class = 'mt-icon mt-'.$type.'-icon mt-icon-'.$name.' mt-'.$type.'-'.$name;
+				$base_class = 'mti'.$type.' mti'.$type.'-'.$name;
+
+				// merge base class with any custom classes
+				$config['class'] = !empty($config['class'])
+					? $base_class.' '.$config['class']
+					: $base_class;
+
+				// generate string of attributes
+				$atts_string = $this->array_to_html_atts($config);
+
+				// generate the HTML for the icon, svg, or symbol
+				$icon = '';
+				switch ($type) {
+
+					// output an icon font or just the classes / atts
+					case 'f':
+						$tag = !empty($config['tag']) ? $config['tag'] : 'span';
+						if (!empty($config['onlyClass'])){
+							$icon = $config['class'];
+						} else if (!empty($config['onlyAtts'])){
+							$icon = $atts_string;
+						} else {
+							$innerHTML = !empty($config['innerHTML']) ? $config['innerHTML'] : '';
+							$icon = '<'.$tag.' '.$atts_string.'>'.$innerHTML.'</'.$tag.'>';
+						}
+						break;
+
+					// if symbol or svg
+					case 'svg':
+					case 'sym':
+
+						// attempt to get svg file (silently fail if file not found)
+						$icon = @file_get_contents(
+							$this->thisplugindir . 'images/'.$dir.$name.'.svg'
+						);
+
+						if ($type === 'sym'){
+
+							// if we successfully loaded the SVG file, copy its viewBox attribute
+							// that will allow the symbol to scale proportionally like a regular svg
+							// but keeps the HTML markup small for better dynamic HTML performance
+							if ($icon){
+								if (preg_match('/viewBox="[^"]+"/', $icon, $matches)){
+									$atts_string.= ' '.$matches[0];
+								}
+							}
+
+							$icon = '
+                            <svg '.$atts_string.'>
+                              <use href="#'.$name.'"></use>
+                            </svg>';
+
+						}
+
+						// use full SVG file from file-system, adding in custom HTML attributes
+                        elseif ($type === 'svg'){
+							$icon = preg_replace(
+								'/<svg /',
+								'<svg '.$atts_string,
+								$icon,
+								1
+							);
+						}
+
+						break;
+				}
+
+				// maybe add some text alongside the icon
+				if (!empty($config['adjacentText'])){
+					$text_atts_string = $this->array_to_html_atts($config['adjacentText']);
+					$icon.= '<span '.$text_atts_string.'>'.$config['adjacentText']['text'].'</span>';
+				}
+
+				// maybe wrap icon with a div
+				if (isset($config['wrap'])){
+					$wrap_atts_string = $this->array_to_html_atts($config['wrap']);
+					//$wrapClass = !empty($config['wrapClass']) ? ' '.$config['wrapClass'] : '';
+					$icon = '
+	                <div '.$wrap_atts_string.'>'
+					        . $icon .
+					        '</div>';
+				}
+
+				return $icon;
+			}
+
+			function symbol($name, $config = array()){
+
+				$config['type'] = 'sym';
+
+				return $this->icon($name, $config);
+			}
+
+			function svg($name, $config = array()){
+
+				$config['type'] = 'svg';
+
+				return $this->icon($name, $config);
+			}
+
+			function iconFont($name, $config = array()){
+
+				$config['type'] = 'f';
+
+				return $this->icon($name, $config);
+			}
+
 			// get extension
 			function get_extension($file) {
 				$tmp = explode('?', $file);
@@ -6836,21 +7815,21 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				foreach ($orig_array as $category => $array){
 					foreach ($array as $i => $value){
 
-					    // array may be an array of arrays with the value as the key
-					    if (is_array($value)){
-						    $data = array_merge(array(
-							    'label' => $i,
-							    'category' => $category
-						    ), $value);
-					    }
+						// array may be an array of arrays with the value as the key
+						if (is_array($value)){
+							$data = array_merge(array(
+								'label' => $i,
+								'category' => $category
+							), $value);
+						}
 
-					    // simple numeric array with single values
-					    else {
-					       $data = array(
-						       'label' => $value,
-						       'category' => $category
-					       );
-					    }
+						// simple numeric array with single values
+						else {
+							$data = array(
+								'label' => $value,
+								'category' => $category
+							);
+						}
 
 						$new_array[] = $data;
 					}
@@ -6867,7 +7846,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				}
 
 				return $new_array;
-            }
+			}
 
 			// WordPress normalises magic_quotes, if magic_quotes are enabled.
 			// Even though deprecated: http://wordpress.stackexchange.com/questions/21693/wordpress-and-magic-quotes
@@ -6887,22 +7866,22 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 			function normalise_tabs($string, $cur_tab_indent, $isSass = false){
 
-			    if (!$isSass){
-				    return $string;
-                }
+				if (!$isSass){
+					return $string;
+				}
 
 				$string = preg_replace("/(?<!^)(\n)/", "\n{$cur_tab_indent}\\2", $string);
 
 				return str_replace("\t}", $cur_tab_indent."}", $string);
 
-                /*// strip all leading white space
+				/*// strip all leading white space
 				$string = preg_replace("/^[ \t]+/m", "", $string);
 
 				// replace line breaks inside with tab (not starting line break or final before })
 				$string = preg_replace("/(?<!^)(\n)([^}])/", "\n{$cur_tab_indent}\t\\2", $string);
 
 				// add back start tab and tab before }
-                return str_replace("}", $cur_tab_indent."}", $string);*/
+				return str_replace("}", $cur_tab_indent."}", $string);*/
 
 			}
 
@@ -6914,7 +7893,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// Another workaround I came up with along time ago without fully understanding wp magic_quotes, but works too.
 			function unescape_cus_quotes($val, $forAttr = false){
 
-			    $single = $forAttr ? '&#039;' : "'";
+				$single = $forAttr ? '&#039;' : "'";
 				$double = $forAttr ? '&quot;' : '"';
 
 				$val = str_replace('cus-#039;', $single, $val);
@@ -6951,6 +7930,8 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			}
 
 			// convert text to param (same as JS function)
+			// todo this doesn't convert non-alpha to unicode like the convert_to_param JS function
+			// doesn't seem to do anything to user data right now, so focussing on other things
 			function to_param($str) {
 				$str = str_replace(' ', '_', $str);
 				$str = strtolower(preg_replace("/[^A-Za-z0-9_]/", '', $str));
@@ -6967,12 +7948,22 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					'sidebar' => __('Sidebar', 'microthemer'),
 					'footer' => __('Footer', 'microthemer')
 				);
+				$initial_index = 0;
 				foreach ($folders as $en_slug => $label){
 					//$this->default_folders[$this->to_param($label)] = '';
 					$this->default_folders[$this->to_param($label)]['this'] = array(
-						'label' => $label
+						'label' => $label,
+                        'index' => $initial_index
 					);
+					$initial_index+= 100;
 				}
+
+				// add non_section stuff that would get set by JS otherwise, causing a save request
+                // which bumps up num_saves and produces the wrong initial notification and publish button state
+				$this->default_folders['non_section'] = array(
+				        'meta' => array(),
+				        'active_events' => '',
+                );
 			}
 
 			// check if the file is an image
@@ -7113,15 +8104,34 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				if ( !empty( $tabs ) ) {
 					$class.= ' has-mt-tabs';
 				}
-				$html = '<div id="'.$id.'-dialog" class="tvr-dialog '.$class.' hidden">
+
+				$icons = array( // todo
+					'unlock-microthemer' => 'unlock-alt',
+					'display-preferences' => 'cog',
+					'edit-media-queries' => 'devices',
+					'mt-enqueue-js' => 'js',
+					'inspect-stylesheet' => 'view-code',
+					'import-from-pack' => 'import',
+					'export-to-pack' => 'export',
+					'display-css-code' => 'view-code',
+					'display-revisions' => 'undo',
+					'manage-design-packs' => 'manage-packs',
+					'google-fonts' => 'google-font',
+					'program-docs' => 'docs',
+				);
+
+				$html = '<div id="'.$id.'-dialog" class="tvr-dialog '.$class.'">
 				<div class="dialog-main">
 					<div class="dialog-inner">
-						<div class="heading dialog-header">
-							<span class="dialog-icon"></span>
+						<div class="dialog-header">
+						    '.$this->iconFont($icons[$id], array(
+						'class' => 'dialog-icon'
+					)).'
 							<span class="text">'.$heading.'</span>
-
-							<span class="tvr-icon close-icon close-dialog"></span>
-							<span class="dialog-status"><span></span></span>
+							<span class="dialog-status"></span>
+							 '.$this->iconFont('times-circle-regular', array(
+						'class' => 'close-dialog'
+					)).'
 						</div>';
 
 				// If there are any tabs, the content is preceded by a tab menu
@@ -7131,8 +8141,8 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 					// whoops, forgot I started this
 					$dialog_tab_val = !empty($this->preferences[$dialog_tab_param])
-                        ? $this->preferences[$dialog_tab_param]
-                        : 0;
+						? $this->preferences[$dialog_tab_param]
+						: 0;
 
 					$active_tab = (!empty($this->preferences['generated_css_focus']) && $dialog_tab_param === 'display_css_code')
 						? $this->preferences['generated_css_focus']
@@ -7146,12 +8156,12 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 					// maybe add functionality to remember pref tab at a later date.
 					for ($i = 0; $i < count($tabs); $i++) {
-					    $tab_name = $tabs[$i];
-					    $tab_class = strtolower(str_replace(' ', '-', $tab_name));
-					    $mode = $tab_class;
-					    if ($mode === 'previous-scss-compile'){
-					        $mode = 'scss';
-                        }
+						$tab_name = $tabs[$i];
+						$tab_class = strtolower(str_replace(' ', '-', $tab_name));
+						$mode = $tab_class;
+						if ($mode === 'previous-scss-compile'){
+							$mode = 'scss';
+						}
 
 						$mode = str_replace('-(min)', '', $mode);
 
@@ -7189,7 +8199,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 							</div>
 							<div class="dialog-footer">
-							'.$this->system_menu(true). $button. '
+							'.$this->settings_menu('dialog-footer'). $button. '
 							</div>
 						</div>
 					</div>
@@ -7200,16 +8210,14 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// output clear icon for section, selector, tab, or pg
 			function clear_icon($level, $extra = false){
 
-			    $title = esc_attr__('Clear', 'microthemer') .  ' ' . $this->level_map[$level];
+				$title = esc_attr__('Clear', 'microthemer') .  ' ' . $this->level_map[$level];
 
-			    $data_att = $extra ? 'data-'.$extra['key'].'="'.$extra['value'].'"' : '';
+				$data_att = $extra ? 'data-'.$extra['key'].'="'.$extra['value'].'"' : '';
 
-				return '<span class="tvr-icon clear-icon" title="'.$title.'" data-input-level="'.$level.'" '.$data_att.'></span>';
+				return '<span class="'.$this->iconFont('eraser', array('onlyClass' => 1)).' clear-icon" title="'.$title.'" data-input-level="'.$level.'" '.$data_att.'></span>';
 			}
 
-			function save_icon($class = ''){
-				return '<div class="save-button code-save '.$class.' tvr-icon" title="'.$this->text['save-button'].'"></div>';
-			}
+
 
 			function extra_actions_icon($id = false){
 
@@ -7218,7 +8226,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					!$id ? 'conditional' : esc_attr__('Show more actions', 'microthemer'),
 					!$id ? 'conditional' : esc_attr__('Show less actions', 'microthemer'),
 					!$id ? false : $this->preferences['show_extra_actions'],
-					'extra-actions-toggle tvr-icon',
+					'extra-actions-toggle',
 					$id,
 					array(
 						'dataAtts' => array(
@@ -7230,26 +8238,29 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			}
 
 			// hover inspect button
-			// an alias is used in wizard mode so content flows to right of variable width button
 			function hover_inspect_button($id = false, $text = false){
 
 				$tip = esc_attr__("(Ctrl+Alt+T)", 'microthemer');
 
 				return $this->ui_toggle(
 					'hover_inspect',
-					!$id ? 'conditional' : esc_attr__('Enable targeting mode', 'microthemer')." ".$tip,
-					!$id ? 'conditional' : esc_attr__('Disable targeting mode', 'microthemer')." ".$tip,
+					!$id ? 'conditional' : esc_attr__('Target page', 'microthemer')." ".$tip,
+					!$id ? 'conditional' : esc_attr__('View page', 'microthemer')." ".$tip,
 					!$id ? false : $this->preferences['hover_inspect'],
 					'hover-inspect-toggle',
 					$id,
 					array(
-						'text' => $text ? $text : esc_html__('Target', 'microthemer'),
+						//'text' => $text ? $text : esc_html__('Target', 'microthemer'),
 						//'text' => 'conditional', // this proved tricky to maintain
 						// - see css .hover-inspect-toggle position:fixed hack.
 						'dataAtts' => array(
 							'no-save' => 1,
 							'dyn-tt-root' => $id ? false : 'hover-inspect-toggle',
-						)
+						),
+						'innerHTML' => '
+                            <span class="mt-ui-toggle mt-icon-switch mt-icon-switch-on edit-mode-icon"></span>
+                            <span class="mt-ui-toggle mt-icon-switch mt-icon-switch-off view-mode-icon"></span>
+                        '
 					)
 				);
 			}
@@ -7278,13 +8289,13 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				);
 			}
 
-			function manual_resize_icon(){
+			/*function manual_resize_icon(){
 				return $this->ui_toggle(
 					'code_manual_resize',
 					'conditional',
 					'conditional',
 					false,
-					'editor-resize-icon tvr-icon',
+					'code-manual-resize',
 					false,
 					// instruct tooltip to get content dynamically
 					array('dataAtts' => array(
@@ -7292,11 +8303,11 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						//'editor-type'=> $editorType
 					))
 				);
-			}
+			}*/
 
 			// output feather icon for section, selector, tab, or pg
 			function feather_icon($level){
-				return '<span class="tvr-icon feather-icon '.$level.'-feather" data-input-level="'.$level.'"></span>';
+				return '<span class="feather-icon '.$level.'-feather" data-input-level="'.$level.'"></span>';
 			}
 
 			// output icon for toggling full interface feature e.g. dock right/bottom
@@ -7317,20 +8328,23 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				// css_filter needs to pass
 				$pref_sub_key = !empty($config['pref_sub_key']) ? 'data-pref_sub_key="'.$config['pref_sub_key'].'"' : '';
 
-				// e.g. css filter has an inside favourite icon
+				// e.g. css modifier has a checkbox
 				$inner_icon = !empty($config['inner_icon']) ? $config['inner_icon'] : '';
 
 				// output arbitrary data atts
 				$dataAtts = '';
 				if (!empty($config['dataAtts'])){
 					foreach ($config['dataAtts'] as $dat => $dat_val){
-						$dataAtts.= 'data-'.$dat.'="'.$dat_val.'" ';
+
+						if ($dat_val !== ''){
+							$dataAtts.= 'data-'.$dat.'="'.$dat_val.'" ';
+						}
 					}
 				}
 
 				// Note: uit-par may need to be var
 				$html = '
-				<'.$tag.' '.$id.' class="ui-toggle uit-par '.$class.'" title="'.$title.'"
+				<'.$tag.' '.$id.' class="mt-ui-toggle uit-par '.$class.'" title="'.$title.'"
 					  data-pos="'.$pos.'"
 					  data-neg="'.$neg.'"
 					  '.$dataAtts.'
@@ -7343,7 +8357,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					$text = $config['text'];
 
 					// show/hide advanced wizard options uses conditional text, as would most text toggles
-					if ($text == 'conditional'){
+					if ($text === 'conditional'){
 						$text = $on ? $config['dataAtts']['text-neg'] : $config['dataAtts']['text-pos'];
 					}
 
@@ -7357,11 +8371,16 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						 />
 						</span>';
 						// the replace str has brackets to ensure we get the right (n) in e.g. nth-child(n)
-						$text = '<span class="pre-edfil ui-toggle">' .
-						        str_replace($ed['str'], '(</span>'.$combo.'<span class="post-edfil ui-toggle">)</span>', $text);
+						$text = '<span class="pre-edfil mt-ui-toggle">' .
+						        str_replace($ed['str'], '(</span>'.$combo.'<span class="post-edfil mt-ui-toggle">)</span>', $text);
 					}
 
 					$html.= $inner_icon . $text;
+				}
+
+				// some custom HTML in between
+				if (!empty($config['innerHTML'])){
+					$html.= $config['innerHTML'];
 				}
 
 				$html.= '</'.$tag.'>';
@@ -7381,7 +8400,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$subgroup = '',
 				$prop = '',
 				$mq_stem = 'tvr_mcth',
-                $tabGroup = ''){
+				$tabGroup = ''){
 
 				// common atts
 				$icon_id = '';
@@ -7404,29 +8423,24 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 				// icon specific
 				if ($con == 'disabled'){
-					$icon_class.= ' tvr-icon disabled-icon '.$level.'-disabled';
+					$icon_class.= ' '.$this->iconFont('disable', array('onlyClass' => 1)).' '.$level.'-disabled';
 					$pos_title = esc_attr__('Disable', 'microthemer') .  ' ' . $this->level_map[$level];
 					$neg_title = esc_attr__('Enable', 'microthemer') .  ' ' . $this->level_map[$level];
 					if ($level === 'pgtab'){
 						$data_atts_arr['tab-group'] = $tabGroup;
-                    }
+					}
 				} elseif ($con == 'chained') {
-					$icon_class.= ' tvr-icon chained-icon '.$subgroup.'-chained';
+					$icon_class.= ' '.$this->iconFont('chain', array('onlyClass' => 1)).' '.$subgroup.'-chained';
 					$pos_title = esc_attr__('Link fields', 'microthemer');
 					$neg_title = esc_attr__('Unlink fields', 'microthemer');
 				} elseif ($con == 'important') {
 					$pos_title = esc_attr__('Add !important', 'microthemer');
 					$neg_title = esc_attr__('Remove !important', 'microthemer');
-					$icon_inside = 'i';
+					$icon_inside = '';
+					$icon_class.= ' ' . $this->iconFont('warning-square', array('onlyClass' => 1));
 				}
 
-				/*elseif ($con == 'pie') {
-					$icon_class.= ' tvr-icon';
-					$pos_title = esc_attr__('Turn CSS3 PIE polyfill on', 'microthemer');
-					$neg_title = esc_attr__('Turn CSS3 PIE polyfill off', 'microthemer');
-				}*/
-
-				elseif ($con == 'flexitem' || $con == 'griditem') {
+                elseif ($con == 'flexitem' || $con == 'griditem') {
 					$icon_class.= ' dynamic-fields-toggle';
 					$pos_title = esc_attr__('Show item fields', 'microthemer');
 					$neg_title = esc_attr__('Show container fields', 'microthemer');
@@ -7437,18 +8451,9 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					$data_atts_arr['text-neg'] = esc_attr__('Container', 'microthemer');
 
 				} elseif ($con == 'gradient') {
-					$icon_class.= ' tvr-icon dynamic-fields-toggle';
+					$icon_class.= ' dynamic-fields-toggle';
 					$pos_title = esc_attr__('Show gradient fields', 'microthemer');
 					$neg_title = esc_attr__('Show background-image fields', 'microthemer');
-				} elseif ($con == 'show_css_filters') {
-					$icon_class.= ' tvr-icon settings-icon quick-opts-wrap tvr-fade-in click-toggle"';
-					$pos_title = esc_attr__('Show selector modifiers', 'microthemer');
-					$neg_title = esc_attr__('Hide selector modifiers', 'microthemer');
-					$icon_id = 'id="show_css_filters-toggle"';
-
-					// display css filters
-					$icon_inside = $this->display_css_filters();
-
 				}
 
 				// generate input if item is on
@@ -7503,7 +8508,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						$dataAtts.= 'data-'.$dat.'="'.$dat_val.'" ';
 					}
 					//$test = 'person';
-;				}
+					;				}
 
 				// generate icon
 				$icon = '<span '.$icon_id.' class="'.$icon_class.'" title="'.$title.'" data-pos="'.$pos_title.'"
@@ -7525,9 +8530,9 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				}
 
 				// return control
-                if ($justInput){
-				    return $input;
-                }
+				if ($justInput){
+					return $input;
+				}
 
 				return $input . $icon;
 			}
@@ -7558,20 +8563,20 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			}
 
 			function get_design_packs($packs){
-			    $count = 0;
-			    $valid_packs = array();
-			    $exclude = array('sass', 'scss');
-			    foreach($packs as $name => $item){
-			        if (is_array($item) && !in_array($name, $exclude)){
-			            ++$count;
-				        $valid_packs[$name] = $item;
-                    }
-                }
-                return array(
-                    'count' => $count,
-                    'directories' => $valid_packs
-                );
-            }
+				$count = 0;
+				$valid_packs = array();
+				$exclude = array('sass', 'scss');
+				foreach($packs as $name => $item){
+					if (is_array($item) && !in_array($name, $exclude)){
+						++$count;
+						$valid_packs[$name] = $item;
+					}
+				}
+				return array(
+					'count' => $count,
+					'directories' => $valid_packs
+				);
+			}
 
 			// output meta spans and logs tmpl for manage pages // todo -  use JS object rather than spans
 			function manage_packs_meta(){
@@ -7602,7 +8607,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						--$i;
 					}
 					echo '<li class="displaying-x">' .
-					     sprintf(esc_html__('Displaying %1$s - %2$s of %3$s', 'microthemer'), $start, $end, $total_packs) . '</li>';
+					     sprintf(esc_html__('Displaying %s - %s of %s', 'microthemer'), $start, $end, $total_packs) . '</li>';
 
 					if (!empty($this->preferences['theme_in_focus']) and $total_packs > 0){
 						$url = 'admin.php?page=' . $this->managesinglepage . '&design_pack=' . $this->preferences['theme_in_focus'];
@@ -7738,93 +8743,242 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 
 			// display the main menu
-			function system_menu($dialog_footer = false){
+			function settings_menu($subset = false){
 
-				$html = '<ul class="mt-options-menu">';
+				//$html = '<ul class="mt-options-tabs">';
+				$html = '';
+				$dialog_footer_html = '<div class="dialog-footer-menu">';
 
 				// menu groups
 				foreach ($this->menu as $group_key => $arr){
 
-					$html.= '
-					<li class="mt-group '.$group_key.'">
-						<span class="mt-group-heading mt-group-heading-'.$group_key.'">'. $arr['name'] . '</span>';
-					if (!empty($arr['sub'])){
-						$html.= '<ul class="mt-sub mt-sub-'.$group_key.'">';
+					// e.g. the exit menu it added to the bottom row with the breadcrumbs
+					if (isset($arr['custom_insert'])){
+						continue;
+					}
 
-						// menu items
-						foreach ($arr['sub'] as $item_key => $arr2){
+					$panel_set = $this->menu_panel_set(false, $group_key, $arr, $subset, $html, $dialog_footer_html);
+					$html = $panel_set['main'];
+					$dialog_footer_html = $panel_set['footer'];
+				}
 
-							// dialog footer only needs a subset of options
-							if ($dialog_footer and empty($arr2['dialog'])) continue;
+				//$html.= '</ul>';
+				$dialog_footer_html.= '</div>';
 
-							// format the data attributes
-							$data_attr = '';
-							if ( !empty($arr2['data_attr']) ){
-								foreach($arr2['data_attr'] as $da_key => $da_value){
-									$data_attr.= 'data-'.$da_key.'="'.$da_value.'"';
-								}
-							}
+				switch ($subset){
+					case false:
+						return $html;
+					case 'dialog-footer':
+						return $dialog_footer_html;
+				}
 
-							// format rel, class, id, data
-							$rel = !empty($arr2['dialog']) ? 'rel="'.$arr2['class'].'"' : '';
-							$id = !empty($arr2['id']) ? 'id="'.$arr2['id'].'"' : '';
-							$link_id = !empty($arr2['link_id']) ? 'id="'.$arr2['link_id'].'"' : '';
-							$link_target = !empty($arr2['link_target']) ? 'target="'.$arr2['link_target'].'"' : '';
-							$icon_id = !empty($arr2['icon_id']) ? 'id="'.$arr2['icon_id'].'"' : '';
-							$icon_class = !empty($arr2['class']) ? $arr2['class'] : '';
-							$text_class = !empty($arr2['text_class']) ? $arr2['text_class'] : '';
-							$text_attr = !empty($arr2['short_name']) ?
-								'data-sl="'.$arr2['short_name'].'" data-ll="'.$arr2['name'].'"' : '';
-							$class = 'item-' . $icon_class;
-							$class.= (isset($arr2['toggle'])) ? ' mt-toggle' : '';
-							$class.= (isset($arr2['item_link'])) ? ' item-link' : '';
-							$class.= (!empty($arr2['new_set'])) ? ' new-set' : '';
-							$show_dialog = $class.= (!empty($arr2['dialog'])) ? ' show-dialog' : '';
-							$icon_title = !empty($arr2['icon_title']) ? 'title="'.$arr2['icon_title'].'"' : '';
-							$sup_checkboxes = !empty($arr2['checkboxes']) ? $arr2['checkboxes'] : false;
+				//return $html;
+			}
 
-							// item
-							$html.= '<li '.$id.' '.$data_attr.' '.$rel.' class="mt-item '.$item_key.' '.$class.'"
-							>';
+			function menu_panel_set($is_nested, $group_key, $arr, $subset, $html, $dialog_footer_html){
 
-							// should a link wrap the icon and text?
-							if (!empty($arr2['item_link'])){
-								$html.= '<a '.$link_id.' '.$link_target.' href="'.$arr2['item_link'].'">';
-							}
+				//$tabs_html = '<div class="mt-options-tabs">';
+				$group_li = '';
+				$areas_html = '';
+				$is_expanded = in_array($group_key, $this->preferences['layout']['right']['expanded_settings'] );
+				$field_class = '';
+				//$this->preferences['program_settings_tab'] === $group_key;
 
-							// icon
-							$html.= '<span '.$icon_id.' class="mt-menu-icon '.$icon_class.' '.$show_dialog.'" '.$icon_title.'></span>';
+				// do we have an icon for the set?
+				$group_icon = '';
+				/*if (!empty($arr['icon_class'])){
+					$group_icon.= '<span class="mt-menu-group-icon '.$arr['icon_class'].'"></span>';
+				}*/
 
-							// text label
-							$colon = isset($arr2['toggle']) & ($item_key!= 'highlighting') ? ':' : '';
-							$html.= '<span class="mt-menu-text '.$show_dialog.' '.$text_class.'"
+				// should a link wrap the icon and text?
+				$link_start = $link_end = $tab_class = '';
+				if (!empty($arr['item_link'])){
+					$link_id = !empty($arr['link_id']) ? 'id="'.$arr['link_id'].'"' : '';
+					$link_target = !empty($arr['link_target']) ? 'target="'.$arr['link_target'].'"' : '';
+					$link_start = '<a class="item-link" '.$link_id.' '.$link_target.' href="'.$arr['item_link'].'">';
+					$link_end = '</a>';
+					$tab_class = ' direct-action';
+				}
+
+				if ($is_expanded){
+					$tab_class.= ' expanded';
+				}
+
+				if ($is_nested){
+					$tab_class.= ' nested-panel-heading';
+					$field_class.= ' nested-panel';
+				}
+
+				//  $group_icon .
+				$group_li.= '
+                <div class="mt-expandable-heading mt-'.$group_key . '-heading'. $tab_class.'" rel="'.$group_key.'">
+                   '. $link_start . $arr['name'] . $link_end . ' 
+                </div>';
+
+				if (!empty($arr['sub'])){
+					$panel_area = $this->menu_panel_sub(
+						$group_key, $arr, $subset, $areas_html, $field_class, $dialog_footer_html
+					);
+					$areas_html = $panel_area['areas_html'];
+					$dialog_footer_html = $panel_area['footer'];
+				}
+
+				// full menu set
+				$html.= $group_li . $areas_html;
+
+				return array(
+					'main' => $html,
+					'footer' => $dialog_footer_html
+				);
+
+			}
+
+			function menu_panel_sub($group_key, $arr, $subset, $areas_html = '', $field_class = '', $dialog_footer_html = ''){
+
+				if ($subset){
+					$field_class.= ' panel-subset-'.$subset;
+				}
+
+				$areas_html.= '<ul class="mt-expandable-panel mt-'.$group_key . '-panel ' . $field_class.'">';
+
+				// menu items
+				foreach ($arr['sub'] as $item_key => $arr2){
+
+					// dialog footer only needs a subset of options
+					if ($subset === 'dialog-footer' and empty($arr2['dialog'])) continue;
+
+					// support nested panels (which we're not currently indenting)
+					if (!empty($arr2['nested'])){
+						$panel_set = $this->menu_panel_set(
+							true, $item_key, $arr2['nested'], $subset, $areas_html, $dialog_footer_html
+						);
+						$areas_html = $panel_set['main'];
+						//$dialog_footer_html = $panel_set['footer'];
+						continue;
+					}
+
+					// format the data attributes
+					$data_attr = '';
+					if ( !empty($arr2['data_attr']) ){
+						foreach($arr2['data_attr'] as $da_key => $da_value){
+							$data_attr.= 'data-'.$da_key.'="'.$da_value.'"';
+						}
+					}
+
+					$common_class = !empty($arr2['class']) ? $arr2['class'] : '';
+					$show_dialog_class = (!empty($arr2['dialog'])) ? ' show-dialog' : '';
+					$class = 'item-' . $common_class;
+					$class.= (isset($arr2['toggle'])) ? ' mt-toggle' : '';
+					$class.= (isset($arr2['item_link'])) ? ' item-link' : '';
+					//$class.= (!empty($arr2['new_set'])) ? ' new-set' : '';
+					$class.= $show_dialog_class;
+
+					// format rel, class, id, data
+					$rel = !empty($arr2['dialog']) ? 'rel="'.$common_class.'"' : '';
+					$id = !empty($arr2['id']) ? 'id="'.$arr2['id'].'"' : '';
+					$link_id = !empty($arr2['link_id']) ? 'id="'.$arr2['link_id'].'"' : '';
+					$link_target = !empty($arr2['link_target']) ? 'target="'.$arr2['link_target'].'"' : '';
+
+
+					// format icon atts
+					$item_icon = !empty($arr2['icon_name'])
+						? $this->iconFont($arr2['icon_name'], array(
+							'class' => 'mt-menu-icon '.$common_class.$show_dialog_class,
+							'id' => !empty($arr2['icon_id']) ? $arr2['icon_id'] : null,
+							'rel' => !empty($arr2['dialog']) ? $common_class : null,
+							'title' => !empty($arr2['icon_title']) ? $arr2['icon_title'] : null,
+						))
+						: '';
+
+					$text_class = !empty($arr2['text_class']) ? $arr2['text_class'] : '';
+					$text_attr = !empty($arr2['short_name']) ?
+						'data-sl="'.$arr2['short_name'].'" data-ll="'.$arr2['name'].'"' : '';
+
+					//$show_dialog = $class.= (!empty($arr2['dialog'])) ? ' show-dialog' : '';
+					//$icon_title = !empty($arr2['icon_title']) ? 'title="'.$arr2['icon_title'].'"' : '';
+					$sup_checkboxes = !empty($arr2['checkboxes']) ? $arr2['checkboxes'] : false;
+
+					// output heading or nothing if we just want a line
+					if (isset($arr2['new_set'])){
+						$areas_html.= '<li class="new-set-heading">'.$arr2['new_set'].'</li>';
+					}
+
+					// item
+					$areas_html.= '<li '.$id.' '.$data_attr.' '.$rel.' class="mt-item '.$item_key.' '.$class.'">';
+
+					// custom HTML
+					if (!empty($arr2['custom'])){
+						$areas_html.= $arr2['custom'];
+					}
+
+					// regular content
+					else {
+						// should a link wrap the icon and text?
+						if (!empty($arr2['item_link'])){
+							$areas_html.= '<a '.$link_id.' '.$link_target.' href="'.$arr2['item_link'].'">';
+						}
+
+						//$item_icon =  '<span '.$icon_id.' '.$rel.' class="mt-menu-icon mtif-'.$icon_class.' '.$show_dialog.'" '.$icon_title.'></span>';
+
+						// add title to icons
+						$item_icon = str_replace(
+							'<span', '<span title="'.$arr2['name'].'"', $item_icon
+						);
+
+						// make docs option default to font-size
+						if ($common_class === 'program-docs'){
+							$item_icon = str_replace(
+								'<span', '<span data-prop-group="font" data-prop="font_family"', $item_icon
+							);
+						}
+
+						// append icon to dialog footer
+						$dialog_footer_html.= $item_icon;
+
+
+						// icon
+						$areas_html.= $item_icon;
+
+						if (!empty($arr2['text_data_attr'])){
+							$text_attr = $this->format_data_attr_array($arr2['text_data_attr'], $text_attr);
+						}
+
+						// text label
+						$colon = ''; // isset($arr2['toggle']) & ($item_key!= 'highlighting') ? ':' : '';
+						$areas_html.= '<span class="mt-menu-text '.$common_class.$show_dialog_class.' '.$text_class.'"
 							title="'.$arr2['title'].'" '.$text_attr.'>'
-							        .$arr2['name'].$colon.'</span>';
+						              .$arr2['name'].$colon.'</span>';
 
-							// do we need toggle?
-							if (isset($arr2['toggle'])){
-								$html.= $this->toggle($item_key, $arr2);
-							}
+						// do we need toggle?
+						if (isset($arr2['toggle'])){
+							$areas_html.= $this->toggle($item_key, $arr2);
+						}
 
-							// do we display keyboard shortcut
-							if (isset($arr2['keyboard_shortcut'])){
-								$html.= '<span class="keyboard-sh">'.$arr2['keyboard_shortcut'].'</span>';
-							}
+						// column options
+						if (isset($arr2['column_options'])){
+							$areas_html.= $this->column_options($arr2['column_options']);
+						}
 
-							// do we need input?
-							if (isset($arr2['input'])){
-								$input_id = !empty($arr2['input_id']) ? 'id="'.$arr2['input_id'].'"' : '';
-								$input_name = !empty($arr2['input_name']) ? $arr2['input_name'] : '';
-								$input_placeholder = !empty($arr2['input_placeholder']) ? $arr2['input_placeholder'] : '';
-								$html.= '
+						// do we display keyboard shortcut
+						if (isset($arr2['keyboard_shortcut'])){
+							$areas_html.= '<span class="keyboard-sh">'.$arr2['keyboard_shortcut'].'</span>';
+						}
+
+						// do we need input?
+						if (isset($arr2['input'])){
+							$input_id = !empty($arr2['input_id']) ? 'id="'.$arr2['input_id'].'"' : '';
+							$input_name = !empty($arr2['input_name']) ? $arr2['input_name'] : '';
+							$input_placeholder = !empty($arr2['input_placeholder']) ? $arr2['input_placeholder'] : '';
+							$areas_html.= '
 								<div class="combobox-wrap tvr-input-wrap">
-								
-								    '.$this->maybe_output_supplementary_checkboxes($sup_checkboxes).' 
+		
 									<input type="text" name="'.$input_name.'" 
 									placeholder="'.$input_placeholder.'"
+									data-appto="#style-components"
 									'.$input_id.' class="combobox has-arrows"
 									rel="'.$arr2['combo_data'].'"
 									value="'.$arr2['input'].'" />
+									<span class="mt-clear-field"></span>
 									<span class="combo-arrow"></span>
 									<span class="tvr-button '.$arr2['button']['class'].'">
 								    '.$arr2['button']['text'].'
@@ -7832,48 +8986,302 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 								    
 								</div>
 								';
-							}
 
-							// custom display value
-							if (isset($arr2['display_value'])){
-								$html.= $arr2['display_value'];
-							}
-
-							if (!empty($arr2['item_link'])){
-								$html.= '</a>';
-							}
-
-							$html.= '</li>';
+							$areas_html.= $this->maybe_output_supplementary_checkboxes($sup_checkboxes);
 						}
-						$html.= '</ul>';
+
+						// custom display value
+						if (isset($arr2['display_value'])){
+							$areas_html.= $arr2['display_value'];
+						}
+
+						if (!empty($arr2['item_link'])){
+							$areas_html.= '</a>';
+						}
 					}
-					$html.= '</li>';
+
+					$areas_html.= '</li>';
 				}
-				$html.= '</ul>';
+
+				$areas_html.= '</ul>';
+
+				return array(
+					'areas_html' => $areas_html,
+					'footer' => $dialog_footer_html
+				);
+			}
+
+			function format_data_attr_array($array, $data_attr = ''){
+
+				if (!empty($array) && is_array($array)){
+					foreach($array as $da_key => $da_value){
+						$data_attr.= ' data-'.$da_key.'="'.$da_value.'"';
+					}
+				}
+
+				return $data_attr;
+			}
+
+			function suggested_screen_layouts(){
+
+				$sm = array(
+					//'expand_device_tabs' => 1,
+					'left_sidebar_columns' => 1,
+				);
+				$md = array(
+					'dock_folders_left' => 1,
+					'dock_styles_left' => 1,
+					'dock_editor_left' => 1,
+					'left_sidebar_columns' => 1,
+				);
+				$lg = array_merge($md, array(
+					'full_height_left_sidebar' => 1,
+					'dock_settings_right' => 1,
+					'wizard_expanded' => 1
+				));
+				$xl = array_merge($lg, array(
+					'left_sidebar_columns' => 3,
+					'dock_styles_left' => 0,
+					'full_height_right_sidebar' => 1,
+				));
+
+				return array(
+					'S' => array(
+						'size' => 1366,
+						'title' => esc_attr__('Options top', 'microthemer'),
+						'on' => $sm
+					),
+					'M' => array(
+						'size' => 1920,
+						'title' => esc_attr__('Options left', 'microthemer'),
+						'on' => $md
+					),
+					'L' => array(
+						'size' => 2160,
+						'title' => esc_attr__('Inspection and settings', 'microthemer'),
+						'on' => $lg
+					),
+					'XL' => array(
+						'size' => 2560,
+						'title' => esc_attr__('Multi-column', 'microthemer'),
+						'on' => $xl
+					),
+				);
+			}
+
+			function screen_layout_options(){
+
+				$html = '<div class="layout-presets-heading">'.esc_html__('Screen size layout presets', 'microthemer').'</div>'.
+				        '<div id="screen-layout-options" class="screen-layout-options fake-radio-parent">';
+
+				foreach ($this->suggested_screen_layouts as $key => $array){
+
+					$on_class = '';
+					$checked = '';
+
+					if ($key === $this->preferences['suggested_layout']){
+						$on_class = ' on';
+						$checked = 'checked="checked"';
+					}
+
+					$html.= '
+                    <div>
+                        <input type="radio" autocomplete="off" class="radio"
+                        name="suggested_layout" value="'.$key.'" '.$checked.' />
+                        '.$this->iconFont('radio-btn-unchecked', array(
+							'class' => 'fake-radio switch-layout-preset '.$on_class,
+							'data-preset' => $key,
+							'title' => $array['title']
+						)).'
+                        <span class="radio-label">'.$key.'</span>
+                    </div>';
+				}
+
+				$html.= '</div>';
+
 				return $html;
+			}
+
+			// keyboard shortcuts
+			function keyboard_shortcuts_list(){
+
+				$shortcuts = array(
+					array(
+						'action' => 'Toggle page builder', // (Elementor, Beaver Builder, or Oxygen)
+						'win' => 'Ctrl+Alt+B',
+					),
+					array(
+						'action' => 'Toggle full code editor',
+						'win' => 'Ctrl+Alt+C',
+					),
+					array(
+						'action' => 'Detach site preview', // in separate window
+						'win' => 'Ctrl+Alt+D',
+					),
+					/*array(
+						'action' => 'Search folders', // support this if time
+						'win' => 'Ctrl+Alt+F',
+					),*/
+					array(
+						'win' => 'Ctrl+Alt+G',
+						'action' => 'View the generated code'
+					),
+					array(
+						'win' => 'Ctrl+Alt+H',
+						'action' => 'Toggle selector highlighting'
+					),
+					array(
+						'action' => 'Jump to UI field for editor line', // Jump between code editor and UI property field
+						'win' => 'Ctrl+Alt+J',
+					),
+					/*array(
+						'action' => 'Toggle CSS property text labels',
+						'win' => 'Ctrl+Alt+L',
+					),*/
+					array(
+						'action' => 'Toggle page navigator menu',
+						'win' => 'Ctrl+Alt+N',
+					),
+					array(
+						'action' => 'Do full Sass compile', // If Sass is enabled, recompiles all MT selectors
+						'win' => 'Ctrl+Alt+P',
+					),
+					array(
+						'action' => 'Return focus to editor',
+						'win' => 'Ctrl+Alt+R',
+					),
+					array(
+						'win' => 'Ctrl+S',
+						'action' => 'Save settings (for JS editor)' // Save settings. This is only needed when typing code in the JavaScript code editor. GUI settings and CSS code edits auto-save.
+					),
+					array(
+						'action' => 'Toggle targeting mode',
+						'win' => 'Ctrl+Alt+T',
+					),
+					array(
+						'action' => 'Navigate to previous selector',
+						'win' => 'Ctrl+Alt+,',
+
+					),
+					array(
+						'action' => 'Navigate to next selector',
+						'win' => 'Ctrl+Alt+.',
+
+					),
+
+				);
+
+				// keyboard shortcuts alt / shift
+				/*
+				 * - select element when hovering ALT
+				 * -  x 10 increment for property adjust
+				 * - ALT + Shift (for left docked view)
+				 * */
+
+				$html = '<div class="keyboard-shortcuts-list">';
+
+				// context dependent Ctrl key
+				$html.= '
+                
+                <span class="shortcut-b shortcut-last shortcut-span3">Ctrl</span>
+                <ul class="shortcut-span3">
+                    <li>'.esc_html__('Press when clicking links to load a new page, even if Targeting mode is enabled', 'microthemer').'</li>
+                </ul>';
+
+				// context dependent Alt key
+				$html.= '
+                
+                <span class="shortcut-b shortcut-last shortcut-span3">Alt</span>
+                <ul class="shortcut-span3">
+                    <li>'.esc_html__('Select an element (instead of clicking it)', 'microthemer').'</li>
+                    <li>'.esc_html__('Enable mousewheel adjust', 'microthemer').'</li>
+                </ul>';
+
+				// context dependent Shift key
+				$html.= '
+          
+                <span class="shortcut-b shortcut-last shortcut-span3">Shift</span>
+                <ul class="shortcut-span3">
+                    <li>'.esc_html__('Select multiple elements when clicking', 'microthemer').'</li>
+                    <li>'.esc_html__('Increment style value by 10 when using:', 'microthemer').'
+                        <ul>
+                             <li>'.esc_html__('Increment buttons', 'microthemer').'</li>
+                             <li>'.esc_html__('Mousewheel', 'microthemer').'</li>
+                             <li>'.esc_html__('Up & down on keyboard', 'microthemer').'</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                '; // <span class="new-shortcut-section"></span>
+
+
+				foreach ($shortcuts as $i => $array){
+
+					$shortcut = $array['win'];
+					$shortcut_pieces = explode('+', $shortcut);
+					$buttons = '';
+					$count = count($shortcut_pieces);
+
+					foreach ($shortcut_pieces as $j => $buttonText){
+						$nth = $j+1;
+						$last_class = ($nth === $count) ? ' shortcut-last' : '';
+						$span_two_class = ($nth === 1 && $count === 2) ? ' shortcut-span2' : '';
+						$buttons.= '<span class="shortcut-b shortcut-b'.($nth).$last_class.$span_two_class.'">'.$buttonText.'</span>';
+					}
+
+					$html.= '<span class="shortcut-heading">'.$array['action'].'</span>'
+					        .$buttons;
+				}
+
+
+
+
+
+				$html.= '</div>';
+
+				return $html;
+
 			}
 
 			function maybe_output_supplementary_checkboxes($checkboxes){
 
-			    if (!$checkboxes){
-			        return '';
-                }
+				if (!$checkboxes){
+					return '';
+				}
 
-			    $html = '';
+				$html = '';
 
-			    if (!empty($checkboxes)){
-			        foreach ($checkboxes as $item){
-				        $html.= '<div class="menu-supplementary-checkbox tvr-clearfix">
+				if (!empty($checkboxes)){
+					foreach ($checkboxes as $item){
+						$html.= '<div class="menu-supplementary-checkbox tvr-clearfix">
                             <input type="checkbox" name="'.$item['name'].'"> 
-                            <span class="fake-checkbox "></span>
+                            '.$this->iconFont('tick-box-unchecked', array(
+								'class' => 'fake-checkbox'
+							)).'
                             <span class="ef-label">'.$item['label'].'</span>
                         </div>';
-                    }
-                }
+					}
+				}
 
-                return $html;
+				return $html;
 
-            }
+			}
+
+			// output left/right column options select menu
+			function column_options($side = 'left'){
+
+				$totalItems = count($this->preferences['layout'][$side]['items']);
+				$optionHTML = '';
+
+				for ($x = 1; $x <= $totalItems; $x++) {
+					$selected = intval($this->preferences['layout'][$side]['num_columns']) === $x
+						? ' selected="selected"'
+						: '';
+					$optionHTML.= '<option value="'.$x.'"'.$selected.'>'.$x.'</option>';
+				}
+
+				return '<select id="'.$side.'-column-options" class="settings-select-menu" data-side="'.$side.'">'.$optionHTML.'</select>';
+			}
 
 			function toggle($item_key, $arr){
 				$on = $arr['toggle'] ? 'on' : '';
@@ -7886,16 +9294,20 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					$title = 'title="'.$title.'"';
 				}
 
+
+				$fhtml = !empty($arr['data-fhtml']) ? ' data-fhtml="'.$arr['data-fhtml'].'" ' : '';
+
+
 				$html = '';
 				//$html.= print_r($on, true);
 				$html.= '
-				<div '.$id.' class="mtonoffswitch ui-toggle uit-par '.$on.'"
-				data-aspect="'.$item_key.'" '.$pos_neg.' '.$title.'>
+				<div '.$id.' class="mtonoffswitch mt-ui-toggle uit-par '.$on.'"
+				data-aspect="'.$item_key.'" '.$pos_neg.' '.$title.$fhtml.'>
 					<input type="checkbox" name="mtonoffswitch" class="mtonoffswitch-checkbox"
 					id="mymtonoffswitch-'.$item_key.'">
-					<label class="mtonoffswitch-label ui-toggle" for="mymtonoffswitch-'.$item_key.'">
-						<span class="mtonoffswitch-inner ui-toggle"></span>
-						<span class="mtonoffswitch-switch ui-toggle"></span>
+					<label class="mtonoffswitch-label mt-ui-toggle" for="mymtonoffswitch-'.$item_key.'">
+						<span class="mtonoffswitch-inner mt-ui-toggle"></span>
+						<span class="mtonoffswitch-switch mt-ui-toggle"></span>
 					</label>
 				</div>';
 				return $html;
@@ -7916,16 +9328,16 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$html = '';
 
 				// get value object, array, and string value
-                $valueArray = false;
+				$valueArray = false;
 				$valueObject = $value;
 				$value = is_array($valueObject) && !empty($valueObject['value'])
-                    ? $valueObject['value']
-                    : ''; // should this be
+					? $valueObject['value']
+					: ''; // should this be
 
-                if (is_array($value)){
-	                $valueArray = $value;
-	                $value = !empty($valueArray[0]) ? $valueArray[0] : '';
-                }
+				if (is_array($value)){
+					$valueArray = $value;
+					$value = !empty($valueArray[0]) ? $valueArray[0] : '';
+				}
 
 				// don't display legacy properties or the image display field
 				if (!$this->is_legacy_prop($property_group_name, $property) and !strpos($property, 'img_display') ){
@@ -7939,7 +9351,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 				if ( ! empty( $search ) && ! empty( $wp_query->query_vars['search_terms'] ) ) {
 
-				    global $wpdb;
+					global $wpdb;
 
 					$q = $wp_query->query_vars;
 					$n = ! empty( $q['exact'] ) ? '' : '%';
@@ -7947,21 +9359,26 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 					foreach ( ( array ) $q['search_terms'] as $term ) {
 
-					    $sql_term = $n . $wpdb->esc_like( $term ) . $n;
+						$sql_term = $n . $wpdb->esc_like( $term ) . $n;
 
 						$search[] = $wpdb->prepare(
-                        "$wpdb->posts.post_title LIKE %s or 
-                            $wpdb->posts.post_name LIKE %s or 
-                            $wpdb->posts.post_type LIKE %s",
-                            $sql_term,
-                            $sql_term,
-                            $sql_term
+							" ($wpdb->posts.post_title LIKE %s or 
+                            $wpdb->posts.post_name LIKE %s) 
+                           
+                            ",
+                            // or $wpdb->posts.post_type LIKE %s
+                            // AND post_status != 'auto-draft' - this caused issues on some sites
+							// the above line made search less precise for content
+                            // e.g. "P" would bring in all pages instead of a page called "Product tour"
+							//$sql_term,
+							$sql_term,
+							$sql_term
 						);
-                    }
+					}
 
 					if ( ! is_user_logged_in() ){
 						$search[] = "$wpdb->posts.post_password = ''";
-                    }
+					}
 
 					$search = ' AND ' . implode( ' AND ', $search );
 				}
@@ -7973,7 +9390,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 			function get_custom_post_types(){
 
-			    $args = array(
+				$args = array(
 					'public'   => true,
 					'_builtin' => false,
 				);
@@ -7985,31 +9402,31 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			}
 
 			function format_posts_of_type(
-			    $post_type, $category, $permalink_structure, $common_config, &$urls
-            ){
+				$post_type, $category, $permalink_structure, $common_config, &$urls
+			){
 
-			    $isCustomPosts = ($post_type !== 'page' && $post_type !== 'post');
-			    $customPostsPathPrefix = $isCustomPosts
-                    ? '/'.$post_type
-                    : '';
+				$isCustomPosts = ($post_type !== 'page' && $post_type !== 'post');
+				$customPostsPathPrefix = $isCustomPosts
+					? '/'.$post_type
+					: '';
 
-			    $items = get_posts(
+				$items = get_posts(
 					array_merge($common_config, array('post_type'=> $post_type))
 				);
 
 				foreach($items as $item){
 
-				    // I noticed a strange bug whereby "kit" should have got an elementor template post in 'My Templates'
-                    // category, but also got the search result in all other post categories inc regular page/post
-                    if ($item->post_type !== $post_type or $item->post_status === 'auto-draft'){
-                        continue;
-                    }
+					// I noticed a strange bug whereby "kit" should have got an elementor template post in 'My Templates'
+					// category, but also got the search result in all other post categories inc regular page/post
+					if ($item->post_type !== $post_type){
+						//continue;
+					}
 
 					$label = $item->post_title;
 
-                    if ($item->post_status === 'draft'){
-	                    $label.= ' — Draft';
-                    }
+					if ($item->post_status === 'draft'){
+						$label.= ' — Draft';
+					}
 
 
 					$path = $customPostsPathPrefix.'/'.$item->post_name.'/';
@@ -8017,25 +9434,25 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 					// if non-standard permalink structure, we have to use the DB method of getting the URL
 					if ($permalink_structure !== '/%postname%/' or
-                        $item->post_type === 'ct_template' or
-                        $item->post_status === 'draft'){
+					    $item->post_type === 'ct_template' or
+					    $item->post_status === 'draft'){
 
-					    // format URL as draft preview
-					    if ($item->post_status === 'draft'){
-						    $url = $item->guid.'&preview=true'; // maybe build this using id and pos_type
-                        }
+						// format URL as draft preview
+						if ($item->post_status === 'draft'){
+							$url = $item->guid.'&preview=true'; // maybe build this using id and pos_type
+						}
 
-                        // it seems to be a quirk of Oxygen that the template admin screen must be loaded first
-					    elseif ($item->post_type === 'ct_template'){
+						// it seems to be a quirk of Oxygen that the template admin screen must be loaded first
+                        elseif ($item->post_type === 'ct_template'){
 							$url = $this->wp_blog_admin_url . 'post.php?post=' . $item->ID.'&action=edit';
-						    //$url = get_permalink($item).'&ct_builder=true';
-                            // enable this after fixing forever loading issue (maybe due to post locking...)
+							//$url = get_permalink($item).'&ct_builder=true';
+							// enable this after fixing forever loading issue (maybe due to post locking...)
 						}
 
 						// non-standard permalink structure
 						else {
 							$url = get_permalink($item);
-                        }
+						}
 
 						//$url = get_permalink($item);
 
@@ -8054,7 +9471,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						'category' => $category,
 						'item_id' => !empty($item->ID) ? $item->ID : false,
 						//'all' => $item, // debug
-                        //'config' => array_merge($common_config, array('post_type'=> $post_type))
+						//'config' => array_merge($common_config, array('post_type'=> $post_type))
 					);
 				}
 
@@ -8065,134 +9482,170 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 			// get example category, author, archive, 404
 			function get_resource_example(){
-                // todo
-            }
+				// todo
+			}
+
+			/*function get_placeholder_urls(){
+				$light = $this->thispluginurl . "includes/place-holder.php";
+			    $dark = $light . "?mt_dark_mode=1";
+			    return array(
+			            'light' => $light,
+			            'dark' => $dark,
+			            'current' => !empty($this->preferences['mt_dark_mode']) ? $dark : $light
+			    );
+			}*/
 
 			function get_site_pages($searchTerm = null){
 
 				// get URL vars
-                $blog_details = function_exists('get_blog_details')
-                    ? get_blog_details( $this->multisite_blog_id )
-                    : false;
+				/*$blog_details = function_exists('get_blog_details')
+					? get_blog_details( $this->multisite_blog_id )
+					: false;*/
 				/*$root_home_url = $blog_details
                     ? rtrim($blog_details->path, '/')
                     : $this->home_url;*/
 
-                $permalink_structure = get_option('permalink_structure');
+                // get_the_title( get_option('page_on_front') )
+
+				$permalink_structure = get_option('permalink_structure');
 				$users_can_register = get_option('users_can_register');
-			    $common_config = array(
-                    'post_status' => array('publish', 'draft'), // we want user to be able to access drafts
-                    'numberposts' => 8,
-                    'suppress_filters' => false,
-                    'orderby' => 'modified',
-                    'order' => 'DESC',
-                    's' => $searchTerm
-                );
+				$common_config = array(
+					'post_status' => array('publish', 'draft'), // we want user to be able to access drafts
+					'numberposts' => 8,
+					'suppress_filters' => false,
+					'orderby' => 'modified',
+					'order' => 'DESC',
+					's' => $searchTerm
+				);
 
-			    // Get data
-                $urls = array();
+				// Get data
+				$urls = array();
 				$formatted_urls = array();
-                $urlTypes = array(
-	                'page' => esc_html__('Pages', 'microthemer'),
-	                'post' => esc_html__('Posts', 'microthemer'),
-	                'wordpress' => esc_html__('WordPress', 'microthemer'),
-	                'custom_posts' => esc_html__('Custom posts', 'microthemer'),
-                    'general' => esc_html__('General', 'microthemer'),
-                );
-                $custom_post_types = $this->get_custom_post_types();
+				$urlTypes = array(
+					'home' => esc_html__('Home page', 'microthemer'),
+					'page' => esc_html__('Recently edited pages', 'microthemer'),
+					'post' => esc_html__('Recently edited posts', 'microthemer'),
+					'wordpress' => esc_html__('WordPress', 'microthemer'),
+					'custom_posts' => esc_html__('Custom posts', 'microthemer'),
+					'general' => esc_html__('General', 'microthemer'),
+				);
+				$custom_post_types = $this->get_custom_post_types();
 
-                foreach ($urlTypes as $key => $category){
+				foreach ($urlTypes as $key => $category){
 
-                    // regular post or page
-                    if ($key === 'page' || $key === 'post'){
-                        $post_type = $key;
-                        $this->format_posts_of_type(
-	                        $post_type, $category, $permalink_structure, $common_config, $urls
-                        );
-                    }
+					// regular post or page
+					if ($key === 'page' || $key === 'post'){
+						$post_type = $key;
+						$this->format_posts_of_type(
+							$post_type, $category, $permalink_structure, $common_config, $urls
+						);
+					}
 
-	                // custom posts
+					// custom posts
                     elseif ($key === 'custom_posts'){
 
-		                //$urls[$key] = $custom_post_types;
-		                foreach ($custom_post_types as $index => $custom_post_type){
-                            $category = $custom_post_type->label;
-			                $post_type = $custom_post_type->name;
-			                $this->format_posts_of_type(
-				                $post_type, $category, $permalink_structure, $common_config, $urls
-			                );
-		                }
+						//$urls[$key] = $custom_post_types;
+						foreach ($custom_post_types as $index => $custom_post_type){
+							$category = $custom_post_type->label;
+							$post_type = $custom_post_type->name;
+							$this->format_posts_of_type(
+								$post_type, $category, $permalink_structure, $common_config, $urls
+							);
+						}
 
-                    }
+					}
 
-                    // general / wordpress
-                    elseif ($key === 'general' || $key === 'wordpress'){
+					// general / wordpress
+                    elseif ($key === 'home' || $key === 'general' || $key === 'wordpress'){
 
-	                    $custom_links = array();
+						$custom_links = array();
 
 	                    // WordPress auth pages
-	                    if ($key === 'wordpress'){
+	                    if ($key === 'home'){
 
-		                    $custom_links = array(
-			                    array(
-				                    'label' => esc_html__('Login page', 'microthemer'),
-				                    'value' => $this->root_rel(wp_login_url(), false, true),
-			                    ),
-			                    array(
-				                    'label' => esc_html__('Lost password page', 'microthemer'),
-				                    'value' => $this->root_rel(wp_lostpassword_url(), false, true),
-			                    )
+	                        $homeTitle = ('posts' === get_option( 'show_on_front' ))
+                                ? esc_html__('Latest posts', 'microthemer')
+                                : get_the_title( get_option('page_on_front') );
+
+		                    $custom_links[] = array(
+			                    'label' => $homeTitle, // esc_html__('Home page', 'microthemer'),
+			                    'value' => '/',
 		                    );
+	                    }
 
-		                    // if registration is supported
-		                    if ($users_can_register){
-			                    $custom_links[] = array(
-				                    'label' => esc_html__('Registration page', 'microthemer'),
-				                    'value' => $this->root_rel(wp_registration_url(), false, true),
-			                    );
-		                    }
+						// WordPress auth pages
+						if ($key === 'wordpress'){
 
-                        }
+							$custom_links[] = array(
+								'label' => esc_html__('Login page', 'microthemer'),
+								'value' => $this->root_rel(wp_login_url(), false, true),
+							);
 
-	                    // General types of page - finish later
-	                    /*elseif ($key === 'general'){
+							$custom_links[] = array(
+								'label' => esc_html__('Lost password page', 'microthemer'),
+								'value' => $this->root_rel(wp_lostpassword_url(), false, true),
+							);
 
-	                        $custom_links = array(
-			                    array(
-				                    'label' => esc_html__('Home page', 'microthemer'),
-				                    'value' => '/',
-			                    ),
-			                    array(
-				                    'label' => esc_html__('Search page', 'microthemer'),
-				                    'value' => '/?s=test',
-			                    )
-		                    );
-	                    }*/
+							/*$custom_links = array(
+								array(
+									'label' => esc_html__('Login page', 'microthemer'),
+									'value' => $this->root_rel(wp_login_url(), false, true),
+								),
+								array(
+									'label' => esc_html__('Lost password page', 'microthemer'),
+									'value' => $this->root_rel(wp_lostpassword_url(), false, true),
+								)
+							);*/
 
-	                    // add the category and merge with urls array
-	                    foreach ($custom_links as $j => $custom_links_array){
-		                    $urls[$key][] = array_merge($custom_links_array, array('category' => $category));
-                        }
+							// if registration is supported
+							if ($users_can_register){
+								$custom_links[] = array(
+									'label' => esc_html__('Registration page', 'microthemer'),
+									'value' => $this->root_rel(wp_registration_url(), false, true),
+								);
+							}
 
-                    }
+						}
 
-                }
+						// General types of page - finish later
+						/*elseif ($key === 'general'){
 
-				// add category urls to flat array
-				foreach ($urls as $key => $array){
-				    if (!empty($urls[$key])){
-					    $formatted_urls = array_merge($formatted_urls, array_values($urls[$key]));
-                    }
+							$custom_links = array(
+								array(
+									'label' => esc_html__('Home page', 'microthemer'),
+									'value' => '/',
+								),
+								array(
+									'label' => esc_html__('Search page', 'microthemer'),
+									'value' => '/?s=test',
+								)
+							);
+						}*/
+
+						// add the category and merge with urls array
+						foreach ($custom_links as $j => $custom_links_array){
+							$urls[$key][] = array_merge($custom_links_array, array('category' => $category));
+						}
+
+					}
 
 				}
 
-                //wp_die('<pre>'.print_r($urls, true).'</pre>');
+				// add category urls to flat array
+				foreach ($urls as $key => $array){
+					if (!empty($urls[$key])){
+						$formatted_urls = array_merge($formatted_urls, array_values($urls[$key]));
+					}
 
-                //return $urls;
+				}
 
-                return $formatted_urls;
+				//wp_die('<pre>'.print_r($urls, true).'</pre>');
 
-            }
+				//return $urls;
+
+				return $formatted_urls;
+
+			}
 
 			// Global system for creating dynamic menus (data, structure, config)
 			// Note: passing array/objs into PHP/JS functions over lots of params should become standard practice
@@ -8247,6 +9700,18 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$display_name = !empty($arr['display_name']) ? $arr['display_name'] : $arr['label'];
 				$name_class = !empty($fields['label']['name_class']) ? ' '.$fields['label']['name_class'] : '';
 
+				$icons = array(
+					'mqs' => 'devices',
+					'enq_js' => 'js',
+					'edit' => 'edit',
+					'delete' => 'bin'
+				);
+
+				$sortableIcon = $this->iconFont($icons[$s['slug']], array(
+					'class' => 'sortable-icon',
+					'title' => $s['items']['icon']['title']
+				));
+
 				$html = '';
 				// li item
 				$html.= '
@@ -8256,11 +9721,11 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$dis_class = !empty($this->preferences['enq_js'][$k]['disabled']) ? 'item-disabled' : '';
 				$html.= '
 				<div class="'.$s['level'].'-row item-row '.$dis_class.'">
-					<span class="'.$s['slug'].'-icon tvr-icon sortable-icon" title="'.$s['items']['icon']['title'].'"></span>
+					'.$sortableIcon.'
 					<span class="name-text '.$s['level'].'-name'.$name_class.'">'.esc_html($display_name).'</span>';
 
 				$html.= '
-				<span class="manage-'.$s['level'].'-icons manage-icons">';
+				<span class="manage-'.$s['level'].'-icons folders-menu-actions">';
 
 				// do action icons
 				foreach ($s['items']['actions'] as $action => $a_arr){
@@ -8282,9 +9747,12 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					} else {
 						// regular icon
 						$a_class = !empty($a_arr['class']) ? $a_arr['class'] : '';
-						$html.= '
-						<span class="'.$a_class. ' '.$action.'-'.$s['level'].' tvr-icon '.$action.'-icon"
-						title="'.$a_arr['title'].'"></span>';
+
+						$html.= $this->iconFont($icons[$action], array(
+							'class' => $a_class. ' '.$action.'-'.$s['level'],
+							'title' => $a_arr['title']
+						));
+
 					}
 
 				}
@@ -8309,7 +9777,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 					if (!empty($f_arr['input_arrows'])){
 						$input.= $f_arr['input_arrows'];
-                    }
+					}
 
 					// just input if hidden
 					if ($input_type == 'hidden'){
@@ -8325,8 +9793,11 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						if ($input_type != 'textarea'){
 							$html.= $input;
 							if ($input_type == 'checkbox'){
-								$html.= '<span class="fake-checkbox "></span>
-									<span class="ef-label">'.$f_arr['label2'].'</span>';
+								$html.=
+									$this->iconFont('tick-box-unchecked', array(
+										'class' => 'fake-checkbox'
+									))
+									.'<span class="ef-label">'.$f_arr['label2'].'</span>';
 							}
 						} else {
 							// text area
@@ -8357,7 +9828,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$selector_count_state = $this->selector_count_state($array);
 
 				// generate html code for sections in this loop to save having to do a 2nd loop later
-				$this->initial_options_html[$this->total_sections] = $this->section_html($section_name, $array);
+				//$this->initial_options_html[$this->total_sections] = $this->section_html($section_name, $array);
 
 				$sec_class = '';
 
@@ -8380,22 +9851,25 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				ob_start();
 				?>
                 <li id="<?php echo 'strk-'.$section_name; ?>" class="section-tag strk strk-sec <?php echo $sec_class; ?>">
-                    <!--<input type="hidden" class="register-section" name="tvr_mcth[<?php //echo $section_name; ?>]" value="" />-->
+
                     <input type="hidden" class="section-display-name"
                            name="tvr_mcth[<?php echo $section_name;?>][this][label]"
                            value="<?php echo esc_attr($display_section_name); ?>" />
-
-                    <!--<input type='hidden' class='view-state-input section-tracker'
-                           name='tvr_mcth[non_section][view_state][<?php /*echo $section_name; */?>][this]' value='0' />-->
-
                     <div class="sec-row item-row">
-                        <span class="menu-arrow folder-menu-arrow tvr-icon"></span>
-                        <span class="folder-icon tvr-icon sortable-icon" title="<?php echo $folder_title; ?>" data-title="<?php echo $folder_title; ?>"></span>
 
-						<?php //echo $this->feather_icon('section'); ?>
+                        <span class="item-icon folder-item-icon">
+                            <?php
+                            echo $this->iconFont('folder', array(
+	                            'class' => 'folder-icon sortable-icon',
+	                            'title' => $folder_title,
+	                            'data-title' => $folder_title
+                            ));
+                            ?>
+                        </span>
+
                         <span class="section-name item-name">
 						    <span class="name-text selector-count-state"
-                              rel="<?php echo $selector_count_state; ?>"><?php echo $display_section_name; ?></span><?php
+                                  rel="<?php echo $selector_count_state; ?>"><?php echo $display_section_name; ?></span><?php
 							if ($selector_count_state > 0) {
 								echo '<span class="folder-count-wrap count-wrap"> (<span class="folder-state-count state-count">'.$selector_count_state.'</span>)</span>';
 							}
@@ -8403,91 +9877,328 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 							$this->total_selectors = $this->total_selectors + $selector_count_state;
 							?>
 						</span>
-                        <span class="edit-section-form hidden">
-							<input type='text' class='rename-input' name='rename_section'
-                                   value='<?php echo $display_section_name; ?>' />
-								<span class='rename-button tvr-button' title="<?php esc_attr_e("Rename folder", 'microthemer'); ?>">
-									<?php printf( esc_html__('Rename', 'microthemer') ); ?>
-								</span>
-								<span class='cancel-rename-section cancel link' title="<?php esc_attr_e("Cancel rename", 'microthemer'); ?>">
-									<?php printf( esc_html__('Cancel', 'microthemer') ); ?>
-								</span>
-						</span>
-                        <span class="manage-section-icons manage-icons">
 
-							<?php
-							// toggle for extra action icons
-							echo $this->extra_actions_icon();
-							/*echo $this->ui_toggle(
-								'show_extra_actions',
-								'conditional', // only wizard toggle has title/on class (easier than maintaining dynamically)
-								'conditional',
-								false,
-								'extra-actions-toggle tvr-icon',
-								false,
-								// instruct tooltip to get content dynamically
-								array('dataAtts' => array(
-									'dyn-tt-root' => 'show_extra_actions',
-									'no-save' => 1
-								))
-							);
-							*/
-							?>
-
-                            <span class="extra-row-actions">
-								<span class="reveal-add-selector tvr-icon add-icon" title="<?php esc_attr_e("Add selector to this folder", 'microthemer'); ?>"></span>
-								<span class="copy-section tvr-icon copy-icon" title="<?php esc_attr_e("Copy Folder", 'microthemer'); ?>"></span>
-								<span class="delete-section tvr-icon delete-icon" title="<?php esc_attr_e("Delete folder", 'microthemer'); ?>"></span>
-								<?php echo $this->clear_icon('section'); ?>
-
-							</span>
-
-
-							<?php echo $this->icon_control(false,'disabled', $disabled, 'section', $section_name); ?>
-
-                            <span class="toggle-rename-section tvr-icon edit-icon" title="<?php esc_attr_e("Rename Folder", 'microthemer'); ?>"></span>
-
-						</span>
-                    </div>
-
-                    <ul class="selector-sub">
-                        <li class="add-selector-list-item">
-                            <div class="sel-row item-row"><?php
-								$tip = esc_html__('Non-coders should use the selector wizard instead of using these form fields.', 'microthemer') . '<br />' . esc_html__('Just double-click something on your site!');
-								if (!$this->optimisation_test){
-									$this->selector_add_modify_form('add', $tip);
-								}
-
-								?></div>
-
-                        </li>
 						<?php
-						/*if (!$this->optimisation_test){
-							if ( is_array($array) ) {
-								$sel_loop_count = 0;
-								foreach ( $array as $css_selector => $array) {
-									if ($css_selector == 'this') continue;
-									++$sel_loop_count;
-									++$this->sel_count;
-									// selector list item
-									echo $this->menu_selector_html($section_name, $css_selector, $array, $sel_loop_count);
-								}
-							}
-						}*/
+						echo $this->item_manage_icons('section', $section_name, array(
+							'disabled' => $disabled,
+							'context' => 'folders-menu',
+						));
 						?>
 
-                    </ul>
-					<?php
+                    </div>
 
-					?>
-
+                    <ul class="selector-sub"></ul>
                 </li>
 				<?php
 
-                return ob_get_clean();
+				return ob_get_clean();
 			}
 
+			// MT supports multiple types of item added to folders now (e.g. selectors, code snippets, etc)
+			function add_folder_item_tabs(){
 
+				$html = '';
+
+				foreach ($this->folder_item_types as $key => $array){
+					$active = $key === 'selector' ? ' active' : '';
+					$html.= '
+				    <span class="mt-tab fit-tab fit-tab-'.$key.$active.'" rel="'.$key.'">
+                        '.$array['label'].'
+                    </span>';
+				}
+
+				return '<div class="query-tabs">'.$html.'</div>';
+			}
+
+			// folder and folder item icons
+			function item_manage_icons($level, $slug, $config){
+
+				$context = $config['context'];
+				$sub_context = !empty($config['sub_context']) ? $config['sub_context'] : '';
+
+				$labels = array(
+					'section' => array(
+						'disable' => esc_html__("Disable folder", 'microthemer'),
+						'clear' => esc_html__("Clear folder styles", 'microthemer'),
+						'delete' => esc_html__("Delete folder", 'microthemer'),
+						'duplicate' => esc_html__("Duplicate folder", 'microthemer'),
+						'more' => esc_html__("Folder options", 'microthemer'),
+
+					),
+					'selector' => array(
+						'disable' => esc_html__("Disable selector", 'microthemer'),
+						'clear' => esc_html__("Clear selector styles", 'microthemer'),
+						'delete' => esc_html__("Delete selector", 'microthemer'),
+						'duplicate' => esc_html__("Duplicate selector", 'microthemer'),
+						//'variation' => esc_html__("Hover state and more", 'microthemer'),
+
+						'retarget' => esc_html__("Re-target selector", 'microthemer'),
+						'more' => esc_html__("Edit selector", 'microthemer'),
+						//'extra' => esc_html__("More options", 'microthemer'),
+					)
+				);
+
+				$icons = array(
+					'disable' => $this->icon_control(false, 'disabled', !empty($config['disabled']), $level, $slug),
+					'clear' => $this->clear_icon($level),
+					'delete' => $this->iconFont('bin', array(
+						'class' => 'delete-'.$level.' mt-icon-divider',
+						'title' => $labels[$level]['delete']
+					)),
+					'duplicate' => $this->iconFont('copy', array(
+						'class' => 'copy-'.$level,
+						'title' => $labels[$level]['duplicate'],
+					)),
+                    'more' => $this->iconFont('dots-vertical', array(
+                        'class' => 'toggle-folder-more-options',
+                        'title' => $labels[$level]['more'],
+                        'data-level' => $level,
+                        'data-forpopup' => 'contextMenu'
+                    )),
+					/*'extra' => $this->iconFont('dots-vertical', array(
+						'class' => 'toggle-cur-extra',
+						'title' => $labels[$level]['extra'],
+						'data-level' => $level,
+						'data-forpopup' => 'contextMenu'
+					)),*/
+				);
+
+				if ($level === 'selector'){
+
+					$icons = array_merge($icons, array(
+						// selector only
+						/*'variation' => $this->iconFont('hand-pointer', array(
+							'class' => 'selector-variation',
+							'title' => $labels[$level]['variation'],
+							'data-forpopup' => 'contextMenu'
+						)),*/
+
+						'spotlight' => $this->ui_toggle(
+							'mt_highlight',
+							'conditional',
+							'conditional',
+							0, // on state is styled by HTML class mt_highlight
+							'current-item-spotlight ' . $this->iconFont('spotlight', array(
+								'onlyClass' => 1
+							)),
+							false,
+							// instruct tooltip to get content dynamically
+							array('dataAtts' =>
+								      array(
+									      'dyn-tt-root' => 'toggle-highlighting',
+									      'highlight-context' => 'current-selector'
+								      )
+							)
+						),
+						'retarget' => $this->iconFont('retarget', array(
+							'class' => 'retarget-'.$level,
+							'title' => $labels[$level]['retarget'],
+						))
+					));
+				}
+
+				$html = '';
+
+				if (isset($config['html_before'])){
+					$html.= $config['html_before'];
+				}
+
+				foreach ($icons as $key => $icon){
+
+					if (
+						($key === 'more' && ($context !== 'folders-menu' && $context !== 'current-item')) ||
+
+						// no duplicate in current item as rarely needed
+						//($key === 'duplicate' && $context === 'current-item') ||
+
+						// current item only
+
+                        // current main
+						($key === 'spotlight' && ($context !== 'current-item' || $sub_context !== 'main')) ||
+						($key === 'retarget' && ($context !== 'current-item' || $sub_context !== 'main')) ||
+						($key === 'extra' && ($context !== 'current-item' || $sub_context !== 'main')) ||
+
+                        // current more
+						($key === 'disable' && ($context === 'current-item' && $sub_context !== 'extra')) ||
+						($key === 'clear' && ($context === 'current-item' && $sub_context !== 'extra')) ||
+						($key === 'delete' && ($context === 'current-item' && $sub_context !== 'extra')) ||
+                        ($key === 'duplicate' && ($context === 'current-item' && $sub_context !== 'extra'))
+						//($key === 'variation' && ($context !== 'current-item' || $sub_context !== 'extra'))
+					){
+						continue;
+					}
+
+					$html.= $icon;
+				}
+
+				if (isset($config['html_after'])){
+					$html.= $config['html_after'];
+				}
+
+				return  '
+			    <div class="manage-'.$level.'-icons mt-icon-line '.$context.'-actions" 
+			        data-context="'.$context.'" data-level="'.$level.'">
+			        '.$html.'
+			    </div>';
+
+			}
+
+			function add_edit_section_form($context){
+
+				if ($context === 'add'){
+					$title = esc_html__("Add folder", 'microthemer');
+					$button_text = esc_html__("Add", 'microthemer');
+					$icons = '';
+				}
+
+				else {
+					$title = esc_html__("Edit folder", 'microthemer');
+					$button_text = esc_html__("Update", 'microthemer');
+					$icons = $this->item_manage_icons('section', 'selector_section', array(
+						'context' => 'folder-popup',
+					));
+				}
+
+				// popup sections
+				$sections = array(
+
+					// edit folder name form
+					$this->context_menu_form($context.'-section', array(
+						'wrap' => 1,
+						'wrapClass' => 'mt-folder-form '.$context.'-section-form',
+						'fields' => array(
+							'label' => array(
+								'label' => esc_html__("Folder name", 'microthemer'),
+								'type' => 'input',
+							),
+							'filler' => array(
+								'custom' => '<span></span>' // filler
+							),
+							'icon-line' => array(
+								'custom' => $icons,
+							),
+
+						),
+						'button' => array(
+							'text' => $button_text,
+						)
+					))
+				);
+
+				// add extra fields for adding a selector if editing a folder
+				if ($context === 'edit'){
+					$sections = array_merge($sections, array(
+						$this->context_menu_heading(
+							esc_html__("Add selector to folder", 'microthemer')
+						),
+						$this->add_folder_item_forms()
+					));
+				}
+
+				return $this->context_menu_content(
+					array(
+						'base_key' => $context.'-folder-options',
+						'title' => $title,
+						'sections' => $sections
+					)
+				);
+
+			}
+
+			function add_edit_selector_form($context){
+
+				if ($context === 'add'){
+					$button_text = esc_html__("Add", 'microthemer');
+					$icons = '';
+				}
+
+				else {
+					$button_text = esc_html__("Update", 'microthemer');
+					$icons = $this->item_manage_icons('selector', 'selector_css', array(
+						'context' => 'folder-popup',
+					));
+				}
+
+				$form = $this->context_menu_form($context.'-selector', array(
+					'wrap' => 1,
+					'wrapClass' => $context.'-selector-form modify-selector-form mt-folder-form 
+				    '.$context.'-folder-item-form show',
+					'fields' => array(
+						'label' => array(
+							'label' => esc_html__("Selector name", 'microthemer'),
+							'type' => 'input',
+							'inputClass' => 'selector-name-input linkable-fields'
+						),
+
+						'linked-fields-toggle' => array(
+							'custom' => $this->ui_toggle(
+								'selname_code_synced',
+								'conditional', // only wizard toggle has title/on class (easier than maintaining dynamically)
+								'conditional',
+								false,
+								'code-chained-icon selname-code-sync popup-options-sync ' . $this->iconFont('chain', array(
+									'onlyClass' => 1
+								)),
+								false,
+								// instruct tooltip to get content dynamically
+								array('dataAtts' => array(
+									'dyn-tt-root' => 'selname_code_synced'
+								))
+							)       ),
+						'code' => array(
+							'label' => esc_html__("Selector code", 'microthemer'),
+							'type' => 'input',
+							'inputClass' => 'selector-css-textarea linkable-fields'
+						),
+						'filler' => array(
+							'custom' => '<span></span>' // filler
+						),
+						'icons' => array(
+							'custom' => $icons
+						),
+					),
+					'button' => array(
+						'text' => $button_text,
+						'class' => $context.'-selector',
+					)
+				));
+
+				// selector variation if edit form
+                if ($context === 'edit'){
+                    $form.=
+                    $this->context_menu_heading(
+	                    esc_html__("Create selector variation", 'microthemer')
+                    )
+                    .
+                    '<div id="mt-selector-state-options"></div>';
+                }
+
+				return $form;
+			}
+
+			function add_folder_item_forms(){
+
+				//$this->add_folder_item_tabs()
+
+				return $this->add_edit_selector_form('add');
+
+				/*.
+
+				$this->context_menu_form('add-snippet', array(
+					'wrap' => 1,
+					'wrapClass' => 'add-snippet-form mt-folder-form add-folder-item-form',
+					'fields' => array(
+						'label' => array(
+							'label' => esc_html__("Name", 'microthemer'),
+							'type' => 'input'
+						)
+					),
+					'button' => array(
+						'text' => esc_html__("Add code snippet", 'microthemer'),
+						'class' => 'add-snippet',
+					)
+				));*/
+			}
 
 			// menu single selector html
 			function menu_selector_html($section_name, $css_selector, $array, $sel_loop_count) {
@@ -8495,14 +10206,6 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				ob_start();
 
 				$sel_class = '';
-
-				/* determine which style groups are active
-				$style_count_state = 0;
-				foreach ($this->propertyoptions as $property_group_name => $junk) {
-					if ($this->pg_has_values_inc_legacy_inc_mq($section_name, $css_selector, $array, $property_group_name)) {
-						++$style_count_state;
-					}
-				}*/
 
 				$style_count_state = $this->selector_has_values($section_name, $css_selector, $array, true);
 
@@ -8537,66 +10240,41 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				?>
                 <li id="<?php echo 'strk-'.$section_name.'-'.$css_selector; ?>" class="selector-tag strk strk-sel <?php echo $sel_class; ?>">
 
-                    <!--<input type='hidden' class='register-selector' name='tvr_mcth[<?php /*echo $section_name; */?>][<?php /*echo $css_selector; */?>]' value='' />-->
-
-                    <!--<input type='hidden'
-                           class='view-state-input selector-tracker' name='tvr_mcth[non_section][view_state][<?php /*echo $section_name;*/?>][<?php /*echo $css_selector;*/?>]' value='0' />-->
-
                     <input type='hidden' class='selector-label' name='tvr_mcth[<?php echo $section_name; ?>][<?php echo $css_selector; ?>][label]' value='<?php echo $array['label']; ?>' />
 
                     <div class="sel-row item-row">
-                        <span class="tvr-icon selector-sortable-icon sortable-icon" title="<?php esc_attr_e("Reorder selector", 'microthemer'); ?>"></span>
-						<?php echo $this->feather_icon('selector'); ?>
+
+                        <span class="item-icon">
+
+                            <?php
+                            echo $this->iconFont('spotlight', array(
+	                            'class' => 'highlight-preview',
+	                            'title' => esc_attr__("Highlight selector", 'microthemer')
+                            ));
+
+                            echo $this->iconFont('target', array(
+	                            'class' => 'selector-sortable-icon sortable-icon',
+	                            'title' => esc_attr__("Reorder selector", 'microthemer')
+                            ));
+                            ?>
+                        </span>
+
                         <span class="selector-name item-name change-selector" title="<?php echo $selector_title; ?>">
-						<span class="name-text style-count-state change-selector"
-                              rel="<?php echo $style_count_state; ?>"><?php echo esc_html($labelCss[0]); ?></span>
-							<?php
-							/* FEATHER SYSTEM SUPERSEDES
-							if ($style_count_state > 0) {
-								echo ' <span class="count-wrap change-selector">(<span class="state-count change-selector">'.$style_count_state.'</span>)</span>';
-							}
-							*/
-							?>
+						    <span class="name-text style-count-state change-selector"
+                                  rel="<?php echo $style_count_state; ?>"><?php echo esc_html($labelCss[0]); ?>
+                            </span>
 						</span>
-                        <span class="manage-selector-icons manage-icons">
 
-							<?php
-							// toggle for extra action icons
-							echo $this->extra_actions_icon();
-							/*echo $this->ui_toggle(
-								'show_extra_actions',
-								'conditional', // only wizard toggle has title/on class (easier than maintaining dynamically)
-								'conditional',
-								false,
-								'extra-actions-toggle tvr-icon',
-								false,
-								// instruct tooltip to get content dynamically
-								array('dataAtts' => array(
-									'dyn-tt-root' => 'show_extra_actions'
-								))
-							);
-							*/
-							?>
+                        <span class="disabled-responsive-tabs"></span>
 
-                            <span class="extra-row-actions">
-								<span class="tvr-icon selector-icon retarget-selector" title="<?php esc_attr_e("Re-target selector ", 'microthemer'); ?>"></span>
-								<span class="copy-selector tvr-icon copy-icon" title="<?php esc_attr_e("Copy selector", 'microthemer'); ?>"></span>
-							<span class="delete-selector tvr-icon delete-icon" title="<?php esc_attr_e("Delete selector", 'microthemer'); ?>"></span>
-								<?php echo $this->clear_icon('selector'); ?>
-							</span>
-
-							<?php echo $this->icon_control(false,'disabled', $disabled, 'selector', $section_name, $css_selector); ?>
-
-                            <span class="toggle-modify-selector tvr-icon edit-icon" title="<?php esc_attr_e("Edit selector", 'microthemer'); ?>"></span>
-
-							<span class="tvr-icon hightlight-icon highlight-preview" title="<?php esc_attr_e("Highlight selector", 'microthemer'); ?>"></span>
-						</span>
 						<?php
-						$tip = esc_html__('Give your selector a better descriptive name and/or modify the CSS selector code.', 'microthemer');
-						if (!$this->optimisation_test){
-							$this->selector_add_modify_form('edit', $tip, $labelCss, $section_name, $css_selector);
-						}
+
+						echo $this->item_manage_icons('selector', $css_selector, array(
+							'disabled' => $disabled,
+							'context' => 'folders-menu',
+						));
 						?>
+
                     </div>
                 </li>
 				<?php
@@ -8605,107 +10283,132 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 			}
 
-			// add/modify selector form
-			function selector_add_modify_form($con, $tip, $labelCss = '', $section_name ='', $css_selector = '') {
-				$display = ucwords($con);
-				if (is_array($labelCss)) {
-					$display_selector_name = esc_attr($labelCss[0]);
-					// convert my custom quote escaping in recognised html encoded single/double quotes
-					$selector_css = esc_attr(str_replace('cus-', '&', $labelCss[1]));
+			function context_menu_form($base_key, $form){
+
+				$html = '';
+				$fields = '';
+
+				// output the fields
+				foreach ($form['fields'] as $key => $item){
+
+					// allow for inserting custom HTML
+					if (isset($item['custom'])){
+						$fields.= $item['custom'];
+						continue;
+					}
+
+					$class = $base_key.'-'.$key;
+					$name = str_replace('-', '_', $class);
+					$input_class = !empty($item['inputClass']) ? ' '.$item['inputClass'] : '';
+
+					$fields.= '<label>'.$item['label'].'</label>';
+
+					if ($item['type'] === 'input'){
+						$fields.= '<input type="text" class="'.$class.'-input'.$input_class.'" name="'.$name.'" />';
+					}
+
+				}
+
+				// add the button
+				$button_class = !empty($form['button']['class']) ? ' '.$form['button']['class'] : '';
+				$fields.= '<span class="tvr-button '.$base_key.'-button '.$button_class.'">'.$form['button']['text'].'</span>';
+
+				// wrap if required
+				if (!empty($form['wrap'])){
+					$wrap_class = !empty($form['wrapClass']) ? ' '.$form['wrapClass'] : '';
+					$html.= '<div class="mt-cm-form '.$base_key.'-form'.$wrap_class.'">'.$fields.'</div>';
 				} else {
-					$display_selector_name = '';
-					$selector_css = '';
+					$html.= $fields;
 				}
 
-				// save current sels in quick lookup array
-				if (!empty($selector_css)){
-					$this->sel_lookup[$selector_css] = 'strk-'.$section_name.'-'.$css_selector;
+				return $html;
+			}
+
+			function context_menu_actions($base_key, $config){
+
+				$icon_html = '';
+				$html = '';
+
+				// loop actions
+				foreach ($config['actions'] as $key => $item){
+
+					// allow for inserting custom HTML
+					if (!empty($item['custom'])){
+						$icon_html.= $item['custom'];
+						continue;
+					}
+
+					$icon_html.= $this->iconFont($key, $item);
 				}
 
-				?>
-                <div class='<?php echo $con; ?>-selector-form float-form hidden'>
-                    <!--<p class="tip">
+				// wrap if required
+				if (!empty($config['wrap'])){
+					$wrap_class = !empty($config['wrapClass']) ? ' '.$config['wrapClass'] : '';
+					$html.= '<div class="mt-cm-actions '.$base_key.'-actions'.$wrap_class.'">'.$icon_html.'</div>';
+				} else {
+					$html.= $icon_html;
+				}
 
-						<span><?php echo $tip; ?></span>
+				return $html;
+			}
 
-					</p>-->
-                    <p class="menu-sel-name-edit">
-                        <label><?php esc_html_e('Label:', 'microthemer'); ?></label>
-                        <span class="tvr-input-wrap selector-name-input-wrap">
-							<input type='text' class='selector-name-input' name='<?php echo $con; ?>_selector[label]' value='<?php echo esc_attr($display_selector_name); ?>' />
-						</span>
-                    </p>
-                    <p>
-                        <label><?php esc_html_e('Code:', 'microthemer'); ?></label>
-                        <span class="tvr-input-wrap selector-css-input-wrap">
-							<input type='text' class='selector-css-textarea' name='<?php echo $con; ?>_selector[css]' value='<?php echo $selector_css; ?>' />
-						</span>
+			// Output context menu content in a structured way
+			function context_menu_content($config){
 
-                    </p>
+				$base_key = $config['base_key'];
+				$title = !empty($config['title']) ? $config['title'] : esc_html__('Options', 'microthemer');
+				$class = !empty($config['class']) ? ' '.$config['class'] : '';
+				$id = !empty($config['id']) ? $config['id'] : 'cm-'.$base_key;
+				$html = '';
 
-					<?php echo $this->ui_toggle(
-						'selname_code_synced',
-						'conditional', // only wizard toggle has title/on class (easier than maintaining dynamically)
-						'conditional',
-						false,
-						'code-chained-icon tvr-icon selname-code-sync',
-						false,
-						// instruct tooltip to get content dynamically
-						array('dataAtts' => array(
-							'dyn-tt-root' => 'selname_code_synced'
-						))
-					); ?>
+				// loop through the sections
+				if (!empty($config['sections']) && is_array($config['sections'])){
+					foreach ($config['sections'] as $i => $section){
+						$html.= $section;
+					}
+				}
 
-                    <p class="sel-toggles">
-						<?php
-						if ($con == 'edit'){
-							?>
-                            <span class="polyfills">
-								<?php
-								/*foreach ($this->polyfills as $poly){
-									if ($this->preferences[$poly.'_by_default'] != 1){
-										$on = false;
-										if (!empty($this->options[$section_name][$css_selector][$poly])) {
-											$on = true;
-										}
-										echo $this->icon_control(false, $poly, $on, 'selector', $section_name, $css_selector);
-									}
-								}*/
-								?>
-							</span>
-							<?php
-							// output any disabled tab inputs
-							foreach ($this->combined_devices() as $key => $m_query){
-								// normalise $opts array for checking
-								if ($key == 'all-devices'){
-									$opts = $this->options;
-								} else {
-									if (empty($this->options['non_section']['m_query'][$key])){
-										continue;
-									}
-									$opts = $this->options['non_section']['m_query'][$key];
-								}
-								if (!empty($opts[$section_name][$css_selector]['tab']['disabled'])){
-									echo $this->icon_control(false,'disabled', true, 'tab-input', $section_name, $css_selector, $key);
-								}
-							}
-						}
+				return '
+			    <div id="'.$id.'" class="cm-'.$base_key.$class.'" data-title="'.$title.'">
+			        '. $html .'
+                </div>';
 
+			}
 
-						// translation friendly button display
-						$button_name = __("Create Selector", 'microthemer');
-						if ($display == 'Edit') {
-							$button_name = __("Save Selector", 'microthemer');
-						}
-						?>
-                        <span class='<?php echo $con; ?>-selector tvr-button'
-                              title="<?php echo esc_attr($button_name); ?>">
-							<?php echo esc_html($button_name); ?>
-						</span>
-                        <span class="cancel-<?php echo $con; ?>-selector cancel link"><?php esc_html_e('Cancel', 'microthemer'); ?></span>
-                    </p>
-                </div>
-				<?php
+			function context_menu_heading($heading = '', $config = array()){
+
+				$title_class = !empty($config['title_class'])
+					? ' '.$config['title_class']
+					: '';
+
+				return '
+			    <div class="mt-panel-header">
+                    <div class="mt-panel-title'.$title_class.'">'.$heading.'</div>
+                    '.( !empty($config['close']) ?  $this->iconFont('times-circle-regular', array('class' => 'close-context-menu')) : '').'                                   
+                </div>';
+			}
+
+			function layout_element_height($side, $abort = false){
+
+				if ($abort){
+					return '';
+				}
+
+				return ' style="height: ' . $this->preferences['layout'][$side]['size'] . 'px"';
+			}
+
+			function panel_resizers($config){
+				$d = $config['dimension'];
+				$grid_axis =  $d === 'width' ? 'column' : 'height';
+				$context = $config['context'];
+				$html = '';
+				for ($x = 1; $x <= $config['total']; $x++) {
+					$side = $x <= $config['side_division'] ? $config['side_1'] : $config['side_2'];
+					$html.= '<div class="mt-panel-resizer mt-'.$d.'-resizer-'.$x.' mt-'.$d.'-resizer '
+					        .$side.'-panel-resizer mt-'.$context.'-resizer-'.$x.'" 
+                 data-template-'.$grid_axis.'="'.$x.'" data-side="'.$side.'" data-context="'.$context.'"></div>';
+				}
+				return $html;
 			}
 
 			// section html
@@ -8761,12 +10464,12 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// determine the number of selectors in the array
 			function selector_count_state($array) {
 
-			    // with empty folder, might not be an array
-			    if (!is_array($array)){
-			        return 0;
-                }
+				// with empty folder, might not be an array
+				if (!is_array($array)){
+					return 0;
+				}
 
-			    $selector_count_state = count($array);
+				$selector_count_state = count($array);
 				$selector_count_recursive = count($array, COUNT_RECURSIVE);
 
 				// if the 2 values are the same, the $selector_count_state variable refers to an empty value
@@ -8782,9 +10485,10 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 			function css_group_icons(){
 
-			    // display pg icons
+				// display pg icons
 				$html = '
-				<ul class="styling-option-icons">';
+				<ul class="styling-option-icons">
+				    <li class="mt-panel-column-heading">'.esc_html__('CSS Properties', 'microthemer').'</li>';
 
 				// display the pg icons
 				$i = -1;
@@ -8799,31 +10503,56 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					$new_pg_cat = (!empty($first_item['new_pg_cat']) and empty($done[$property_group_name]))
 						? $first_item['new_pg_cat']
 						: false;
-					$close_pg_cat_li = $i === 0 ? '' : '</ul></li>';
+					$close_pg_cat_li = $i === 0 ? '' : '</div></li>';
 
 					// if new cat, close previous and start new
 					if ($new_pg_cat){
 						$html.= $close_pg_cat_li . '
-                        <li class="new-pg-cat">
-                            <ul class="pg-cat-sub">
-                                <li class="new-pg-cat-label">'.$new_pg_cat.'</li>';
+                        <li class="new-pg-cat new-pg-cat-'.$property_group_name.'">
+                            <div class="pg-cat-sub">
+                                <div class="new-pg-cat-label">'.$new_pg_cat.'</div>';
 						$done[$property_group_name] = true;
 					}
 
 					// icon
-					$html.='
-						 <li class="pg-icon pg-icon-'.$property_group_name.' '.$class.'"
-						 rel="'.$property_group_name.'" title="'.$this->property_option_groups[$property_group_name].'">
-						 </li>';
+					$icon_name = str_replace('_', '-', $property_group_name);
+					$icon_type = 'f';
+					$icon_dir = 'svg-min/';
+
+					if ($property_group_name === 'gradient'){
+						$icon_type = 'svg';
+					}
+
+					$label = $this->property_option_groups[$property_group_name];
+
+					$html.= $this->icon($icon_name, array(
+						'type' => $icon_type,
+						'dir' => $icon_dir,
+						'class' => 'pg-icon pg-icon-'.$property_group_name,
+						'rel' => $property_group_name,
+						'title' => $label,
+						'adjacentText' => array(
+							'text' => $label,
+							'class' => 'mti-text pg-icon-text-label'
+						),
+						'wrap' => array(
+							'class' => 'mti-wrap pg-icon-wrap pg-icon-wrap-' . $property_group_name,
+							'rel' => $property_group_name,
+							//'title' => $label,
+						),
+						// 'wrapClass' => $property_group_name. '-wrap',
+
+					));
+
 				}
 
 				// close new-pg-cat item and list
 				$html.='
-                    </ul></li>
+                    </div></li>
 				</ul>';
 
 				return $html;
-            }
+			}
 
 
 			// display property group icons and options
@@ -8848,47 +10577,18 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 				$html.=
 
-                    // whole property group
-                    $this->mt_hor_scroll_buttons('style', 'li') .
+					// whole property group
+					$this->mt_hor_scroll_buttons('style', 'li') .
 
-                    // single template/auto column
-                    $this->mt_hor_scroll_buttons('gridcolumns', 'li') .
+					// single template/auto column
+					$this->mt_hor_scroll_buttons('gridcolumns', 'li') .
 
-                    // single template/auto row
-                    $this->mt_hor_scroll_buttons('gridrows', 'li') .
-                    //$this->sidebar_size_controls() .
+					// single template/auto row
+					$this->mt_hor_scroll_buttons('gridrows', 'li') .
 
-                 '</ul>';
+					'</ul>';
 
 				return $html;
-			}
-
-			// Haven't found a nice way to slot this in.
-            // There are CSS issues with resizable needing scroll and absolute positing not fixing to bottom with scroll
-            // Using CSS resize because jQuery resize is really jerky
-			function sidebar_size_controls(){
-
-			    $sizes = array(
-				   '0' => esc_attr__('Collapse', 'microthemer'),
-                   'sm' => esc_attr__('Small', 'microthemer'),
-                   'md' => esc_attr__('Medium', 'microthemer'),
-                   'lg' => esc_attr__('Large', 'microthemer'),
-                   //'xl' => esc_attr__('Exra large', 'microthemer'),
-                );
-
-				$sizes_html = '';
-			    foreach ($sizes as $key => $label){
-				    $sizes_html.= '<span class="mt-sc-option mt-sc-option-'.$key.'" data-type="'.$key.'"
-				    title="'.$label.'"
-				    >'.$key.'</span>';
-                }
-
-				return '
-                <li class="mt-sidebar-controls">
-                    <span class="mt-sc-label">'.esc_html__('Size', 'microthemer').': </span>
-                    '.$sizes_html.'
-                    <span class="mt-sc-drag-handle" title="Drag sidebar size"></span>
-                </li>';
 			}
 
 			function mt_hor_scroll_buttons($type, $el = 'li'){
@@ -8986,7 +10686,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// does the selector contain any styles?
 			function selector_has_values($section_name, $css_selector, $array, $deep){
 
-			    return !empty($array['compiled_css']);
+				return !empty($array['compiled_css']);
 
 				/*$style_count_state = 0;
 				foreach ($this->propertyoptions as $property_group_name => $junk) {
@@ -9126,7 +10826,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				// main pg wrapper
 				$html ='
 				<li id="opts-'.$section_name.'-'.$css_selector.'-'.$property_group_name.'"
-						 class="group-tag group-tag-'.$property_group_name.' hidden '.$pg_show_class.'">';
+						 class="group-tag group-tag-'.$property_group_name.' '.$pg_show_class.'">';
 
 				// output all devices and MQ fields
 				$html.= $this->single_device_fields(
@@ -9225,6 +10925,19 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				return $html;
 			}
 
+			function back_to_properties($pg_slug){
+				return '
+                <div class="back-to-properties">
+                    '.$this->iconFont('arrow-alt-circle-left', array(
+						'class' => 'back-to-properties-icon',
+						'adjacentText' => array(
+							'text' => $this->property_option_groups[$pg_slug],
+							'class' => 'mti-text back-to-properties-text'
+						)
+					)).'
+                </div>';
+			}
+
 			// the options fields part of the property group (which can be added as templates)
 			function single_option_fields(
 				$section_name,
@@ -9269,10 +10982,19 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 				// do all-devices fields
 				$html = '
-				<div '.$id.' class="property-fields hidden property-'.$property_group_name.'
+				<div '.$id.' class="property-fields property-'.$property_group_name.'
 				property-fields-'. $key . ' ' . $conditional_classes. ' ' . $show_class.'">
 				<div class="pg-inner">
 					';
+
+
+				// option to go back to properties
+				$html.= $this->back_to_properties($property_group_name);
+
+				// line divider for horizontal tabbed grid fields
+				if ($property_group_name === 'grid'){
+					$html.= '<div class="grid-divider-or-spacer"></div>';
+				}
 
 				// merge to allow for new properties added to property-options.inc.php (array with values must come 2nd)
 				$property_group_array = array_merge($this->propertyoptions[$property_group_name], $property_group_array);
@@ -9372,43 +11094,43 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// compare the original set of media queries with a new config to detect deleted mqs
 			function deleted_media_queries($orig_media_queries, $new_media_queries){
 
-			    $deleted = false;
+				$deleted = false;
 
-                foreach($orig_media_queries as $key => $array){
-                    if (empty($new_media_queries[$key])){
-	                    $deleted[] = $key;
-                    }
-                }
+				foreach($orig_media_queries as $key => $array){
+					if (empty($new_media_queries[$key])){
+						$deleted[] = $key;
+					}
+				}
 
-                return $deleted;
-            }
+				return $deleted;
+			}
 
 			// compare the original set of media queries with a new config to detect deleted mqs
 			function clean_deleted_media_queries($orig_media_queries, $new_media_queries){
 
-			    if ($deleted = $this->deleted_media_queries($orig_media_queries, $new_media_queries)){
+				if ($deleted = $this->deleted_media_queries($orig_media_queries, $new_media_queries)){
 
-				    $non_section = &$this->options['non_section'];
+					$non_section = &$this->options['non_section'];
 
-				    foreach($deleted as $i => $key){
-					    if (!empty($non_section['m_query'][$key])){
-						    unset($non_section['m_query'][$key]);
-					    }
-					    if (!empty($non_section['important']['m_query'][$key])){
-						    unset($non_section['important']['m_query'][$key]);
-					    }
-				    }
+					foreach($deleted as $i => $key){
+						if (!empty($non_section['m_query'][$key])){
+							unset($non_section['m_query'][$key]);
+						}
+						if (!empty($non_section['important']['m_query'][$key])){
+							unset($non_section['important']['m_query'][$key]);
+						}
+					}
 
-				    // save
-                    update_option($this->optionsName, $this->options);
+					// save
+					update_option($this->optionsName, $this->options);
 
-				    /*$this->log(
-					    esc_html__('Deleted media query cleaned', 'microthemer'),
-					    '<pre>' . print_r($deleted, true) . print_r($this->options['non_section']['m_query'], true). '</pre>',
-					    'notice'
-				    );*/
+					/*$this->log(
+						esc_html__('Deleted media query cleaned', 'microthemer'),
+						'<pre>' . print_r($deleted, true) . print_r($this->options['non_section']['m_query'], true). '</pre>',
+						'notice'
+					);*/
 
-			    }
+				}
 
 			}
 
@@ -9416,21 +11138,18 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// This happens even when no selectors are showing, so a different approach is needed
 			function global_media_query_tabs(){
 
+				/*'.$this->icon('border-white').'
+				                           <span class="font-awesome-icon-test"></span>
+				                                                                  '.$this->icon('padding-margin', array('type' => 'sym')).'
+                     '.$this->icon('gradient', array('type' => 'svg')).'
+                     '.$this->icon('check-circle', array('type' => 'svg')).'*/
+
 				$html = '
-                <div class="query-tabs-wrap">
+                <div class="query-tabs-wrap pending-overflow-check">
                 
-                <span class="edit-mq show-dialog"
-                        title="' . esc_attr__('Edit media queries', 'microthemer') . '" rel="edit-media-queries">
-                        </span>
-                
-                
-                    <div class="query-tabs">';
-
-				/*<input class="device-focus" type="hidden"
-                        name="tvr_mcth[non_section][device_focus]"
-                        value="'.$this->preferences['mq_device_focus'].'" />*/
-
-				//$html.= print_r($this->combined_devices(), true);
+                    <div class="query-tabs menu-style-tabs">
+                    
+                    ';
 
 				// display tabs
 				foreach ($this->combined_devices() as $key => $m_query){
@@ -9441,26 +11160,23 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					// should the tab be active? - let JS handle this
 					//$class = ($this->preferences['mq_device_focus'] == $key) ? 'active' : '';
 
+					$menu_trigger = $this->iconFont('dots-horizontal', array(
+						'class' => 'item-context-menu devices-context-menu-trigger',
+						'data-forpopup' => "contextMenu"
+					));
+
 					$html.= '
-                                <span class="quick-opts-wrap tvr-fade-in mt-tab mq-tab mq-tab-'.$key.'" rel="'.$key.'">' .
-					        // disabled check is always done with JS after loading the selector, no need to check item-disabled class
+                            <span class="mt-tab mq-tab mq-tab-'.$key.'" rel="'.$key.'" title="' . esc_attr($m_query['query']). '">' .
+					        $menu_trigger .
 					        '<span class="mt-tab-txt mq-tab-txt">' . $m_query['label']. '</span>
-                                     <span class="quick-opts tvr-dots dots-above">
-                                        <div class="quick-opts-inner">'
-					        . $this->icon_control(false,'disabled', false, 'tab')
-					        . $this->clear_icon('tab'). '
-                                            <span class="tvr-icon info-icon" title="'.$m_query['query'].'"></span>
-                                        </div>
-                                     </span>
-                                </span>';
+                            </span>';
 				}
 
 
 				$html.= '
-    
-                        <div class="clear"></div>
-    
-                    </div>
+
+
+                </div>
                    
 				</div>' . $this->mt_hor_scroll_buttons('responsive', 'div');
 
@@ -9498,8 +11214,8 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 			function is_non_length_unit($factoryUnit, $prop){
 				return $factoryUnit === 's' || $factoryUnit === 'deg' || ($factoryUnit === ''); //&& $prop !== 'line_height' -
-                // we removed line-height too as this is just for setting units globally,
-                // and we don't want to change line-height from default non-unit when using 'ALL Units' option
+				// we removed line-height too as this is just for setting units globally,
+				// and we don't want to change line-height from default non-unit when using 'ALL Units' option
 			}
 
 			// check if !important should be used for CSS3 line
@@ -9529,7 +11245,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 				if ($con == 'mq') {
 
-				    // don't output media query if no values inside
+					// don't output media query if no values inside
 					if (!$this->ui_data_has_values($ui_data, false)){
 						return $sty;
 					}
@@ -9618,8 +11334,8 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 						// output JS compiled CSS selector code
 						$sty['data'].= $this->normalise_tabs(
-						   $this->normalise_line_breaks($sub_array['compiled_css']), $tab
-                        );
+							$this->normalise_line_breaks($sub_array['compiled_css']), $tab
+						);
 
 						//$sty['data'].= $this->normalise_line_breaks($sub_array['compiled_css']);
 
@@ -9678,7 +11394,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 				}
 				// return the modified $sty array
-                $close_mq = "\n}\n\n";
+				$close_mq = "\n}\n\n";
 				if ($con == 'mq') {
 					$sty['data'].= $close_mq;
 					if ($this->client_scss()){
@@ -9718,7 +11434,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			// update active-styles.css
 			function update_active_styles2($activated_from, $context = '') {
 
-			    // get path to active-styles.css
+				// get path to active-styles.css
 				$act_styles = $this->micro_root_dir.'active-styles.css';
 
 				// check for micro-themes folder and create if it doesn't exist
@@ -9744,29 +11460,29 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$scss_custom_code = '';
 				$custom_code = '';
 				if ( !empty($this->options['non_section']['hand_coded_css']) &&
-                     !empty(trim($this->options['non_section']['hand_coded_css'])) ){
+				     !empty(trim($this->options['non_section']['hand_coded_css'])) ){
 
-				    // format comment
-				    $name = esc_attr_x('Full Code Editor CSS', 'CSS comment', 'microthemer');
+					// format comment
+					$name = esc_attr_x('Full Code Editor CSS', 'CSS comment', 'microthemer');
 					$eq_str = $this->eq_str($name);
 					$custom_code_comment = "/*= $name $eq_str */\n\n";
 
 					// if the scss compiles in the browser
 					if ($this->client_scss()){
 
-					    // log raw SCSS for writing to active-styles.scss
-					    $scss_custom_code.= $custom_code_comment . $this->options['non_section']['hand_coded_css'] ."\n";
+						// log raw SCSS for writing to active-styles.scss
+						$scss_custom_code.= $custom_code_comment . $this->options['non_section']['hand_coded_css'] ."\n";
 
 						// include already compiled CSS
-					    if (!empty($this->options['non_section']['hand_coded_css_compiled'])){
+						if (!empty($this->options['non_section']['hand_coded_css_compiled'])){
 							$custom_code.= $custom_code_comment . $this->options['non_section']['hand_coded_css_compiled'] ."\n";
 						}
-                    }
+					}
 
-                    // server-side scss or no scss support
-                    else {
-	                    $custom_code.= $custom_code_comment . $this->options['non_section']['hand_coded_css'] ."\n";
-                    }
+					// server-side scss or no scss support
+					else {
+						$custom_code.= $custom_code_comment . $this->options['non_section']['hand_coded_css'] ."\n";
+					}
 
 				}
 
@@ -9788,7 +11504,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$anim_keyframes = '';
 
 				if ( !empty($this->options['non_section']['meta']['animations']['names']) and
-                     count($this->options['non_section']['meta']['animations']['names']) ){
+				     count($this->options['non_section']['meta']['animations']['names']) ){
 
 					// flag section with CSS comment
 					$name = esc_attr_x('Animations', 'CSS comment', 'microthemer');
@@ -9813,11 +11529,11 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				$sty['data'] = $title . $anim_keyframes . $custom_code . $sty['data'];
 				$sty['scss_data'] = $title . $anim_keyframes . $scss_custom_code . $sty['scss_data'];
 
-                /** UPDATE PREFERENCES */
+				/** UPDATE PREFERENCES */
 
-                $pref_array = array();
+				$pref_array = array();
 
-                // save the google font values
+				// save the google font values
 				$g_fonts = $this->get_item(
 					$this->options,
 					array('non_section', 'meta', 'g_fonts')
@@ -9830,8 +11546,8 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 				// store any js events
 				$pref_array['active_events'] = !empty($this->options['non_section']['active_events'])
-                    ? $this->options['non_section']['active_events']
-                    : array();
+					? $this->options['non_section']['active_events']
+					: array();
 
 				if ($activated_from != 'customised' and $context != __('Merge', 'microthemer')) {
 					$pref_array['theme_in_focus'] = $activated_from;
@@ -9843,6 +11559,10 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				}
 
 				$pref_array['num_saves'] = ++$this->preferences['num_saves'];
+
+				if (empty($this->preferences['auto_publish_mode'])){
+					$pref_array['num_unpublished_saves'] = ++$this->preferences['num_unpublished_saves'];
+				}
 
 				if ($this->savePreferences($pref_array) and $activated_from != 'customised') {
 					$this->log(
@@ -9861,23 +11581,25 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 
 				// get user config for draft
-                $css_files = array();
-				$file_stub = $this->preferences['draft_mode'] ? 'draft' : 'active';
+				$css_files = array();
+				$file_stub = $this->preferences['draft_mode'] && !$this->forcePublish  && empty($this->preferences['auto_publish_mode'])
+					? 'draft'
+					: 'active';
 
 				// if scss is enabled, write to SCSS file
-                if ($this->preferences['allow_scss']){
+				if ($this->preferences['allow_scss']){
 
-                    // add uncompiled scss to array
-	                $uncompiled = $this->client_scss() ? $sty['scss_data'] : $sty['data'];
-	                $file_name = $file_stub . '-styles.scss';
-	               /* $css_files[] = array(
-		                'name' => $file_name,
-		                'data' => $uncompiled
-	                );*/
+					// add uncompiled scss to array
+					$uncompiled = $this->client_scss() ? $sty['scss_data'] : $sty['data'];
+					$file_name = $file_stub . '-styles.scss';
+					/* $css_files[] = array(
+						 'name' => $file_name,
+						 'data' => $uncompiled
+					 );*/
 
-	                // write data to file so they can see their mistake
-	                $this->write_file($this->micro_root_dir . $file_name, $uncompiled);
-                }
+					// write data to file so they can see their mistake
+					$this->write_file($this->micro_root_dir . $file_name, $uncompiled);
+				}
 
 				// if server-side scss is enabled, compile on the server
 				if ($this->server_scss()){
@@ -9896,7 +11618,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						$action = esc_html__('View the error line (Ctrl + Alt + G)', 'microthemer');
 						$this->log(
 							esc_html__('Sass compilation error', 'microthemer'),
-							'<p>'.esc_html__('An error was found in your SCSS code which prevented it from
+							'<p>'.esc_html__('An error was found in your Sass code which prevented it from
 							being compiled into regular CSS code.', 'microthemer') . '</p>
 							<p><b>' . htmlentities($e->getMessage(), ENT_QUOTES, 'UTF-8').'</b></p>
 							<p>
@@ -9936,7 +11658,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				}
 
 				// write to the ie specific stylesheets if user defined
-				$this->update_ie_sheets();
+				//$this->update_ie_sheets();
 
 				// write any js code to external script file
 				$this->update_javascript();
@@ -9945,13 +11667,13 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 			function g_url_with_subsets($g_url = false, $found_gf_subsets = false, $gfont_subset = false){
 
-			    $g_url = $g_url !== false ? $g_url : $this->preferences['g_url'];
+				$g_url = $g_url !== false ? $g_url : $this->preferences['g_url'];
 
-			    if (empty($g_url)){
-			        return '';
-                }
+				if (empty($g_url)){
+					return '';
+				}
 
-			    $found_gf_subsets = $found_gf_subsets !== false ? $found_gf_subsets : $this->preferences['found_gf_subsets'];
+				$found_gf_subsets = $found_gf_subsets !== false ? $found_gf_subsets : $this->preferences['found_gf_subsets'];
 				$gfont_subset = $gfont_subset !== false ? $gfont_subset : $this->preferences['gfont_subset'];
 				$subsets = array();
 
@@ -9974,7 +11696,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				}
 
 				return $g_url;
-            }
+			}
 
 			// update the external JS file or add to head if that is enabled
 			// some hosts block the creation of .js files with PHP
@@ -9988,7 +11710,10 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					$pref_array['load_js'] = 0;
 				}
 				// always update file otherwise JS can't be cleared
-				$file_stub = $this->preferences['draft_mode'] ? 'draft' : 'active';
+				$file_stub = $this->preferences['draft_mode'] && !$this->forcePublish && empty($this->preferences['auto_publish_mode'])
+					? 'draft'
+					: 'active';
+
 				$script = $this->micro_root_dir.$file_stub.'-scripts.js';
 				$this->write_file($script, $val);
 				/*if (!$this->write_file($script, $val)){
@@ -10002,7 +11727,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 			}
 
 			// update ie specific stylesheets
-			function update_ie_sheets() {
+			/*function update_ie_sheets() {
 				if ( !empty($this->options['non_section']['ie_css']) and
 				     is_array($this->options['non_section']['ie_css']) ) {
 					foreach ($this->options['non_section']['ie_css'] as $key => $val) {
@@ -10022,7 +11747,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					// update the preferences so that the stylesheets are called in the <head>
 					$this->savePreferences($pref_array);
 				}
-			}
+			}*/
 
 
 			// write settings to .json file
@@ -10108,12 +11833,12 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 							}
 						}
 					}
-                }
+				}
 
 				// include preferences in export if passed in
-                if ($preferences){
-	                $json_data['non_section']['exported_preferences'] = $preferences;
-                }
+				if ($preferences){
+					$json_data['non_section']['exported_preferences'] = $preferences;
+				}
 
 				// set handcoded css to nothing if not marked for export
 				if ( empty($this->serialised_post['export_sections']['hand_coded_css'])) {
@@ -10126,11 +11851,11 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				}
 
 				// ie too
-				foreach ($this->preferences['ie_css'] as $key => $value) {
+				/*foreach ($this->preferences['ie_css'] as $key => $value) {
 					if ( empty($this->serialised_post['export_sections']['ie_css'][$key])) {
 						$json_data['non_section']['ie_css'][$key] = '';
 					}
-				}
+				}*/
 
 				// create debug selective export file if specified at top of script
 				if ($this->debug_selective_export) {
@@ -10251,7 +11976,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				}
 
 				// active_queries are just used for import now. Unset as they have served their purpose
-                unset($filtered_json['non_section']['active_queries']);
+				unset($filtered_json['non_section']['active_queries']);
 
 				// just for debugging
 				if ($this->debug_import) {
@@ -10306,12 +12031,12 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 				// json decode was successful
 
-                // if the export included workspace settings, save preferences and remove from data
-                // this is insurance agaist upgrade problems
-                if (!empty($json_array['non_section']['exported_preferences'])){
-				    update_option($this->preferencesName, $json_array['non_section']['exported_preferences']);
-				    unset($json_array['non_section']['exported_preferences']);
-                }
+				// if the export included workspace settings, save preferences and remove from data
+				// this is insurance agaist upgrade problems
+				if (!empty($json_array['non_section']['exported_preferences'])){
+					update_option($this->preferencesName, $json_array['non_section']['exported_preferences']);
+					unset($json_array['non_section']['exported_preferences']);
+				}
 
 				// replace mq keys, add new to the UI, add css units if necessary.
 				$filtered_json = $this->filter_incoming_data('import', $json_array);
@@ -10481,34 +12206,24 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 
 					// the hand-coded CSS of the imported settings needs to be appended to the original
 					foreach ($this->custom_code as $key => $arr){
+
+
+						$new_code = trim($new_settings['non_section'][$key]);
+						if (!empty($new_code)) {
+							$merged_settings['non_section'][$key] =
+								$orig_settings['non_section'][$key]
+								. "\n\n/* " . esc_html_x('Imported CSS', 'CSS comment', 'microthemer') . " */\n"
+								. $new_settings['non_section'][$key];
+						} else {
+							// the imported pack has no custom code so keep the original
+							$merged_settings['non_section'][$key] = $orig_settings['non_section'][$key];
+						}
+
 						// if regular main custom css or JS
-						if ($key == 'hand_coded_css' or $key == 'js'){
-							$new_code = trim($new_settings['non_section'][$key]);
-							if (!empty($new_code)) {
-								$merged_settings['non_section'][$key] =
-									$orig_settings['non_section'][$key]
-									. "\n\n/* " . esc_html_x('Imported CSS', 'CSS comment', 'microthemer') . " */\n"
-									. $new_settings['non_section'][$key];
-							} else {
-								// the imported pack has no custom code so keep the original
-								$merged_settings['non_section'][$key] = $orig_settings['non_section'][$key];
-							}
-						}
-						// if ie css
-                        elseif ($key == 'ie_css'){
-							foreach ($arr as $key2 => $arr2){
-								$new_code = trim($new_settings['non_section'][$key][$key2]);
-								if (!empty($new_code)) {
-									$merged_settings['non_section'][$key][$key2] =
-										$orig_settings['non_section'][$key][$key2]
-										. "\n\n/* " . esc_html_x('Code from design pack imported with Merge', 'CSS comment', 'microthemer') . " */\n"
-										. $new_settings['non_section'][$key][$key2];
-								} else {
-									// the imported pack has no custom code so keep the original
-									$merged_settings['non_section'][$key][$key2] = $orig_settings['non_section'][$key][$key2];
-								}
-							}
-						}
+						/*if ($key == 'hand_coded_css' or $key == 'js'){
+
+						}*/
+
 					}
 				}
 				// maybe do some more processing here
@@ -10760,7 +12475,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						'<p>' . esc_html__('The PHP server setting "Safe-Mode" is on.', 'microthemer')
 						. '</p><p>' . wp_kses(
 							sprintf(
-								__('<b>This isn\'t necessarily a problem. But if the design pack "%1$s" hasn\'t been created</b>, please create the directory %2$s manually and give it permission code 777.', 'microthemer'),
+								__('<b>This isn\'t necessarily a problem. But if the design pack "%s" hasn\'t been created</b>, please create the directory %s manually and give it permission code 777.', 'microthemer'),
 								$this->readable_name($name), $this->root_rel($this_micro_abs)
 							),
 							array( 'b' => array() )
@@ -10784,7 +12499,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						$this->import_pack_images_to_library($json_config_file, $name);
 					}
 					// add the dir to the file structure array
-                    $this->file_structure[$name] = $this->dir_loop($this->micro_root_dir . $name);
+					$this->file_structure[$name] = $this->dir_loop($this->micro_root_dir . $name);
 					ksort($this->file_structure);
 					//$this->dir_loop($this->micro_root_dir . $name);
 
@@ -10953,11 +12668,11 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 				// convert to array
 				if ($action == 'decode'){
 
-				    // if we can't decode using native PHP function
-				    if (!$json_array = json_decode($data, true)) {
+					// if we can't decode using native PHP function
+					if (!$json_array = json_decode($data, true)) {
 
 						// MT may be trying to decode data encoded by an older custom JSON class, rather than PHP native
-                        // so attempt to decode using legacy class
+						// so attempt to decode using legacy class
 						if( !class_exists('Moxiecode_JSON') ) {
 							require_once($this->thisplugindir . 'includes/class-json.php');
 						}
@@ -10969,11 +12684,11 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 							return false;
 						}
 
-					    /*$this->log(
-						    esc_html__('Legacy format data successfully decoded', 'microthemer'),
-						    '<p>' . esc_html__('Please contact themeover.com for help', 'microthemer') . '</p>',
-                           'info'
-					    );*/
+						/*$this->log(
+							esc_html__('Legacy format data successfully decoded', 'microthemer'),
+							'<p>' . esc_html__('Please contact themeover.com for help', 'microthemer') . '</p>',
+						   'info'
+						);*/
 
 					}
 					return $json_array;
@@ -11255,7 +12970,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						$this->log(
 							esc_html__('Move to library failed', 'microthemer'),
 							'<p>' . sprintf(
-								esc_html__('%1$s could not be moved to %2$s', 'microthemer'),
+								esc_html__('%s could not be moved to %s', 'microthemer'),
 								$filename,
 								$uploads['path']
 							) . '</p>',
@@ -11532,7 +13247,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 					if ( empty( $theme_data['AuthorURI'] ) ) {
 						$theme_data['Author'] = $theme_data['AuthorName'];
 					} else {
-						$theme_data['Author'] = sprintf( '<a href="%1$s" title="%2$s">%3$s</a>', $theme_data['AuthorURI'], esc_html__( 'Visit author homepage' ), $theme_data['AuthorName'] );
+						$theme_data['Author'] = sprintf( '<a href="%s" title="%s">%s</a>', $theme_data['AuthorURI'], esc_html__( 'Visit author homepage' ), $theme_data['AuthorName'] );
 					}
 				}
 				return $theme_data;
@@ -11651,7 +13366,7 @@ $this->show_me = '<pre>$media_queries_list: '.print_r($media_queries_list, true)
 						$this->log(
 							esc_html__('Directory rename error', 'microthemer'),
 							'<p>' . sprintf(
-								esc_html__('WordPress does not have permission to rename the directory %1$s to match your new theme name "%2$s".', 'microthemer'),
+								esc_html__('WordPress does not have permission to rename the directory %s to match your new theme name "%s".', 'microthemer'),
 								$this->root_rel($orig_name),
 								htmlentities($this->readable_name($_POST['theme_meta']['Name']))
 							) . $this->permissionshelp.'.</p>'
@@ -11747,7 +13462,7 @@ DateCreated: '.date('Y-m-d').'
 					// success message
 					$this->log(
 						'meta.txt '.$task,
-						'<p>' . sprintf( esc_html__('The %1$s file for the design pack was %2$s', 'microthemer'), 'meta.txt', $task ) . '</p>',
+						'<p>' . sprintf( esc_html__('The %s file for the design pack was %s', 'microthemer'), 'meta.txt', $task ) . '</p>',
 						'dev-notice'
 					);
 				}
@@ -11798,7 +13513,7 @@ DateCreated: '.date('Y-m-d').'
 					$this->log(
 						'readme.txt '.$task,
 						'<p>' . sprintf(
-							esc_html__('The %1$s file for the design pack was %2$s', 'microthemer'),
+							esc_html__('The %s file for the design pack was %s', 'microthemer'),
 							'readme.txt', $task
 						) . '</p>',
 						'dev-notice'
@@ -11943,6 +13658,30 @@ DateCreated: '.date('Y-m-d').'
 				}
 			}
 
+			// slightly modified version of wp_remote_fopen where we also get the response code
+			function wp_remote_fopen( $uri ) {
+
+			    $parsed_url = parse_url( $uri );
+
+				if ( ! $parsed_url || ! is_array( $parsed_url ) ) {
+					return false;
+				}
+
+				$options            = array();
+				$options['timeout'] = 10;
+
+				$response = wp_safe_remote_get( $uri, $options );
+
+				if ( is_wp_error( $response ) ) {
+					return false;
+				}
+
+				return array(
+				   'body' => wp_remote_retrieve_body( $response ),
+                   'code' => wp_remote_retrieve_response_code( $response )
+                );
+			}
+
 			// resize image using wordpress functions
 			function wp_resize($path, $w, $h, $dest, $crop = true){
 				$image = wp_get_image_editor( $path );
@@ -11994,7 +13733,7 @@ DateCreated: '.date('Y-m-d').'
 					$this->log(
 						esc_html__('Dimensions too big', 'microthemer'),
 						'<p>' . sprintf(
-							esc_html__('The resize dimensions you specified (%1$s x %2$s) are bigger than the original image (%3$s x %4$s). This is not allowed.', 'microthemer'),
+							esc_html__('The resize dimensions you specified (%s x %s) are bigger than the original image (%s x %s). This is not allowed.', 'microthemer'),
 							$max_width, $max_height, $width, $height
 						) . '</p>'
 					);
@@ -12059,10 +13798,10 @@ DateCreated: '.date('Y-m-d').'
 	if (!function_exists('tvr_microthemer_getOnlyValid')) {
 		function tvr_microthemer_getOnlyValid($p_event, &$p_header) {
 
-		    // avoid null byte hack (THX to Dominic Szablewski)
+			// avoid null byte hack (THX to Dominic Szablewski)
 			if ( strpos($p_header['filename'], chr(0) ) !== false ){
 				$p_header['filename'] = substr ( $p_header['filename'], 0, strpos($p_header['filename'], chr(0) ));
-            }
+			}
 
 			$info = pathinfo($p_header['filename']);
 
@@ -12073,11 +13812,11 @@ DateCreated: '.date('Y-m-d').'
 				// For MAC skip the ".image" files
 				if ($info['basename'][0] == '.' ){
 					return 0;
-                }
+				}
 
 				else {
 					return 1;
-                }
+				}
 
 			}
 
@@ -12125,11 +13864,11 @@ DateCreated: '.date('Y-m-d').'
 // frontend code - insert active-styles.css in head section if active
 if (!is_admin()) {
 
-    // no need to run MT frontend script on Oxygen intermediate iframe
-    // only one the actual site preview
-    if (isset($_GET['ct_builder']) && !isset($_GET['oxygen_iframe'])){
-        return false;
-    }
+	// no need to run MT frontend script on Oxygen intermediate iframe
+	// only one the actual site preview
+	if (isset($_GET['ct_builder']) && !isset($_GET['oxygen_iframe'])){
+		return false;
+	}
 
 	// admin class
 	if (!class_exists('tvr_microthemer_frontend')) {
@@ -12141,7 +13880,7 @@ if (!is_admin()) {
 			var $preferencesName = 'preferences_themer_loader';
 			// @var array $preferences Stores the ui options for this plugin
 			var $preferences = array();
-			var $version = '6.3.6.2';
+			var $version = '7.1.1.3';
 			var $microthemeruipage = 'tvr-microthemer.php';
 			var $file_stub = '';
 			var $min_stub = '';
@@ -12175,7 +13914,10 @@ if (!is_admin()) {
 
 				// default WP action order
 				$action_order = 999999;
-				$action_hook = 'wp_enqueue_scripts';
+				//$action_hook = 'wp_enqueue_scripts';
+				$action_hook = !empty($this->preferences['stylesheet_in_footer'])
+                    ? 'wp_footer'
+                    : 'wp_enqueue_scripts';
 
 				// logged out page view mode
 				add_action('init',  array(&$this, 'mt_nonlog'), $action_order);
@@ -12189,22 +13931,25 @@ if (!is_admin()) {
 				// add active-styles.css (if not preview)
 				if (!isset($_GET['tvr_micro'])) {
 
-				    // note changed from wp_print_styles on Feb 22nd 2018 as discovered it is deprecated
+					// note changed from wp_print_styles on Feb 22nd 2018 as discovered it is deprecated
 					// the inactive code was using wp_enqueue_scripts, so now the will be consistent
 
-                    // alternative order if user specifies stylesheet must come after Oxygen
-                    if (!empty($this->preferences['after_oxy_css'])){
-	                    $action_order = 11000000; // 11m
-	                    $action_hook = 'wp_head';
-                    }
+					// alternative order if user specifies stylesheet must come e.g. after Oxygen
+					if (!empty($this->preferences['stylesheet_order'])){
+						$action_order = intval($this->preferences['stylesheet_order']);
+						//$action_hook = 'wp_head';
+						$action_hook = !empty($this->preferences['stylesheet_in_footer'])
+							? 'wp_footer'
+							: 'wp_head';
+					}
 
-                    // add css
-                    add_action( $action_hook, array(&$this, 'add_css'), $action_order);
+					// add css
+					add_action( $action_hook, array(&$this, 'add_css'), $action_order);
 
-                    // add MT global stylesheet to login page unless specified otherwise
-                    if (!empty($this->preferences['global_styles_on_login'])){
-	                    add_action('login_enqueue_scripts', array(&$this, 'add_css'), $action_order);
-                    }
+					// add MT global stylesheet to login page unless specified otherwise
+					if (!empty($this->preferences['global_styles_on_login'])){
+						add_action('login_enqueue_scripts', array(&$this, 'add_css'), $action_order);
+					}
 
 				}
 
@@ -12282,49 +14027,49 @@ if (!is_admin()) {
 						die('Permission denied');
 					}
 				}
-            }
+			}
 
-            // perform redirect for e.g. Oxygen edit URL params for the current post
-            // this is more performant than getting the edit links in the quick edit menu
-            function mt_redirect(){
+			// perform redirect for e.g. Oxygen edit URL params for the current post
+			// this is more performant than getting the edit links in the quick edit menu
+			function mt_redirect(){
 
-			    // redirect to Oxygen edit page
-			    if ( isset($_GET['mto2_edit_link']) && function_exists('oxygen_add_posts_quick_action_link') ){
+				// redirect to Oxygen edit page
+				if ( isset($_GET['mto2_edit_link']) && function_exists('oxygen_add_posts_quick_action_link') ){
 
-				    $nonce = !empty($_GET['_wpnonce']) ? $_GET['_wpnonce'] : false;
-				    if ( current_user_can("administrator") and wp_verify_nonce( $nonce, 'mt_builder_redirect_check' ) ) {
-				        global $post;
+					$nonce = !empty($_GET['_wpnonce']) ? $_GET['_wpnonce'] : false;
+					if ( current_user_can("administrator") and wp_verify_nonce( $nonce, 'mt_builder_redirect_check' ) ) {
+						global $post;
 
-					    // try to get link
-					    $edit_link = oxygen_add_posts_quick_action_link(array(), $post);
+						// try to get link
+						$edit_link = oxygen_add_posts_quick_action_link(array(), $post);
 
-					    // we have a valid URL
-					    if (!empty($edit_link['oxy_edit'])){
+						// we have a valid URL
+						if (!empty($edit_link['oxy_edit'])){
 
-						    preg_match('/href="(.+?)"/', $edit_link['oxy_edit'], $matches);
+							preg_match('/href="(.+?)"/', $edit_link['oxy_edit'], $matches);
 
-                            if (!empty($matches[1])){
+							if (!empty($matches[1])){
 
-                                $edit_url = $matches[1];
+								$edit_url = $matches[1];
 
-	                            wp_redirect( esc_url($edit_url) );
-                            }
+								wp_redirect( esc_url($edit_url) );
+							}
 
-					    }
+						}
 
-					    else {
-					        // warn that edit lock might be in place
-                        }
+						else {
+							// warn that edit lock might be in place
+						}
 
-				    } else {
-					    die('Permission denied');
-				    }
+					} else {
+						die('Permission denied');
+					}
 
 
 
-                }
+				}
 
-            }
+			}
 
 			function init_mt_vars(){
 				// get_current_user_id() needs to be here (hooked function)
@@ -12405,8 +14150,9 @@ if (!is_admin()) {
 						$append = $this->num_save_append;
 					}
 
-					// special case for loading CSS after Oxygen
-					$add_styles = !empty($this->preferences['after_oxy_css']);
+					// use the $wp_styles->add() method rather than enqueu if order is specified
+                    // or loading stylesheets in footer which only works if using $wp_styles->add()
+					$add_styles = !empty($this->preferences['stylesheet_order']) || !empty($this->preferences['stylesheet_in_footer']);
 
 					// check if Google Fonts stylesheet needs to be called
 					if (!empty($this->preferences['g_fonts_used'])) {
@@ -12420,7 +14166,7 @@ if (!is_admin()) {
 					tvr_common::mt_enqueue_or_add($add_styles, $mt_handle, $formatted_url);
 
 					// check if ie-specific stylesheets need to be called
-					global $is_IE;
+					/*global $is_IE;
 					if ( $is_IE ) {
 
 						foreach ($this->preferences['ie_css'] as $key => $cond){
@@ -12432,7 +14178,7 @@ if (!is_admin()) {
 								tvr_common::mt_enqueue_or_add(true, $ie_handle, $path, 'conditional', $cond);
 							}
 						}
-					}
+					}*/
 
 					// UI frontend CSS
 					if (is_user_logged_in() || isset($_GET['mt_nonlog'])) {
@@ -12449,9 +14195,9 @@ if (!is_admin()) {
 			// get the current page for iframe-meta and loading WP page after clicking WP admin MT option
 			function currentPageURL() {
 
-			    return tvr_common::get_protocol() . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+				return tvr_common::get_protocol() . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
-			    /*$isSSL = (!empty($_SERVER["HTTPS"]) and $_SERVER["HTTPS"] == "on");
+				/*$isSSL = (!empty($_SERVER["HTTPS"]) and $_SERVER["HTTPS"] == "on");
 
 				// new system of getting page URL - didn't work with wp-login.php
 				global $wp;
@@ -12480,43 +14226,43 @@ if (!is_admin()) {
 			// add meta iframe-url tracker (for remembering the preview page)
 			function add_frontend_data($any) {
 
-			    if ( is_user_logged_in() || isset($_GET['mt_nonlog']) ) {
+				if ( is_user_logged_in() || isset($_GET['mt_nonlog']) ) {
 
-			        global $wp;
+					global $wp;
 
-				    $MTDynFrontData = array(
-					    'iframe-url' => rawurlencode(
-						    esc_url(
-						      tvr_common::strip_page_builder_and_other_params($this->currentPageURL()),
-                              null,
-                              'read'
-                            )
-                        ),
-					    'mt-show-admin-bar' => intval($this->preferences['admin_bar_preview']),
-                        'page-title' => get_the_title()
-				    );
+					$MTDynFrontData = array(
+						'iframe-url' => rawurlencode(
+							esc_url(
+								tvr_common::strip_page_builder_and_other_params($this->currentPageURL()),
+								null,
+								'read'
+							)
+						),
+						'mt-show-admin-bar' => intval($this->preferences['admin_bar_preview']),
+						'page-title' => get_the_title()
+					);
 
-				    // get Oxygen page width
-                    if ( function_exists('oxygen_vsb_get_page_width') ){
+					// get Oxygen page width
+					if ( function_exists('oxygen_vsb_get_page_width') ){
 
-	                   /* Maybe come back to this is issues using oxygen toolbar link for URL to load
-	                   $template_id = function_exists('oxygen_vsb_get_page_width')
-		                    ? oxygen_vsb_get_page_width()
-		                    : null;
-	                    $template_posts = function_exists('ct_get_templates_post')
-		                    ? ct_get_templates_post($template_id)
-		                    : null;*/
+						/* Maybe come back to this is issues using oxygen toolbar link for URL to load
+						$template_id = function_exists('oxygen_vsb_get_page_width')
+							 ? oxygen_vsb_get_page_width()
+							 : null;
+						 $template_posts = function_exists('ct_get_templates_post')
+							 ? ct_get_templates_post($template_id)
+							 : null;*/
 
-	                    $MTDynFrontData['oxygen'] = array(
-		                    'page-width' => intval( oxygen_vsb_get_page_width() ),
-                           /* 'template_id' => $template_id,
-                            'template_posts' => $template_posts,*/
-                        );
-                    }
+						$MTDynFrontData['oxygen'] = array(
+							'page-width' => intval( oxygen_vsb_get_page_width() ),
+							/* 'template_id' => $template_id,
+							 'template_posts' => $template_posts,*/
+						);
+					}
 
-				    ?>
+					?>
                     <script> window.MTDynFrontData = <?php echo json_encode( $MTDynFrontData ); ?>; </script>
-                    <?php
+					<?php
 				}
 			}
 
@@ -12548,18 +14294,12 @@ if (!is_admin()) {
 				}
 
 				if ( is_user_logged_in() || isset($_GET['mt_nonlog'])) {
-					// testing only - swap default jQuery with 2.x for future proofing
-					/*
-					$jq2 = false;
-					if ($jq2){
-						wp_deregister_script('jquery');
-						wp_register_script('jquery', ($this->thispluginurl.'js/jq2.js'));
-					}*/
 
-					wp_enqueue_script( 'jquery' );
+					wp_enqueue_script( 'jquery' ); // wp_enqueue_script( 'jquery' );
+					wp_enqueue_script( 'jquery-ui-tooltip');
 					wp_register_script( 'tvr_mcth_frontend',
 						$this->thispluginurl.'js'.$min.'/frontend.js?v='.$this->version, $frontendJS_deps );
-					wp_enqueue_script( 'tvr_mcth_frontend' );
+					wp_enqueue_script( 'tvr_mcth_frontend');
 				}
 
 				// enqueue any native wp libraries the user has specified
@@ -12588,8 +14328,9 @@ if (!is_admin()) {
 			function add_body_classes($classes){
 				global $post;
 				if ( isset( $post ) ) {
-					$classes[] = 'mt-'.$post->ID;
-					$classes[] = 'mt-'.$post->post_type.'-'.$post->post_name;
+					$pfx = !empty($this->preferences['page_class_prefix']) ? $this->preferences['page_class_prefix'] : 'mt';
+					$classes[] = $pfx.'-'.$post->ID;
+					$classes[] = $pfx.'-'.$post->post_type.'-'.$post->post_name;
 				}
 				return $classes;
 			}
@@ -12597,7 +14338,7 @@ if (!is_admin()) {
 			// add first and last classes to menus
 			function add_first_and_last_classes( $classes, $item, $args ) {
 
-                //wp_die('The menu stuff: '. '<pre>'.print_r($args->menu).'</pre>');
+				//wp_die('The menu stuff: '. '<pre>'.print_r($args->menu).'</pre>');
 
 				// store menu item count if not done already
 				if (empty($this->menu_item_counts[ $args->menu->slug ])){

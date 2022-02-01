@@ -14,8 +14,7 @@ import {
 	withSpokenMessages,
 	Placeholder,
 	Button,
-	IconButton,
-	Toolbar,
+	ToolbarGroup,
 	Disabled,
 	Tip,
 } from '@wordpress/components';
@@ -24,28 +23,30 @@ import { compose } from '@wordpress/compose';
 import PropTypes from 'prop-types';
 import { Icon, grid } from '@woocommerce/icons';
 import GridLayoutControl from '@woocommerce/editor-components/grid-layout-control';
-import { HAS_PRODUCTS } from '@woocommerce/block-settings';
 import {
 	InnerBlockLayoutContextProvider,
 	ProductDataContextProvider,
 } from '@woocommerce/shared-context';
 import { getBlockMap } from '@woocommerce/atomic-utils';
 import { previewProducts } from '@woocommerce/resource-previews';
+import { getSetting } from '@woocommerce/settings';
+import { blocksConfig } from '@woocommerce/block-settings';
 
 /**
  * Internal dependencies
  */
+import { getBlockClassName } from '../utils';
 import {
 	renderHiddenContentPlaceholder,
 	renderNoProductsPlaceholder,
-	getBlockClassName,
-} from '../utils';
+} from '../edit-utils';
 import {
 	DEFAULT_PRODUCT_LIST_LAYOUT,
 	getProductLayoutConfig,
 } from '../base-utils';
 import { getSharedContentControls, getSharedListControls } from '../edit';
 import Block from './block';
+import './editor.scss';
 
 /**
  * Component to handle edit mode of "All Products".
@@ -119,6 +120,10 @@ class Editor extends Component {
 						rows={ rows }
 						alignButtons={ alignButtons }
 						setAttributes={ setAttributes }
+						minColumns={ getSetting( 'min_columns', 1 ) }
+						maxColumns={ getSetting( 'max_columns', 6 ) }
+						minRows={ getSetting( 'min_rows', 1 ) }
+						maxRows={ getSetting( 'max_rows', 6 ) }
 					/>
 				</PanelBody>
 				<PanelBody
@@ -139,11 +144,14 @@ class Editor extends Component {
 
 		return (
 			<BlockControls>
-				<Toolbar
+				<ToolbarGroup
 					controls={ [
 						{
 							icon: 'edit',
-							title: __( 'Edit', 'woocommerce' ),
+							title: __(
+								'Edit inner product layout',
+								'woocommerce'
+							),
 							onClick: () => this.togglePreview(),
 							isActive: isEditing,
 						},
@@ -235,7 +243,7 @@ class Editor extends Component {
 						>
 							{ __( 'Cancel', 'woocommerce' ) }
 						</Button>
-						<IconButton
+						<Button
 							className="wc-block-all-products__reset-button"
 							icon={ <Icon srcElement={ grid } /> }
 							label={ __(
@@ -248,7 +256,7 @@ class Editor extends Component {
 								'Reset Layout',
 								'woocommerce'
 							) }
-						</IconButton>
+						</Button>
 					</div>
 				</div>
 			</Placeholder>
@@ -279,7 +287,7 @@ class Editor extends Component {
 		const blockTitle = this.getTitle();
 		const blockIcon = this.getIcon();
 
-		if ( ! HAS_PRODUCTS ) {
+		if ( blocksConfig.productCount === 0 ) {
 			return renderNoProductsPlaceholder( blockTitle, blockIcon );
 		}
 

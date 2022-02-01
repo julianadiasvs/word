@@ -26,7 +26,7 @@ require_once( EWWW_IMAGE_OPTIMIZER_PLUGIN_PATH . 'classes/class-ewwwio-backgroun
 /**
  * Processes media uploads in background/async mode.
  *
- * Uses a dual-queue system to track uploads to be optimized, handling them one at a time.
+ * Uses a db queue system to track uploads to be optimized, handling them one at a time.
  *
  * @see EWWWIO_Background_Process
  */
@@ -677,3 +677,35 @@ class EWWWIO_Test_Async_Handler extends WP_Async_Request {
 }
 global $ewwwio_test_async;
 $ewwwio_test_async = new EWWWIO_Test_Async_Handler();
+
+/**
+ * Handles a simulated async request used to test async requests for the debugger.
+ *
+ * @see WP_Async_Request
+ */
+class EWWWIO_Test_Optimize_Handler extends WP_Async_Request {
+
+	/**
+	 * The action name used to trigger this class extension.
+	 *
+	 * @access protected
+	 * @var string $action
+	 */
+	protected $action = 'ewwwio_test_optimize';
+
+	/**
+	 * Handles the test async request.
+	 *
+	 * Called via a POST request to verify that nothing is blocking or altering requests from the server to itself.
+	 */
+	protected function handle() {
+		session_write_close();
+		ewwwio_debug_message( '<b>' . __METHOD__ . '()</b>' );
+		check_ajax_referer( $this->identifier, 'nonce' );
+		if ( empty( $_POST['ewwwio_test_verify'] ) ) {
+			return;
+		}
+	}
+}
+global $ewwwio_test_optimize;
+$ewwwio_test_optimize = new EWWWIO_Test_Optimize_Handler();

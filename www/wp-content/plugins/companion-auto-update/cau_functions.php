@@ -1026,6 +1026,10 @@ function cau_list_outdated() {
 	if ( ! function_exists( 'get_plugins' ) ) {
         require_once ABSPATH . 'wp-admin/includes/plugin.php';
     }
+	
+	if( !function_exists( 'plugins_api' ) ) {
+		require_once( ABSPATH.'wp-admin/includes/plugin-install.php' );
+	}
 
 	foreach ( get_plugins() as $key => $value) {
 
@@ -1037,17 +1041,24 @@ function cau_list_outdated() {
 		foreach ( $value as $k => $v ) if( $k == "Name" ) $name = $v;
 		
 		// Get plugins tested up to version
-		if( !function_exists( 'plugins_api' ) ) require_once( ABSPATH.'wp-admin/includes/plugin-install.php' );
-		$api 			= plugins_api( 'plugin_information', array( 'slug' => wp_unslash( $actualSlug ) ) );
+		$api = plugins_api( 'plugin_information', array( 'slug' => wp_unslash( $actualSlug ), 'tested' => true ) );
 
 		// Version compare
 		$tested_version 	= substr( $api->tested, 0, 3 ); // Format version number
-		$current_version 	= substr( get_bloginfo( 'version' ), 0, 3 );  // Format version number
-		$version_difference = ($current_version - $tested_version); // Get the difference
-		// $tested_wp      	= ( empty( $api->tested ) || cau_version_compare( get_bloginfo( 'version' ), $api->tested, '<' ) );
 
-		if( $version_difference >= '0.3' )  {
-			$outdatedList[$name] = substr( $api->tested, 0, 3 );
+		// Check if "tested up to" version number is set
+		if( $tested_version != '' ) {
+
+			$current_version 	= substr( get_bloginfo( 'version' ), 0, 3 );  // Format version number
+			$version_difference = ( (int)$current_version - (int)$tested_version ); // Get the difference
+			// $tested_wp      	= ( empty( $api->tested ) || cau_version_compare( get_bloginfo( 'version' ), $api->tested, '<' ) );
+
+			if( $version_difference >= '0.3' )  {
+				$outdatedList[$name] = substr( $api->tested, 0, 3 );
+			}
+
+		} else {
+			$outdatedList[$name] = ''; // We'll catch this when sending the e-mail
 		}
 
 	}
@@ -1373,7 +1384,7 @@ function cau_delayed_updates__formated() {
 // Add "put on hold" timestamp to the database if it hasn't been set yet
 function cau_hold_updates() {
 
-	require_once( ABSPATH.'wp-admin/includes/plugin-install.php' );
+	if ( !function_exists( 'get_plugin_updates' ) ) require_once ABSPATH . 'wp-admin/includes/update.php';
 	$plugins = get_plugin_updates();
 
 	if ( !empty( $plugins ) ) {

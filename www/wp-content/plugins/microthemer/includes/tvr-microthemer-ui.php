@@ -9,6 +9,8 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
 $this->show_me = '<pre>$media_queries_list: '.print_r($this->oxygen_mqs, true). '</pre>' .
                  '<pre>$media_queries_list_above: '.print_r($media_queries_list_above, true). '</pre>';*/
 
+//$this->show_me = '<pre>layout: '.print_r($this->preferences['layout'], true). '</pre>';
+
 $debug_unlock = false;
 if ($debug_unlock){
 	$this->show_me.= '<pre>'.print_r($this->preferences['subscription'], true). '</pre>';
@@ -27,39 +29,56 @@ $dev_tasks = false;
 if ($dev_tasks and TVR_DEV_MODE){
 
     // update the option icons - after adding new properties
-	include $this->thisplugindir . 'includes/regenerate-option-icons.inc.php';
+	//include $this->thisplugindir . 'includes/regenerate-option-icons.inc.php';
 
 	// update the animation array - if new version of animate.css
 	include $this->thisplugindir . 'includes/regenerate-animations.inc.php';
+
+	// update the animation array - if new version of animate.css
+	include $this->thisplugindir . 'includes/layout-permutations.inc.php';
 }
 
 // set interface classes
-$ui_class = '';
-$this->preferences['admin_bar_preview'] ? $ui_class.= 'show-admin-bar' : $ui_class.= 'do-not-show-admin-bar';
+
+// don't show panel content that depends on an el by default, this class will be removed if a valid triggerEl
+$ui_class = 'mt-zero-elements tvr-no-sels hide-mt-suggestions';
+
+$this->preferences['admin_bar_preview'] ? $ui_class.= ' show-admin-bar' : $ui_class.= ' do-not-show-admin-bar';
 //$this->preferences['auto_capitalize'] ? $ui_class.= ' tvr-caps' : false;
-$this->preferences['dark_editor'] ? $ui_class.= ' dark-editor' : false;
+$this->preferences['mt_dark_mode'] ? $ui_class.= ' mt_dark_mode' : false;
 
 $this->preferences['buyer_validated'] ? $ui_class.= ' plugin-unlocked' : $ui_class.= ' free-trial-mode';
-
-
-
-$this->preferences['show_interface'] ? $ui_class.= ' show_interface' : false;
+$this->preferences['hide_interface'] ? $ui_class.= ' hide_interface' : false;
 ($this->preferences['css_important'] != 1) ? $ui_class.= ' manual-css-important' : false;
 $this->preferences['show_code_editor'] ? $ui_class.= ' show_code_editor' : false;
 $this->preferences['show_text_labels'] ? $ui_class.= ' show_text_labels' : false;
 $this->preferences['show_rulers'] ? $ui_class.= ' show_rulers' : false;
 $this->preferences['draft_mode'] ? $ui_class.= ' draft_mode' : false;
 $this->preferences['dock_wizard_right'] ? $ui_class.= ' dock_wizard_right' : false;
+$this->preferences['dock_settings_right'] ? $ui_class.= ' dock_settings_right' : false;
 $this->preferences['hover_inspect'] ? $ui_class.= ' hover_inspect' : false;
 $this->preferences['selname_code_synced'] ? $ui_class.= ' selname_code_synced' : false;
 $this->preferences['wizard_expanded'] ? $ui_class.= ' wizard_expanded' : false;
 $this->preferences['code_manual_resize'] ? $ui_class.= ' code_manual_resize' : false;
 $this->preferences['show_extra_actions'] ? $ui_class.= ' show_extra_actions' : false;
-!$this->preferences['allow_scss'] ? $ui_class.= ' instant_editing_enabled' : false;
+$this->preferences['specificity_preference'] ? $ui_class.= ' specificity_preference' : false;
+$this->preferences['auto_publish_mode'] ? $ui_class.= ' auto_publish_mode' : false;
+
+
+
+$this->preferences['dock_folders_left'] ? $ui_class.= ' dock_folders_left' : false;
+$this->preferences['dock_styles_left'] ? $ui_class.= ' dock_styles_left' : false;
 $this->preferences['dock_editor_left'] ? $ui_class.= ' dock_editor_left' : false;
-$this->preferences['dock_options_left'] ? $ui_class.= ' dock_options_left' : false;
+$this->preferences['full_height_left_sidebar'] ? $ui_class.= ' full_height_left_sidebar' : false;
+$this->preferences['full_height_right_sidebar'] ? $ui_class.= ' full_height_right_sidebar' : false;
+$this->preferences['expand_device_tabs'] ? $ui_class.= ' expand_device_tabs' : false;
+
+
+$ui_class.= ' mt-left-cols-'. $this->preferences['layout']['left']['effective_num_columns'];
+$ui_class.= ' mt-top-rows-'. $this->preferences['layout']['top']['effective_num_rows'];
+
+
 $this->preferences['detach_preview'] ? $ui_class.= ' detach_preview' : false;
-!empty($this->preferences['server_scss']) ? $ui_class.= ' server_scss' : false;
 !empty($this->preferences['show_sampled_values']) ? $ui_class.= ' show_sampled_values' : false;
 !empty($this->preferences['show_sampled_variables']) ? $ui_class.= ' show_sampled_variables' : false;
 !empty($this->preferences['tape_measure_slider']) ? $ui_class.= ' tape_measure_slider' : false;
@@ -99,6 +118,14 @@ if ($this->edge_mode['active']){
 		}
 	}
 }
+
+
+// set the css filters here so that favourites get updated regardless of display order of main filters
+$css_filters =  $this->display_css_filters();
+
+$for_main_ui = true;
+
+require_once('common-inline-assets.php');
 
 ?>
 
@@ -144,6 +171,7 @@ if ($this->edge_mode['active']){
         <!--<input type="text" id="tvr-width-input" class="property-input combobox" name="non_section[tvr_width_input]" value="" />-->
 
         <span id="inputWidthCalc"></span>
+        <span id="codeInputWidthCalc"></span>
 
 		<span id="ui-nonce"><?php echo wp_create_nonce('tvr_microthemer_ui_load_styles'); ?></span>
 		<span id="fonts-api" rel="<?php echo $this->thispluginurl.'includes/fonts-api.php'; ?>"></span>
@@ -169,6 +197,37 @@ if ($this->edge_mode['active']){
 		<span id='plugin-url' rel='<?php echo $this->thispluginurl; ?>'></span>
 		<span id='docs-url' rel='<?php echo 'admin.php?page=' . $this->docspage; ?>'></span>
 		<span id='tooltip_delay' rel='<?php echo $this->preferences['tooltip_delay']; ?>'></span>
+
+        <span id='inno-firewall-issue' rel='<?php echo $this->innoFirewall ? 1 : 0 ?>'></span>
+
+
+        <?php
+        // root toggle for manual resize of editor
+      /*  echo $this->ui_toggle(
+            'code_manual_resize',
+            esc_attr__('Make editor height drag resizable', 'microthemer'),
+            esc_attr__('Auto-set editor height', 'microthemer'),
+            $this->preferences['code_manual_resize'],
+            'code-manual-resize tvr-icon',
+            'code_manual_resize' // id
+        );*/
+
+        // root element highlight toggle
+        $keyboard = ' (Ctrl + Alt + H)';
+        echo $this->ui_toggle(
+	        'mt_highlight',
+	        esc_attr__('Enable highlighting', 'microthemer').$keyboard,
+	        esc_attr__('Disable highlighting', 'microthemer').$keyboard,
+	        0, // this gets turned on by JS (so classes get added too)
+	        'toggle-highlighting',
+	        'toggle-highlighting', // id
+	        array('dataAtts' => array(
+	            'fHTML' => 1,
+		        'no-save' => 1
+	        ))
+        );
+        ?>
+
 		<?php
 		// edge mode settings
 		if ($this->edge_mode['active']){
@@ -187,622 +246,510 @@ if ($this->edge_mode['active']){
 		<form method="post" name="tvr_microthemer_ui_serialised" id="tvr_microthemer_ui_serialised" autocomplete="off">
 			<textarea id="tvr-serialised-data" name="tvr_serialized_data"></textarea>
 		</form>
-		<?php
 
-		// classes that affect display of things in the ui
-		$main_class = '';
-
-		// log ie notice
-		//$this->ie_notice();
-
-		/*** Build Visual View ***/
-
-
-		?>
 		<form method="post" name="tvr_microthemer_ui_save" id="tvr_microthemer_ui_save" autocomplete="off">
-		<?php wp_nonce_field('tvr_microthemer_ui_save');?>
+		<?php wp_nonce_field('tvr_microthemer_ui_save'); ?>
 		<input type="hidden" name="action" value="tvr_microthemer_ui_save" />
 		<!--<textarea id="user-action" name="tvr_mcth[non_section][meta][user_action]"></textarea>-->
 
 
-		<div id="visual-view" class="<?php echo $main_class; ?>">
-
-			<div id="v-top-controls">
-
-				<div id='hand-css-area'>
-					<div id="custom-code-toolbar">
-						<?php
-
-						// hover inspect toggle
-						echo $this->hover_inspect_button();
-
-						// code view toggle
-						echo $this->code_view_icon();
-
-						?>
-						<!--<div class="heading">
-							<?php /*esc_html_e('Enter your own CSS or JavaScript code', 'microthemer'); */?>
-						</div>-->
-					</div>
-
-					<?php
-					// root toggle for manual resize of editor
-					echo $this->ui_toggle(
-						'code_manual_resize',
-						esc_attr__('Make editor height drag resizable', 'microthemer'),
-						esc_attr__('Auto-resize editor height', 'microthemer'),
-						$this->preferences['code_manual_resize'],
-						'editor-resize-icon tvr-icon',
-						'code_manual_resize' // id
-					);
-					?>
-
-					<div id="code-editors-wrap" class="tvr-editor-area">
-						<div id="css-tab-areas" class="query-tabs css-code-tabs">
-						<span class="edit-code-tabs show-dialog"
-							title="<?php esc_attr_e('Edit custom code tabs', 'microthemer'); ?>" rel="edit-code-tabs">
-						</span>
-
-							<?php
-                            //print_r($this->custom_code_flat);
-
-							// save the configuration of the css tab
-							$css_focus = !empty($this->preferences['css_focus'])
-                                ? $this->preferences['css_focus']
-                                : 'all-browsers';
-
-							foreach ($this->custom_code_flat as $key => $arr) {
-
-							    //if ($this->preferences['hide_ie_tabs'] || )
-
-                                if ($arr['tab-key'] === 'all-browsers'){
-	                                $arr['label'] = $this->preferences['allow_scss'] ? 'SCSS' : 'CSS';
-                                }
-
-								if ($key == 'hand_coded_css' or
-                                    $key == 'js' or
-                                    empty($this->preferences['hide_ie_tabs'])){
-									echo '<span class="css-tab mt-tab css-tab-'.$arr['tab-key'].' show" rel="'.$arr['tab-key'].'">'.$arr['label'].'</span>';
-								}
-
-
-							}
-
-							?>
-							<!--<input class="css-focus" type="hidden"
-								name="tvr_mcth[non_section][css_focus]"
-								value="<?php /*echo $css_focus; */?>" />-->
-						</div>
-						<div id="tvr-inner-code" class="tvr-inner-code">
-							<?php
-							foreach ($this->custom_code_flat as $key => $arr) {
-
-							    $code = '';
-							    $include_editor = false;
-
-								if ($key == 'hand_coded_css' or $key == 'js'){
-									$opt_arr = $this->options['non_section'];
-									$name = 'tvr_mcth[non_section]';
-									$include_editor = true;
-								} else {
-									$opt_arr = !empty( $this->options['non_section']['ie_css'])
-                                        ? $this->options['non_section']['ie_css']
-                                        : array();
-									$name = 'tvr_mcth[non_section][ie_css]';
-									$include_editor = empty($this->preferences['hide_ie_tabs']);
-								}
-
-								if (!$include_editor){
-								    continue;
-                                }
-
-								if (!empty($opt_arr[$key])){
-									$code = htmlentities($opt_arr[$key], ENT_QUOTES, 'UTF-8');
-								}
-
-								$name.= '['.$key.']';
-
-								if ($arr['tab-key'] == $css_focus){
-									$show_c = 'show';
-								} else {
-									$show_c = '';
-								}
-
-								?>
-								<div rel="<?php echo $arr['tab-key']; ?>"
-									 class="mt-full-code mt-full-code-<?php echo $arr['tab-key']; ?> hidden
-									 <?php echo $show_c; ?>" data-code-type="<?php echo $arr['type']; ?>">
-
-                                    <div class="css-code-wrap">
-										<textarea id='css-<?php echo $arr['tab-key']; ?>' class="hand-css-textarea"
-                                                  data-mode="<?php echo $arr['type']; ?>"
-											 name="<?php echo $name; ?>" autocomplete="off"><?php echo $code; ?></textarea>
-									</div>
-
-								</div>
-
-							<?php
-							}
-							?>
-						</div>
-					</div>
-				</div>
-
-
-				<div id="advanced-wizard">
-
-					<div id="selector-naming">
-
-						<?php
-						// alias for hover inspect button, which will vary in size, so easier to have as inline-block element here
-						echo $this->hover_inspect_button(false, esc_html__('Cancel', 'microthemer'));
-						?>
-
-						<div class="heading dialog-header naming-header">
-							<span class="dialog-icon"></span>
-							<span class="text"><?php esc_html_e('Element targeting', 'microthemer'); ?> <!--<a href="#" target="_blank">(learn how)</a>--></span>
-
-						</div>
-
-						<div class="refine-target-controls">
-							<span class="tvr-prev-sibling refine-button disabled"
-								  title="<?php esc_attr_e("Previous element", 'microthemer'); ?>">&lArr;</span>
-							<div class="updown-wrap">
-							<span class="tvr-parent refine-button disabled"
-								  title="<?php esc_attr_e("Parent element", 'microthemer'); ?>">&uArr;</span>
-							<span class="tvr-child refine-button disabled"
-								  title="<?php esc_attr_e("Child element", 'microthemer'); ?>">&dArr;</span>
-							</div>
-									<span class="tvr-next-sibling refine-button disabled"
-										  title="<?php esc_attr_e("Next element", 'microthemer'); ?>">&rArr;</span>
-						</div>
-
-						<div class="naming-fields">
-
-							<div class="quick-wrap wiz-name">
-								<label class="wizard-name-label" title="<?php esc_attr_e("Microthemer will auto-generate a label that simply 'describes' the element(s) you target. Change the label as you please.", 'microthemer'); ?>"><?php esc_html_e('Label', 'microthemer'); ?></label>
-								<label class="wizard-code-label" title="<?php esc_attr_e("The selector label is synced with CSS code. \nEnter/edit CSS code.", 'microthemer'); ?>"><?php esc_html_e('Code', 'microthemer'); ?></label>
-								<span class="tvr-input-wrap wizard-name-wrap" >
-									<input id='wizard-name' type='text' class='wizard-name wizard-input' name='wizard_name' value='' />
-									<?php echo $this->ui_toggle(
-										'selname_code_synced',
-										esc_attr__('Sync selector label with code', 'microthemer'),
-										esc_attr__('Unsync selector label with code', 'microthemer'),
-										$this->preferences['selname_code_synced'],
-										'code-chained-icon tvr-icon selname-code-sync',
-										'selname_code_synced',
-										array('dataAtts' => array(
-											'fhtml' => 1 // for quick options font. Note: $.data() is case insensitive
-										))
-
-									); ?>
-
-									<div id="css-filters">
-										<?php
-										echo $this->icon_control(
-											false,
-											'show_css_filters',
-											false, // never show on page load
-											'show_css_filters',
-											'show_css_filters'
-										);
-
-										// css filter favourites
-										echo '
-									<ul id="fav-filters" class="css-filter-list">'.$this->fav_css_filters.'</ul>';
-										?>
-									</div>
-								</span>
-								<span class="num-els-icon-wrap">
-
-								</span>
-
-
-
-							</div>
-
-							<div class="quick-wrap wiz-folder">
-								<label title="<?php esc_attr_e("Place your selector into a folder. \nJust to keep your styles organised", 'microthemer'); ?>"><?php esc_html_e('Folder', 'microthemer'); ?></label>
-									<span class="tvr-input-wrap wizard-folder-wrap" >
-										<input type="text" class="combobox wizard-folder has-arrows wizard-input"
-											   id="wizard_folder" name="wizard_folder" rel="cur_folders" value=""
-											   data-ph-title="<?php esc_attr_e("Enter or select a folder", 'microthemer'); ?>" />
-										<span class="combo-arrow"></span>
-									</span>
-							</div>
-
-
-
-						</div>
-
-						<div id="create-sel-wrap" class="create-sel-wrap">
-
-							<div class='wizard-add tvr-button'>
-								<span class="mt-full-label wizard-add"><?php esc_html_e('Create selector', 'microthemer'); ?></span>
-								<span class="creating-code-sel"></span>
-							</div>
-							<?php /*<span id="update-sel-info" class="tvr-icon info-icon" title="<?php esc_attr_e("Update selector:
-	NOTE: current selector will be renamed/reorganised if you change the Name or Folder fields above.", 'microthemer'); ?>"></span>*/ ?>
-							<div id="wizard-update-cur" class='wizard-update-cur tvr-button tvr-blue'>
-								<span class="mt-full-label wizard-update-cur">
-									<?php esc_html_e('Update selector', 'microthemer'); ?>
-								</span>
-							</div>
-
-						</div>
-
-						<?php
-						echo $this->ui_toggle(
-							'wizard_expanded',
-							esc_attr__('Show advanced targeting options', 'microthemer'),
-							esc_attr__('Hide advanced targeting options', 'microthemer'),
-							$this->preferences['wizard_expanded'],
-							'wizard-expand-toggle',
-							false,
-							array(
-								'text' => 'conditional',
-								'dataAtts' => array(
-									'text-pos' => esc_attr__('Show advanced', 'microthemer'),
-									'text-neg' => esc_attr__('Hide advanced', 'microthemer'),
-								),
-							)
-						);
-						?>
-
-						<span class="cancel-wizard cancel tvr-icon close-icon"
-							  title="<?php esc_attr_e("Close the selector wizard", 'microthemer'); ?>"></span>
-
-						<?php
-						echo $this->ui_toggle(
-							'dock_wizard_right',
-							esc_attr__('Dock to right', 'microthemer'),
-							esc_attr__('Dock to top', 'microthemer'),
-							$this->preferences['dock_wizard_right'],
-							'dock-toggle'
-						);
-						?>
-
-
-
-					</div>
-
-					<div id="adv-tabs" class="query-tabs">
-						<?php
-						// save the configuration of the css tab
-						if (empty($this->preferences['adv_wizard_tab'])){
-							$adv_wizard_focus = 'refine-targeting';
-						} else {
-							$adv_wizard_focus = $this->preferences['adv_wizard_tab'];
-						}
-						$tab_headings = array(
-							'html-inspector' => esc_html__('HTML', 'microthemer'),
-							'css-inspector' => esc_html__('Styles', 'microthemer'),
-							'css-computed' => esc_html__('Computed', 'microthemer'),
-							'refine-targeting' => esc_html__('Targeting', 'microthemer'),
-						);
-						foreach ($tab_headings as $key => $value) {
-							if ($key == $adv_wizard_focus){
-								$active_c = 'active';
-							} else {
-								$active_c = '';
-							}
-							echo '<span class="adv-tab mt-tab adv-tab-'.$key.' show '.$active_c.'" rel="'.$key.'">'.$tab_headings[$key].'</span>';
-						}
-						// this is redundant (preferences store focus) but kept for consistency with other tab remembering
-						?>
-						<!--<input class="adv-wizard-focus" type="hidden"
-							   name="tvr_mcth[non_section][adv_wizard_focus]"
-							   value="<?php /*echo $adv_wizard_focus; */?>" />-->
-					</div>
-
-					<div class="wizard-panes">
-
-						<div class="adv-area-html-inspector adv-area hidden <?php
-						if ($adv_wizard_focus == 'html-inspector') {
-							echo 'show';
-						}?>">
-
-							<div class="heading">
-								<span class="text"><?php esc_html_e('Page HTML', 'microthemer'); ?></span>
-							</div>
-
-
-							<div id="nav-bread">
-
-								<div id="dom-bread" class="drag-port">
-									<div class="drag-containment">
-										<div id="full-breadcrumbs" class="drag-content"></div>
-									</div>
-								</div>
-
-							</div>
-
-
-							<div id="html-preview" class="wizard-inner scrollable-area">
-
-								<div class="css-code-wrap">
-									<textarea name="inspector_html" class="dont-serialize"></textarea>
-									<pre id="wizard_inspector_html" class="wizard_inspector_html"
-										 data-mode="html"></pre>
-								</div>
-
-								<?php // it would ne nice if mirror could work without this. ace.edit() needs work ?>
-								<div class="css-code-wrap mirror">
-									<textarea name="inspector_html_mirror" class="dont-serialize"></textarea>
-									<pre id="wizard_inspector_html_mirror" class="wizard_inspector_html"
-										 data-mode="html"></pre>
-								</div>
-
-
-								<?php
-								/*
-								?>
-								echo $this->ui_toggle(
-									'ace_full_page_html',
-									esc_attr__('Show full page HTML', 'microthemer'),
-									esc_attr__('Show reduced HTML', 'microthemer'),
-									$this->preferences['ace_full_page_html'],
-									'full-page-html'
-								);
-								*/
-								?>
-
-							</div>
-
-
-
-						</div>
-
-
-						<div class="adv-area-css-inspector adv-area hidden <?php
-						if ($adv_wizard_focus == 'css-inspector') {
-							echo 'show';
-						}
-						?>">
-
-							<div id="actual-styles" class="actual-styles wizard-inner scrollable-area"></div>
-
-						</div>
-
-
-						<div class="adv-area-css-computed adv-area hidden <?php
-						if ($adv_wizard_focus == 'css-computed') {
-							echo 'show';
-						}
-						?>">
-
-							<div class="css-inner-wrap wizard-inner scrollable-area">
-								<div id="html-computed-css">
-
-									<?php
-									$i = 1;
-									foreach ($this->property_option_groups as $property_group => $pg_label) {
-										?>
-										<ul id="comp-<?php echo $property_group; ?>"
-											class="accordion-menu property-menu <?php if ($i&1) { echo 'odd'; } ?>">
-											<li class="css-group-heading accordion-heading">
-												<span class="menu-arrow accordion-menu-arrow tvr-icon" title="<?php esc_attr_e("Open/close group", 'microthemer'); ?>"></span>
-												<span class="text-for-group"><?php echo $pg_label; ?></span>
-											</li>
-											<?php
-											++$i;
-											?>
-										</ul>
-									<?php
-									}
-									?>
-								</div>
-							</div>
-
-						</div>
-
-
-						<div id="refine-targeting-pane" class="adv-area-refine-targeting adv-area hidden <?php
-						if ($adv_wizard_focus == 'refine-targeting') {
-							echo 'show';
-						}
-						?>">
-
-							<div class="heading">
-
-                                <span class="text"><?php esc_html_e('Targeting suggestions', 'microthemer'); ?></span>
-
-                                <?php
-                                $specificity_high = !empty($this->preferences['specificity_preference']) ? ' on' : '';
-                                ?>
-                                <div class="ui-toggle uit-par specificity-preference<?php echo $specificity_high; ?>" data-aspect="specificity_preference">
-                                    <span class="specificity-label"
-                                          title=" <?php esc_attr_e('Sort by specificity', 'microthemer'); ?>">
-                                        <?php esc_html_e('Specificity', 'microthemer'); ?>:
-                                    </span>
-                                    <span class="specificity-low ui-toggle"
-                                          title=" <?php esc_attr_e('favour classes', 'microthemer'); ?>">
-                                        <?php esc_html_e('low', 'microthemer'); ?>
-                                    </span>
-                                    <span class="specificity-high ui-toggle"
-                                          title=" <?php esc_attr_e('favour ids', 'microthemer'); ?>">
-                                        <?php esc_html_e('high', 'microthemer'); ?>
-                                    </span>
+		<div id="visual-view" class="visual-view">
+
+			<div id="mt-top-controls">
+
+                <div id='hand-css-area' class="tvr-editor-area">
+
+                    <div id="css-tab-areas" class="query-tabs menu-style-tabs css-code-tabs">
+                    <span class="edit-code-tabs show-dialog"
+                          title="<?php esc_attr_e('Edit custom code tabs', 'microthemer'); ?>" rel="edit-code-tabs">
+                    </span>
+
+                        <?php
+                        //print_r($this->custom_code_flat);
+
+                        // save the configuration of the css tab
+                        $css_focus = !empty($this->preferences['css_focus'])
+                            ? $this->preferences['css_focus']
+                            : 'all-browsers';
+
+                        foreach ($this->custom_code_flat as $key => $arr) {
+
+                            //if ($this->preferences['hide_ie_tabs'] || )
+
+                            if ($arr['tab-key'] === 'all-browsers'){
+                                $arr['label'] = $this->preferences['allow_scss'] ? 'SCSS' : 'CSS';
+                            }
+
+                            if ($key == 'hand_coded_css' or
+                                $key == 'js' or
+                                empty($this->preferences['hide_ie_tabs'])){
+                                echo '<span class="css-tab mt-tab css-tab-'.$arr['tab-key'].' show" rel="'.$arr['tab-key'].'">'.$arr['label'].'</span>';
+                            }
+
+
+                        }
+
+                        ?>
+                        <!--<input class="css-focus" type="hidden"
+                            name="tvr_mcth[non_section][css_focus]"
+                            value="<?php /*echo $css_focus; */?>" />-->
+                    </div>
+                    <div id="tvr-inner-code" class="tvr-inner-code">
+                        <?php
+                        foreach ($this->custom_code_flat as $key => $arr) {
+
+                            $code = '';
+	                        $opt_arr = $this->options['non_section'];
+	                        $name = 'tvr_mcth[non_section]';
+
+                           /* $include_editor = false;
+
+                            if ($key == 'hand_coded_css' or $key == 'js'){
+
+                                $include_editor = true;
+                            } else {
+                                $opt_arr = !empty( $this->options['non_section']['ie_css'])
+                                    ? $this->options['non_section']['ie_css']
+                                    : array();
+                                $name = 'tvr_mcth[non_section][ie_css]';
+                                $include_editor = empty($this->preferences['hide_ie_tabs']);
+                            }
+
+                            if (!$include_editor){
+                                continue;
+                            }*/
+
+                            if (!empty($opt_arr[$key])){
+                                $code = htmlentities($opt_arr[$key], ENT_QUOTES, 'UTF-8');
+                            }
+
+                            $name.= '['.$key.']';
+
+                            if ($arr['tab-key'] == $css_focus){
+                                $show_c = 'show';
+                            } else {
+                                $show_c = '';
+                            }
+
+                            ?>
+                            <div rel="<?php echo $arr['tab-key']; ?>"
+                                 class="mt-full-code mt-full-code-<?php echo $arr['tab-key']; ?> hidden
+                                 <?php echo $show_c; ?>" data-code-type="<?php echo $arr['type']; ?>">
+
+                                <div class="css-code-wrap">
+                                    <textarea id='css-<?php echo $arr['tab-key']; ?>' class="hand-css-textarea"
+                                              data-mode="<?php echo $arr['type']; ?>"
+                                              name="<?php echo $name; ?>" autocomplete="off"><?php echo $code; ?></textarea>
                                 </div>
-							</div>
+
+                            </div>
+
+                            <?php
+                        }
+                        ?>
+                    </div>
+
+                </div>
 
 
-							<?php /*<span id="n-els" title="<?php esc_attr_e('Number of elements a selector targets',
-								'microthemer'); ?>">N</span> */ ?>
-
-							<div class="wizard-inner scrollable-area">
-
-								<ul id="code-suggestions"></ul>
-
-								<div id="targets-nothing" class="hidden">
-
-									<div id="nothing-invalid" class="hidden">
-										<div class="targets-nothing-heading">
-											<?php echo esc_html__('Invalid selector', 'microthemer'); ?>:
-										</div>
-										<ul id="targets-nothing-invalid"></ul>
-									</div>
+                <div id="tvr-nav" class="tvr-nav">
 
 
-									<div id="nothing-valid" class="hidden">
-										<div class="targets-nothing-heading">
-											<?php echo esc_html__('Selectors that target zero elements', 'microthemer'); ?>:
-										</div>
-										<ul id="targets-nothing-sels"></ul>
-									</div>
+                    <div id="current-folder-item" class="tvr-input-wrap">
 
-								</div>
+                        <div id="quick-nav" class="mt-no-flex">
 
-							</div>
-						</div>
+		                    <?php
+		                    echo
+			                    $this->iconFont('arrow-alt-circle-left-regular', array(
+				                    'id' => 'vb-focus-prev',
+				                    'class' => 'scroll-buttons',
+				                    'title' => esc_attr__("Previous selector (Ctrl+Alt+,)", 'microthemer'),
+			                    ))
+			                    .
+			                    $this->iconFont('arrow-alt-circle-right-regular', array(
+				                    'id' => 'vb-focus-next',
+				                    'class' => 'scroll-buttons mt-icon-divider',
+				                    'title' => esc_attr__("Next selector (Ctrl+Alt+.)", 'microthemer'),
+			                    ))
+		                    ?>
+
+                        </div>
+
+                        <span class="bc-sep mt-no-flex"></span>
+
+                        <?php //echo  $this->svg('chevron');  debug later ?>
+
+                        <div id="tvr-main-menu" class="tvr-main-menu-wrap hierarchy-item mt-no-flex">
+
+		                    <?php
+		                    echo $this->iconFont('folder', array(
+			                    'id' => 'main-menu-tip-trigger',
+			                    'class' => 'folder-icon main-menu-tip-trigger',
+			                    'title' => esc_attr__('View all folders', 'microthemer'),
+			                    'data-trigger' => 'all',
+			                    'data-forpopup' => 'folders',
+		                    ));
+		                    ?>
+
+                        </div>
+
+                        <span id="sec-in-focus" class="quick-menu-text sec-in-focus"
+                              data-trigger="folder" data-forpopup="folders"
+                              title="<?php echo esc_attr__('View current folder', 'microthemer'); ?>"></span>
+                        <input id="sec-hierarchy-input" type="text" rel="cur_folders" data-appto="#style-components" spellcheck="false"
+                               class="sec-hierarchy-input hierarchy-input combobox has-arrows" name="sec_hierarchy_input" value="">
+                        <span class="combo-arrow cur-item-dropdown"></span>
+                        <span class="bc-sep folder-sel-sep mt-no-flex"></span>
+
+                        <?php
+                        echo $this->ui_toggle(
+	                        'selector_auto_name',
+	                        esc_attr__('Enable auto-naming', 'microthemer'),
+	                        esc_attr__('Disable auto-naming (temporarily)', 'microthemer'),
+	                        !empty($this->preferences['selector_auto_name']),
+	                        'selector-auto-name ' . $this->iconFont('bolt', array(
+		                        'onlyClass' => 1
+	                        )),
+	                        'selector_auto_name',
+	                        array('dataAtts' => array(
+		                        'no-save' => 1
+	                        ))
+                        );
+
+                        ?>
+
+                        <input id="sel-hierarchy-input" type="text" rel="alt_label_suggestions"
+                               data-appto="#style-components" spellcheck="false" class="sel-hierarchy-input hierarchy-input combobox has-suggestions" name="sel_hierarchy_input" value=""
+                               title="<?php echo esc_attr__('Edit selector label', 'microthemer'); ?>">
+                        <span class="combo-arrow combo-dots cur-item-dropdown sel-label-dot-menu"></span>
+
+                        <div class="save-selector-label tvr-button" title="<?php echo esc_attr__('Save selector', 'microthemer'); ?>">
+                           <?php echo esc_html__('Save', 'microthemer'); ?>
+                        </div>
+
+                        <?php
+                        echo $this->iconFont('times-circle-regular', array(
+                                'class' => "cancel-selector-label-edit",
+                                'title' => esc_attr__('Cancel', 'microthemer')
+                             ));
+
+                        echo $this->ui_toggle(
+		                    'selname_code_synced',
+		                    esc_attr__('Sync label and code', 'microthemer'),
+		                    esc_attr__('Unsync label and code', 'microthemer'),
+		                    $this->preferences['selname_code_synced'],
+		                    'code-chained-icon selname-code-sync current-item-sync ' . $this->iconFont('chain', array(
+			                    'onlyClass' => 1
+		                    )),
+		                    'selname_code_synced',
+		                    array('dataAtts' => array(
+			                    'fhtml' => 1 // for quick options font. Note: $.data() is case insensitive
+		                    ))
+
+	                    );
+
+                        // combo-dots, has-suggestions removed to make input easier to search
+                        //
+                        ?>
+
+                        <input id="code-hierarchy-input" type="text"
+                               data-appto="#style-components"
+                               rel="all_sel_suggestions" spellcheck="false"
+                               class="code-hierarchy-input hierarchy-input has-arrows combobox" name="code_hierarchy_input" value="">
+                        <span class="combo-arrow cur-item-dropdown"></span>
+
+                       <!-- <span class="num-els-icon-wrap">
+                            <span class="num-els-icon"></span>
+                        </span>-->
+
+                        <?php
+                        // CSS modifiers toggle (in future maybe have JS event classes here)
+                        $pos_title = esc_attr__('Show selector modifiers', 'microthemer');
+                        $neg_title = esc_attr__('Hide selector modifiers', 'microthemer');
+                        echo $this->iconFont('cog', array(
+	                        'id' => "show_css_filters-toggle",
+	                        'class' => "toggle-css-modifiers toggle-cm-using-atts",
+	                        'title' => $pos_title,
+	                        'data-filter' => '#cm-css-filters',
+	                        'data-forpopup' => 'contextMenu',
+	                        'data-pos' => $pos_title,
+	                        'data-neg' => $neg_title
+                        ));
+                        ?>
+
+	                    <?php
+	                    // save / update buttons
+	                    echo  '
+                    <div id="create-sel-wrap" class="create-sel-wrap mt-no-flex">
+
+                        <div class="save-draft-selector tvr-button" title="'.esc_attr__('Save selector', 'microthemer').'">
+                            '.esc_html__('Save', 'microthemer').'
+                        </div>
+                    
+                        <div id="wizard-update-cur" class="wizard-update-cur tvr-button" title="'.esc_attr__('Update selector', 'microthemer').'"> 
+                            '.esc_html__('Update', 'microthemer').'
+                        </div>
+                        
+                        
+                         '.$this->iconFont('times-circle-regular', array(
+			                    'class' => "cancel-current-selector-edit",
+			                    'title' => esc_attr__('Cancel', 'microthemer')
+		                    )).'
+                    </div>';
+	                    ?>
 
 
-					</div>
+                        <div id="mt-current-item-actions" class="mt-no-flex">
 
-				</div>
+		                    <?php
+		                    echo $this->item_manage_icons('selector', 'selector_css', array(
+
+			                    'context' => 'current-item',
+			                    'sub_context' => 'main'
+
+			                    /* 'html_before' =>
+								 $this->iconFont('arrow-alt-circle-left-regular', array(
+									 'id' => 'vb-focus-prev',
+									 'class' => 'scroll-buttons',
+									 'title' => esc_attr__("Previous selector (Ctrl+Alt+,)", 'microthemer'),
+								 ))
+								 .
+								 $this->iconFont('arrow-alt-circle-right-regular', array(
+									 'id' => 'vb-focus-next',
+									 'class' => 'scroll-buttons mt-icon-divider',
+									 'title' => esc_attr__("Next selector (Ctrl+Alt+.)", 'microthemer'),
+								 ))*/
+		                    ));
+		                    ?>
+
+                        </div>
 
 
-				<div id="right-stuff-wrap">
 
-					<div id="status-board" class="tvr-popdown-wrap">
+                    </div>
 
-						<div id="status-short"></div>
 
-						<div id="full-logs" class="tvr-popdown scrollable-area">
-							<div id="tvr-dismiss">
-								<span class="link dismiss-status"><?php esc_html_e('dismiss', 'microthemer'); ?></span>
-								<span class="tvr-icon close-icon dismiss-status"></span>
-							</div>
-							<div class="heading ensure-selectable"><?php esc_html_e('Microthemer Notifications', 'microthemer'); ?></div>
-							<?php
-							echo $this->display_log();
-							?>
 
-							<div id="script-feedback"></div>
-						</div>
-					</div>
+                    <div id="starter-message" class="hidden">
+		                <?php esc_html_e('Click anything on the page to begin', 'microthemer'); ?>
+                    </div>
 
-				</div>
+                </div>
 
-				<?php
-				/*echo $this->ui_toggle(
-					'show_code_editor',
-					esc_attr__('Show code editor view', 'microthemer'),
-					esc_attr__('Show GUI view', 'microthemer'),
-					$this->preferences['show_code_editor'],
-					'toggle-full-code-editor',
-					'code-editor-alias'
-				)*/
+
+                <div id="responsive-bar">
+					<?php
+                    echo $this->iconFont('devices', array(
+                        'class' => 'edit-mq triggers-more-options show-dialog',
+                        'title' => esc_attr__('Edit media queries', 'microthemer'),
+                        'rel' => 'edit-media-queries'
+                    ))
+                    . $this->global_media_query_tabs();
+                    ?>
+                </div>
+
+                <div id="status-and-settings">
+
+                    <div id="mt-notifications">
+
+                        <div id="status-board" class="dont-show-full-logs">
+
+                            <div class="short-full-status-wrap tvr-popdown-wrap"">
+
+                                <div id="status-short" class="mt-fixed-opacity mt-fixed-color"></div>
+
+                                <div id="full-logs" class="tvr-popdown scrollable-area">
+
+                                    <div class="heading ensure-selectable">
+                                        <?php esc_html_e('Notifications', 'microthemer'); ?>
+                                    </div>
+
+                                    <div id="tvr-dismiss">
+
+		                                <?php
+		                                echo $this->iconFont('times-circle-regular', array(
+			                                'class' => 'dismiss-status'
+		                                ));
+		                                ?>
+
+                                        <span class="dismiss-status">
+                                            <?php esc_html_e('dismiss', 'microthemer'); ?>
+                                        </span>
+
+                                    </div>
+
+		                            <?php
+		                            echo $this->display_log();
+		                            ?>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div id="mt-publish-action" class="mt-publish-action">
+                            <?php
+                            esc_html_e('Publish', 'microthemer');
+
+                            /*if ($this->preferences['num_unpublished_saves'] < 1){
+	                            esc_html_e('Published', 'microthemer');
+                            } else {
+	                            esc_html_e('Publish', 'microthemer');
+                            }*/
+
+                            ?>
+                        </div>
+
+
+                    </div>
+
+                    <?php
+
+
+
+                    // settings
+                    echo $this->iconFont('cog', array(
+                        'id' => 'program-settings-icon',
+                        'class' => 'program-settings-icon',
+                        'data-forpopup' => 'settingsMenu',
+                    ));
+
+                    // unlock MT
+                    if (!$this->preferences['buyer_validated']){
+	                    echo $this->icon('unlock-alt', array(
+		                    'class' => 'license-action mt-fixed-color unlock-pro-version show-dialog',
+		                    'rel' => 'unlock-microthemer',
+		                    'title' => esc_attr__('Enter license key to unlock the pro version', 'microthemer')
+	                    ));
+                    }
+
+                    // renew subscription
+                    elseif ($this->is_capped_version()){
+	                    echo $this->icon('cart', array(
+		                    'class' => 'license-action mt-fixed-color renew-subscription',
+		                    'title' => esc_attr__('Renew your subscription to get the latest version of Microthemer', 'microthemer'),
+                            'tag' => 'a',
+                            'href' => 'https://themeover.com/',
+                            'target' => '_blank'
+	                    ));
+                    }
+
+                    // interface collapse
+                    echo $this->ui_toggle(
+	                    'hide_interface',
+	                    esc_attr__('Collapse interface', 'microthemer')."\n",
+	                    esc_attr__('Expand interface', 'microthemer')."\n",
+	                    $this->preferences['hide_interface'],
+	                    'toggle-mt-interface '.$this->iconFont('double-chevron-up', array('onlyClass' => 1)),
+	                    'toggle-mt-interface',
+	                    array(
+		                    'dataAtts' => array(
+			                    'fhtml' => 1
+		                    ),
+	                    )
+                    );
+
 				?>
 
-				<?php
+                </div>
+
+                <?php
                 echo $this->show_me;
 				?>
 
 
 			</div>
 
-            <div id="z-control">
+            <!-- add mts-sm class by default so action icons don't take up space briefly while the page loads -->
+            <div id="mt-folders" class="mt-folders mts-sm" data-popupName="folders">
+
+                <div class="folders-panel-header">
+
+                    <?php
+                    echo $this->ui_toggle(
+	                    'expand_all_folders',
+	                    esc_attr__('Expand all folders', 'microthemer'),
+	                    esc_attr__('Collapse all folders', 'microthemer'),
+	                    0, //!empty($this->preferences['expand_all_folders']), // this will be done via JS
+	                    'toggle-all-folders ' .$this->iconFont('chevron-right', array('onlyClass' => 1)),
+	                    'toggle-all-folders',
+	                    array(
+		                    'dataAtts' => array(
+			                    'no-save' => 1
+		                    )
+	                    )
+                    )
+                    ?>
+
+                    <div class="tvr-input-wrap search-folders-wrap">
+                        <input type="text" id="search-folders-input" class="search-folders-input" name="search_folders" />
+                        <span class="mt-clear-field"></span>
+                        <span class="search-folders-placeholder">
+                            <?php echo esc_html__('Search folders', 'microthemer'); ?>
+                        </span>
+                    </div>
 
 
+                    <?php
+                    echo $this->iconFont('add', array(
+                            'class' => 'add-folder-toggle',
+                            'data-forpopup' => 'contextMenu',
+                            'title' => esc_attr__('Add folder', 'microthemer')
+                    ));
 
-                <div id="tvr-nav" class="tvr-nav">
+                    ?>
+                </div>
 
-					<?php
-					// hover inspect toggle
-					echo $this->hover_inspect_button('hover-inspect-toggle');
 
-					// code view toggle
-					echo $this->code_view_icon();
-					?>
-
-                    <div id="quick-nav" class="quick-nav">
-							<span id="vb-focus-prev" class="scroll-buttons tvr-icon"
-                                  title="<?php esc_attr_e("Previous selector (Ctrl+Alt+,)", 'microthemer'); ?>"></span>
-                        <span id="vb-focus-next" class="scroll-buttons tvr-icon"
-                              title="<?php esc_attr_e("Next selector (Ctrl+Alt+.)", 'microthemer'); ?>"></span>
+                <div class="scrollable-area menu-scrollable">
+                    <ul id='tvr-menu'>
 						<?php
-						// for quick debugging
-						//$this->show_me = $this->json_format_ua('icon', 'item', 'val');
-
+						foreach ( $this->options as $section_name => $array) {
+							// if non_section continue
+							if ($section_name == 'non_section') {
+								continue;
+							}
+							// section menu item (trigger function for menu selectors too)
+							echo $this->menu_section_html($section_name, $array);
+							++$this->total_sections;
+						}
 						?>
-                    </div>
+                    </ul>
+                </div>
+                <!-- keep track of total sections & selectors -->
+                <div id="ui-totals-count">
 
-                    <div id="tvr-main-menu" class="tvr-main-menu-wrap">
-                        <div class="mt-opt-divider"></div>
-                        <span id="main-menu-tip-trigger" class="main-menu-tip-trigger">
-								<span class="menu-arrow main-menu-tip-trigger tvr-icon"></span>
-								<span class="main-menu-text main-menu-tip-trigger"
-                                      title="<?php esc_attr_e("Manage existing selectors", 'microthemer'); ?>">
-									<?php esc_html_e("Selectors", 'microthemer'); ?>
-								</span>
-							</span>
-                        <div id="main-menu-popdown" class="main-menu-popdown">
+                    <span id="section-count-state" class='section-count-state' rel='<?php echo $this->total_selectors; ?>'></span>
 
-                            <div class="scrollable-area menu-scrollable">
-                                <ul id='tvr-menu'>
-									<?php
-									foreach ( $this->options as $section_name => $array) {
-										// if non_section continue
-										if ($section_name == 'non_section') {
-											continue;
-										}
-										// section menu item (trigger function for menu selectors too)
-										echo $this->menu_section_html($section_name, $array);
-										++$this->total_sections;
-									}
-									?>
-                                </ul>
-                            </div>
-                            <!-- keep track of total sections & selectors -->
-                            <div id="ui-totals-count">
-
-                                <span id="section-count-state" class='section-count-state' rel='<?php echo $this->total_selectors; ?>'></span>
-
-                                <span id="total-sec-count"><?php echo $this->total_sections; ?></span>
-                                <span class="total-folders"><?php esc_html_e('Folders', 'microthemer'); ?>&nbsp;&nbsp;</span>
+                    <span id="total-sec-count"><?php echo $this->total_sections; ?></span>
+                    <span class="total-folders"><?php esc_html_e('Folders', 'microthemer'); ?>&nbsp;&nbsp;</span>
 
 
-                                <span id="total-sel-count"><?php echo $this->total_selectors; ?></span>
-                                <span><?php esc_html_e('Selectors', 'microthemer'); ?></span>
+                    <span id="total-sel-count"><?php echo $this->total_selectors; ?></span>
+                    <span><?php esc_html_e('Selectors', 'microthemer'); ?></span>
 
-                                <span id="new-section-add" class='new-section-add'
-                                      title="<?php esc_attr_e('Create a new folder', 'microthemer'); ?>">
-												<?php esc_html_e('New folder', 'microthemer'); ?>
-									</span>
 
-                            </div>
-                        </div>
-                    </div>
-
-                    <span id="current-selector"></span>
-
-                    <div id="starter-message" class="hidden">
-                        <span rel="program-docs" data-docs-index="1" class="link item-program-docs show-dialog" title="<?php esc_html_e('Quick tips on how to use Microthemer', 'microthemer'); ?>"><?php esc_html_e('Getting started tips', 'microthemer'); ?></span>
-                    </div>
 
                 </div>
 
-                <div id="responsive-bar">
-		            <?php echo $this->global_media_query_tabs(); ?>
-                </div>
+            </div>
 
-                <div id="css-group-icons">
-		            <?php echo $this->css_group_icons(); ?>
-                </div>
-
-
-
+            <div id="css-group-icons">
+				<?php echo $this->css_group_icons(); ?>
             </div>
 
             <ul id='tvr-options'>
 				<?php
-				foreach ( $this->initial_options_html as $key => $html) {
-					echo $html;
+				foreach ( $this->options as $section_name => $array) {
+					// if non_section continue
+					if ($section_name == 'non_section') {
+						continue;
+					}
+					// section menu item (trigger function for menu selectors too)
+					echo $this->section_html($section_name, $array);
 				}
-				?>
 
-				<?php
 				include $this->thisplugindir . 'includes/grid-control.inc.php';
 				echo $grid_control;
 				?>
@@ -810,81 +757,458 @@ if ($this->edge_mode['active']){
             </ul>
 
 
+            <div id="inline-editor"<?php echo $this->layout_element_height(
+                 'editor_height',
+                (
+                 empty($this->preferences['code_manual_resize']) ||
+                 !empty($this->preferences['dock_editor_left'])  ||
+                 !empty($this->preferences['detach_preview'])
+                )); ?>>
 
-            <div id="inline-editor">
+                <?php
+                echo $this->back_to_properties('code');
+                ?>
 
                 <div class="tvr-editor-area">
                     <div class="css-code-wrap">
                         <pre id="adaptable-editor" class="custom-css-pre"></pre>
                     </div>
-                </div>
+                    <div class="editor-actions-toggle">
+		                <?php
+		                echo $this->iconFont('dots-horizontal', array(
+			                'class' => 'toggle-editor-options',
+			                'data-forpopup' => 'contextMenu',
+		                ));
+		                ?>
+                    </div>
 
-                <div class="editor-actions">
-                    <span class="quick-opts-wrap tvr-fade-in">
-                        <span class="css-icon mt-icon"></span>
-                        <span class="quick-opts">
-                            <div class="quick-opts-inner">
-                                <?php echo $this->manual_resize_icon('inline-code'); ?>
-                            </div>
-                        </span>
-                    </span>
+                    <span class="gui-shortcut" title="Ctrl + Alt + J">J</span>
                 </div>
-
-                <span class="gui-shortcut" title="Ctrl + Alt + J">J</span>
 
             </div>
+
+            <?php
+            // draggable panel resizer divs for left columns
+            echo $this->panel_resizers(array(
+	            'context' => 'main_columns',
+	            'dimension' => 'width',
+	            'total' => 5,
+	            'side_division' => 3,
+	            'side_1' => 'left',
+	            'side_2' => 'right',
+            ));
+
+            // resizers for editor and inspection panels
+            echo $this->panel_resizers(array(
+	            'context' => 'element_heights',
+	            'dimension' => 'height',
+	            'total' => 2,
+	            'side_division' => 1,
+	            'side_1' => 'editor_height',
+	            'side_2' => 'inspection_height',
+            ));
+            ?>
+
+
 
             <?php
             $page_context = $this->microthemeruipage;
             include $this->thisplugindir . 'includes/tvr-microthemer-preview-wrap.php';
             ?>
 
-			<div id="v-left-controls-wrap">
+            <div id="advanced-wizard">
 
-				<div id="v-left-controls-old">
-					<?php // echo $this->display_left_menu_icons(); ?>
-				</div>
+                <?php
+                // save the configuration of the css tab
+                $adv_wizard_focus = !empty($this->preferences['adv_wizard_tab'])
+	                ? $this->preferences['adv_wizard_tab']
+	                : 'css-computed';
+                ?>
 
-				<div id="v-left-controls">
-					<?php echo $this->system_menu(); ?>
-					<div class="notify-draft" title="<?php esc_attr_e("To publish your changes, simply turn draft mode off", 'microthemer'); ?>">
-						<span class="draft-mode tvr-icon nd-icon"></span>
-						<span class="nd-text"><?php esc_html_e('Draft mode: ON', 'microthemer'); ?></span>
-					</div>
-					<?php
-					if (!$this->preferences['buyer_validated']){
-						?>
-						<div class="cta-wrap">
-							<a class="cta-button buy-cta tvr-button red-button" href="https://themeover.com" target="_blank"
-							   title="<?php esc_attr_e('Purchase a license to use the full program', 'microthemer'); ?>">
-								<span class="tvr-icon"></span>
-								<span class="cta-label"><?php esc_html_e('Buy', 'microthemer'); ?></span>
-							</a>
-							<span class="cta-button unlock-cta tvr-button show-dialog"
-								  title="<?php esc_attr_e("If you have purchased Microthemer you can enter your email address to unlock the full program. If you have not yet purchased Microthemer, you cannot unlock the full version.", 'microthemer'); ?>" rel="unlock-microthemer">
-								<span class="tvr-icon show-dialog" rel="unlock-microthemer"></span>
-								<span class="cta-label show-dialog" rel="unlock-microthemer"><?php esc_html_e("Unlock", 'microthemer'); ?></span>
-							</span>
-						</div>
-					<?php
-					}
+                <div class="wizard-panes"<?php echo $this->layout_element_height('inspection_height'); ?>>
 
-					if ($this->is_capped_version()){
-						?>
-                        <div class="cta-wrap">
+                    <div class="adv-area-html-inspector adv-area">
 
-                            <span class="cta-button unlock-cta tvr-button show-dialog"
-                                  title="<?php esc_attr_e("Renew your subscription to get the latest version of Microthemer.", 'microthemer'); ?>" rel="unlock-microthemer">
-								<span id="mt-renew-prompt" class="cta-label show-dialog" rel="unlock-microthemer"><?php esc_html_e("Enable Updates", 'microthemer'); ?></span>
-							</span>
+                        <div id="html-preview" class="wizard-inner">
+
+                            <div class="css-code-wrap">
+                                <textarea name="inspector_html" class="dont-serialize"></textarea>
+                                <pre id="wizard_inspector_html" class="wizard_inspector_html"
+                                     data-mode="html"></pre>
+                            </div>
+
+							<?php // it would ne nice if mirror could work without this. ace.edit() needs work ?>
+                            <div class="css-code-wrap mirror">
+                                <textarea name="inspector_html_mirror" class="dont-serialize"></textarea>
+                                <pre id="wizard_inspector_html_mirror" class="wizard_inspector_html"
+                                     data-mode="html"></pre>
+                            </div>
+
+
+							<?php
+							/*
+							?>
+							echo $this->ui_toggle(
+								'ace_full_page_html',
+								esc_attr__('Show full page HTML', 'microthemer'),
+								esc_attr__('Show reduced HTML', 'microthemer'),
+								$this->preferences['ace_full_page_html'],
+								'full-page-html'
+							);
+							*/
+							?>
+
                         </div>
-						<?php
+
+
+
+                    </div>
+
+
+                    <div class="adv-area-css-inspector adv-area scrollable-area <?php
+                        if ($adv_wizard_focus == 'css-inspector') {
+                            echo 'show';
+                        }
+                        ?>">
+
+                        <div id="actual-styles" class="actual-styles wizard-inner"></div>
+
+                    </div>
+
+
+                    <div class="adv-area-css-computed adv-area scrollable-area <?php
+					if ($adv_wizard_focus == 'css-computed') {
+						echo 'show';
 					}
-					?>
-				</div>
+					?>">
+
+                        <div id="key-computed"><?php // echo $this->key_computed_info(); ?></div>
+
+                        <div id="html-computed-css" class="accordion-wrapper">
+
+		                    <?php
+
+		                    foreach ($this->property_option_groups as $property_group => $pg_label) {
+			                    ?>
+                                <div id="comp-<?php echo $property_group; ?>" class="accordion-menu property-menu">
+
+                                    <div class="css-group-heading accordion-heading mt-expandable-heading">
+	                                    <?php echo $pg_label; ?>
+                                    </div>
+
+                                    <ul class="mt-expandable-panel mt-computed-panel"></ul>
+
+                                </div>
+			                    <?php
+		                    }
+		                    ?>
+                        </div>
+
+                    </div>
 
 
-			</div>
+                    <div id="refine-targeting-pane" class="adv-area adv-area-refine-targeting">
+
+                        <?php echo  $this->targeting_suggestions('panel'); ?>
+
+                    </div>
+
+                    <div id="adv-tabs" class="query-tabs menu-style-tabs">
+		                <?php
+
+		                $tab_headings = array(
+			                'html-inspector' => esc_html__('HTML', 'microthemer'),
+			                'css-computed' => esc_html__('Computed', 'microthemer'),
+			                'css-inspector' => esc_html__('Styles', 'microthemer'),
+			                'refine-targeting' => esc_html__('Targeting', 'microthemer'),
+		                );
+		                foreach ($tab_headings as $key => $value) {
+			                if ($key == $adv_wizard_focus){
+				                $active_c = 'active';
+			                } else {
+				                $active_c = '';
+			                }
+			                echo '<span class="adv-tab mt-tab adv-tab-'.$key.' show '.$active_c.'" rel="'.$key.'">'.$tab_headings[$key].'</span>';
+		                }
+		                // this is redundant (preferences store focus) but kept for consistency with other tab remembering
+		                ?>
+                        <!--<input class="adv-wizard-focus" type="hidden"
+							   name="tvr_mcth[non_section][adv_wizard_focus]"
+							   value="<?php /*echo $adv_wizard_focus; */?>" />-->
+                    </div>
+
+                    <?php
+                    echo $this->panel_resizers(array(
+	                    'context' => 'inspection_columns',
+	                    'dimension' => 'width',
+	                    'total' => 2,
+	                    'side_division' => 1,
+	                    'side_1' => 'left_inspect',
+	                    'side_2' => 'right_inspect',
+                    ));
+                    ?>
+
+
+                </div>
+
+                <div id="nav-bread">
+
+	                <?php
+	                echo $this->ui_toggle(
+		                'wizard_expanded',
+		                esc_attr__('Advanced inspection', 'microthemer'),
+		                esc_attr__('Advanced inspection', 'microthemer'),
+		                $this->preferences['wizard_expanded'],
+		                'wizard-expand-toggle '.$this->iconFont('cog', array('onlyClass' => 1)),
+		                'wizard-expand-toggle',
+		                array(
+			                'text' => esc_attr__('Inspect', 'microthemer'),
+                            'dataAtts' => array(
+	                            'layout-preset' => 'view'
+                            )
+		                )
+	                );
+	                ?>
+
+                    <div id="refine-target-controls">
+
+		                <?php
+		                echo $this->iconFont('caret-up', array(
+			                'class' => 'tvr-parent refine-button disabled',
+			                'title' => esc_attr__("Parent element", 'microthemer'),
+		                ));
+		                echo $this->iconFont('caret-down', array(
+			                'class' => 'tvr-child refine-button disabled',
+			                'title' => esc_attr__("Child element", 'microthemer'),
+		                ));
+		                echo $this->iconFont('caret-left', array(
+			                'class' => 'tvr-prev-sibling refine-button disabled',
+			                'title' => esc_attr__("Previous sibling", 'microthemer'),
+		                ));
+		                echo $this->iconFont('caret-right', array(
+			                'class' => 'tvr-next-sibling refine-button disabled',
+			                'title' => esc_attr__("Next sibling", 'microthemer'),
+		                ));
+		                ?>
+
+                    </div>
+
+                    <div id="dom-bread" class="drag-port">
+                        <div class="drag-containment">
+                            <div id="full-breadcrumbs" class="drag-content mt-breadcrumb-nav"></div>
+                        </div>
+                    </div>
+
+                    <div id="on-canvas-behaviour">
+
+                        <div class="mt-oncanvas-dropdown-wrap">
+                            <select id="mt-oncanvas-dropdown">
+                                <optgroup label="<?php echo esc_attr__('Visual controls', 'microthemer'); ?>">
+                                <?php
+                                $canvas_controls = array(
+	                                'size_and_spacing' => esc_html__('Size and Spacing', 'microthemer'),
+	                                'border' => esc_html__('Border', 'microthemer'),
+	                                'position' => esc_html__('Position', 'microthemer'),
+	                                'transform' => esc_html__('Transform', 'microthemer'),
+	                                'grig' => esc_html__('Grid', 'microthemer'),
+                                );
+                                foreach ($canvas_controls as $key => $label){
+                                    $selected = ($key === 'size_and_spacing') ? 'selected="selected"' : '';
+                                    echo '<option value="'.$key.'" '.$selected.'>'.$label.'</option>';
+                                }
+                                ?>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <div class="targeting-mode-toggle">
+
+                            <span><?php echo esc_html__('Targeting mode', 'microthemer'); ?></span>
+
+                            <?php
+	                        echo $this->toggle('hover_inspect', array(
+		                        // have off by default, so we can see when targeting fails to apply (actually no) issue with detached preview when site is already loaded
+	                            'toggle' => !empty($this->preferences['hover_inspect']),
+	                            'toggle_id' => 'hover-inspect-toggle',
+		                        'data-pos' => esc_attr__('Enable targeting', 'microthemer'),
+		                        'data-neg' => esc_attr__('Disable targeting', 'microthemer'),
+                            ));
+	                        //echo $this->hover_inspect_button('hover-inspect-toggle');
+	                        // onCanvas dropdown menu (Size & Spacing, border, grid, transform, position)
+	                        // targeting mode switch
+	                        ?>
+
+                        </div>
+
+                        <div class="mt-exit-wrap">
+                            <?php
+                            echo $this->iconFont('wordpress', array(
+                                'class' => 'mt-exit-options',
+                                'tag' => 'a',
+                                'href' => $this->wp_blog_admin_url
+                                //'title' => esc_html__('Exit to WordPress', 'microthemer')
+                            ));
+                            echo $this->menu_panel_sub('exit', $this->menu['exit'], 'bottom-row')['areas_html'];
+                            ?>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div id="program-settings-menu" class="scrollable-area" data-popupName="settingsMenu">
+                <div class="mt-panel-column-heading">
+                    <?php echo esc_html__('Settings', 'microthemer'); ?>
+                </div>
+				<?php
+				//echo $this->system_menu();
+				echo $this->settings_menu();
+				?>
+            </div>
+
+
+
+            <div id="mt-context-menu" data-popupName="contextMenu">
+
+	            <?php
+
+                echo $this->context_menu_heading('', array('close' => 1));
+
+	            // selector variation options
+	            /*echo $this->context_menu_content(array(
+		            'base_key' => 'item-extra-options',
+		            'title' => esc_html__('Current item options', 'microthemer'),
+		            'sections' => array(
+                        // dynamically added with JS
+                        $this->item_manage_icons('selector', 'selector_css', array(
+                            'context' => 'current-item',
+                            'sub_context' => 'extra'
+                        )),
+                        $this->context_menu_heading(
+							esc_html__("State selector", 'microthemer')
+						),
+                        '<div id="mt-selector-state-options"></div>'
+		            )
+	            ));*/
+
+
+
+	            // selector modifier options (must come before targeting options for fav filters)
+	            echo $this->context_menu_content(array(
+		            'base_key' => 'css-filters',
+		            'title' => esc_html__('Selector modifiers', 'microthemer'),
+		            'sections' => array(
+			            $css_filters
+		            )
+	            ));
+
+	            // selector modifier options (must come before targeting options for fav filters)
+	            echo $this->context_menu_content(array(
+		            'base_key' => 'suggestions',
+		            'title' => esc_html__('Targeting options', 'microthemer'),
+		            'sections' => array(
+			            $this->targeting_suggestions('menu')
+		            )
+	            ));
+
+                // Add folder
+                echo $this->add_edit_section_form('add');
+
+                // Folder options (rename, add item, action icons)
+                echo $this->add_edit_section_form('edit');
+
+                // selector (item) options
+                echo $this->context_menu_content(array(
+	                'base_key' => 'selector-options',
+	                'title' => esc_html__('Edit selector', 'microthemer'),
+	                'sections' => array(
+		                $this->add_edit_selector_form('edit')
+	                )
+                ));
+
+                // Code editor options
+                echo $this->context_menu_content(array(
+	                'base_key' => 'editor-options',
+	                'title' => esc_html__('Code editor options', 'microthemer'),
+	                'sections' => array(
+		                $this->context_menu_actions('editor', array(
+
+		                    'wrap' => 1,
+			                'actions' => array(
+
+			                    'resize' => array(
+			                       'custom' =>
+                                       '<div class="code-manual-resize-wrap"><span>'
+                                       .esc_html__('Editor height resizable', 'microthemer')
+                                       .'</span>'
+                                       .$this->toggle('code_manual_resize', array(
+	                                       'toggle' => $this->preferences['code_manual_resize'],
+	                                       'toggle_id' => 'code_manual_resize',
+	                                       'data-pos' => esc_attr__('Enable drag resize', 'microthemer'),
+	                                       'data-neg' => esc_attr__('Auto-set editor height', 'microthemer'),
+                                       )).'</div>'
+
+			                    ),
+
+				                'code' => array(
+					                'class' => 'beautify-editor-code',
+					                'wrap' => array(),
+					                'adjacentText' =>  array(
+						                'text' => esc_html__('Beautify code', 'microthemer'),
+						                'class' => 'mti-text beautify-editor-code'
+					                )
+				                )
+                            )
+                        ))
+	                )
+                ));
+
+
+	            // Responsive tab options
+	            echo $this->context_menu_content(array(
+		            'base_key' => 'responsive-tab-options',
+		            'title' => esc_html__('Responsive tab', 'microthemer'),
+		            'sections' => array(
+
+			            $this->context_menu_form('edit-responsive-tab', array(
+				            'wrap' => 1,
+				            //'wrapClass' => '',
+				            'fields' => array(
+					            'label' => array(
+						            'label' => esc_html__("Label", 'microthemer'),
+						            'type' => 'input',
+					            ),
+					            'query' => array(
+						            'label' => esc_html__("Media Query", 'microthemer'),
+						            'type' => 'input',
+					            ),
+					            'filler' => array(
+						            'custom' => '<span></span>' // filler
+					            ),
+					            'icon-line' => array(
+						            'custom' => '
+                                    <div class="responsive-tab-actions mt-icon-line" data-context="popup-form">'
+                                        . $this->icon_control(false,'disabled', false, 'tab')
+                                        . $this->clear_icon('tab'). '
+                                    </div>',
+					            ),
+				            ),
+				            'button' => array(
+					            'text' => esc_html__("Update", 'microthemer'),
+				            )
+			            ))
+		            )
+	            ));
+
+
+                ?>
+
+
+            </div>
 
             <div id="style-components"></div>
 
@@ -918,11 +1242,7 @@ if ($this->edge_mode['active']){
 
                 <span class="mtss-unit-menu">
 
-                    <span class="mtss-current-unit"></span>
-
-                    <!--<span class="mtss-px-equiv">
-                        (<span class="mtss-px-value">20</span><span class="mtss-px">px</span>)
-                    </span>-->
+                    <span class="mtss-current-unit" data-forpopup="units"></span>
 
                     <span class="mtss-numeric">
                         <span class="mtss-numeric-value"></span>
@@ -931,46 +1251,35 @@ if ($this->edge_mode['active']){
                         </span>
                     </span>
 
-                    <div class="mtss-units">
-                        <?php
-                        $html = '';
-                        //$units = array_merge(array(''))
-                        foreach ($this->css_units as $unit_cat => $cat_units){
-                            $first_unit_key = array_keys($cat_units)[0];
-	                        $html.= '
-	                        <ul class="unit-cat unit-cat-'.$cat_units[$first_unit_key]['type'].'">
-	                            <li class="unit-cat-heading">'.$unit_cat.'</li>';
-                                foreach ($cat_units as $unit => $unit_data){
-                                    $html.= '<li class="mt-unit-item" data-unit="'.$unit.'"
-                                    title="'.$unit_data['desc'].'">'.$unit.'</li>';
-                                }
-	                        $html.= '
-                            </ul>';
-                        }
-                        echo $html;
-                        ?>
-                    </div>
-
                 </span>
-
-
 
             </div>
 
+            <div id="mtss-units" class="mtss-units">
+				<?php
+				$html = '';
+				//$units = array_merge(array(''))
+				foreach ($this->css_units as $unit_cat => $cat_units){
+					$first_unit_key = array_keys($cat_units)[0];
+					$html.= '
+	                        <ul class="unit-cat unit-cat-'.$cat_units[$first_unit_key]['type'].'">
+	                            <li class="unit-cat-heading">'.$unit_cat.'</li>';
+					foreach ($cat_units as $unit => $unit_data){
+						$html.= '<li class="mt-unit-item" data-unit="'.$unit.'"
+                                    title="'.$unit_data['desc'].'">'.$unit.'</li>';
+					}
+					$html.= '
+                            </ul>';
+				}
+				echo $html;
+				?>
+            </div>
+
+
+
 		</div>
 
-		<?php
 
-		// mt logo, interface collapse
-		echo $this->ui_toggle(
-			'show_interface',
-			esc_attr__('Show Microthemer toolbar', 'microthemer')."\n",
-			esc_attr__('Hide Microthemer toolbar', 'microthemer')."\n",
-			$this->preferences['show_interface'],
-			'm-logo',
-			'm-logo'
-		);
-		?>
 
 		<?php
 		/*// store the active media queries so they can be shared with design packs
@@ -1017,6 +1326,8 @@ if ($this->edge_mode['active']){
 	// output dynamic JS here as it changes on page load
 	echo '<script type="text/javascript">';
 
+	//echo ' console.log("The object", TvrMT.data); ';
+
 	// auto-show unlock dialog
 	echo 'var launchMTUnlock = ' . (isset($_GET['launch_unlock']) ? 1 : 0) . ";\n\n";
 
@@ -1039,7 +1350,7 @@ if ($this->edge_mode['active']){
 						$title = esc_html__('Renew your subscription to get the latest version', 'microthemer');
 					}
 				} else {
-					$title = esc_html__('Enter your PayPal email to unlock Microthemer', 'microthemer');
+					$title = esc_html__('Enter your License key to unlock Microthemer', 'microthemer');
 				}
 				echo $this->start_dialog('unlock-microthemer', $title, 'small-dialog'); ?>
 				<div class="content-main">
@@ -1050,7 +1361,7 @@ if ($this->edge_mode['active']){
 							echo '<p>' . esc_html__('License Type: ', 'microthemer') . '<b>'.$this->preferences['license_type'].'</b></p>';
 						}
 						?>
-						<p><span class="link reveal-unlock"><?php esc_html_e('Validate software using a different email address', 'microthemer'); ?></span>
+						<p><span class="link reveal-unlock"><?php esc_html_e('Validate software using a different unlock code', 'microthemer'); ?></span>
 						</p>
 					<?php
 					} else {
@@ -1058,7 +1369,7 @@ if ($this->edge_mode['active']){
 					}
 					?>
 					<div id='tvr_validate_form' class='hidden <?php echo $class; ?>'>
-						<?php wp_nonce_field('tvr_validate_form'); ?>
+						<?php wp_nonce_field('tvr_validate_form', 'validate_nonce'); ?>
 						<?php
 						if (!$this->preferences['buyer_validated'] or $this->is_capped_version()){
 							$attempted_email = esc_attr($this->preferences['buyer_email']);
@@ -1082,16 +1393,52 @@ if ($this->edge_mode['active']){
 						?>
 						<ul class="form-field-list">
 							<li>
-								<label class="text-label" title="<?php esc_attr_e("Enter email or unlock code shown in 'My Downloads'", 'microthemer'); ?>">
-                                    <?php esc_html_e('Enter email or unlock code shown in ', 'microthemer'); ?>
+								<label class="text-label" title="<?php esc_attr_e("Enter license key shown in 'My Downloads'", 'microthemer'); ?>">
+                                    <?php esc_html_e('Enter license key ', 'microthemer'); ?>
+                                    (shown in
                                     <a href="https://themeover.com/my-account/" target="_blank">
                                         <?php esc_html_e('My Downloads', 'microthemer'); ?>
                                     </a>
+                                    )
                                 </label>
 								<input type='text' autocomplete="off" name='tvr_preferences[buyer_email]'
 									value='<?php echo $attempted_email; ?>' />
 							</li>
 						</ul>
+
+                        <?php
+
+                        if ($this->innoFirewall){
+
+	                        $realIP = file_get_contents("http://ipecho.net/plain");
+	                        $debug_info = '';
+
+	                        if (!empty($this->innoFirewall['debug'])){
+		                        $debug_info = '<br /><br /><div class="heading">Debug info</div>
+                                <pre class="connection-debug">'.print_r($this->innoFirewall['debug'], true).'</pre>';
+	                        }
+
+                            echo
+                            '
+                            <div class="firewall-captcha">
+                                <div class="heading">Possible firewall issue</div>
+                                <ol>
+                                    <li>Please make a note of "<b>'.esc_html($realIP).'</b>" as well as any other IP address that may be shown in the box below - <b>before doing step 2.</b></li>
+                                    <li>Fill out the captcha form below, if one is shown.</li>
+                                    <li>Once you have completed the captcha form, try submitting your license key again.</li>
+                                    <li>If you still cannot unlock Microthemer, please <a target="_blank" href="https://themeover.com/support/contact/">send us</a> the IP address(es) you noted down in step 1.</li>
+                                  
+                                </ol>
+                                
+                                <iframe src="'.esc_attr($this->innoFirewall['url']).'" width="100%" height="500"></iframe>
+                                
+                                '.$debug_info.'
+                            </div>
+                            ';
+                        }
+
+                        ?>
+
 
 						<?php echo $this->dialog_button('Validate', 'input', 'ui-validate'); ?>
 
@@ -1102,7 +1449,7 @@ if ($this->edge_mode['active']){
 
 							<div class="full-about">
 								<p><?php echo wp_kses(
-									__('<b>Note:</b> Themeover will record your domain name when you submit your email address for license verification purposes.', 'microthemer'),
+									__('<b>Note:</b> Themeover will record your domain name when you submit your unlock code for license verification purposes.', 'microthemer'),
 									array( 'b' => array() )
 								) ; ?></p>
 								<p><?php echo wp_kses(
@@ -1258,44 +1605,6 @@ if ($this->edge_mode['active']){
 
 			</form>
 
-			<!-- Edit Custom Code Tabs -->
-			<form id="edit-code-tabs" name='tvr_code_tabs_form' method="post" autocomplete="off"
-				action="admin.php?page=<?php echo $this->microthemeruipage;?>" >
-				<?php wp_nonce_field('tvr_code_tabs_form'); ?>
-				<?php echo $this->start_dialog('edit-code-tabs', esc_html__('Manage Custom Code Editors', 'microthemer'), 'small-dialog'); ?>
-
-				<div class="content-main">
-					<ul id="code-list">
-						<?php
-						$i = 0;
-						/*
-						if (is_array($this->preferences['code_tabs'])){
-							foreach ($this->preferences['code_tabs'] as $key => $value) {
-								if (is_array($value)){
-									foreach ($value as $key => $v2) {
-										echo '<li>This is just a teaser: <b>'.$v2.'</b></li>';
-									}
-								} else {
-									echo '<li>This is just a teaser: <b>'.$value.'</b></li>';
-								}
-								++$i;
-							}
-						}
-						*/
-						?>
-					</ul>
-					<p>You will be able to create new code editors and specify the language (CSS, SCSS, JavaScript)
-					as well as browser targeting.</p>
-				</div>
-				<?php
-				echo $this->end_dialog(esc_html__('Update Custom Code Tabs', 'microthemer'), 'input', 'update-custom-code-tabs');
-				?>
-			</form>
-
-			<!-- manage custom code row template
-			...
-			-->
-
 
 			<!-- Display (Potentially) External CSS file -->
 			<?php echo $this->start_dialog(
@@ -1347,12 +1656,13 @@ if ($this->edge_mode['active']){
 							<ul id="overwrite-merge" class="checkboxes fake-radio-parent">
 								<li><input name="tvr_import_method" type="radio" value="<?php esc_attr_e('Overwrite', 'microthemer'); ?>" id='ui-import-overwrite'
 										   class="radio ui-import-method" />
-									<span class="fake-radio"></span>
+
+                                    <?php echo $this->iconFont('radio-btn-unchecked', array('class' => 'fake-radio')); ?>
 									<span class="ef-label"><?php esc_html_e('Overwrite', 'microthemer'); ?></span>
 								</li>
 								<li><input name="tvr_import_method" type="radio" value="<?php esc_attr_e('Merge', 'microthemer'); ?>" id='ui-import-merge'
 										   class="radio ui-import-method" />
-									<span class="fake-radio"></span>
+									<?php echo $this->iconFont('radio-btn-unchecked', array('class' => 'fake-radio')); ?>
 									<span class="ef-label"><?php esc_html_e('Merge', 'microthemer'); ?></span>
 								</li>
 							</ul>
@@ -1443,7 +1753,12 @@ if ($this->edge_mode['active']){
 										?>
 										<input type="checkbox" name="tvr_preferences[css_imp_only_selected]"
 											<?php echo $checked; ?> value="1" />
-										<span class="fake-checkbox toggle-import-selected-text <?php echo $on; ?>"></span>
+                                        <?php
+                                        echo $this->iconFont('tick-box-unchecked', array(
+	                                        'class' => 'fake-checkbox toggle-import-selected-text '.$on,
+                                        ));
+                                        ?>
+
 										<span class="ef-label import-selected-label">
 											<?php esc_html_e('Only import selected text', 'microthemer'); ?>
 										</span>
@@ -1641,22 +1956,30 @@ if ($this->edge_mode['active']){
 				<div class="heading"><?php esc_html_e('Folders', 'microthemer'); ?></div>
 				<ul id="toggle-checked-folders" class="checkboxes">
 					<li><input type="checkbox" name="toggle_checked_folders" />
-						<span class="fake-checkbox toggle-checked-folders"></span>
+						<?php
+						echo $this->iconFont('tick-box-unchecked', array(
+							'class' => 'fake-checkbox toggle-checked-folders',
+						));
+						?>
 						<span class="ef-label check-all-label"><?php esc_html_e('Check All', 'microthemer'); ?></span>
 					</li>
 				</ul>
 				<ul id="available-folders" class="checkboxes"></ul>
 
-				<div class="heading"><?php esc_html_e('Custom CSS', 'microthemer'); ?></div>
+				<div class="heading"><?php esc_html_e('Custom code', 'microthemer'); ?></div>
 				<ul id="custom-css" class="checkboxes">
 					<?php
 					foreach ($this->custom_code_flat as $key => $arr) {
-						$name = ($key == 'hand_coded_css' or $key == 'js') ?
-							'export_sections' : 'export_sections[ie_css]';
+						$name = 'export_sections'; /*($key == 'hand_coded_css' or $key == 'js') ?
+							'export_sections' : 'export_sections[ie_css]';*/
 						?>
 						<li>
 							<input type="checkbox" name="<?php echo $name; ?>[<?php echo $key; ?>]" />
-							<span class="fake-checkbox custom-css-<?php echo $arr['tab-key']; ?>"></span>
+							<?php
+							echo $this->iconFont('tick-box-unchecked', array(
+								'class' => 'fake-checkbox custom-css-'.$arr['tab-key'],
+							));
+							?>
 							<span class="code-icon tvr-icon"></span>
 							<span class="ef-label"><?php echo $arr['label']; ?></span>
 						</li>
@@ -1674,7 +1997,7 @@ if ($this->edge_mode['active']){
 					<div class="full-about">
 						<p><?php echo wp_kses(
 							sprintf(
-								__('Microthemer gives you the flexibility to export your current work to a design pack for later use (you can <span %1$s>import</span> it back). Microthemer will create a directory on your server in %2$s which will be used to store your settings and background images. Your folders, selectors, and hand-coded css settings are saved to a configuration file in this directory called config.json.', 'microthemer'),
+								__('Microthemer gives you the flexibility to export your current work to a design pack for later use (you can <span %s>import</span> it back). Microthemer will create a directory on your server in %s which will be used to store your settings and background images. Your folders, selectors, and hand-coded css settings are saved to a configuration file in this directory called config.json.', 'microthemer'),
 								'class="link show-dialog" rel="import-from-pack"',
 								'<code>/wp-content/micro-themes/</code>'
 								),
@@ -1706,6 +2029,7 @@ if ($this->edge_mode['active']){
 			<!-- View CSS -->
 			<?php
 			// get user config for scss/draft/minify
+            $modes = array('draft', 'active');
 			$input_ext = $this->preferences['allow_scss'] ? 'scss': 'css';
 			$input_file_stub = $this->preferences['draft_mode'] ? 'draft' : 'active';
 			$min_stub = $this->preferences['minify_css'] ? 'min.': '';
@@ -1716,22 +2040,30 @@ if ($this->edge_mode['active']){
 				'scss' => array(
 					'do' => $this->preferences['allow_scss'],
 					'ext' => 'scss',
+					'draft_file' => 'draft-styles.scss',
+					'active_file' => 'active-styles.scss',
 					'file' => $input_file_stub.'-styles.scss'
 				),
 				'css' => array(
 					'do' => 1,
 					'ext' => 'css',
+					'draft_file' => 'draft-styles.css',
+					'active_file' => 'active-styles.css',
 					'file' => $input_file_stub.'-styles.css'
 				),
 				'css_min' => array(
 					'do' => $this->preferences['minify_css'],
 					'ext' => 'css',
+					'draft_file' => 'min.draft-styles.css',
+					'active_file' => 'min.active-styles.css',
 					'file' => 'min.'.$input_file_stub.'-styles.css',
 					'minified' => 1
 				),
 				'js' => array(
 					'do' => 1,
 					'ext' => 'js',
+					'draft_file' => 'draft-scripts.js',
+					'active_file' => 'active-scripts.js',
 					'file' => $jsf,
 					'file_exists' => file_exists($this->micro_root_dir . $jsf)
 				),
@@ -1739,6 +2071,8 @@ if ($this->edge_mode['active']){
 					'do' => !empty($this->preferences['minify_js']),
 					'ext' => 'js',
 					'file' => 'min'.$jsf,
+					'draft_file' => 'min.draft-scripts.js',
+					'active_file' => 'min.active-scripts.js',
 					'file_exists' => file_exists($this->micro_root_dir . 'min'.$jsf),
 					'minified' => 1
 				),
@@ -1762,7 +2096,7 @@ if ($this->edge_mode['active']){
 					$name = strtoupper($arr['ext']);
 
 					if ($key == 'scss_compile'){
-						$name = 'Previous SCSS Compile';
+						$name = 'Previous Sass Compile';
                     }
 
 					$name.= !empty($arr['minified']) ? ' ('.esc_html__('Min', 'microthemer').')' : '';
@@ -1778,11 +2112,12 @@ if ($this->edge_mode['active']){
 				<div id="view-css-areas">
 					<?php
 					$i = -1;
+					$p = $this->preferences;
 					foreach ($all_pos_tabs as $k => $arr){
 						if (!$arr['do']) continue;
 						++$i;
-						$show = (!empty($this->preferences['generated_css_focus']) && $i === $this->preferences['generated_css_focus']) ||
-						        (empty($this->preferences['generated_css_focus']) && $i === 0)
+						$show = (!empty($p['generated_css_focus']) && $i === $p['generated_css_focus']) ||
+						        (empty($p['generated_css_focus']) && $i === 0)
                             ? 'show'
                             : '';
 
@@ -1790,28 +2125,37 @@ if ($this->edge_mode['active']){
 						<div class="dialog-tab-field dialog-tab-field-<?php echo $i; ?> tab-field-<?php echo $k; ?> hidden <?php echo $show; ?>" rel="<?php echo $i; ?>">
 
 
-                            <div class="view-file">
+                            <div class="view-file view-file-<?php echo $k; ?>">
 
 	                            <?php
 	                            if ($k === 'scss_compile'){
 		                            ?>
                                     <div id="scss-error-notes">
                                         <p><b>NOTE: </b> for maximum performance Microthemer selectively
-                                            compiles SCSS code (previous compile shown below).
+                                            compiles Sass code (previous compile shown below).
                                             To compile everything use <b>Ctrl + Alt + P</b></p>
                                     </div>
                                     <div id="scss-import-error-notes" class="hidden">
-                                        <p>The SCSS error occurred in an @import file: <b><span id="scss-error-file">file here</span></b> (please fix this error and then refresh Microthemer)</p>
+                                        <p>The Sass error occurred in an @import file: <b><span id="scss-error-file">file here</span></b> (please fix this error and then refresh Microthemer)</p>
                                     </div>
 		                            <?php
 	                            }
 
 	                            else {
-		                            ?>
-                                    <a href="<?php echo $this->micro_root_url . $arr['file']; ?>" target="_blank">
-			                            <?php echo $arr['file']; ?></a>
-                                    <span>(<?php echo esc_html_e('not editable here', 'microthemer'); ?>)</span>
-		                            <?php
+
+
+
+	                                $outputFiles = array('draft_file', 'active_file');
+		                            $mts = '?mts=' . (!empty($p['num_saves']) ? $p['num_saves'] : 0);
+
+	                                foreach($outputFiles as $j => $outputFileKey){
+
+	                                    $outputFile = $arr[$outputFileKey];
+
+	                                    echo '<a href="'.$this->micro_root_url . $outputFile . $mts .'" target="_blank" 
+	                                    title="'.esc_attr__('View file on server', 'microthemer').'">'.$outputFile.'</a>';
+	                                }
+
 	                            }
 	                            ?>
 
@@ -1850,7 +2194,7 @@ if ($this->edge_mode['active']){
 						); ?></p>
 						<p><?php echo wp_kses(
 							sprintf(
-								__('<b>Also note</b>, Microthemer adds the "!important" declaration to all CSS styles by default. If you\'re up to speed on %1$s you may want to disable this behaviour on the <span %2$s>preferences page</span>. If so, you will still be able to apply "!important" declarations on a per style basis by clicking the faint "i"s that will appear to the right of all style option fields.', 'microthemer'),
+								__('<b>Also note</b>, Microthemer adds the "!important" declaration to all CSS styles by default. If you\'re up to speed on %s you may want to disable this behaviour on the <span %s>preferences page</span>. If so, you will still be able to apply "!important" declarations on a per style basis by clicking the faint "i"s that will appear to the right of all style option fields.', 'microthemer'),
 								'<a target="_blank" href="http://themeover.com/beginners-guide-to-understanding-css-specificity/">' . esc_html__('CSS specificity', 'microthemer') . '</a>',
 								'class="link show-dialog" rel="display-preferences"'
 							),
@@ -1881,26 +2225,13 @@ if ($this->edge_mode['active']){
 			</div>
 			<?php echo $this->end_dialog(esc_html_x('Close', 'verb', 'microthemer'), 'span', 'close-dialog'); ?>
 
-			<!-- Spread the word -->
-			<?php echo $this->start_dialog('display-share', esc_html__('Show off your new discovery', 'microthemer'), 'small-dialog'); ?>
-			<div class="content-main">
-				<div class="explain">
-					<div class="heading link explain-link"><?php esc_html_e('About this feature', 'microthemer'); ?></div>
-					<div class="full-about">
-						<p><?php esc_html_e('cash back feature - coupon code to give new customer, affiliate commission for existing', 'microthemer'); ?></p>
-						<p><?php esc_html_e('For now, just a simply share widget.', 'microthemer'); ?></p>
-					</div>
-				</div>
-			</div>
-			<?php echo $this->end_dialog(esc_html_x('Close', 'verb', 'microthemer'), 'span', 'close-dialog'); ?>
-
-		</div>
 
 		<!-- Manage Design Packs -->
 		<?php echo $this->start_dialog('manage-design-packs', esc_html__('Install & Manage Design Packs', 'microthemer')); ?>
 		<iframe id="manage_iframe" class="microthemer-iframe" frameborder="0" name="manage_iframe"
 				rel="<?php echo 'admin.php?page='.$this->microthemespage; ?>"
-				src="<?php echo $this->thispluginurl; ?>includes/place-holder2.html"
+				src="about:blank"
+                loading="lazy"
 				data-frame-loaded="0"></iframe>
 		<?php echo $this->end_dialog(esc_html_x('Close', 'verb', 'microthemer'), 'span', 'close-dialog'); ?>
 
@@ -1908,7 +2239,8 @@ if ($this->edge_mode['active']){
 		<?php echo $this->start_dialog('google-fonts', esc_html__('Google Fonts Library', 'microthemer')); ?>
         <iframe id="google_fonts_iframe" class="microthemer-iframe" frameborder="0" name="google_fonts_iframe"
                 rel="<?php echo 'admin.php?page='.$this->fontspage; ?>"
-                src="<?php echo $this->thispluginurl; ?>includes/place-holder2.html"
+                src="about:blank"
+                loading="lazy"
                 data-frame-loaded="0"></iframe>
 		<?php echo $this->end_dialog(esc_html_x('Close', 'verb', 'microthemer'), 'span', 'close-dialog'); ?>
 
@@ -1916,34 +2248,15 @@ if ($this->edge_mode['active']){
 		<?php echo $this->start_dialog('program-docs', esc_html__('Help Centre', 'microthemer')); ?>
 		<iframe id="docs_iframe" class="microthemer-iframe" frameborder="0" name="docs_iframe"
 				rel="<?php echo 'admin.php?page=' . $this->docspage; ?>"
-				src="<?php echo $this->thispluginurl; ?>includes/place-holder2.html"
+				src="about:blank"
+                loading="lazy"
 				data-frame-loaded="0"></iframe>
 		<?php echo $this->end_dialog(esc_html_x('Close', 'verb', 'microthemer'), 'span', 'close-dialog'); ?>
 
-		<!-- Integration -->
-		<?php
-		echo $this->start_dialog('integration', esc_html__('Integration with 3rd party software', 'microthemer'), 'small-dialog');
-		?>
-		<div class="content-main">
-			<div class="heading"><?php esc_html_e('WPTouch Mobile Plugin', 'microthemer'); ?></div>
-			<p><?php /*echo wp_kses(
-				sprintf(
-					__('Microthemer can be used to style the mobile-only theme that WPTouch presents to mobile devices. In order to load the mobile theme in Microthemer\'s preview window, simply enable WPTouch mode using the toggle in the left toolbar. This toggle will only appear if Microthemer detects that you have installed and activated WPTouch. There is a <a %1$s>free</a> and <a %2$s>premium version</a> of WPTouch.', 'microthemer'),
-					'target="_blank" href="<?php echo $this->wp_blog_admin_url; ?>plugin-install.php?tab=search&type=term&s=wptouch+mobile+plugin"',
-					'target="_blank" href="http://www.wptouch.com/"'
-				),
-					array( 'a' => array( 'href' => array(), 'target' => array() ) )
-				);
- */?></p>
-			<div class="explain">
-			<div class="heading link explain-link"><?php esc_html_e('About this feature', 'microthemer'); ?></div>
-				<div class="full-about">
-					<p><?php esc_html_e('When possible, we\'ll add little features to make it easier to use Microthemer with complementary products.', 'microthemer'); ?></p>
-				</div>
-			</div>
-		</div>
-		<?php echo $this->end_dialog(esc_html_x('Close', 'verb', 'microthemer'), 'span', 'close-dialog'); ?>
-		<?php
+
+        </div>
+
+        <?php
 	}
 	?>
 
@@ -1967,10 +2280,12 @@ if ($this->edge_mode['active']){
 				esc_attr__('More colors', 'microthemer'),
 				esc_attr__('Less colors', 'microthemer'),
 				false, // never on initially
-				'full-palette-toggle',
+				'full-palette-toggle ' . $this->iconFont('dots-horizontal', array(
+				        'onlyClass' => 1
+                )),
 				false,
 				array(
-					'text' => '...',
+					//'text' => '...',
 					'dataAtts' => array(
 						'no-save' => 1
 					)
@@ -2005,6 +2320,9 @@ if ($this->edge_mode['active']){
 					),
 					'site' => array(
 						'title' => esc_html__('Site colors', 'microthemer'),
+						'icon_class' => $this->iconFont('sync-alt', array(
+						        'onlyClass' => 1
+                        )),
 						'icons_buttons' => array(
 							'refresh-icon' => array(
 								'title' => esc_html__('Resample colors affecting the current page', 'microthemer')
@@ -2021,6 +2339,11 @@ if ($this->edge_mode['active']){
 							// output buttons/icons
 							if (!empty($arr['icons_buttons'])){
 								foreach ($arr['icons_buttons'] as $class => $array){
+
+								    if (!empty($arr['icon_class'])){
+									    $class.= ' '.$arr['icon_class'];
+								    }
+
 									$text = !empty($array['text']) ? $array['text'] : '';
 									$title = !empty($array['title']) ? 'title="'.$array['title'].'"' : '';
 									echo '<span class="'.$class.'" '.$title.'>'.$text.'</span>';

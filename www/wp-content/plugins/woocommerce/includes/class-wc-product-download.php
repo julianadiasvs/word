@@ -7,6 +7,8 @@
  * @since   3.0.0
  */
 
+use Automattic\Jetpack\Constants;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -51,8 +53,16 @@ class WC_Product_Download implements ArrayAccess {
 	 * @return string absolute, relative, or shortcode.
 	 */
 	public function get_type_of_file_path( $file_path = '' ) {
-		$file_path = $file_path ? $file_path : $this->get_file();
-		if ( 0 === strpos( $file_path, 'http' ) || 0 === strpos( $file_path, '//' ) ) {
+		$file_path  = $file_path ? $file_path : $this->get_file();
+		$parsed_url = wp_parse_url( $file_path );
+		if (
+			$parsed_url &&
+			isset( $parsed_url['host'] ) && // Absolute url means that it has a host.
+			( // Theoretically we could permit any scheme (like ftp as well), but that has not been the case before. So we allow none or http(s).
+				! isset( $parsed_url['scheme'] ) ||
+				in_array( $parsed_url['scheme'], array( 'http', 'https' ), true )
+			)
+		) {
 			return 'absolute';
 		} elseif ( '[' === substr( $file_path, 0, 1 ) && ']' === substr( $file_path, -1 ) ) {
 			return 'shortcode';
@@ -90,18 +100,28 @@ class WC_Product_Download implements ArrayAccess {
 		$file_path = $this->get_file();
 
 		// File types for URL-based files located on the server should get validated.
-		$is_file_on_server = false;
-		if ( false !== stripos( $file_path, network_site_url( '/', 'https' ) ) ||
-			false !== stripos( $file_path, network_site_url( '/', 'http' ) ) ||
-			false !== stripos( $file_path, site_url( '/', 'https' ) ) ||
-			false !== stripos( $file_path, site_url( '/', 'http' ) )
-		) {
-			$is_file_on_server = true;
-		}
+		$parsed_file_path  = WC_Download_Handler::parse_file_path( $file_path );
+		$is_file_on_server = ! $parsed_file_path['remote_file'];
+		$file_path_type    = $this->get_type_of_file_path( $file_path );
 
-		if ( ! $is_file_on_server && 'relative' !== $this->get_type_of_file_path() ) {
+		// Shortcodes are allowed, validations should be done by the shortcode provider in this case.
+		if ( 'shortcode' === $file_path_type ) {
 			return true;
 		}
+
+		// Remote paths are allowed.
+		if ( ! $is_file_on_server && 'relative' !== $file_path_type ) {
+			return true;
+		}
+
+		// On windows system, local files ending with `.` are not allowed.
+		// @link https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file?redirectedfrom=MSDN#naming-conventions.
+		if ( $is_file_on_server && ! $this->get_file_extension() && 'WIN' === strtoupper( substr( Constants::get_constant( 'PHP_OS' ), 0, 3 ) ) ) {
+			if ( '.' === substr( $file_path, -1 ) ) {
+				return false;
+			}
+		}
+
 		return ! $this->get_file_extension() || in_array( $this->get_file_type(), $this->get_allowed_mime_types(), true );
 	}
 
@@ -164,6 +184,11 @@ class WC_Product_Download implements ArrayAccess {
 	 * @param string $value File URL/Path.
 	 */
 	public function set_file( $value ) {
+		// A `///` is recognized as an "absolute", but on the filesystem, so it bypasses the mime check in `self::is_allowed_filetype`.
+		// This will strip extra prepending / to the maximum of 2.
+		if ( preg_match( '#^//+(/[^/].+)$#i', $value, $matches ) ) {
+			$value = $matches[1];
+		}
 		switch ( $this->get_type_of_file_path( $value ) ) {
 			case 'absolute':
 				$this->data['file'] = esc_url_raw( $value );
@@ -230,6 +255,7 @@ class WC_Product_Download implements ArrayAccess {
 	 * @param string $offset Offset.
 	 * @return mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet( $offset ) {
 		switch ( $offset ) {
 			default:
@@ -247,11 +273,12 @@ class WC_Product_Download implements ArrayAccess {
 	 * @param string $offset Offset.
 	 * @param mixed  $value Offset value.
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetSet( $offset, $value ) {
 		switch ( $offset ) {
 			default:
 				if ( is_callable( array( $this, "set_$offset" ) ) ) {
-					return $this->{"set_$offset"}( $value );
+					$this->{"set_$offset"}( $value );
 				}
 				break;
 		}
@@ -262,6 +289,7 @@ class WC_Product_Download implements ArrayAccess {
 	 *
 	 * @param string $offset Offset.
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetUnset( $offset ) {}
 
 	/**
@@ -270,6 +298,7 @@ class WC_Product_Download implements ArrayAccess {
 	 * @param string $offset Offset.
 	 * @return bool
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetExists( $offset ) {
 		return in_array( $offset, array_keys( $this->data ), true );
 	}

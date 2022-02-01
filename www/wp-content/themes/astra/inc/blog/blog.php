@@ -49,7 +49,7 @@ if ( ! function_exists( 'astra_post_class_blog_grid' ) ) {
 	function astra_post_class_blog_grid( $classes ) {
 
 		if ( is_archive() || is_home() || is_search() ) {
-			$classes[] = 'ast-col-sm-12';
+			$classes[] = astra_attr( 'ast-blog-col' );
 			$classes[] = 'ast-article-post';
 		}
 
@@ -219,7 +219,7 @@ if ( ! function_exists( 'astra_get_blog_post_thumbnail' ) ) {
 
 		if ( 'archive' === $type ) {
 			// Blog Post Featured Image.
-			astra_get_post_thumbnail( '<div class="ast-blog-featured-section post-thumb ast-col-md-12">', '</div>' );
+			astra_get_post_thumbnail( '<div class="ast-blog-featured-section post-thumb ' . astra_attr( 'ast-grid-blog-col' ) . '">', '</div>' );
 		} elseif ( 'single' === $type ) {
 			// Single Post Featured Image.
 			astra_get_post_thumbnail();
@@ -344,7 +344,7 @@ if ( ! function_exists( 'astra_get_audios_from_post' ) ) {
 
 		// for audio post type - grab.
 		$post    = get_post( $post_id );
-		$content = do_shortcode( apply_filters( 'the_content', $post->post_content ) );
+		$content = do_shortcode( apply_filters( 'the_content', $post->post_content ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		$embeds  = apply_filters( 'astra_get_post_audio', get_media_embedded_in_content( $content ) );
 
 		if ( empty( $embeds ) ) {
@@ -375,7 +375,7 @@ if ( ! function_exists( 'astra_get_video_from_post' ) ) {
 	function astra_get_video_from_post( $post_id ) {
 
 		$post    = get_post( $post_id );
-		$content = do_shortcode( apply_filters( 'the_content', $post->post_content ) );
+		$content = do_shortcode( apply_filters( 'the_content', $post->post_content ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		$embeds  = apply_filters( 'astra_get_post_audio', get_media_embedded_in_content( $content ) );
 
 		if ( empty( $embeds ) ) {

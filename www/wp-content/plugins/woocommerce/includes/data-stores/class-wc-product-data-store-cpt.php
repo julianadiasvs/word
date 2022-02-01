@@ -710,6 +710,8 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 		if ( $force || array_key_exists( 'shipping_class_id', $changes ) ) {
 			wp_set_post_terms( $product->get_id(), array( $product->get_shipping_class_id( 'edit' ) ), 'product_shipping_class', false );
 		}
+
+		_wc_recount_terms_by_product( $product->get_id() );
 	}
 
 	/**
@@ -1116,7 +1118,7 @@ class WC_Product_Data_Store_CPT extends WC_Data_Store_WP implements WC_Object_Da
 			$product->get_id()
 		);
 
-		$query .= ' AND postmeta.meta_key IN ( "' . implode( '","', array_map( 'esc_sql', $meta_attribute_names ) ) . '" )';
+		$query .= " AND postmeta.meta_key IN ( '" . implode( "','", array_map( 'esc_sql', $meta_attribute_names ) ) . "' )";
 
 		$query .= ' ORDER BY posts.menu_order ASC, postmeta.post_id ASC;';
 

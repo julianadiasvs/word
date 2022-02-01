@@ -31,12 +31,19 @@ class Admin_Helper {
 	 * @return array
 	 */
 	public static function get_htaccess_data() {
-		if ( ! function_exists( 'get_home_path' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/file.php';
+		if ( ! Helper::is_filesystem_direct() ) {
+			return [
+				'content'  => '',
+				'writable' => false,
+			];
 		}
-		$wp_filesystem = WordPress::get_filesystem();
-		$htaccess_file = get_home_path() . '.htaccess';
 
+		$wp_filesystem = WordPress::get_filesystem();
+		if ( empty( $wp_filesystem ) ) {
+			return;
+		}
+
+		$htaccess_file = get_home_path() . '.htaccess';
 		return ! $wp_filesystem->exists( $htaccess_file ) ? false : [
 			'content'  => $wp_filesystem->get_contents( $htaccess_file ),
 			'writable' => $wp_filesystem->is_writable( $htaccess_file ),
@@ -66,7 +73,7 @@ class Admin_Helper {
 		$view = rank_math()->admin_dir() . "views/{$view}.php";
 
 		if ( ! file_exists( $view ) ) {
-			wp_redirect( Helper::get_admin_url() );
+			Helper::redirect( Helper::get_admin_url() );
 			exit;
 		}
 
@@ -147,7 +154,7 @@ class Admin_Helper {
 	}
 
 	/**
-	 * Is user plan expire.
+	 * Is user plan expired.
 	 *
 	 * @return boolean
 	 */
@@ -168,6 +175,8 @@ class Admin_Helper {
 		if ( $registered && isset( $registered['username'] ) && isset( $registered['api_key'] ) ) {
 			Api::get()->deactivate_site( $registered['username'], $registered['api_key'] );
 			self::get_registration_data( false );
+
+			do_action( 'rank_math/deregister_site' );
 		}
 	}
 
@@ -200,8 +209,7 @@ class Admin_Helper {
 	 */
 	public static function is_post_edit() {
 		global $pagenow;
-
-		return 'post.php' === $pagenow || 'post-new.php' === $pagenow;
+		return ! Helper::is_ux_builder() && ( 'post.php' === $pagenow || 'post-new.php' === $pagenow );
 	}
 
 	/**
@@ -297,7 +305,7 @@ class Admin_Helper {
 					'view'  => 'help',
 					'nonce' => wp_create_nonce( 'rank_math_register_product' ),
 				],
-				admin_url( 'admin.php' )
+				( is_multisite() && is_plugin_active_for_network( plugin_basename( RANK_MATH_FILE ) ) ) ? network_admin_url( 'admin.php' ) : admin_url( 'admin.php' )
 			);
 		} else {
 			$redirect_to = Security::add_query_arg_raw(
@@ -315,7 +323,7 @@ class Admin_Helper {
 
 		return apply_filters(
 			'rank_math/license/activate_url',
-			Security::add_query_arg_raw( $args, 'https://rankmath.com/auth/' ),
+			Security::add_query_arg_raw( $args, 'https://rankmath.com/auth' ),
 			$args
 		);
 	}
@@ -329,6 +337,11 @@ class Admin_Helper {
 	 */
 	public static function is_home_page() {
 		$front_page = (int) get_option( 'page_on_front' );
+
+		if ( Helper::is_divi_frontend_editor() ) {
+			$p = get_post();
+			return ! empty( $p->ID ) && $p->ID === $front_page;
+		}
 
 		return $front_page && self::is_post_edit() && (int) Param::get( 'post' ) === $front_page;
 	}

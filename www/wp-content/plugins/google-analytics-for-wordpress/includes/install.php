@@ -243,10 +243,11 @@ class MonsterInsights_Install {
 		$data = array(
 			'installed_version' => MONSTERINSIGHTS_VERSION,
 			'installed_date'    => time(),
-			'installed_pro'     => monsterinsights_is_pro_version(),
+			'installed_pro'     => monsterinsights_is_pro_version() ? time() : false,
+			'installed_lite'     => monsterinsights_is_pro_version() ? false : time(),
 		);
 
-		update_option( 'monsterinsights_over_time', $data );
+		update_option( 'monsterinsights_over_time', $data, false );
 
 		// Let addons + MI Pro/Lite hook in here. @todo: doc as nonpublic
 		do_action( 'monsterinsights_after_new_install_routine', MONSTERINSIGHTS_VERSION );
@@ -283,12 +284,10 @@ class MonsterInsights_Install {
 			'tag_links_in_rss'                         => true,
 			'allow_anchor'                             => 0,
 			'add_allow_linker'                         => 0,
-			'custom_code'                              => '',
 			'save_settings'                            => array( 'administrator' ),
 			'view_reports'                             => array( 'administrator', 'editor' ),
 			'events_mode'                              => 'js',
 			'tracking_mode'                            => 'gtag', // Default new users to gtag.
-			'gtagtracker_compatibility_mode'           => true,
 			'email_summaries'                          => 'on',
 			'summaries_html_template'                  => 'yes',
 			'summaries_email_addresses'                => $admin_email_array,
@@ -645,7 +644,7 @@ class MonsterInsights_Install {
 			$over_time = get_option( 'monsterinsights_over_time', array() );
 			if ( empty( $over_time['connected_date'] ) ) {
 				$over_time['connected_date'] = time();
-				update_option( 'monsterinsights_over_time', $over_time );
+				update_option( 'monsterinsights_over_time', $over_time, false );
 			}
 		}
 
@@ -665,7 +664,7 @@ class MonsterInsights_Install {
 			$over_time = get_option( 'monsterinsights_over_time', array() );
 			if ( empty( $over_time['connected_date'] ) ) {
 				$over_time['connected_date'] = time();
-				update_option( 'monsterinsights_over_time', $over_time );
+				update_option( 'monsterinsights_over_time', $over_time, false );
 			}
 		}
 

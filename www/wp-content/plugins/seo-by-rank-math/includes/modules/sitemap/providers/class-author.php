@@ -1,6 +1,6 @@
 <?php
 /**
- * The Sitemap Module
+ * The sitemap provider for author archives.
  *
  * @since      0.9.0
  * @package    RankMath
@@ -89,6 +89,11 @@ class Author implements Provider {
 	 */
 	public function get_sitemap_links( $type, $max_entries, $current_page ) {
 		$links = [];
+
+		if ( $current_page < 1 ) {
+			$current_page = 1;
+		}
+
 		$users = $this->get_users(
 			[
 				'offset' => ( $current_page - 1 ) * $max_entries,

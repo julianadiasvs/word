@@ -41,16 +41,16 @@ class OAuth {
 	 * OAuth reply back
 	 */
 	public function process_oauth() {
-		$process_oauth = Param::get( 'process_oauth', false, FILTER_SANITIZE_STRING );
-		$access_token  = Param::get( 'access_token', false, FILTER_SANITIZE_STRING );
+		$process_oauth = Param::get( 'process_oauth', false );
+		$access_token  = Param::get( 'access_token', false );
+		$security      = Param::get( 'rankmath_security', false );
 
 		// Early Bail!!
-		if ( $process_oauth < 1 && empty( $access_token ) ) {
+		if ( empty( $security ) || ( $process_oauth < 1 && empty( $access_token ) ) ) {
 			return;
 		}
 
-		$security = Param::get( 'rankmath_security', false, FILTER_SANITIZE_STRING );
-		if ( empty( $security ) || ! wp_verify_nonce( $security, 'rank_math_oauth_token' ) ) {
+		if ( ! wp_verify_nonce( $security, 'rank_math_oauth_token' ) ) {
 			wp_nonce_ays( 'rank_math_oauth_token' );
 			die();
 		}
@@ -73,7 +73,7 @@ class OAuth {
 		Permissions::fetch();
 
 		if ( ! empty( $redirect ) ) {
-			wp_safe_redirect( $redirect );
+			Helper::redirect( $redirect );
 			exit;
 		}
 	}
@@ -117,9 +117,9 @@ class OAuth {
 	 */
 	private function get_tokens_from_url() {
 		$data = [
-			'access_token'  => urldecode( Param::get( 'access_token', '', FILTER_SANITIZE_STRING ) ),
-			'refresh_token' => urldecode( Param::get( 'refresh_token', '', FILTER_SANITIZE_STRING ) ),
-			'expire'        => urldecode( Param::get( 'expire', '', FILTER_SANITIZE_STRING ) ),
+			'access_token'  => urldecode( Param::get( 'access_token', '' ) ),
+			'refresh_token' => urldecode( Param::get( 'refresh_token', '' ) ),
+			'expire'        => urldecode( Param::get( 'expire', '' ) ),
 		];
 
 		Authentication::tokens( $data );

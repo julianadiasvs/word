@@ -45,16 +45,20 @@ defined( 'ABSPATH' ) || exit;
 			<h2><?php esc_html_e( 'Learn more', 'rank-math' ); ?></h2>
 			<ul>
 				<li>
-					<span class="dashicons dashicons-facebook"></span><a href="<?php KB::the( 'fb-group' ); ?>" target="_blank"><strong><?php esc_html_e( 'Join FREE Facebook Group', 'rank-math' ); ?></strong></a>
+					<?php if ( ! defined( 'RANK_MATH_PRO_FILE' ) ) { ?>
+						<span class="dashicons dashicons-star-filled pro"></span><a href="<?php KB::the( 'pro-ready-step' ); ?>" target="_blank"><strong class="pro-label"><?php esc_html_e( 'Know more about the PRO version', 'rank-math' ); ?></strong></a>
+					<?php } else { ?>
+						<span class="dashicons dashicons-video-alt3"></span><a href="<?php KB::the( 'yt-link' ); ?>" target="_blank"><?php esc_html_e( 'Subscribe to Our YouTube Channel', 'rank-math' ); ?></a>
+					<?php } ?>
 				</li>
 				<li>
-					<span class="dashicons dashicons-welcome-learn-more"></span><a href="<?php KB::the( 'rm-kb' ); ?>" target="_blank"><?php esc_html_e( 'Rank Math Knowledge Base', 'rank-math' ); ?></a>
+					<span class="dashicons dashicons-facebook"></span><a href="<?php KB::the( 'fb-group' ); ?>" target="_blank"><?php esc_html_e( 'Join FREE Facebook Group', 'rank-math' ); ?></a>
 				</li>
 				<li>
-					<span class="dashicons dashicons-video-alt3"></span><a href="<?php KB::the( 'wp-error-fixes' ); ?>" target="_blank"><?php esc_html_e( 'Common WordPress Errors & Fixes', 'rank-math' ); ?></a>
+					<span class="dashicons dashicons-welcome-learn-more"></span><a href="<?php KB::the( 'rm-kb-ready' ); ?>" target="_blank"><?php esc_html_e( 'Rank Math Knowledge Base', 'rank-math' ); ?></a>
 				</li>
 				<li>
-					<span class="dashicons dashicons-sos"></span><a href="<?php KB::the( 'rm-support' ); ?>" target="_blank"><?php esc_html_e( 'Get 24x7 Support', 'rank-math' ); ?></a>
+					<span class="dashicons dashicons-sos"></span><a href="<?php KB::the( 'rm-support-ready' ); ?>" target="_blank"><?php esc_html_e( 'Get 24x7 Support', 'rank-math' ); ?></a>
 				</li>
 			</ul>
 		</div>

@@ -2,119 +2,119 @@
 # This file is distributed under the same license as the Plugins - UpdraftPlus WordPress Backup Plugin - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-03-02 14:06:36+0000\n"
+"PO-Revision-Date: 2021-04-22 11:49:30+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: GlotPress/2.4.0-alpha\n"
+"X-Generator: GlotPress/3.0.0-alpha.2\n"
 "Language: pt\n"
 "Project-Id-Version: Plugins - UpdraftPlus WordPress Backup Plugin - Stable (latest release)\n"
 
-#: central/bootstrap.php:561
+#: central/translations-updraftplus.php:53
 msgid "recommended"
 msgstr "recomendado"
 
-#: central/bootstrap.php:550
+#: central/translations-updraftplus.php:46
 msgid "Description"
 msgstr "Descrição"
 
-#: central/bootstrap.php:492
+#: central/translations-updraftplus.php:36
 msgid "Details"
 msgstr "Detalhes"
 
-#: admin.php:877
+#: admin.php:929
 msgid "Please enter a valid URL"
 msgstr "Por favor insira um URL válido"
 
-#: admin.php:5240
+#: admin.php:5504
 msgid "Your settings have been saved."
 msgstr "As suas configurações foram gravadas."
 
-#: admin.php:860
+#: admin.php:912
 msgid "Saving..."
 msgstr "Salvando..."
 
-#: admin.php:3561
+#: admin.php:3760
 msgid "stop"
 msgstr "Parar"
 
-#: templates/wp-admin/notices/horizontal-notice.php:16
-#: templates/wp-admin/notices/horizontal-notice.php:18
-#: templates/wp-admin/notices/autobackup-notice.php:16
-#: templates/wp-admin/notices/autobackup-notice.php:18 admin.php:2980
+#: admin.php:3178 templates/wp-admin/notices/autobackup-notice.php:16
+#: templates/wp-admin/notices/autobackup-notice.php:18
+#: templates/wp-admin/notices/horizontal-notice.php:48
+#: templates/wp-admin/notices/horizontal-notice.php:50
 msgid "Dismiss"
 msgstr "Descartar"
 
-#: admin.php:5112
+#: admin.php:5367
 msgid "settings"
 msgstr " - opções"
 
-#: admin.php:694
+#: admin.php:733
 msgid "Extensions"
 msgstr "Extensões"
 
-#: class-updraftplus.php:3307
+#: class-updraftplus.php:3538
 msgid "To complete your migration/clone, you should now log in to the remote site and restore the backup set."
 msgstr "Para concluir a migração/clonagem, deverá agora iniciar sessão no site remoto e restaurar o conjunto de backup."
 
-#: templates/wp-admin/advanced/site-info.php:56
+#: templates/wp-admin/advanced/site-info.php:70
 msgid "required for some remote storage providers"
 msgstr "necessários para alguns fornecedores de alojamento remoto"
 
-#: backup.php:1508
+#: backup.php:1572
 msgid "The backup directory is not writable (or disk space is full) - the database backup is expected to shortly fail."
 msgstr "Este directório de backup não permite gravação (ou o espaço de disco está cheio) - provavelmente o backup da base de dados vai falhar."
 
-#: central/bootstrap.php:415 includes/class-remote-send.php:517
+#: central/translations-updraftplus.php:25 includes/class-remote-send.php:551
 msgid "Key created successfully."
 msgstr "Chave criada com sucesso."
 
-#: central/bootstrap.php:415
+#: central/translations-updraftplus.php:26
 msgid "You must copy and paste this key now - it cannot be shown again."
 msgstr "Tem que copiar e colar esta chave agora - não poderá ser mostrada novamente."
 
-#: templates/wp-admin/advanced/site-info.php:56
+#: templates/wp-admin/advanced/site-info.php:70
 msgid "Not installed"
 msgstr "Não instalado"
 
-#: admin.php:891
+#: admin.php:943
 msgid "day(s)"
 msgstr "dia(s)"
 
-#: backup.php:1636 backup.php:1638
+#: backup.php:1810 backup.php:1812
 msgid "The database backup appears to have failed"
 msgstr "O backup da base de dados parece ter falhado"
 
-#: backup.php:1636
+#: backup.php:1810
 msgid "no options or sitemeta table was found"
 msgstr "não foram encontradas opções nem tabela de metadados do site"
 
-#: backup.php:1638
+#: backup.php:1812
 msgid "the options table was not found"
 msgstr "a tabela de opções não foi encontrada"
 
-#: admin.php:889
+#: admin.php:941
 msgid "day"
 msgstr "dia"
 
-#: admin.php:890
+#: admin.php:942
 msgid "in the month"
 msgstr "do mês"
 
-#: admin.php:892
+#: admin.php:944
 msgid "hour(s)"
 msgstr "hora(s)"
 
-#: admin.php:893
+#: admin.php:945
 msgid "week(s)"
 msgstr "semana(s)"
 
-#: admin.php:894
+#: admin.php:946
 msgid "For backups older than"
 msgstr "Para backups mais antigos que"
 
-#: admin.php:896
+#: admin.php:948
 msgid "Processing..."
 msgstr "A processar..."
 
@@ -123,11 +123,11 @@ msgstr "A processar..."
 msgid "Press here to look inside your remote storage methods for any existing backup sets (from any site, if they are stored in the same folder)."
 msgstr "Clique aqui para ver pesquisar nos seus métodos de alojamento remoto por quaisquer conjuntos de backup (de qualquer site, se estiverem alojados na mesma pasta)."
 
-#: templates/wp-admin/settings/existing-backups-table.php:167
+#: templates/wp-admin/settings/existing-backups-table.php:166
 msgid "Actions upon selected backups"
 msgstr "Acções sobre os backups seleccionados"
 
-#: templates/wp-admin/settings/existing-backups-table.php:170
+#: templates/wp-admin/settings/existing-backups-table.php:169
 msgid "Deselect"
 msgstr "Desseleccionar"
 
@@ -140,88 +140,88 @@ msgstr "Tem a certeza que quer apagar %s do UpdraftPlus?"
 msgid "or to configure more complex schedules"
 msgstr "ou para configurar agendamentos mais complexos"
 
-#: templates/wp-admin/settings/existing-backups-table.php:169
+#: templates/wp-admin/settings/existing-backups-table.php:168
 msgid "Select all"
 msgstr "Seleccionar tudo"
 
-#: restorer.php:3207
+#: restorer.php:3828
 msgid "To use this backup, your database server needs to support the %s character set."
 msgstr "Para utilizar este backup, o servidor da base de dados tem que suportar o conjunto de caracteres %s."
 
-#: restorer.php:3160
+#: restorer.php:3781
 msgctxt "The user is being told the number of times an error has happened, e.g. An error (27) occurred"
 msgid "An error (%s) occurred:"
 msgstr "Ocorreu um erro (%s):"
 
-#: restorer.php:3212
+#: restorer.php:3840
 msgid "Too many database errors have occurred - aborting"
 msgstr "Ocorreram demasiados erros na base de dados - a abortar"
 
-#: restorer.php:2704 restorer.php:3123 restorer.php:3190 restorer.php:3207
+#: restorer.php:3033 restorer.php:3738 restorer.php:3811 restorer.php:3828
 msgid "An error occurred on the first %s command - aborting run"
 msgstr "Ocorreu um erro no primeiro comando %s - a abortar a execução"
 
-#: restorer.php:2588
+#: restorer.php:2868
 msgid "Backup created by:"
 msgstr "Backup criado por:"
 
-#: restorer.php:3018
+#: restorer.php:3615
 msgid "An SQL line that is larger than the maximum packet size and cannot be split was found; this line will not be processed, but will be dropped: %s"
 msgstr "Foi encontrada uma linha SQL que é maior que o tamanho máximo de pacote e não pode ser dividida; esta linha não será processada e será descartada: %s"
 
-#: restorer.php:2673
+#: restorer.php:3002
 msgid "Split line to avoid exceeding maximum packet size"
 msgstr "Quebrar a linha para evitar exceder o tamanho máximo de pacote"
 
-#: restorer.php:2599
+#: restorer.php:2879
 msgid "Content URL:"
 msgstr "URL do conteúdo:"
 
-#: restorer.php:2593
+#: restorer.php:2873
 msgid "Site home:"
 msgstr "Início do site:"
 
-#: restorer.php:2224
+#: restorer.php:2355
 msgid "Requested table engine (%s) is not present - changing to MyISAM."
 msgstr "O mecanismo de tabela solicitado (%s) não está presente - a mudar para MyISAM."
 
-#: restorer.php:2064
+#: restorer.php:2150
 msgid "Please supply the requested information, and then continue."
 msgstr "Por favor, forneça a informação solicitada e continue."
 
-#: restorer.php:2303
+#: restorer.php:2434
 msgid "will restore as:"
 msgstr "irá restaurar como:"
 
-#: restorer.php:3160
+#: includes/class-search-replace.php:496 restorer.php:3781
 msgid "the database query being run was:"
 msgstr "a consulta à base de dados que estava em execução era:"
 
-#: restorer.php:3342 restorer.php:3432
+#: restorer.php:3970 restorer.php:4060
 msgid "Table prefix has changed: changing %s table field(s) accordingly:"
 msgstr "O prefixo da tabela foi alterado: a modificar o(s) campo(s) %s da tabela em conformidade:"
 
-#: restorer.php:2368
+#: restorer.php:2612
 msgid "Failed to find database file"
 msgstr "Falhou em encontrar o ficheiro da base de dados"
 
-#: restorer.php:2389
+#: restorer.php:2633
 msgid "Failed to open database file"
 msgstr "Falhou ao abrir o ficheiro da base de dados"
 
-#: restorer.php:2175 restorer.php:2611 restorer.php:2730
+#: restorer.php:2263 restorer.php:2891 restorer.php:3059
 msgid "Old table prefix:"
 msgstr "Prefixo da tabela antiga:"
 
-#: updraftplus.php:157
+#: updraftplus.php:158
 msgid "You do not have UpdraftPlus completely installed - please de-install and install it again. Most likely, WordPress malfunctioned when copying the plugin files."
 msgstr "Não tem o UpdraftPlus completamente instalado - por favor desinstale e instale de novo. Provavelmente ocorreu um erro no WordPress ao copiar os ficheiros do plugin."
 
-#: restorer.php:3205
+#: restorer.php:3826
 msgid "This problem is caused by trying to restore a database on a very old MySQL version that is incompatible with the source database."
 msgstr "Este problema é causado por tentar restaurar a base de dados numa versão muito antiga do MySQL que é incompatível com esta base de dados."
 
-#: restorer.php:3205
+#: restorer.php:3826
 msgid "This database needs to be deployed on MySQL version %s or later."
 msgstr "Esta base de dados tem que ser implementada num MySQL versão %s ou superior."
 
@@ -242,160 +242,156 @@ msgstr "Backup e restauro: faça backups localmente, para Amazon S3, Dropbox, Go
 msgid "UpdraftPlus.Com, DavidAnderson"
 msgstr "UpdraftPlus.Com, DavidAnderson"
 
-#: restorer.php:2345
+#: restorer.php:2589
 msgid "Warning: PHP safe_mode is active on your server. Timeouts are much more likely. If these happen, then you will need to manually restore the file via phpMyAdmin or another method."
 msgstr "Aviso: O safe_mode do PHP está activo no seu servidor. É mais provável que ultrapasse os tempos de espera. Neste caso, terá então que restaurar manualmente o ficheiro através do phpMyAdmin ou outro método."
 
-#: methods/updraftvault.php:392
+#: methods/updraftvault.php:416
 msgid "Don't know your email address, or forgotten your password?"
 msgstr "Não sabe qual é o endereço de email ou esqueceu a sua senha?"
 
-#: methods/updraftvault.php:385
+#: methods/updraftvault.php:409
 msgid "Enter your UpdraftPlus.Com email / password here to connect:"
 msgstr "Insira aqui o seu email e senha da conta UpdraftPlus.Com para estabelecer ligação:"
 
-#: methods/updraftvault.php:752
+#: methods/updraftvault.php:832
 msgid "If you have forgotten your password, then go here to change your password on updraftplus.com."
 msgstr "Se tiver esquecido a sua senha, vá aqui para mudar a sua senha do updraftplus.com."
 
-#: methods/updraftvault.php:375
+#: methods/updraftvault.php:399
 msgid "Payments can be made in US dollars, euros or GB pounds sterling, via card or PayPal."
 msgstr "Os pagamentos serão feitos em dólares americanos, euros ou libras esterlinas, através de cartão ou PayPal."
 
-#: methods/updraftvault.php:104
+#: methods/updraftvault.php:110
 msgid "Updraft Vault"
 msgstr "Updraft Vault"
 
-#: methods/updraftvault.php:255
+#: methods/updraftvault.php:279
 msgid "Your UpdraftPlus Premium purchase is over a year ago. You should renew immediately to avoid losing the 12 months of free storage allowance that you get for being a current UpdraftPlus Premium customer."
 msgstr "A sua compra do UpdraftPlus Premium tem mais de um ano. Deve renovar imediatamente para evitar perder os 12 meses de alojamento gratuito que pode obter por ser cliente do UpdraftPlus Premium."
 
-#: methods/updraftvault.php:258
+#: methods/updraftvault.php:282
 msgid "You have an UpdraftPlus Vault subscription with overdue payment. You are within the few days of grace period before it will be suspended, and you will lose your quota and access to data stored within it. Please renew as soon as possible!"
 msgstr "Tem uma subscrição do UpdraftPlus Vault com pagamento em atraso. Tem alguns dias até que o serviço seja suspenso, pelo que perderá a sua quota e acesso aos dados armazenados. Por favor renove o mais breve possível!"
 
-#: methods/updraftvault.php:261
+#: methods/updraftvault.php:285
 msgid "You have an UpdraftPlus Vault subscription that has not been renewed, and the grace period has expired. In a few days' time, your stored data will be permanently removed. If you do not wish this to happen, then you should renew as soon as possible."
 msgstr "Tem uma subscrição do UpdraftPlus Vault que não foi renovada e o período de espera expirou. Em alguns dias os seus dados alojados serão removidos permanentemente. Se não quer que isto aconteça, deverá renovar o mais breve possível."
 
-#: methods/updraftvault.php:326 methods/updraftvault.php:343
+#: methods/updraftvault.php:350 methods/updraftvault.php:367
 msgid "UpdraftPlus Vault brings you storage that is <strong>reliable, easy to use and a great price</strong>."
 msgstr "O UpdraftPlus Vault tem um alojamento que é <strong>seguro, fácil de utilizar e tem um óptimo preço</strong>."
 
-#: methods/updraftvault.php:326 methods/updraftvault.php:343
+#: methods/updraftvault.php:350 methods/updraftvault.php:367
 msgid "Press a button to get started."
 msgstr "Prima um botão para começar."
 
-#: methods/updraftvault.php:330
+#: methods/updraftvault.php:354
 msgid "Show the options"
 msgstr "Mostrar as opções"
 
-#: methods/updraftvault.php:337 methods/updraftvault.php:378
+#: methods/updraftvault.php:361 methods/updraftvault.php:402
 msgid "UpdraftPlus Vault is built on top of Amazon's world-leading data-centres, with redundant data storage to achieve 99.999999999% reliability."
 msgstr "O UpdraftPlus Vault é baseado no sistema líder mundial de armazenamento da Amazon, com redundância dos dados armazenados para alcançar uma segurança de 99.999999999%."
 
-#: central/bootstrap.php:620
+#: central/translations-updraftplus.php:63
 msgid "Read more about it here."
 msgstr "Ler mais sobre isto aqui."
 
-#: methods/updraftvault.php:354 methods/updraftvault.php:361
-#: methods/updraftvault.php:368
+#: methods/updraftvault.php:378 methods/updraftvault.php:385
+#: methods/updraftvault.php:392
 msgid "%s per quarter"
 msgstr "%s por trimestre"
 
-#: methods/updraftvault.php:375
+#: methods/updraftvault.php:399
 msgid "Subscriptions can be cancelled at any time."
 msgstr "As subscrições podem ser canceladas em qualquer momento."
 
-#: central/bootstrap.php:585
+#: central/translations-updraftplus.php:59 methods/updraftvault.php:405
+#: methods/updraftvault.php:419
 #: templates/wp-admin/settings/exclude-settings-modal/exclude-panel-heading.php:4
-#: methods/updraftvault.php:381 methods/updraftvault.php:395
 msgid "Back..."
 msgstr "Voltar..."
 
-#: methods/updraftvault.php:392
+#: methods/updraftvault.php:416
 msgid "Go here for help"
 msgstr "Vá aqui para ajuda"
 
-#: methods/updraftvault.php:415 methods/updraftvault.php:479
+#: methods/updraftvault.php:439 methods/updraftvault.php:503
 msgid "Vault owner"
 msgstr "Dono do Vault"
 
-#: methods/updraftvault.php:416 methods/updraftvault.php:481
+#: methods/updraftvault.php:440 methods/updraftvault.php:505
 msgid "Quota:"
 msgstr "Quota:"
 
-#: methods/updraftvault.php:496
+#: methods/updraftvault.php:536
 msgid "You can get more quota here"
 msgstr "Pode obter mais quota aqui"
 
-#: methods/updraftvault.php:501 methods/updraftvault.php:517
-#: methods/updraftvault.php:560
+#: methods/updraftvault.php:551 methods/updraftvault.php:568
+#: methods/updraftvault.php:622
 msgid "Current use:"
 msgstr "Utilização actual:"
 
-#: methods/updraftvault.php:504 methods/updraftvault.php:520
-#: methods/updraftvault.php:522 methods/updraftvault.php:579
+#: methods/updraftvault.php:554 methods/updraftvault.php:571
+#: methods/updraftvault.php:573 methods/updraftvault.php:658
 msgid "Get more quota"
 msgstr "Obter mais quota"
 
-#: methods/updraftvault.php:506 methods/updraftvault.php:579
+#: methods/updraftvault.php:556 methods/updraftvault.php:658
 msgid "Refresh current status"
 msgstr "Actualizar o estado actual"
 
-#: methods/s3.php:1238
+#: methods/s3.php:1287
 msgid "Delete failed:"
 msgstr "A eliminação falhou:"
 
-#: methods/ftp.php:370
+#: methods/ftp.php:371
 msgid "FTP server"
 msgstr "Servidor de FTP"
 
-#: methods/ftp.php:375
+#: methods/ftp.php:376
 msgid "FTP login"
 msgstr "Utilizador de FTP"
 
-#: methods/ftp.php:380
+#: methods/ftp.php:381
 msgid "FTP password"
 msgstr "Senha de FTP"
 
-#: methods/ftp.php:385
+#: methods/ftp.php:386
 msgid "Remote path"
 msgstr "Caminho remoto"
 
-#: methods/ftp.php:390
+#: methods/ftp.php:391
 msgid "Passive mode"
 msgstr "Modo passivo"
 
-#: methods/ftp.php:392
+#: methods/ftp.php:393
 msgid "Almost all FTP servers will want passive mode; but if you need active mode, then uncheck this."
 msgstr "Quase todos os servidores de FTP vão precisar de modo passivo, mas se precisar de modo activo então deverá desactivar esta opção."
 
-#: includes/updraftplus-login.php:55 methods/updraftvault.php:717
+#: includes/updraftplus-login.php:55 methods/updraftvault.php:797
 msgid "To remove the block, please go here."
 msgstr "Para remover este bloco, por favor clique aqui."
 
-#: methods/email.php:96
+#: methods/email.php:100
 msgid "configure it here"
 msgstr "configure aqui"
 
-#: methods/s3.php:947
-msgid "To create a new IAM sub-user and access key that has access only to this bucket, use this add-on."
-msgstr "Para criar um novo sub-utilizador IAM e chave de acesso para aceder apenas a este bucket, utilize este add-on."
-
-#: includes/updraftplus-login.php:55 methods/updraftvault.php:717
+#: includes/updraftplus-login.php:55 methods/updraftvault.php:797
 msgid "UpdraftPlus.com has responded with 'Access Denied'."
 msgstr "O UpdraftPlus.com respondeu com 'Acesso negado'."
 
-#: includes/updraftplus-login.php:55 methods/updraftvault.php:717
+#: includes/updraftplus-login.php:55 methods/updraftvault.php:797
 msgid "It appears that your web server's IP Address (%s) is blocked."
 msgstr "Parece que o endereço IP (%s) do seu servidor está bloqueado."
 
-#: includes/updraftplus-login.php:55 methods/updraftvault.php:717
+#: includes/updraftplus-login.php:55 methods/updraftvault.php:797
 msgid "This most likely means that you share a webserver with a hacked website that has been used in previous attacks."
 msgstr "Provavelmente significa que o seu site partilha o servidor com um site que foi invadido e utilizado anteriormente para fazer ataques."
 
-#: methods/s3.php:187 methods/s3.php:200
+#: methods/s3.php:203 methods/s3.php:216
 msgid "%s Error: Failed to initialise"
 msgstr "Erro %s: Falhou ao iniciar"
 
@@ -409,42 +405,43 @@ msgctxt "\"tenant\" is a term used with OpenStack storage - Google for \"OpenSta
 msgid "tenant"
 msgstr "inquilino"
 
-#: methods/googledrive.php:1329
+#: methods/googledrive.php:1421
 msgid "%s does not allow authorisation of sites hosted on direct IP addresses. You will need to change your site's address (%s) before you can use %s for storage."
 msgstr "%s não permite autorização de sites alojados em endereços IP directos. Deverá modificar o endereço do site (%s) antes de poder utilizar o %s para alojamento."
 
-#: methods/updraftvault.php:693
+#: methods/updraftvault.php:773
 msgid "You need to supply both an email address and a password"
 msgstr "Tem que introduzir endereço de email e password"
 
-#: methods/updraftvault.php:752
+#: methods/updraftvault.php:832
 msgid "Your email address was valid, but your password was not recognised by UpdraftPlus.Com."
 msgstr "O seu endereço de email é válido, mas a sua password não foi reconhecida pelo UpdraftPlus.com."
 
-#: methods/updraftvault.php:755
+#: methods/updraftvault.php:835
 msgid "You entered an email address that was not recognised by UpdraftPlus.Com"
 msgstr "Introduziu um endereço de email que não foi reconhecido pelo UpdraftPlus.Com"
 
-#: class-updraftplus.php:4614 restorer.php:1687
+#: class-updraftplus.php:5018 restorer.php:1710
 msgid "You are using the %s webserver, but do not seem to have the %s module loaded."
 msgstr "Está a utilizar o servidor web %s, mas não parece ter o módulo %s carregado."
 
-#: methods/googledrive.php:1336
+#: methods/googledrive.php:1428
 msgid "Follow this link to your Google API Console, and there activate the Drive API and create a Client ID in the API Access section."
 msgstr "Siga esta ligação para a sua Consola de API do Google, active o Drive API e crie um ID de Cliente na secção de Acesso via API."
 
-#: methods/googledrive.php:600
+#: methods/googledrive.php:656
 msgid "failed to access parent folder"
 msgstr "falhou o acesso ao directório superior"
 
-#: methods/googledrive.php:525 methods/googledrive.php:538
+#: methods/googledrive.php:577 methods/googledrive.php:590
 msgid "However, subsequent access attempts failed:"
 msgstr "Entretanto, as tentativas de acesso subsequentes falharam:"
 
+#: admin.php:1044 admin.php:5916 methods/openstack2.php:144 restorer.php:289
+#: restorer.php:291
 #: templates/wp-admin/settings/downloading-and-restoring.php:27
+#: templates/wp-admin/settings/tab-backups.php:27
 #: templates/wp-admin/settings/updraftcentral-connect.php:14
-#: templates/wp-admin/settings/tab-backups.php:27 methods/openstack2.php:144
-#: admin.php:987 admin.php:5652 restorer.php:263 restorer.php:265
 msgid "Follow this link for more information"
 msgstr "Siga esta ligação para mais informações"
 
@@ -468,163 +465,156 @@ msgstr "O objecto %s não foi encontrado"
 msgid "Region: %s"
 msgstr "Região: %s"
 
-#: methods/googledrive.php:1382
+#: methods/googledrive.php:1476
 msgid "<strong>This is NOT a folder name</strong>."
 msgstr "<strong>Isto NÃO é um nome de pasta</strong>."
 
-#: methods/googledrive.php:1382
+#: methods/googledrive.php:1476
 msgid "It is an ID number internal to Google Drive"
 msgstr "É um número de identificação interno (ID) do Google Drive"
 
-#: methods/googledrive.php:1395
+#: methods/googledrive.php:1489
 msgid "To be able to set a custom folder name, use UpdraftPlus Premium."
 msgstr "Para poder definir um nome de pasta personalizado, utilize o UpdraftPlus Premium."
 
-#: methods/googledrive.php:1377 methods/googledrive.php:1388
+#: methods/googledrive.php:1471 methods/googledrive.php:1482
 msgid "Folder"
 msgstr "Pasta"
 
-#: methods/googledrive.php:558
+#: methods/googledrive.php:613
 msgid "Name: %s."
 msgstr "Nome: %s."
 
-#: methods/insufficient.php:21 methods/addon-not-yet-present.php:19
+#: methods/addon-not-yet-present.php:19 methods/insufficient.php:21
 msgid "This remote storage method (%s) requires PHP %s or later."
 msgstr "Este método de armazenamento remoto (%s) necessita do PHP %s ou posterior."
 
-#: methods/insufficient.php:121 methods/addon-not-yet-present.php:95
+#: methods/addon-not-yet-present.php:101 methods/insufficient.php:121
 msgid "Your %s version: %s."
 msgstr "A versão do seu %s: %s."
 
-#: methods/googledrive.php:297
+#: methods/googledrive.php:311
 msgid "Google Drive list files: failed to access parent folder"
 msgstr "Lista de ficheiros do Google Drive: falhou ao aceder à pasta superior"
 
-#: restorer.php:733
+#: restorer.php:755
 msgid "Failed to unpack the archive"
 msgstr "Falhou ao desempacotar o ficheiro"
 
-#: restorer.php:1500 restorer.php:1548
+#: restorer.php:1522 restorer.php:1570
 msgid "The WordPress content folder (wp-content) was not found in this zip file."
 msgstr "O pasta de conteúdo do WordPress (wp-content) não foi encontrada neste ficheiro zip."
 
-#: restorer.php:1395
+#: restorer.php:1416
 msgid "This version of UpdraftPlus does not know how to handle this type of foreign backup"
 msgstr "Esta versão do UpdraftPlus não consegue utilizar este sistema de backup de terceiros."
 
-#: methods/s3.php:897
+#: methods/s3.php:907
 msgid "Other %s FAQs."
 msgstr "Outras FAQs %s."
 
-#: methods/ftp.php:340
+#: methods/ftp.php:341
 msgid "encrypted FTP (explicit encryption)"
 msgstr "FTP encriptado (encriptação explícita)"
 
-#: methods/ftp.php:338
+#: methods/ftp.php:339
 msgid "regular non-encrypted FTP"
 msgstr "FTP normal não-encriptado"
 
-#: methods/ftp.php:339
+#: methods/ftp.php:340
 msgid "encrypted FTP (implicit encryption)"
 msgstr "FTP encriptado (encriptação implícita)"
 
-#: restorer.php:1387
+#: restorer.php:1408
 msgid "Existing unremoved folders from a previous restore exist (please use the \"Delete Old Directories\" button to delete them before trying again): %s"
 msgstr "Existem pastas não removidas que pertencem a um restauro anterior (por favor utilize o botão \"Apagar Pastas Antigas\" para as apagar antes de tentar novamente): %s"
 
-#: restorer.php:1130
+#: restorer.php:1151
 msgid "The directory does not exist"
 msgstr "O directório não existe"
 
-#: restorer.php:730
+#: restorer.php:752
 msgid "Could not move the files into place. Check your file permissions."
 msgstr "Não pode mover os ficheiros para o local. Verifique suas permissões de ficheiros."
 
-#: restorer.php:723
+#: restorer.php:745
 msgid "Moving old data out of the way..."
 msgstr "Movendo dados antigos para fora do caminho..."
 
-#: restorer.php:727
+#: restorer.php:749
 msgid "Could not move old files out of the way."
 msgstr "Não pode mover os ficheiros antigos para fora do caminho."
 
-#: restorer.php:729
+#: restorer.php:751
 msgid "Could not move new files into place. Check your wp-content/upgrade folder."
 msgstr "Não pode mover os novos ficheiros para o local. Verifique a pasta wp-content/upgrade."
 
-#: methods/email.php:96
+#: methods/email.php:100
 msgid "Your site's admin email address (%s) will be used."
 msgstr "Será utilizado o endereço de email do administrador do seu site (%s)."
 
-#: methods/email.php:97
-msgid "For more options, use the \"%s\" add-on."
-msgstr "Para mais opções, utilize o add-on \"%s\"."
-
-#: methods/s3.php:322
+#: methods/s3.php:354
 msgid "The required %s PHP module is not installed - ask your web hosting company to enable it"
 msgstr "O módulo PHP %s é necessário e não está instalado - solicite a sua activação junto do seu serviço de alojamento"
 
-#: options.php:208
+#: options.php:229
 msgid "This is a WordPress multi-site (a.k.a. network) installation."
 msgstr "Esta é uma instalação WordPress do tipo multi-site (também conhecido como rede)."
 
-#: options.php:208
-msgid "WordPress Multisite is supported, with extra features, by UpdraftPlus Premium, or the Multisite add-on."
-msgstr "Multisite WordPress é suportado, com recursos extra, pelo UpdraftPlus Premium ou pelo add-on Multisite."
-
-#: options.php:208
+#: options.php:229
 msgid "UpdraftPlus warning:"
 msgstr "Aviso do UpdraftPlus:"
 
-#: includes/updraftplus-login.php:57 methods/updraftvault.php:719
+#: includes/updraftplus-login.php:57 methods/updraftvault.php:799
 msgid "UpdraftPlus.Com returned a response which we could not understand (data: %s)"
 msgstr "O UpdraftPlus.Com devolveu uma resposta que não pudemos entender (dados: %s)"
 
-#: methods/updraftvault.php:758
+#: methods/updraftvault.php:838
 msgid "Your email address and password were not recognised by UpdraftPlus.Com"
 msgstr "O seu endereço de email e senha não foram reconhecidos pelo UpdraftPlus.Com"
 
-#: methods/updraftvault.php:746 methods/updraftvault.php:761
+#: methods/updraftvault.php:826 methods/updraftvault.php:849
+#: methods/updraftvault.php:852
 msgid "UpdraftPlus.Com returned a response, but we could not understand it"
 msgstr "O UpdraftPlus.Com devolveu uma resposta, mas não conseguimos entendê-la"
 
-#: methods/googledrive.php:1407
+#: methods/googledrive.php:1501
 msgid "<strong>(You appear to be already authenticated,</strong> though you can authenticate again to refresh your access if you've had a problem)."
 msgstr "<strong>(Parece que já está autenticado</strong>, mas pode autenticar-se novamente para renovar o seu acesso se tiver ocorrido algum problema)."
 
-#: methods/email.php:47
+#: methods/email.php:48
 msgid "Backup is of: %s."
 msgstr "Backup em: %s."
 
-#: methods/email.php:67
+#: methods/email.php:70
 msgid "The attempt to send the backup via email failed (probably the backup was too large for this method)"
 msgstr "Falhou a tentativa de enviar o backup via email (provavelmente o backup era muito grande para este método)"
 
-#: restorer.php:1363
+#: restorer.php:1384
 msgid "folder"
 msgstr "pasta"
 
-#: restorer.php:1371
+#: restorer.php:1392
 msgid "file"
 msgstr "ficheiro"
 
-#: methods/s3.php:865
+#: methods/s3generic.php:91
 msgid "Examples of S3-compatible storage providers:"
 msgstr "Exemplos de fornecedores de armazenamento compatível com S3:"
 
-#: restorer.php:724
+#: restorer.php:746
 msgid "Moving unpacked backup into place..."
 msgstr "A mover o backup descompactado para o local..."
 
-#: methods/s3.php:874
+#: methods/s3generic.php:91
 msgid "... and many more!"
 msgstr "... e muito mais!"
 
-#: methods/s3generic.php:63 methods/s3generic.php:74 methods/s3generic.php:85
+#: methods/s3generic.php:79 methods/s3generic.php:93 methods/s3generic.php:104
 msgid "S3 (Compatible)"
 msgstr "S3 (Compatível)"
 
-#: restorer.php:1641
+#: restorer.php:1663
 msgid "Files found:"
 msgstr "Ficheiros encontrados:"
 
@@ -632,21 +622,21 @@ msgstr "Ficheiros encontrados:"
 msgid "%s login failure"
 msgstr "falha no login %s "
 
-#: methods/s3.php:883
+#: methods/s3.php:893
 msgid "Your web server's PHP installation does not included a required module (%s). Please contact your web hosting provider's support and ask for them to enable it."
 msgstr "A instalação PHP do seu servidor web não inclui um módulo necessário (%s). Por favor, contacte o suporte do seu serviço de alojamento web e solicite a respectiva activação."
 
-#: methods/s3.php:1231
+#: methods/s3.php:1280
 msgid "Please check your access credentials."
 msgstr "Por favor, verifique as suas credenciais de acesso."
 
-#: methods/s3.php:1209
+#: methods/s3.php:1257
 msgid "The error reported by %s was:"
 msgstr "O erro reportado pelo %s foi:"
 
+#: admin.php:1032 admin.php:3284 methods/openstack2.php:164
+#: methods/updraftvault.php:412
 #: templates/wp-admin/settings/updraftcentral-connect.php:50
-#: methods/updraftvault.php:388 methods/openstack2.php:164 admin.php:976
-#: admin.php:3086
 msgid "Password"
 msgstr "Senha"
 
@@ -654,59 +644,55 @@ msgstr "Senha"
 msgid "username"
 msgstr "utilizador"
 
-#: methods/ftp.php:429 methods/openstack2.php:185
+#: methods/ftp.php:430 methods/openstack2.php:185
 msgid "password"
 msgstr "senha"
 
-#: methods/ftp.php:386
+#: methods/ftp.php:387
 msgid "Needs to already exist"
 msgstr "Tem que existir previamente"
 
-#: methods/ftp.php:421
+#: methods/ftp.php:422
 msgid "Failure: No server details were given."
 msgstr "Falha: Nenhum detalhe do servidor foi indicado."
 
-#: methods/ftp.php:439
+#: methods/ftp.php:440
 msgid "Failure: we did not successfully log in with those credentials."
 msgstr "Falha: não conseguimos fazer login com estas credenciais."
 
-#: methods/ftp.php:448
+#: methods/ftp.php:449
 msgid "Success: we successfully logged in, and confirmed our ability to create a file in the given directory (login type:"
 msgstr "Sucesso: conseguimos fazer login e confirmamos ser possível criar um ficheiro no directório indicado (tipo de login:"
 
-#: methods/ftp.php:451
+#: methods/ftp.php:452
 msgid "Failure: we successfully logged in, but were not able to create a file in the given directory."
 msgstr "Falha: conseguimos fazer login com sucesso mas não foi possível criar um ficheiro no directório indicado."
 
-#: methods/ftp.php:349
+#: methods/ftp.php:350
 msgid "Only non-encrypted FTP is supported by regular UpdraftPlus."
 msgstr " Apenas FTP não encriptado é suportado pela versão normal do UpdraftPlus."
 
-#: methods/ftp.php:349
-msgid "If you want encryption (e.g. you are storing sensitive business data), then an add-on is available."
-msgstr "Se pretende encriptação (p.ex.: armazena dados corporativos sensíveis), está disponível um add-on."
-
-#: methods/s3.php:895
+#: methods/s3.php:905
 msgid "If you see errors about SSL certificates, then please go here for help."
 msgstr "Se vir erros sobre certificados SSL, por favor veja aqui como obter ajuda."
 
-#: methods/s3.php:1159
+#: methods/s3.php:1184
 msgid "API secret"
 msgstr "segredo da API"
 
-#: methods/openstack2.php:150 methods/s3.php:1201
+#: methods/openstack2.php:150 methods/s3.php:1249
 msgid "Region"
 msgstr "Região"
 
-#: methods/s3.php:1219 methods/s3.php:1231
+#: methods/s3.php:1268 methods/s3.php:1280
 msgid "Failure"
 msgstr "Falha"
 
-#: methods/s3.php:1224
+#: methods/s3.php:1273
 msgid "The communication with %s was encrypted."
 msgstr "A comunicação com %s foi encriptada."
 
-#: methods/s3.php:1226
+#: methods/s3.php:1275
 msgid "The communication with %s was not encrypted."
 msgstr "A comunicação com %s não foi encriptada."
 
@@ -714,141 +700,141 @@ msgstr "A comunicação com %s não foi encriptada."
 msgid "WordPress Backup"
 msgstr "Backup do WordPress"
 
-#: methods/email.php:92
+#: methods/email.php:96
 msgid "Note:"
 msgstr "Nota:"
 
-#: methods/s3.php:421
+#: methods/s3.php:456
 msgid "%s upload: getting uploadID for multipart upload failed - see log file for more details"
 msgstr "Carregar %s: falhou a obtenção do uploadID para carregamentos em múltiplas partes - veja o ficheiro de log para mais informações"
 
-#: methods/s3.php:473
+#: methods/s3.php:508
 msgid "%s re-assembly error (%s): (see log file for more)"
 msgstr "Erro ao juntar %s (%s): (veja o ficheiro de log para mais informações)"
 
-#: methods/googledrive.php:1334
+#: methods/googledrive.php:1426
 msgid "For longer help, including screenshots, follow this link. The description below is sufficient for more expert users."
 msgstr "Para uma ajuda mais extensa, incluindo imagens do ecrã, siga esta ligação. A descrição abaixo é suficiente para utilizadores experientes."
 
-#: methods/googledrive.php:1336
+#: methods/googledrive.php:1428
 msgid "Select 'Web Application' as the application type."
 msgstr "Seleccione \"Aplicação Web\" como o tipo da aplicação."
 
-#: methods/googledrive.php:1336
+#: methods/googledrive.php:1428
 msgid "You must add the following as the authorised redirect URI (under \"More Options\") when asked"
 msgstr "Quando for pedido, deverá adicionar o seguinte URI de redicionamento autorizado (em \"Mais Opções\")"
 
-#: methods/googledrive.php:1362
+#: methods/googledrive.php:1456
 msgid "Client ID"
 msgstr "ID do cliente"
 
-#: methods/googledrive.php:1363
+#: methods/googledrive.php:1457
 msgid "If Google later shows you the message \"invalid_client\", then you did not enter a valid client ID here."
 msgstr "Se o Google mostrar mais tarde a mensagem \"cliente inválido\", então não inseriu aqui um ID de cliente válido."
 
-#: methods/googledrive.php:1366
+#: methods/googledrive.php:1460
 msgid "Client Secret"
 msgstr "Segredo do cliente"
 
-#: methods/googledrive.php:1402
+#: methods/googledrive.php:1496
 msgid "Authenticate with Google"
 msgstr "Autenticar com o Google"
 
-#: methods/googledrive.php:643
+#: methods/googledrive.php:699
 msgid "Account full: your %s account has only %d bytes left, but the file to be uploaded is %d bytes"
 msgstr "A conta está cheia: a sua conta %s tem apenas %d bytes restantes, mas o ficheiro a ser carregado tem %d bytes"
 
-#: methods/googledrive.php:600 methods/googledrive.php:662
-#: methods/googledrive.php:678 methods/googledrive.php:680
+#: methods/googledrive.php:656 methods/googledrive.php:718
+#: methods/googledrive.php:734 methods/googledrive.php:736
 msgid "Failed to upload to %s"
 msgstr "Falhou carregar para %s"
 
-#: methods/googledrive.php:704 methods/googledrive.php:705
-#: methods/googledrive.php:715 methods/googledrive.php:716
+#: methods/googledrive.php:760 methods/googledrive.php:761
+#: methods/googledrive.php:771 methods/googledrive.php:772
 msgid "Account is not authorized."
 msgstr "Conta não autorizada."
 
-#: methods/addon-not-yet-present.php:26 methods/addon-not-yet-present.php:64
-#: methods/addon-not-yet-present.php:71
+#: methods/addon-not-yet-present.php:26 methods/addon-not-yet-present.php:68
+#: methods/addon-not-yet-present.php:75
 msgid "You do not have the UpdraftPlus %s add-on installed - get it from %s"
 msgstr "Não tem o add-on %s do UpdraftPlus instalado - obtenha-o em %s"
 
-#: methods/addon-not-yet-present.php:80
+#: methods/addon-not-yet-present.php:86
 msgid "follow this link to get it"
 msgstr "siga esta ligação para obtê-lo"
 
-#: methods/googledrive.php:492
+#: methods/googledrive.php:540
 msgid "Authorization failed"
 msgstr "Falha a autorização"
 
-#: methods/googledrive.php:558
+#: methods/googledrive.php:613
 msgid "you have authenticated your %s account."
 msgstr "autenticou a sua conta %s."
 
-#: methods/googledrive.php:748 methods/googledrive.php:784
+#: methods/googledrive.php:804 methods/googledrive.php:840
 msgid "Have not yet obtained an access token from Google - you need to authorise or re-authorise your connection to Google Drive."
 msgstr "Ainda não obteve um token de acesso do Google - tem que autorizar (de novo) a sua ligação com o Google Drive."
 
-#: restorer.php:717
+#: restorer.php:739
 msgid "UpdraftPlus is not able to directly restore this kind of entity. It must be restored manually."
 msgstr "O UpdraftPlus não consegue restaurar directamente este tipo de entidade. Terá que restaurar manualmente."
 
-#: restorer.php:718
+#: restorer.php:740
 msgid "Backup file not available."
 msgstr "O ficheiro de backup não está disponível."
 
-#: restorer.php:719
+#: restorer.php:741
 msgid "Copying this entity failed."
 msgstr "Falhou ao copiar esta entidade."
 
-#: restorer.php:720
+#: restorer.php:742
 msgid "Unpacking backup..."
 msgstr "A desempacotar o backup..."
 
-#: restorer.php:721
+#: restorer.php:743
 msgid "Decrypting database (can take a while)..."
 msgstr "A desencriptar a base de dados (isto pode levar algum tempo)..."
 
-#: restorer.php:722
+#: restorer.php:744
 msgid "Database successfully decrypted."
 msgstr "Base de dados desencriptada com sucesso."
 
-#: restorer.php:725
+#: restorer.php:747
 msgid "Restoring the database (on a large site this can take a long time - if it times out (which can happen if your web hosting company has configured your hosting to limit resources) then you should use a different method, such as phpMyAdmin)..."
 msgstr "A restaurar a base de dados (num site grande isto pode levar muito tempo - se o tempo se esgotar (o que pode ocorrer se o serviço de alojamento web configurou o alojamento com limite de recursos) então deverá utilizar um método diferente, como o phpMyAdmin)..."
 
-#: restorer.php:726
+#: restorer.php:748
 msgid "Cleaning up rubbish..."
 msgstr "A limpar o lixo..."
 
-#: restorer.php:731
+#: restorer.php:753
 msgid "Failed to delete working directory after restoring."
 msgstr "Falhou ao apagar o directório de trabalho após o restauro."
 
-#: restorer.php:1030
+#: restorer.php:1052
 msgid "Failed to create a temporary directory"
 msgstr "Falhou ao criar um directório temporário"
 
-#: restorer.php:1046
+#: restorer.php:1068
 msgid "Failed to write out the decrypted database to the filesystem"
 msgstr "Falhou ao gravar a base de dados desencriptada no sistema de ficheiros"
 
-#: methods/googledrive.php:285 methods/googledrive.php:287
-#: methods/googledrive.php:558 methods/googledrive.php:600
-#: methods/googledrive.php:643 methods/googledrive.php:650
-#: methods/googledrive.php:662 methods/googledrive.php:678
-#: methods/googledrive.php:680 methods/googledrive.php:1322
-#: methods/googledrive.php:1329 methods/googledrive.php:1362
-#: methods/googledrive.php:1366 methods/googledrive.php:1377
-#: methods/googledrive.php:1388
+#: methods/googledrive.php:299 methods/googledrive.php:301
+#: methods/googledrive.php:613 methods/googledrive.php:656
+#: methods/googledrive.php:699 methods/googledrive.php:706
+#: methods/googledrive.php:718 methods/googledrive.php:734
+#: methods/googledrive.php:736 methods/googledrive.php:1414
+#: methods/googledrive.php:1421 methods/googledrive.php:1456
+#: methods/googledrive.php:1460 methods/googledrive.php:1471
+#: methods/googledrive.php:1482
 msgid "Google Drive"
 msgstr "Google Drive"
 
-#: options.php:74
+#: options.php:92
 msgid "UpdraftPlus Backups"
 msgstr "Backups do UpdraftPlus"
 
-#: methods/updraftvault.php:744
+#: methods/updraftvault.php:824
 msgid "You do not currently have any UpdraftPlus Vault quota"
 msgstr "Actualmente não tem qualquer quota no UpdraftPlus Vault"
 
@@ -871,90 +857,90 @@ msgstr "Não foi possível aceder ao container %s"
 msgid "%s error - we accessed the container, but failed to create a file within it"
 msgstr "Erro %s - container acedido, mas falhou ao criar um ficheiro no container ."
 
-#: methods/s3.php:1221
+#: methods/s3.php:1270
 msgid "We accessed the bucket, and were able to create files within it."
 msgstr "Acedemos ao bucket e foi possível criar ficheiros."
 
-#: methods/s3.php:1219 methods/s3.php:1231
+#: methods/s3.php:1268 methods/s3.php:1280
 msgid "We successfully accessed the bucket, but the attempt to create a file in it failed."
 msgstr "Conseguimos aceder com sucesso ao bucket, mas a tentativa de criar um ficheiro falhou."
 
-#: methods/s3.php:1207
+#: methods/s3.php:1255
 msgid "Failure: We could not successfully access or create such a bucket. Please check your access credentials, and if those are correct then try another bucket name (as another %s user may already have taken your name)."
 msgstr "Falha: Não conseguimos aceder ou criar o bucket com sucesso. Por favor verifique suas credenciais de acesso, caso estejam correctas, tente outro nome de bucket (pois algum outro utilizador %s poderá já ter utilizado esse nome)."
 
-#: methods/s3.php:1181
+#: methods/s3.php:1206
 msgid "Failure: No bucket details were given."
 msgstr "Falha: Não foi fornecido nenhum detalhe do bucket."
 
-#: methods/s3.php:965
+#: methods/s3.php:976
 msgid "Enter only a bucket name or a bucket and path. Examples: mybucket, mybucket/mypath"
 msgstr "Introduza apenas um nome de bucket ou um bucket e um caminho. Exemplos: omeubucket, omeubucket/omeucaminho"
 
-#: includes/class-commands.php:796 methods/updraftvault.php:667
+#: includes/class-commands.php:898 methods/updraftvault.php:747
 msgid "An unknown error occurred when trying to connect to UpdraftPlus.Com"
 msgstr "Ocorreu um erro desconhecido ao tentar ligar a UpdraftPlus.com"
 
-#: methods/updraftvault.php:415 methods/updraftvault.php:479
+#: methods/updraftvault.php:439 methods/updraftvault.php:503
 msgid "This site is <strong>connected</strong> to UpdraftPlus Vault."
 msgstr "O site está <strong>ligado</strong> ao UpdraftPlus Vault."
 
-#: methods/updraftvault.php:421 methods/updraftvault.php:475
+#: methods/updraftvault.php:445 methods/updraftvault.php:499
 msgid "You are <strong>not connected</strong> to UpdraftPlus Vault."
 msgstr "<strong>Não está ligado</strong> ao UpdraftPlus Vault."
 
-#: methods/googledrive.php:1336
+#: methods/googledrive.php:1428
 msgid "N.B. If you install UpdraftPlus on several WordPress sites, then you cannot re-use your project; you must create a new one from your Google API console for each site."
 msgstr "Nota: Se instalar o UpdraftPlus em diversos sites WordPress, não poderá reutilizar o seu projeto; deverá criar um novo a partir da sua consola API do Google para cada site."
 
-#: methods/googledrive.php:484
-msgid "No refresh token was received from Google. This often means that you entered your client secret wrongly, or that you have not yet re-authenticated (below) since correcting it. Re-check it, then follow the link to authenticate again. Finally, if that does not work, then use expert mode to wipe all your settings, create a new Google client ID/secret, and start again."
-msgstr "Nenhum token foi recente recebido do Google. Isto normalmente significa que inseriu mal o segredo do cliente ou que ainda não reautenticou novamente (abaixo) desde que o corrigiu. Verifique outra vez e então siga a ligação para autenticar novamente. Finalmente, se isto não funcionar, utilize o modo avançado para limpar todas as definições, criar um novo ID e segredo do cliente Google e inicie novamente."
-
-#: methods/ftp.php:42 methods/googledrive.php:285 methods/googledrive.php:287
-#: methods/addon-base-v2.php:74 methods/addon-base-v2.php:115
-#: methods/addon-base-v2.php:157 methods/addon-base-v2.php:234
-#: methods/addon-base-v2.php:323
+#: methods/addon-base-v2.php:74 methods/addon-base-v2.php:122
+#: methods/addon-base-v2.php:164 methods/addon-base-v2.php:241
+#: methods/addon-base-v2.php:330 methods/ftp.php:42 methods/googledrive.php:299
+#: methods/googledrive.php:301
 msgid "No %s settings were found"
 msgstr "Nenhuma definição de %s encontrada"
 
-#: admin.php:899
+#: admin.php:952
 msgid "Testing %s Settings..."
 msgstr "Testando as Definições %s... "
 
-#: methods/insufficient.php:120 methods/addon-not-yet-present.php:94
+#: methods/googledrive.php:532
+msgid "No refresh token was received from Google. This often means that you entered your client secret wrongly, or that you have not yet re-authenticated (below) since correcting it. Re-check it, then follow the link to authenticate again. Finally, if that does not work, then use expert mode to wipe all your settings, create a new Google client ID/secret, and start again."
+msgstr "Nenhum token foi recente recebido do Google. Isto normalmente significa que inseriu mal o segredo do cliente ou que ainda não reautenticou novamente (abaixo) desde que o corrigiu. Verifique outra vez e então siga a ligação para autenticar novamente. Finalmente, se isto não funcionar, utilize o modo avançado para limpar todas as definições, criar um novo ID e segredo do cliente Google e inicie novamente."
+
+#: methods/addon-not-yet-present.php:100 methods/insufficient.php:120
 msgid "You will need to ask your web hosting company to upgrade."
 msgstr "Deverá solicitar ao seu serviço de alojamento web para fazer uma actualização."
 
-#: methods/updraftvault.php:415 methods/updraftvault.php:479
+#: methods/updraftvault.php:439 methods/updraftvault.php:503
 msgid "Well done - there's nothing more needed to set up."
 msgstr "Muito bem - não há mais nada para definir."
 
-#: methods/addon-not-yet-present.php:80
+#: methods/addon-not-yet-present.php:86
 msgid "%s support is available as an add-on"
 msgstr "O suporte para %s está disponível como um add-on"
 
-#: methods/s3.php:964
+#: methods/s3.php:975
 msgid "%s location"
 msgstr "Localização de %s"
 
-#: methods/s3.php:956
+#: methods/s3.php:967
 msgid "%s access key"
 msgstr "Chave de acesso de %s"
 
-#: methods/s3.php:960
+#: methods/s3.php:971
 msgid "%s secret key"
 msgstr "Chave secreta de %s"
 
-#: methods/dreamobjects.php:115 methods/s3generic.php:117
+#: methods/dreamobjects.php:126 methods/s3generic.php:136
 msgid "%s end-point"
 msgstr "End-point de %s"
 
-#: restorer.php:1363 restorer.php:1371
+#: restorer.php:1384 restorer.php:1392
 msgid "UpdraftPlus needed to create a %s in your content directory, but failed - please check your file permissions and enable the access (%s)"
 msgstr "O UpdraftPlus precisou criar um %s no directório de conteúdos mas falhou - por favor verifique as suas permissões de ficheiros e active o acesso (%s)"
 
-#: options.php:208
+#: options.php:229
 msgid "(This applies to all WordPress backup plugins unless they have been explicitly coded for multisite compatibility)."
 msgstr "(Isto é aplicável a todos os plugins de backup do WordPress, a menos que tenham sido explicitamente programados para compatibilidade multissite)."
 
@@ -962,230 +948,222 @@ msgstr "(Isto é aplicável a todos os plugins de backup do WordPress, a menos q
 msgid "Container"
 msgstr "Contentor"
 
-#: backup.php:3313
+#: backup.php:4169
 msgid "The zip engine returned the message: %s."
 msgstr "O motor de zip devolveu a mensagem: %s."
 
-#: includes/updraftplus-notices.php:148
+#: includes/updraftplus-notices.php:151
 msgid "Follow this link to sign up for the UpdraftPlus newsletter."
 msgstr "Siga esta ligação para subscrever a newsletter do UpdraftPlus."
 
-#: backup.php:3315
+#: backup.php:4171
 msgid "A zip error occurred"
 msgstr "Ocorreu um erro de zip"
 
-#: backup.php:3317
+#: backup.php:4173
 msgid "your web hosting account appears to be full; please see: %s"
 msgstr "o seu alojamento parece estar cheio, por favor veja: %s"
 
-#: backup.php:3319
+#: backup.php:4175
 msgid "check your log for more details."
 msgstr "veja o seu log para mais detalhes."
 
-#: class-updraftplus.php:4653
+#: class-updraftplus.php:5058
 msgid "Backup label:"
 msgstr "Identificação do backup:"
 
-#: class-updraftplus.php:4643 class-updraftplus.php:4645
+#: class-updraftplus.php:5048 class-updraftplus.php:5050
 msgid "The site in this backup was running on a webserver with version %s of %s. "
 msgstr "O site neste backup estava a funcionar num servidor com a versão %s de %s."
 
-#: class-updraftplus.php:4643
+#: class-updraftplus.php:5048
 msgid "This is significantly newer than the server which you are now restoring onto (version %s)."
 msgstr "Isto é significativamente mais recente do que o servidor onde está agora a fazer o restauro (versão %s)."
 
-#: class-updraftplus.php:4643
+#: class-updraftplus.php:5048
 msgid "You should only proceed if you cannot update the current server and are confident (or willing to risk) that your plugins/themes/etc. are compatible with the older %s version."
 msgstr "Deverá continuar apenas se não consegue actualizar este servidor e se está confiante (ou disposto a correr o risco) que os seus plugins/temas/etc. são compatíveis com a versão %s mais antiga."
 
-#: class-updraftplus.php:4643 class-updraftplus.php:4645
+#: class-updraftplus.php:5048 class-updraftplus.php:5050
 msgid "Any support requests to do with %s should be raised with your web hosting company."
 msgstr "Quaisquer pedidos de suporte relativos a %s deverão ser solicitados ao seu serviço de alojamento."
 
-#: includes/updraftplus-notices.php:139 includes/updraftplus-notices.php:140
+#: includes/updraftplus-notices.php:140 includes/updraftplus-notices.php:143
 msgid "Facebook"
 msgstr "Facebook"
 
-#: includes/updraftplus-notices.php:139 includes/updraftplus-notices.php:140
-msgid "Google+"
-msgstr "Google+"
-
-#: includes/updraftplus-notices.php:139 includes/updraftplus-notices.php:140
-msgid "LinkedIn"
-msgstr "LinkedIn"
-
-#: includes/class-filesystem-functions.php:285 restorer.php:2383
+#: includes/class-filesystem-functions.php:302 restorer.php:2627
 msgid "restoration"
 msgstr "Restauro"
 
-#: class-updraftplus.php:4495
+#: class-updraftplus.php:4888
 msgid "Decryption failed. The database file is encrypted."
 msgstr "A desencriptação falhou. A base de dados está encriptada."
 
-#: backup.php:1449
+#: backup.php:1509
 msgid "database connection attempt failed."
 msgstr "falhou a tentativa de ligação à base de dados."
 
-#: backup.php:1449
+#: backup.php:1509
 msgid "Connection failed: check your access details, that the database server is up, and that the network connection is not firewalled."
 msgstr "A ligação falhou: verifique os detalhes do seu acesso, se o servidor de banco de dados está em funcionamento e se a ligação de rede não foi bloqueada por firewall."
 
-#: methods/dropbox.php:802 methods/dropbox.php:804
+#: methods/dropbox.php:851 methods/dropbox.php:853
 msgid "Success:"
 msgstr "Sucesso:"
 
-#: methods/dropbox.php:610
+#: methods/dropbox.php:634
 msgid "Dropbox"
 msgstr "Dropbox"
 
-#: methods/dropbox.php:614
+#: methods/dropbox.php:638
 msgid "(You appear to be already authenticated)."
 msgstr "(Aparentemente já está autenticado)."
 
-#: methods/dropbox.php:610
+#: methods/dropbox.php:634
 msgid "Authenticate with %s"
 msgstr "Autentique com %s"
 
-#: methods/cloudfiles.php:403 methods/openstack-base.php:460
+#: methods/cloudfiles.php:415 methods/openstack-base.php:460
 msgid "Error downloading remote file: Failed to download"
 msgstr "Erro ao descarregar o ficheiro remoto: Falha ao descarregar"
 
-#: methods/googledrive.php:1418 methods/dropbox.php:667
+#: methods/dropbox.php:691 methods/googledrive.php:1512
 msgid "Account holder's name: %s."
 msgstr "Nome do titular da conta: %s."
 
-#: class-updraftplus.php:1509 methods/cloudfiles.php:416
+#: class-updraftplus.php:1573 methods/cloudfiles.php:428
 msgid "Error - failed to download the file"
 msgstr "Erro - falhou ao descarregar o ficheiro"
 
-#: methods/dropbox.php:373
+#: methods/dropbox.php:406
 msgid "%s returned an unexpected HTTP response: %s"
 msgstr "%s obteve uma resposta HTTP inesperada: %s."
 
-#: includes/class-filesystem-functions.php:285 methods/ftp.php:343
+#: includes/class-filesystem-functions.php:302 methods/ftp.php:344
 msgid "Your web server's PHP installation has these functions disabled: %s."
 msgstr "A instalação PHP do seu servidor web tem as seguintes funções desactivadas: %s."
 
-#: includes/class-filesystem-functions.php:285 methods/ftp.php:343
+#: includes/class-filesystem-functions.php:302 methods/ftp.php:344
 msgid "Your hosting company must enable these functions before %s can work."
 msgstr "O seu serviço de alojamento tem que activar estas funções para que o %s possa funcionar."
 
-#: includes/class-filesystem-functions.php:305
+#: includes/class-filesystem-functions.php:322
 msgid "The database file appears to have been compressed twice - probably the website you downloaded it from had a mis-configured webserver."
 msgstr "O ficheiro da base de dados parece ter sido comprimido duas vezes - provavelmente o site de onde foi efectuado o download está com o servidor web configurado incorrectamente."
 
-#: includes/class-filesystem-functions.php:312
-#: includes/class-filesystem-functions.php:334
+#: includes/class-filesystem-functions.php:329
+#: includes/class-filesystem-functions.php:351
 msgid "The attempt to undo the double-compression failed."
 msgstr "Falhou a tentativa de desfazer a dupla compressão."
 
-#: includes/class-filesystem-functions.php:336
+#: includes/class-filesystem-functions.php:353
 msgid "The attempt to undo the double-compression succeeded."
 msgstr "A tentativa de desfazer a dupla compressão foi bem sucedida."
 
-#: backup.php:1686
+#: backup.php:1883
 msgid "Failed to open database file for reading:"
 msgstr "Falhou ao abrir o ficheiro da base de dados para leitura:"
 
-#: backup.php:1495
+#: backup.php:1559
 msgid "please wait for the rescheduled attempt"
 msgstr "por favor aguarde pela nova tentativa que foi agendada"
 
-#: backup.php:1497
+#: backup.php:1561
 msgid "No database tables found"
 msgstr "Nenhuma tabela de base de dados foi encontrada"
 
-#: methods/cloudfiles-new.php:159
+#: methods/cloudfiles-new.php:161
 msgid "Northern Virginia (IAD)"
 msgstr "Virgínia do Norte (IAD)"
 
-#: methods/cloudfiles-new.php:160
+#: methods/cloudfiles-new.php:162
 msgid "Hong Kong (HKG)"
 msgstr "Hong Kong (HKG)"
 
-#: methods/cloudfiles-new.php:161
+#: methods/cloudfiles-new.php:163
 msgid "London (LON)"
 msgstr "Londres (LON)"
 
-#: methods/cloudfiles-new.php:110
+#: methods/cloudfiles-new.php:112
 msgid "US or UK-based Rackspace Account"
 msgstr "Conta do Rackspace baseada nos EUA (US) ou Reino Unido (UK) "
 
-#: methods/cloudfiles-new.php:112
+#: methods/cloudfiles-new.php:114
 msgid "Accounts created at rackspacecloud.com are US-accounts; accounts created at rackspace.co.uk are UK-based"
 msgstr "Contas criadas em rackspacecloud.com são contas dos EUA (US); contas criadas em rackspace.co.uk são baseadas no Reino Unido (UK)"
 
-#: methods/cloudfiles-new.php:158
+#: methods/cloudfiles-new.php:160
 msgid "Chicago (ORD)"
 msgstr "Chicago (ORD)"
 
-#: methods/openstack2.php:33 methods/cloudfiles-new.php:37
-#: methods/openstack-base.php:489 methods/openstack-base.php:491
-#: methods/openstack-base.php:512
+#: methods/cloudfiles-new.php:37 methods/openstack-base.php:489
+#: methods/openstack-base.php:491 methods/openstack-base.php:512
+#: methods/openstack2.php:33
 msgid "Authorisation failed (check your credentials)"
 msgstr "Autorização falhou (verifique as suas credenciais)"
 
-#: methods/cloudfiles-new.php:110
+#: methods/cloudfiles-new.php:112
 msgid "Accounts created at rackspacecloud.com are US accounts; accounts created at rackspace.co.uk are UK accounts."
 msgstr "Contas criadas em rackspacecloud.com são contas dos EUA (US); contas criadas em rackspace.co.uk são contas do Reino Unido (UK)."
 
-#: class-updraftplus.php:4575
+#: class-updraftplus.php:4977
 msgid "(version: %s)"
 msgstr "(versão: %s)"
 
-#: class-updraftplus.php:3478
+#: class-updraftplus.php:3709
 msgid "Latest status:"
 msgstr "Último estado:"
 
-#: backup.php:3306 class-updraftplus.php:931
+#: backup.php:4162 class-updraftplus.php:978
 msgid "Your free space in your hosting account is very low - only %s Mb remain"
 msgstr "O espaço livre na sua conta de alojamento está muito baixo - restam apenas %s Mb"
 
-#: class-updraftplus.php:915
+#: class-updraftplus.php:962
 msgid "The amount of memory (RAM) allowed for PHP is very low (%s Mb) - you should increase it to avoid failures due to insufficient memory (consult your web hosting company for more help)"
 msgstr "A quantidade de memória (RAM) permitida para o PHP está muito baixa (%s Mb) - deverá aumentá-la para evitar falhas devido à memória insuficiente (consulte seu serviço de alojamento web para mais ajuda)"
 
-#: class-updraftplus.php:3322
+#: class-updraftplus.php:3553
 msgid "The backup has not finished; a resumption is scheduled"
 msgstr "O backup não foi terminado; foi agendado um recomeço."
 
-#: class-updraftplus.php:2172
+#: class-updraftplus.php:2283
 msgid "Your website is visited infrequently and UpdraftPlus is not getting the resources it hoped for; please read this page:"
 msgstr "O seu website é visitado raramente e o UpdraftPlus não está a receber os recursos que esperava, por favor leia esta página:"
 
-#: class-updraftplus.php:4636
+#: class-updraftplus.php:5041
 msgid "You are importing from a newer version of WordPress (%s) into an older one (%s). There are no guarantees that WordPress can handle this."
 msgstr "Está a importar de uma versão mais recente do WordPress (%s) para uma mais versão antiga (%s). Não há garantia de que o WordPress consiga lidar com isso."
 
-#: class-updraftplus.php:4898
+#: class-updraftplus.php:5312
 msgid "This database backup is missing core WordPress tables: %s"
 msgstr "Faltam tabelas essenciais do WordPress neste backup da base de dados: %s"
 
-#: class-updraftplus.php:4906
+#: class-updraftplus.php:5320
 msgid "UpdraftPlus was unable to find the table prefix when scanning the database backup."
 msgstr "O UpdraftPlus não conseguiu encontrar o prefixo das tabelas ao verificar o backup da base de dados."
 
-#: class-updraftplus.php:4512
+#: class-updraftplus.php:4905
 msgid "The database is too small to be a valid WordPress database (size: %s Kb)."
 msgstr "A base de dados é muito pequena para ser uma base de dados válida do WordPress (tamanho: %s Kb)."
 
-#: backup.php:2969 backup.php:3262
+#: backup.php:3805 backup.php:4115
 msgid "Failed to open the zip file (%s) - %s"
 msgstr "Falha ao abrir o ficheiro zip (%s) - %s"
 
-#: class-updraftplus.php:4520
+#: class-updraftplus.php:4919
 msgid "Failed to open database file."
 msgstr "Falhou ao abrir o ficheiro da base de dados."
 
-#: methods/dropbox.php:443
+#: methods/dropbox.php:482
 msgid "You do not appear to be authenticated with %s (whilst deleting)"
 msgstr "Não parece estar autenticado com %s (enquanto apaga)"
 
-#: methods/dropbox.php:451
+#: methods/dropbox.php:490
 msgid "Failed to access %s when deleting (see log file for more)"
 msgstr "Falhou ao aceder %s enquanto está a apagar (ver mais no ficheiro de log)"
 
-#: methods/dropbox.php:485
+#: methods/dropbox.php:528
 msgid "You do not appear to be authenticated with %s"
 msgstr "Parece não estar autenticado com %s"
 
@@ -1193,184 +1171,172 @@ msgstr "Parece não estar autenticado com %s"
 msgid "%s error - failed to upload file"
 msgstr "Erro %s - falhou ao carregar o ficheiro"
 
-#: methods/addon-base-v2.php:258 methods/openstack-base.php:460
+#: methods/addon-base-v2.php:265 methods/openstack-base.php:460
 msgid "%s Error"
 msgstr "Erro %s"
 
-#: methods/cloudfiles.php:238 methods/openstack-base.php:44
+#: methods/cloudfiles.php:250 methods/openstack-base.php:44
 #: methods/openstack-base.php:357 methods/openstack-base.php:422
 #: methods/openstack-base.php:495 methods/openstack-base.php:498
 #: methods/openstack-base.php:516 methods/openstack-base.php:521
 msgid "%s authentication failed"
 msgstr "Falhou a autenticação %s"
 
-#: class-updraftplus.php:1398
+#: class-updraftplus.php:1462
 msgid "%s error - failed to re-assemble chunks"
 msgstr "Erro %s - falhou ao juntar as partes"
 
-#: backup.php:2251 backup.php:2283
+#: backup.php:3008 backup.php:3036
 msgid "%s: unreadable file - could not be backed up"
 msgstr "%s: ficheiro não pode ser lido - o backup não foi feito"
 
-#: backup.php:2995
+#: backup.php:3834
 msgid "A very large file was encountered: %s (size: %s Mb)"
 msgstr "Foi encontrado um ficheiro muito grande: %s (tamanho: %s Mb)"
 
-#: backup.php:1581
-msgid "Table %s has very many rows (%s) - we hope your web hosting company gives you enough resources to dump out that table in the backup"
-msgstr "A tabela %s tem muitas linhas (%s) - esperamos que o seu serviço de alojamento web lhe forneça os recursos necessários para inserir essa tabela no backup"
-
-#: backup.php:1738
+#: backup.php:1961
 msgid "An error occurred whilst closing the final database file"
 msgstr "Ocorreu um erro ao fechar o ficheiro final da base de dados"
 
-#: class-updraftplus.php:3301
+#: class-updraftplus.php:3532
 msgid "The backup apparently succeeded (with warnings) and is now complete"
 msgstr "Aparentemente o backup foi bem sucedido (com avisos) e está agora concluído."
 
-#: class-updraftplus.php:944
+#: class-updraftplus.php:991
 msgid "Your free disk space is very low - only %s Mb remain"
 msgstr "O seu espaço livre em disco é muito reduzido - restam apenas %s Mb"
 
-#: class-updraftplus.php:4679 restorer.php:2628
+#: class-updraftplus.php:5084 restorer.php:2908
 msgid "Site information:"
 msgstr "Informações do site:"
 
-#: includes/updraftplus-notices.php:159 includes/updraftplus-notices.php:160
-#: includes/updraftplus-notices.php:169 includes/updraftplus-notices.php:170
+#: includes/updraftplus-notices.php:162 includes/updraftplus-notices.php:163
+#: includes/updraftplus-notices.php:172 includes/updraftplus-notices.php:173
 msgid "Blog link"
 msgstr "Ligação do blog"
 
-#: includes/updraftplus-notices.php:159 includes/updraftplus-notices.php:160
-#: includes/updraftplus-notices.php:169 includes/updraftplus-notices.php:170
+#: includes/updraftplus-notices.php:162 includes/updraftplus-notices.php:163
+#: includes/updraftplus-notices.php:172 includes/updraftplus-notices.php:173
 msgid "RSS link"
 msgstr "Ligação RSS"
 
-#: methods/dropbox.php:802 methods/dropbox.php:804
+#: methods/dropbox.php:851 methods/dropbox.php:853
 msgid "you have authenticated your %s account"
 msgstr "autenticou a sua conta %s"
 
-#: methods/dropbox.php:807 methods/dropbox.php:829
+#: methods/dropbox.php:856 methods/dropbox.php:878
 msgid "though part of the returned information was not as expected - your mileage may vary"
 msgstr "embora parte da informação devolvida não fosse esperada - a sua experiência pode ser diferente"
 
-#: methods/dropbox.php:817
+#: methods/dropbox.php:866
 msgid "Your %s account name: %s"
 msgstr "O seu nome de conta %s: %s"
 
-#: methods/dropbox.php:172 methods/dropbox.php:189
+#: methods/dropbox.php:194 methods/dropbox.php:211
 msgid "You do not appear to be authenticated with Dropbox"
 msgstr "Parece não estar autenticado com a Dropbox."
 
-#: methods/dropbox.php:280
+#: methods/dropbox.php:313
 msgid "error: failed to upload file to %s (see log file for more)"
 msgstr "erro: falhou ao carregar o ficheiro para %s (ver o ficheiro de log para mais informação)"
 
-#: methods/dropbox.php:602 methods/dropbox.php:604
+#: methods/dropbox.php:628
 msgid "Need to use sub-folders?"
 msgstr "Necessita de sub pastas?"
 
-#: methods/dropbox.php:602 methods/dropbox.php:604
-msgid "Backups are saved in"
-msgstr "Backups são armazenados em"
-
-#: methods/dropbox.php:602 methods/dropbox.php:604
-msgid "there's an add-on for that."
-msgstr "existe um add-on para isso."
-
-#: methods/cloudfiles.php:466
+#: methods/cloudfiles.php:478
 msgid "US or UK Cloud"
 msgstr "Nuvem nos EUA (US) ou Reino Unido (UK)"
 
-#: methods/cloudfiles.php:470 methods/cloudfiles-new.php:114
+#: methods/cloudfiles-new.php:116 methods/cloudfiles.php:482
 msgid "UK"
 msgstr "Reino Unido"
 
-#: methods/cloudfiles.php:486
+#: methods/cloudfiles.php:498
 msgid "Cloud Files username"
 msgstr "Nome de utilizador do Cloud Files"
 
-#: methods/cloudfiles.php:443 methods/s3.php:887 methods/cloudfiles-new.php:96
-#: methods/openstack-base.php:576
+#: methods/cloudfiles-new.php:96 methods/cloudfiles.php:455
+#: methods/openstack-base.php:576 methods/s3.php:897
 msgid "UpdraftPlus's %s module <strong>requires</strong> %s. Please do not file any support requests; there is no alternative."
 msgstr "Os módulos %s do UpdraftPlus <strong>necessitam</strong> de %s. Por favor, não envie pedidos de suporte. Não existe alternativa."
 
-#: methods/cloudfiles.php:522 methods/s3.php:1155
-#: methods/cloudfiles-new.php:179
+#: methods/cloudfiles-new.php:181 methods/cloudfiles.php:534
+#: methods/s3.php:1180
 msgid "API key"
 msgstr "Chave de API"
 
-#: methods/cloudfiles.php:527 methods/openstack2.php:158
-#: methods/cloudfiles-new.php:184 admin.php:975
+#: admin.php:1031 methods/cloudfiles-new.php:186 methods/cloudfiles.php:539
+#: methods/openstack2.php:158
 msgid "Username"
 msgstr "Nome de utilizador"
 
-#: methods/cloudfiles.php:557 methods/cloudfiles.php:560
-#: methods/cloudfiles.php:563
+#: methods/cloudfiles.php:569 methods/cloudfiles.php:572
+#: methods/cloudfiles.php:575
 msgid "Cloud Files authentication failed"
 msgstr "Falhou a autenticação do Cloud Files"
 
-#: class-updraftplus.php:1283
+#: class-updraftplus.php:1347
 msgid "%s Error: Failed to open local file"
 msgstr "Erro %s: Falhou ao abrir o ficheiro local"
 
-#: methods/s3.php:386 methods/s3.php:398 methods/s3.php:399
-#: methods/openstack-base.php:314
+#: methods/openstack-base.php:314 methods/s3.php:421 methods/s3.php:433
+#: methods/s3.php:434
 msgid "%s Error: Failed to upload"
 msgstr "Erro %s: Falhou ao carregar"
 
-#: class-updraftplus.php:1441 class-updraftplus.php:1485
-#: methods/cloudfiles.php:386
+#: class-updraftplus.php:1505 class-updraftplus.php:1549
+#: methods/cloudfiles.php:398
 msgid "Error opening local file: Failed to download"
 msgstr "Erro ao abrir o ficheiro local: Falhou ao descarregar"
 
-#: methods/cloudfiles.php:449 methods/openstack2.php:120
-#: methods/cloudfiles-new.php:98
+#: methods/cloudfiles-new.php:98 methods/cloudfiles.php:461
+#: methods/openstack2.php:120
 msgid "Also, you should read this important FAQ."
 msgstr "E ainda, deverá ler esta importante FAQ."
 
-#: includes/Dropbox2/OAuth/Consumer/ConsumerAbstract.php:126
+#: includes/Dropbox2/OAuth/Consumer/ConsumerAbstract.php:137
 msgid "You need to re-authenticate with %s, as your existing credentials are not working."
 msgstr "Tem que se autenticar novamente com %s, pois as suas credenciais existentes não estão a funcionar."
 
-#: methods/googledrive.php:522 methods/dropbox.php:840 methods/dropbox.php:849
+#: methods/dropbox.php:889 methods/dropbox.php:898 methods/googledrive.php:574
 msgid "Your %s quota usage: %s %% used, %s available"
 msgstr "A utilização da sua quota %s: %s %% utilizado, %s disponível"
 
-#: methods/googledrive.php:558 methods/addon-base-v2.php:363
-#: methods/cloudfiles.php:578 methods/s3.php:1221
-#: methods/openstack-base.php:535
+#: methods/addon-base-v2.php:370 methods/cloudfiles.php:590
+#: methods/googledrive.php:613 methods/openstack-base.php:535
+#: methods/s3.php:1270
 msgid "Success"
 msgstr "Sucesso"
 
-#: methods/cloudfiles.php:443 methods/s3.php:887 methods/cloudfiles-new.php:96
-#: methods/openstack-base.php:576
+#: methods/cloudfiles-new.php:96 methods/cloudfiles.php:455
+#: methods/openstack-base.php:576 methods/s3.php:897
 msgid "Your web server's PHP installation does not included a required module (%s). Please contact your web hosting provider's support."
 msgstr "A instalação PHP do seu servidor web não inclui um módulo necessário (%s). Por favor contacte o suporte do seu serviço de alojamento web."
 
-#: backup.php:2163
+#: backup.php:2918
 msgid "Infinite recursion: consult your log for more information"
 msgstr "Recursão infinita: consulte o seu log para mais informações"
 
-#: class-updraftplus.php:4008
+#: class-updraftplus.php:4372
 msgid "Could not read the directory"
 msgstr "Não foi possível ler o directório"
 
-#: class-updraftplus.php:4024
+#: class-updraftplus.php:4388
 msgid "Could not save backup history because we have no backup array. Backup probably failed."
 msgstr "Não foi possível gravar o histórico do backup porque não temos nenhuma matriz de backup. O backup provavelmente falhou."
 
-#: backup.php:2051
+#: backup.php:2801
 msgid "Could not open the backup file for writing"
 msgstr "Não foi possível abrir o ficheiro de backup para gravação"
 
-#: class-updraftplus.php:4493 includes/class-updraftplus-encryption.php:336
-#: restorer.php:1038
+#: class-updraftplus.php:4886 includes/class-updraftplus-encryption.php:336
+#: restorer.php:1060
 msgid "Decryption failed. The database file is encrypted, but you have no encryption key entered."
 msgstr "A desencriptação falhou. O ficheiro da base de dados está encriptado, mas não foi inserida nenhuma chave de encriptação."
 
-#: class-updraftplus.php:4505 includes/class-updraftplus-encryption.php:354
-#: restorer.php:1051
+#: class-updraftplus.php:4898 includes/class-updraftplus-encryption.php:354
+#: restorer.php:1073
 msgid "Decryption failed. The most likely cause is that you used the wrong key."
 msgstr "A desencriptação falhou. A causa mais provável é que tenha utilizado uma chave errada."
 
@@ -1378,75 +1344,67 @@ msgstr "A desencriptação falhou. A causa mais provável é que tenha utilizado
 msgid "The decryption key used:"
 msgstr "A chave de desencriptação utilizada:"
 
-#: class-updraftplus.php:4282 methods/googledrive.php:1251 methods/s3.php:351
+#: class-updraftplus.php:4673 methods/googledrive.php:1343 methods/s3.php:383
 msgid "File not found"
 msgstr "Ficheiro não encontrado"
 
-#: includes/updraftplus-notices.php:117
-msgid "Like UpdraftPlus and can spare one minute?"
-msgstr "Gosta do UpdraftPlus e pode dispor de um minuto?"
-
-#: class-updraftplus.php:1922
+#: class-updraftplus.php:2025
 msgid "Themes"
 msgstr "Temas"
 
-#: class-updraftplus.php:1923
+#: class-updraftplus.php:2026
 msgid "Uploads"
 msgstr "Carregamentos"
 
-#: class-updraftplus.php:1938
+#: class-updraftplus.php:2041
 msgid "Others"
 msgstr "Outros"
 
-#: class-updraftplus.php:3318
+#: class-updraftplus.php:3549
 msgid "The backup attempt has finished, apparently unsuccessfully"
 msgstr "A tentativa de backup terminou, aparentemente sem sucesso"
 
-#: class-updraftplus.php:660
+#: class-updraftplus.php:689
 msgid "No log files were found."
 msgstr "Nenhum ficheiro de log encontrado."
 
-#: class-updraftplus.php:1921
+#: class-updraftplus.php:2024
 msgid "Plugins"
 msgstr "Plugins"
 
-#: class-updraftplus.php:4742
+#: class-updraftplus.php:5150
 msgid "The database backup uses MySQL features not available in the old MySQL version (%s) that this site is running on."
 msgstr "O backup da base de dados utiliza recursos do MySQL que não estão disponíveis na versão antiga de MySQL (%s) em que este site está a funcionar."
 
-#: class-updraftplus.php:4742
+#: class-updraftplus.php:5150
 msgid "You must upgrade MySQL to be able to use this database."
 msgstr "Tem que actualizar o MySQL para poder utilizar esta base de dados."
 
-#: methods/cloudfiles-new.php:119
+#: methods/cloudfiles-new.php:121
 msgid "Cloud Files Storage Region"
 msgstr "Região de armazenamento do Cloud Files"
 
-#: methods/cloudfiles-new.php:129
+#: methods/cloudfiles-new.php:131
 msgid "Cloud Files Username"
 msgstr "Nome de utilizador do Cloud Files"
 
-#: methods/cloudfiles.php:490 methods/cloudfiles-new.php:137
+#: methods/cloudfiles-new.php:139 methods/cloudfiles.php:502
 msgid "Cloud Files API Key"
 msgstr "Chave de API do Cloud Files"
 
-#: methods/cloudfiles-new.php:132
-msgid "To create a new Rackspace API sub-user and API key that has access only to this Rackspace container, use this add-on."
-msgstr "Para criar um novo sub utilizador de API do Rackspace e uma chave de API que tenha acesso apenas a este container do Rackspace, utilize este add-on."
-
-#: methods/cloudfiles.php:578 methods/openstack-base.php:535
+#: methods/cloudfiles.php:590 methods/openstack-base.php:535
 msgid "We accessed the container, and were able to create files within it."
 msgstr "Acedemos ao container e foi possível criar ficheiros no interior."
 
-#: methods/cloudfiles.php:574
+#: methods/cloudfiles.php:586
 msgid "Cloud Files error - we accessed the container, but failed to create a file within it"
 msgstr "Erro do Cloud Files - acedemos ao container mas falhámos ao criar um ficheiro no interior"
 
-#: methods/cloudfiles.php:547 methods/openstack-base.php:477
+#: methods/cloudfiles.php:559 methods/openstack-base.php:477
 msgid "Failure: No container details were given."
 msgstr "Falha: Não foram indicados detalhes do container."
 
-#: methods/cloudfiles.php:495 methods/cloudfiles-new.php:142
+#: methods/cloudfiles-new.php:144 methods/cloudfiles.php:507
 msgid "Cloud Files Container"
 msgstr "Container do Cloud Files"
 
@@ -1454,78 +1412,78 @@ msgstr "Container do Cloud Files"
 msgid "The %s connection timed out; if you entered the server correctly, then this is usually caused by a firewall blocking the connection - you should check with your web hosting company."
 msgstr "A ligação %s expirou; se inseriu o servidor correctamente então isto terá sido causado por uma firewall a bloquear a conexão - deverá verificar com seu serviço de alojamento web."
 
-#: class-updraftplus.php:2976
+#: class-updraftplus.php:3172
 msgid "Could not create files in the backup directory. Backup aborted - check your UpdraftPlus settings."
 msgstr "Não foi possível criar ficheiros no directório de backup. O backup foi abortado - verifique as suas definições do UpdraftPlus."
 
-#: methods/backup-module.php:315 admin.php:898
+#: admin.php:951 methods/backup-module.php:337
 msgid "Test %s Settings"
 msgstr "Teste as Definições do %s"
 
-#: admin.php:900
+#: admin.php:953
 msgid "%s settings test result:"
 msgstr "Resultado do teste de definições de %s:"
 
-#: includes/class-backup-history.php:682
+#: includes/class-backup-history.php:687
 msgid "One or more backups has been added from scanning remote storage; note that these backups will not be automatically deleted through the \"retain\" settings; if/when you wish to delete them then you must do so manually."
 msgstr "Um ou mais backups foram adicionados ao verificar o armazenamento remoto. Note que estes backups não serão automaticamente apagados pela definição \"reter\". Se ou quando quiser apagá-los terá que o fazer manualmente."
 
-#: methods/cloudfiles.php:232 methods/dropbox.php:355
+#: methods/cloudfiles.php:244 methods/dropbox.php:388
 #: methods/openstack-base.php:117
 msgid "No settings were found"
 msgstr "Nenhuma definição foi encontrada"
 
-#: methods/cloudfiles-new.php:157
+#: methods/cloudfiles-new.php:159
 msgid "Sydney (SYD)"
 msgstr "Sidney (SYD)"
 
-#: methods/cloudfiles.php:469 methods/cloudfiles-new.php:113
+#: methods/cloudfiles-new.php:115 methods/cloudfiles.php:481
 msgid "US (default)"
 msgstr "EUA (por omissão)"
 
-#: methods/cloudfiles-new.php:156
+#: methods/cloudfiles-new.php:158
 msgid "Dallas (DFW) (default)"
 msgstr "Dallas (DFW) (por omissão)"
 
-#: includes/Dropbox2/OAuth/Consumer/ConsumerAbstract.php:118
-#: methods/googledrive.php:415
+#: includes/Dropbox2/OAuth/Consumer/ConsumerAbstract.php:129
+#: methods/googledrive.php:433
 msgid "The %s authentication could not go ahead, because something else on your site is breaking it. Try disabling your other plugins and switching to a default theme. (Specifically, you are looking for the component that sends output (most likely PHP warnings/errors) before the page begins. Turning off any debugging settings may also help)."
 msgstr "A autenticação no %s não pôde prosseguir porque algo no site está a impedir. Tente desactivar alguns plugins e mude para o tema por omissão. (Especialmente se está à procura de um componente que envie informação (mais provavelmente alertas/erros PHP) antes do início da página. Desactivar qualquer depuração também pode ajudar)."
 
-#: class-updraftplus.php:543 methods/dropbox.php:751 methods/dropbox.php:772
-#: methods/dropbox.php:786 methods/dropbox.php:799 methods/dropbox.php:941
+#: class-updraftplus.php:565 methods/dropbox.php:757 methods/dropbox.php:814
+#: methods/dropbox.php:828 methods/dropbox.php:848 methods/dropbox.php:1005
 msgid "%s error: %s"
 msgstr "Erro de %s: %s"
 
-#: methods/dropbox.php:751 methods/dropbox.php:772
+#: methods/dropbox.php:757 methods/dropbox.php:814
 msgid "%s authentication"
 msgstr "Autenticação de %s"
 
-#: class-updraftplus.php:4672
+#: class-updraftplus.php:5077
 msgid "Your backup is of a WordPress multisite install; but this site is not. Only the first site of the network will be accessible."
 msgstr "O seu backup é de uma instalação WordPress multissite, mas este site não. Apenas o primeiro site da rede ficará acessível."
 
-#: class-updraftplus.php:4672
+#: class-updraftplus.php:5077
 msgid "If you want to restore a multisite backup, you should first set up your WordPress installation as a multisite."
 msgstr "Se pretende restaurar um backup multissite, deverá primeiro definir a sua instalação WordPress como multissite."
 
-#: class-updraftplus.php:4664 restorer.php:732
+#: class-updraftplus.php:5069 restorer.php:754
 msgid "You are running on WordPress multisite - but your backup is not of a multisite site."
 msgstr "Está a usar o WordPress em multissite - mas o seu backup não é o de um site multissite."
 
-#: templates/wp-admin/settings/existing-backups-table.php:105
+#: templates/wp-admin/settings/existing-backups-table.php:104
 msgid "Backup sent to remote site - not available for download."
 msgstr "Backup enviado para o site remoto - indisponível para descarregar."
 
-#: templates/wp-admin/settings/existing-backups-table.php:106
+#: templates/wp-admin/settings/existing-backups-table.php:105
 msgid "Site"
 msgstr "Site"
 
-#: admin.php:4325
+#: admin.php:4513
 msgid "(backup set imported from remote location)"
 msgstr "(conjunto de backup importado de localização remota)"
 
-#: admin.php:3850
+#: admin.php:4049
 msgid "No backup has been completed"
 msgstr "Nenhum backup foi concluído."
 
@@ -1534,20 +1492,21 @@ msgctxt "Uploader: Drop db.gz.crypt files here to upload them for decryption - o
 msgid "or"
 msgstr "ou"
 
-#: admin.php:3866
+#: admin.php:4068 admin.php:4073
 msgctxt "i.e. Non-automatic"
 msgid "Manual"
 msgstr "Manual"
 
-#: templates/wp-admin/settings/form-contents.php:261
+#: templates/wp-admin/settings/form-contents.php:274
 msgid "Check this box to have a basic report sent to"
 msgstr "Escolha esta opção para enviar um relatório resumido para o"
 
-#: templates/wp-admin/settings/form-contents.php:261
+#: templates/wp-admin/settings/form-contents.php:274
+#: templates/wp-admin/settings/form-contents.php:277
 msgid "your site's admin address"
 msgstr "endereço do administrador do seu site"
 
-#: admin.php:3820
+#: admin.php:4019
 msgid "incremental backup; base backup: %s"
 msgstr "backup incremental; backup de base: %s"
 
@@ -1557,16 +1516,16 @@ msgid "and retain this many scheduled backups"
 msgstr "e manter todos estes backups agendados"
 
 #: templates/wp-admin/settings/existing-backups-table.php:17
-#: templates/wp-admin/settings/existing-backups-table.php:68
+#: templates/wp-admin/settings/existing-backups-table.php:67
 msgid "Backup date"
 msgstr "Data do backup"
 
 #: templates/wp-admin/settings/existing-backups-table.php:18
-#: templates/wp-admin/settings/existing-backups-table.php:101
+#: templates/wp-admin/settings/existing-backups-table.php:100
 msgid "Backup data (click to download)"
 msgstr "Dados do backup (clique para descarregar)"
 
-#: admin.php:3350 admin.php:4422
+#: admin.php:3547 admin.php:4610
 msgid "View Log"
 msgstr "Ver o log"
 
@@ -1574,24 +1533,24 @@ msgstr "Ver o log"
 msgid "Why am I seeing this?"
 msgstr "Porque estou a ver isto?"
 
-#: class-updraftplus.php:3375
+#: class-updraftplus.php:3606
 msgid "Full backup"
 msgstr "Backup Completo"
 
-#: class-updraftplus.php:3375
+#: class-updraftplus.php:3606
 msgid "Incremental"
 msgstr "Incremental"
 
-#: updraftplus.php:100 updraftplus.php:101 updraftplus.php:102 admin.php:3868
-#: admin.php:3869 admin.php:3870 admin.php:3871
+#: admin.php:4075 admin.php:4076 admin.php:4077 admin.php:4078
+#: updraftplus.php:101 updraftplus.php:102 updraftplus.php:103
 msgid "Every %s hours"
 msgstr "A cada %s horas"
 
-#: class-updraftplus.php:3443
+#: class-updraftplus.php:3674
 msgid "read more at %s"
 msgstr "ler mais em %s"
 
-#: class-updraftplus.php:3443
+#: class-updraftplus.php:3674
 msgid "Email reports created by UpdraftPlus (free edition) bring you the latest UpdraftPlus.com news"
 msgstr "Relatórios de email criados pelo UpdraftPlus (edição gratuita) com as últimas notícias do UpdraftPlus.com"
 
@@ -1603,11 +1562,11 @@ msgstr "Ainda não fez nenhum backup."
 msgid "Database Options"
 msgstr "Opções da Base de Dados"
 
-#: admin.php:4188
+#: admin.php:4396
 msgid "External database"
 msgstr "Base de dados externa"
 
-#: templates/wp-admin/settings/form-contents.php:305
+#: templates/wp-admin/settings/form-contents.php:321
 msgid "This will also cause debugging output from all plugins to be shown upon this screen - please do not be surprised to see these."
 msgstr "Isto também fará com que a saída da depuração de todos os plugins seja mostrada neste ecrã - por favor não se surpreenda ao ver isso."
 
@@ -1631,147 +1590,131 @@ msgstr "Primeiro, insira a chave de desencriptação"
 msgid "use UpdraftPlus Premium"
 msgstr "utilize o UpdraftPlus Premium"
 
-#: includes/class-backup-history.php:506 admin.php:4226
+#: admin.php:4434 includes/class-backup-history.php:505
 msgid "Backup created by: %s."
 msgstr "Backup criado por: %s."
 
-#: admin.php:4232
+#: admin.php:4440
 msgid "Files and database WordPress backup (created by %s)"
 msgstr "Backup dos ficheiros e base de dados do WordPress (criado por %s)"
 
-#: admin.php:4232
+#: admin.php:4440
 msgid "Files backup (created by %s)"
 msgstr "Backup dos ficheiros (criado por %s)"
 
-#: admin.php:4180 admin.php:4228
+#: admin.php:4388 admin.php:4436
 msgid "unknown source"
 msgstr "origem desconhecida"
 
-#: admin.php:4186
+#: admin.php:4394
 msgid "Database (created by %s)"
 msgstr "Base de dados (criada por %s)"
 
-#: templates/wp-admin/settings/form-contents.php:305
+#: templates/wp-admin/settings/form-contents.php:321
 msgid "Check this to receive more information and emails on the backup process - useful if something is going wrong."
 msgstr "Escolha esta opção para receber mais informações e emails sobre o processo de backup - isto é útil caso algo esteja a correr mal."
 
-#: admin.php:3987
+#: admin.php:4195
 msgid "If entering multiple files/directories, then separate them with commas. For entities at the top level, you can use a * at the start or end of the entry as a wildcard."
 msgstr "Se inserir vários ficheiros/pastas, separe-os com vírgulas. Para entidades no nível superior pode utilizar um * no início ou fim da entrada, como um wildcard."
 
-#: admin.php:4771
+#: admin.php:4994
 msgid "Follow this link to download the log file for this restoration (needed for any support requests)."
 msgstr "Siga esta ligação para descarregar o ficheiro de log deste restauro (necessário para pedidos de suporte)."
 
-#: templates/wp-admin/settings/form-contents.php:346
+#: templates/wp-admin/settings/form-contents.php:362
 msgid "See this FAQ also."
 msgstr "Ver também esta FAQ."
 
-#: admin.php:4864
+#: admin.php:5087
 msgid "Backup does not exist in the backup history"
 msgstr "O backup não existe no histórico de backups"
 
-#: templates/wp-admin/settings/form-contents.php:263
-msgid "For more reporting features, use the Reporting add-on."
-msgstr "Para mais opções de relatório, utilize o add-on \"Reporting\"."
-
-#: class-updraftplus.php:3392
+#: class-updraftplus.php:3623
 msgid "Unknown/unexpected error - please raise a support request"
 msgstr "Erro desconhecido/inesperado - por favor envie um pedido de suporte"
 
-#: class-updraftplus.php:3428
+#: class-updraftplus.php:3659 class-updraftplus.php:3834
 msgid "The log file has been attached to this email."
 msgstr "O ficheiro de log foi anexado a este email."
 
-#: class-updraftplus.php:3477
+#: class-updraftplus.php:3708
 msgid "Backup contains:"
 msgstr "Backup contém:"
 
-#: class-updraftplus.php:3382 admin.php:345
+#: admin.php:384 class-updraftplus.php:3613
 msgid "Files and database"
 msgstr "Ficheiros e base de dados"
 
-#: class-updraftplus.php:3384
+#: class-updraftplus.php:3615
 msgid "Files (database backup has not completed)"
 msgstr "Ficheiros (backup da base de dados não está concluído)"
 
-#: class-updraftplus.php:3384
+#: class-updraftplus.php:3615
 msgid "Files only (database was not part of this particular schedule)"
 msgstr "Apenas ficheiros (base de dados não faz parte deste agendamento em particular)"
 
-#: class-updraftplus.php:3387
+#: class-updraftplus.php:3618
 msgid "Database (files backup has not completed)"
 msgstr "Base de dados (backup dos ficheiros não está concluído)"
 
-#: class-updraftplus.php:3387
+#: class-updraftplus.php:3618
 msgid "Database only (files were not part of this particular schedule)"
 msgstr "Apenas base de dados (ficheiros não fazem parte deste agendamento em particular)"
 
 #: templates/wp-admin/settings/form-contents.php:244
-#: templates/wp-admin/settings/tab-addons.php:230
-#: templates/wp-admin/settings/tab-addons.php:231 methods/email.php:97
+#: templates/wp-admin/settings/tab-addons.php:243
+#: templates/wp-admin/settings/tab-addons.php:244
 msgid "Reporting"
 msgstr "Relatórios"
 
-#: templates/wp-admin/settings/form-contents.php:148
-msgid "See also the \"More Files\" add-on from our shop."
-msgstr "Veja também o add-on \"More Files\" na nossa loja."
-
-#: templates/wp-admin/settings/form-contents.php:126
-msgid "You can send a backup to more than one destination with an add-on."
-msgstr "Pode enviar um backup para mais que um destino com um add-on."
-
-#: admin.php:3561
+#: admin.php:3760
 msgid "Note: the progress bar below is based on stages, NOT time. Do not stop the backup simply because it seems to have remained in the same place for a while - that is normal."
 msgstr "Nota: a barra de progressos abaixo é baseada em etapas, NÃO em tempo. Não pare o backup simplesmente porque ele parece ter permanecido no mesmo lugar algum tempo - isto é normal."
 
-#: admin.php:4300
+#: admin.php:4488
 msgid "If you are seeing more backups than you expect, then it is probably because the deletion of old backup sets does not happen until a fresh backup completes."
 msgstr "Se vê mais backups do que esperado, provavelmente é porque a exclusão de backups antigos não acontece até que um novo backup seja concluído."
 
-#: admin.php:4298 admin.php:4300
+#: admin.php:4486 admin.php:4488
 msgid "(Not finished)"
 msgstr "(Não concluído)"
 
-#: templates/wp-admin/settings/form-contents.php:329
+#: templates/wp-admin/settings/form-contents.php:345
 msgid "<b>Do not</b> place it inside your uploads or plugins directory, as that will cause recursion (backups of backups of backups of...)."
 msgstr "<b>Não</b> coloque dentro do seu directório uploads ou plugins, senão irá causar backups recursivos (backups de backups de backups de...)."
 
-#: central/bootstrap.php:459 central/bootstrap.php:466
-#: methods/updraftvault.php:437 methods/updraftvault.php:483
-#: methods/updraftvault.php:566 admin.php:3488
+#: admin.php:3687 central/translations-updraftplus.php:28
+#: methods/updraftvault.php:461 methods/updraftvault.php:508
+#: methods/updraftvault.php:627
 msgid "Unknown"
 msgstr "Desconhecido"
 
-#: admin.php:3505
-msgid "next resumption: %d (after %ss)"
-msgstr "próximo recomeço: %d (após %ss)"
-
-#: admin.php:3526
+#: admin.php:3725
 msgid "Job ID: %s"
 msgstr "ID da operação: %s"
 
-#: admin.php:4269
+#: admin.php:4464
 msgid "You appear to be missing one or more archives from this multi-archive set."
 msgstr "Parece que há um ou mais ficheiros em falta neste conjunto de ficheiros de backup."
 
-#: templates/wp-admin/settings/form-contents.php:309
+#: templates/wp-admin/settings/form-contents.php:325
 msgid "Split archives every:"
 msgstr "Dividir os ficheiros a cada:"
 
-#: includes/class-storage-methods-interface.php:289
+#: includes/class-storage-methods-interface.php:295
 msgid "File is not locally present - needs retrieving from remote storage"
 msgstr "O ficheiro não está presente localmente - é necessário obtê-lo do armazenamento remoto"
 
-#: restorer.php:508
+#: restorer.php:534
 msgid "Final checks"
 msgstr "Verificações finais"
 
-#: restorer.php:392
+#: restorer.php:418
 msgid "Looking for %s archive: file name: %s"
 msgstr "A procurar o ficheiro %s: nome do ficheiro: %s"
 
-#: templates/wp-admin/settings/form-contents.php:315
+#: templates/wp-admin/settings/form-contents.php:331
 msgid "Check this to delete any superfluous backup files from your server after the backup run finishes (i.e. if you uncheck, then any files despatched remotely will also remain locally, and any files being kept locally will not be subject to the retention limits)."
 msgstr "Marque esta opção para apagar quaisquer ficheiros de backup supérfluos do seu servidor após a execução do backup terminar (p.ex.: se desmarcar esta opção, então qualquer ficheiro enviado remotamente irá permanecer localmente, e qualquer arquivo mantido localmente não estará sujeito a limites de retenção)."
 
@@ -1779,119 +1722,112 @@ msgstr "Marque esta opção para apagar quaisquer ficheiros de backup supérfluo
 msgid "Drop encrypted database files (db.gz.crypt files) here to upload them for decryption"
 msgstr "Largue aqui os ficheiros encriptados da base de dados (ficheiros db.gz.crypt) para os carregar e desencriptar."
 
-#: admin.php:3973
+#: admin.php:4181
 msgid "Your wp-content directory server path: %s"
 msgstr "O caminho para o directório wp-content no servidor: %s"
 
-#: restorer.php:412
+#: restorer.php:438
 msgid "file is size:"
 msgstr "tamanho do ficheiro:"
 
-#: admin.php:3540 admin.php:3832
+#: admin.php:3739 admin.php:4031
 msgid "Warning: %s"
 msgstr "Aviso: %s"
 
-#: class-updraftplus.php:3419
+#: class-updraftplus.php:3650
 msgid "Warnings encountered:"
 msgstr "Avisos encontrados:"
 
-#: methods/updraftvault.php:321 admin.php:4065
+#: admin.php:4273 methods/updraftvault.php:345
 msgid "Your web server's PHP installation does not included a <strong>required</strong> (for %s) module (%s). Please contact your web hosting provider's support and ask for them to enable it."
 msgstr "A instalação PHP do seu servidor web não inclui (para o %s) um módulo (%s) <strong>requerido</strong>. Por favor, contacte o suporte do seu serviço de alojamento web e solicite a respectiva activação."
 
-#: class-updraftplus.php:3401
+#: class-updraftplus.php:3632
 msgid "Errors encountered:"
 msgstr "Erros encontrados:"
 
-#: methods/addon-base-v2.php:349 admin.php:3611 admin.php:3647 admin.php:3657
+#: admin.php:3810 admin.php:3846 admin.php:3856 methods/addon-base-v2.php:356
 msgid "Failed"
 msgstr "Falhou"
 
-#: includes/class-storage-methods-interface.php:317
-#: includes/class-remote-send.php:407 admin.php:3615 admin.php:3650
-#: admin.php:3654 restorer.php:410 restorer.php:3348 restorer.php:3468
+#: admin.php:3814 admin.php:3849 admin.php:3853
+#: includes/class-remote-send.php:441
+#: includes/class-storage-methods-interface.php:323 restorer.php:436
+#: restorer.php:3976 restorer.php:4096
 msgid "OK"
 msgstr "OK"
 
-#: class-updraftplus.php:3475 class-updraftplus.php:4575
+#: class-updraftplus.php:3706 class-updraftplus.php:4977
 msgid "Backup of:"
 msgstr "Backup de:"
 
-#: restorer.php:407
+#: restorer.php:433
 msgid "Archive is expected to be size:"
 msgstr "Tamanho esperado para o ficheiro:"
 
-#: restorer.php:415
+#: restorer.php:441
 msgid "The backup records do not contain information about the proper size of this file."
 msgstr "Os registos de backup não contêm informações sobre o tamanho correcto deste ficheiro."
 
-#: restorer.php:601
+#: restorer.php:623
 msgid "Error message"
 msgstr "Mensagem de erro"
 
-#: restorer.php:418 restorer.php:419
-msgid "Could not find one of the files for restoration"
-msgstr "Não foi possível encontrar um dos ficheiros para o restauro"
-
-#: admin.php:4074
+#: admin.php:4282
 msgid "Your web server's PHP/Curl installation does not support https access. We cannot access %s without this support. Please contact your web hosting provider's support. %s <strong>requires</strong> Curl+https. Please do not file any support requests; there is no alternative."
 msgstr "A instalação PHP/Curl do seu servidor web não suporta o acesso https. Não podemos aceder a %s sem este suporte. Por favor contacte o suporte do seu serviço de alojamento web. O %s <strong>necessita</strong> de Curl+https. Por favor não abra pedidos de suporte, não há alternativa."
 
-#: admin.php:4412
+#: admin.php:4600
 msgid "Delete this backup set"
 msgstr "Apagar este conjunto de backup"
 
-#: admin.php:4328
+#: admin.php:4516
 msgid "After pressing this button, you will be given the option to choose which components you wish to restore"
 msgstr "Após primir este botão será dada a opção de escolher que componentes pretende restaurar"
 
-#: admin.php:4863
+#: admin.php:5086
 msgid "This backup does not exist in the backup history - restoration aborted. Timestamp:"
 msgstr "Este backup não existe no histórico de backups - restauro abortado. Data e hora:"
 
-#: admin.php:4900
+#: admin.php:5123
 msgid "ABORT: Could not find the information on which entities to restore."
 msgstr "ABORTADO: Não foi possível encontrar informação sobre que entidades restaurar."
 
-#: admin.php:4900
+#: admin.php:5123
 msgid "If making a request for support, please include this information:"
 msgstr "Se fizer um pedido de suporte, por favor inclua esta informação:"
 
-#: templates/wp-admin/settings/form-contents.php:340
+#: templates/wp-admin/settings/form-contents.php:356
 msgid "Do not verify SSL certificates"
 msgstr "Não verificar certificados SSL"
 
-#: templates/wp-admin/settings/form-contents.php:341
+#: templates/wp-admin/settings/form-contents.php:357
 msgid "Note that not all cloud backup methods are necessarily using SSL authentication."
 msgstr "Note que nem todos os métodos de backup em nuvem utilizam necessariamente autenticação SSL."
 
-#: templates/wp-admin/settings/form-contents.php:345
+#: templates/wp-admin/settings/form-contents.php:361
 msgid "Disable SSL entirely where possible"
 msgstr "Desactivar SSL completamente sempre que possível"
 
-#: templates/wp-admin/settings/form-contents.php:314
+#: templates/wp-admin/settings/form-contents.php:330
 msgid "Delete local backup"
 msgstr "Apagar o backup local"
 
-#: templates/wp-admin/settings/form-contents.php:319
+#: templates/wp-admin/settings/form-contents.php:335
 msgid "Backup directory"
 msgstr "Directório de backup"
 
-#: admin.php:3893
+#: admin.php:4101
 msgid "or, to reset this option"
 msgstr "ou, para desfazer esta opção"
 
-#: templates/wp-admin/settings/form-contents.php:335
+#: templates/wp-admin/settings/form-contents.php:351
 msgid "Use the server's SSL certificates"
 msgstr "Utilize os certificados SSL do servidor"
 
-#: templates/wp-admin/settings/form-contents.php:336
-msgid "By default UpdraftPlus uses its own store of SSL certificates to verify the identity of remote sites (i.e. to make sure it is talking to the real Dropbox, Amazon S3, etc., and not an attacker). We keep these up to date. However, if you get an SSL error, then choosing this option (which causes UpdraftPlus to use your web server's collection instead) may help."
-msgstr "Por omissão o UpdraftPlus utiliza o seu próprio conjunto de certificados SSL para verificar a identidade de sites remotos (p.ex.: para ter certeza de que está a ligar a Dropbox, Amazon S3, etc. reais e não um atacante). Nós mantemos isto actualizado. No entanto, se receber um erro de SSL, poderá ajudar escolher esta opção (que força o UpdraftPlus a utilizar o conjunto de certificados do seu servidor web)."
-
+#: admin.php:3274 methods/updraftvault.php:411
 #: templates/wp-admin/settings/form-contents.php:256
 #: templates/wp-admin/settings/updraftcentral-connect.php:44
-#: methods/updraftvault.php:387 admin.php:3076
 msgid "Email"
 msgstr "Email"
 
@@ -1907,11 +1843,15 @@ msgstr "Desencriptar manualmente o ficheiro de backup da base de dados"
 msgid "Choose your remote storage"
 msgstr "Escolha o seu armazenamento remoto"
 
-#: admin.php:4158
+#: admin.php:4366
 msgid "None"
 msgstr "Nenhum"
 
-#: templates/wp-admin/settings/form-contents.php:304
+#: templates/wp-admin/settings/form-contents.php:352
+msgid "By default UpdraftPlus uses its own store of SSL certificates to verify the identity of remote sites (i.e. to make sure it is talking to the real Dropbox, Amazon S3, etc., and not an attacker). We keep these up to date. However, if you get an SSL error, then choosing this option (which causes UpdraftPlus to use your web server's collection instead) may help."
+msgstr "Por omissão o UpdraftPlus utiliza o seu próprio conjunto de certificados SSL para verificar a identidade de sites remotos (p.ex.: para ter certeza de que está a ligar a Dropbox, Amazon S3, etc. reais e não um atacante). Nós mantemos isto actualizado. No entanto, se receber um erro de SSL, poderá ajudar escolher esta opção (que força o UpdraftPlus a utilizar o conjunto de certificados do seu servidor web)."
+
+#: templates/wp-admin/settings/form-contents.php:320
 msgid "Debug mode"
 msgstr "Modo de depuração (debug)"
 
@@ -1919,19 +1859,19 @@ msgstr "Modo de depuração (debug)"
 msgid "The above directories are everything, except for WordPress core itself which you can download afresh from WordPress.org."
 msgstr "Os directórios acima incluem tudo excepto o próprio núcleo do WordPress, que poderá obter novamente em WordPress.org."
 
-#: admin.php:3872
+#: admin.php:4079
 msgid "Daily"
 msgstr "Diariamente"
 
-#: admin.php:3873
+#: admin.php:4080
 msgid "Weekly"
 msgstr "Semanalmente"
 
-#: admin.php:3874
+#: admin.php:4081
 msgid "Fortnightly"
 msgstr "Quinzenalmente"
 
-#: admin.php:3875
+#: admin.php:4069 admin.php:4082
 msgid "Monthly"
 msgstr "Mensalmente"
 
@@ -1947,107 +1887,107 @@ msgstr "p.ex.: se o seu servidor estiver ocupado durante o dia e desejar executa
 msgid "Include in files backup"
 msgstr "Incluído no backup dos ficheiros"
 
-#: admin.php:3973
+#: admin.php:4181
 msgid "Any other directories found inside wp-content"
 msgstr "Quaisquer outros directórios encontrados dentro do wp-content"
 
-#: admin.php:3560
+#: admin.php:3759
 msgid "show log"
 msgstr "mostrar o log"
 
-#: admin.php:3713
+#: admin.php:3912
 msgid "The folder was created, but we had to change its file permissions to 777 (world-writable) to be able to write to it. You should check with your hosting provider that this will not cause any problems"
 msgstr "A pasta foi criada, mas tivemos que alterar as permissões de acesso para 777 (gravável por todos) para ser possível gravar no seu interior. Deverá verificar com seu serviço de alojamento se isto não causará qualquer problema"
 
-#: admin.php:3718
+#: admin.php:3917
 msgid "The folder exists, but your webserver does not have permission to write to it."
 msgstr "A pasta existe, mas o servidor web não tem permissões de gravação na pasta."
 
-#: admin.php:3571
+#: admin.php:3770
 msgid "Remove old directories"
 msgstr "Remover directórios antigos"
 
-#: admin.php:3574
+#: admin.php:3773
 msgid "Old directories successfully removed."
 msgstr "Directórios antigos removidos com sucesso."
 
-#: backup.php:277
+#: backup.php:310
 msgid "Could not create %s zip. Consult the log file for more information."
 msgstr "Não foi possível criar o zip %s. Consulte o ficheiro de log para mais informações."
 
-#: class-updraftplus.php:3476
+#: class-updraftplus.php:3707
 msgid "WordPress backup is complete"
 msgstr "O backup do WordPress está concluído"
 
-#: class-updraftplus.php:3434
+#: class-updraftplus.php:3665
 msgid "Backed up: %s"
 msgstr "Backup efectuado: %s"
 
-#: templates/wp-admin/settings/form-contents.php:341
+#: templates/wp-admin/settings/form-contents.php:357
 msgid "Choosing this option lowers your security by stopping UpdraftPlus from verifying the identity of encrypted sites that it connects to (e.g. Dropbox, Google Drive). It means that UpdraftPlus will be using SSL only for encryption of traffic, and not for authentication."
 msgstr "Escolher esta opção reduz a sua segurança, por impedir que o UpdraftPlus verifique a identidade dos sites encriptados a que se liga (p.ex.: Dropbox, Google Drive). Isto significa que o UpdraftPlus irá utilizar o SSL apenas para encriptar o tráfego e não para a autenticação."
 
-#: admin.php:3506
+#: admin.php:3705
 msgid "last activity: %ss ago"
 msgstr "última actividade: %ss atrás"
 
-#: templates/wp-admin/settings/form-contents.php:289
+#: templates/wp-admin/settings/form-contents.php:305
 msgid "Advanced / Debugging Settings"
 msgstr "Definições Avançadas / Depuração"
 
-#: templates/wp-admin/settings/form-contents.php:293
+#: templates/wp-admin/settings/form-contents.php:309
 msgid "Expert settings"
 msgstr "Definições avançadas"
 
-#: templates/wp-admin/settings/form-contents.php:294
+#: templates/wp-admin/settings/form-contents.php:310
 msgid "Show expert settings"
 msgstr "Mostrar definições avançadas"
 
-#: templates/wp-admin/settings/form-contents.php:346
+#: templates/wp-admin/settings/form-contents.php:362
 msgid "Choosing this option lowers your security by stopping UpdraftPlus from using SSL for authentication and encrypted transport at all, where possible. Note that some cloud storage providers do not allow this (e.g. Dropbox), so with those providers this setting will have no effect."
 msgstr "Escolher esta opção reduz a sua segurança, por impedir que o UpdraftPlus utilize SSL para a autenticação e tráfego encriptados sempre que possível. Note que alguns fornecedores de armazenamento em nuvem não permitem isto (p.ex.: Dropbox), com estes fornecedores esta definição não terá efeito."
 
-#: templates/wp-admin/settings/form-contents.php:374
+#: templates/wp-admin/settings/form-contents.php:390
 msgid "Save Changes"
 msgstr "Guardar alterações"
 
-#: admin.php:4077
+#: admin.php:4285
 msgid "Good news: Your site's communications with %s can be encrypted. If you see any errors to do with encryption, then look in the 'Expert Settings' for more help."
 msgstr "Boas notícias: A comunicação do seu site com %s pode ser encriptada. Se vir quaisquer erros relacionados com encriptação, veja nas 'Definições Avançadas' para mais ajuda."
 
-#: admin.php:3576
+#: admin.php:3775
 msgid "Old directory removal failed for some reason. You may want to do this manually."
 msgstr "A remoção do directório antigo falhou por alguma razão. Pode querer fazer isso manualmente."
 
-#: admin.php:3699
+#: admin.php:3898
 msgid "The request to the filesystem to create the directory failed."
 msgstr "Falhou o pedido ao sistema de ficheiros para criar um directório."
 
-#: admin.php:3893
+#: admin.php:4101
 msgid "If that is unsuccessful check the permissions on your server or change it to another directory that is writable by your web server process."
 msgstr "Se isso não for bem sucedido, verifique as permissões no seu servidor ou mude para outro directório que seja gravável pelo processo do seu servidor web."
 
-#: admin.php:3885
+#: admin.php:4093
 msgid "Backup directory specified is writable, which is good."
 msgstr "O directório especificado para backup é gravável, ainda bem."
 
-#: backup.php:204
+#: backup.php:237
 msgid "%s - could not back this entity up; the corresponding directory does not exist (%s)"
 msgstr "%s - não foi possível fazer o backup desta entidade; o directório correspondente não existe (%s)"
 
-#: admin.php:3889
+#: admin.php:4097
 msgid "Backup directory specified does <b>not</b> exist."
 msgstr "O directório de backup especificado <b>não</b> existe."
 
-#: admin.php:3891
+#: admin.php:4099
 msgid "Backup directory specified exists, but is <b>not</b> writable."
 msgstr "O directório de backup especificado existe, mas <b>não</b> é gravável."
 
-#: templates/wp-admin/settings/form-contents.php:329
+#: templates/wp-admin/settings/form-contents.php:345
 msgid "This is where UpdraftPlus will write the zip files it creates initially.  This directory must be writable by your web server. It is relative to your content directory (which by default is called wp-content)."
 msgstr "Aqui será onde o UpdraftPlus guardará os ficheiros zip que são criados inicialmente. Este directório deve ter permissão de escrita pelo seu servidor web. Isto é relativo ao seu directório de conteúdos (que por omissão é chamado wp-content)."
 
-#: admin.php:3718
+#: admin.php:3917
 msgid "You will need to consult with your web hosting provider to find out how to set permissions for a WordPress plugin to write to the directory."
 msgstr "Consulte o seu serviço de alojamento web, para saber como definir as permissões de escrita para que um plugin do WordPress possa gravar no directório."
 
@@ -2055,7 +1995,7 @@ msgstr "Consulte o seu serviço de alojamento web, para saber como definir as pe
 msgid "If you choose no remote storage, then the backups remain on the web-server. This is not recommended (unless you plan to manually copy them to your computer), as losing the web-server would mean losing both your website and the backups in one event."
 msgstr "Se optar por não utilizar armazenamento remoto os backups irão permanecer no servidor web. Isto não é recomendado (a menos que pretenda copiá-los manualmente para o seu computador), pois perder o servidor web significaria perder o seu website e os backups simultaneamente."
 
-#: restorer.php:381
+#: restorer.php:407
 msgid "Skipping restoration of WordPress core when importing a single site into a multisite installation. If you had anything necessary in your WordPress directory then you will need to re-add it manually from the zip file."
 msgstr "Saltar o restauro do core do WordPress ao importar um único site para uma instalação multissite. Se tiver algo necessário no seu directório do WordPress, terá de adicionar manualmente a partir do ficheiro zip."
 
@@ -2081,11 +2021,11 @@ msgctxt "Uploader: Drop backup files here - or - Select Files"
 msgid "or"
 msgstr "ou"
 
-#: admin.php:2706
+#: admin.php:2891
 msgid "For even more features and personal support, check out "
 msgstr "Para mais recursos e suporte pessoal, veja "
 
-#: admin.php:2269
+#: admin.php:2422
 msgid "Error: unexpected file read fail"
 msgstr "Erro: falha inesperada ao ler ficheiro"
 
@@ -2094,8 +2034,8 @@ msgstr "Erro: falha inesperada ao ler ficheiro"
 msgid "Upload files into UpdraftPlus."
 msgstr "Carregue ficheiros para o UpdraftPlus."
 
+#: includes/updraftplus-notices.php:138 includes/updraftplus-notices.php:141
 #: templates/wp-admin/settings/header.php:16
-#: includes/updraftplus-notices.php:139 includes/updraftplus-notices.php:140
 msgid "Twitter"
 msgstr "Twitter"
 
@@ -2103,31 +2043,27 @@ msgstr "Twitter"
 msgid "Unless you have a problem, you can completely ignore everything here."
 msgstr "A menos que tenha um problema, pode ignorar completamente tudo o que está aqui."
 
-#: admin.php:2452
+#: admin.php:2605
 msgid "This file could not be uploaded"
 msgstr "Este ficheiro não pôde ser carregado"
 
-#: templates/wp-admin/advanced/site-info.php:44
+#: templates/wp-admin/advanced/site-info.php:57
 msgid "Memory limit"
 msgstr "Limite de memória"
 
-#: templates/wp-admin/advanced/site-info.php:74
+#: templates/wp-admin/advanced/site-info.php:88
 msgid "%s (%s used)"
 msgstr "%s (%s utilizado)"
 
-#: templates/wp-admin/advanced/site-info.php:95
-msgid "Plugins for debugging:"
-msgstr "Plugins para depuração:"
-
-#: templates/wp-admin/advanced/site-info.php:74
+#: templates/wp-admin/advanced/site-info.php:88
 msgid "Free disk space in account:"
 msgstr "Espaço de disco livre na sua conta:"
 
-#: templates/wp-admin/advanced/site-info.php:98
+#: templates/wp-admin/advanced/site-info.php:112
 msgid "Fetch"
 msgstr "Obter"
 
-#: templates/wp-admin/advanced/site-info.php:100
+#: templates/wp-admin/advanced/site-info.php:114
 msgid "Call"
 msgstr "Chamar"
 
@@ -2142,9 +2078,9 @@ msgstr "Este recurso requer o %s versão %s ou posterior"
 msgid "Rescan local folder for new backup sets"
 msgstr "Procurar novamente na pasta local por novos conjuntos de backup"
 
+#: templates/wp-admin/advanced/site-info.php:118
 #: templates/wp-admin/settings/downloading-and-restoring.php:56
 #: templates/wp-admin/settings/tab-backups.php:60
-#: templates/wp-admin/advanced/site-info.php:104
 msgid "Rescan remote storage"
 msgstr "Verifique novamente o armazenamento remoto"
 
@@ -2153,7 +2089,7 @@ msgstr "Verifique novamente o armazenamento remoto"
 msgid "Upload backup files"
 msgstr "Carregar os ficheiros de backup"
 
-#: admin.php:2467
+#: admin.php:2620
 msgid "This backup was created by %s, and can be imported."
 msgstr "Este backup foi criado por %s e pode ser importado."
 
@@ -2161,7 +2097,7 @@ msgstr "Este backup foi criado por %s e pode ser importado."
 msgid "Retrieving (if necessary) and preparing backup files..."
 msgstr "Recuperando (se necessário) e preparando os ficheiros de backup..."
 
-#: admin.php:1691
+#: admin.php:1822
 msgid "Messages:"
 msgstr "Mensagens:"
 
@@ -2170,66 +2106,66 @@ msgstr "Mensagens:"
 msgid "Drop backup files here"
 msgstr "Largue os ficheiros de backup aqui"
 
-#: admin.php:3425
+#: admin.php:3624
 msgid "(%s%%, file %s of %s)"
 msgstr "(%s%%, ficheiro %s de %s)"
 
-#: admin.php:3434
+#: admin.php:3633
 msgid "Waiting until scheduled time to retry because of errors"
 msgstr "A esperar até a hora agendada para repetir devido a erros"
 
-#: admin.php:3439
+#: admin.php:3638
 msgid "Backup finished"
 msgstr "Backup concluído"
 
-#: admin.php:3465
+#: admin.php:3664
 msgid "table: %s"
 msgstr "tabela: %s"
 
-#: admin.php:3452
+#: admin.php:3651
 msgid "Created database backup"
 msgstr "Criado o backup da base de dados"
 
-#: admin.php:3478
+#: admin.php:3677
 msgid "Encrypting database"
 msgstr "Encriptando a base de dados"
 
-#: admin.php:3486
+#: admin.php:3685
 msgid "Encrypted database"
 msgstr "Base de dados encriptada"
 
-#: admin.php:3417
+#: admin.php:3616
 msgid "Uploading files to remote storage"
 msgstr "Carregando os ficheiros para o armazenamento remoto"
 
-#: admin.php:3430
+#: admin.php:3629
 msgid "Pruning old backup sets"
 msgstr "Limpando conjuntos de backups antigos"
 
-#: admin.php:3395
+#: admin.php:3594
 msgid "Creating file backup zips"
 msgstr "Criando zips do backup de ficheiros"
 
-#: admin.php:3408
+#: admin.php:3607
 msgid "Created file backup zips"
 msgstr "Criados zips do backup de ficheiros"
 
-#: admin.php:3463
+#: admin.php:3662
 msgid "Creating database backup"
 msgstr "Criando backup da base de dados"
 
-#: admin.php:3390
+#: admin.php:3589
 msgid "Backup begun"
 msgstr "Backup iniciado"
 
-#: admin.php:2733
+#: admin.php:2931
 msgid "Your PHP memory limit (set by your web hosting company) is very low. UpdraftPlus attempted to raise it but was unsuccessful. This plugin may struggle with a memory limit of less than 64 Mb  - especially if you have very large files uploaded (though on the other hand, many sites will be successful with a 32Mb limit - your experience may vary)."
 msgstr "O seu limite de memória PHP (definido pelo serviço de alojamento) é muito baixo. O UpdraftPlus tentou aumentá-lo mas sem sucesso. Este plugin pode ter dificuldades com limites de memória inferiores a 64 Mb, especialmente se tem arquivos muito grandes para carregar (por outro lado, muitos sites serão bem sucedidos com um limite de 32 Mb - a sua experiencia pode variar)."
 
-#: templates/wp-admin/settings/tab-addons.php:28
-#: templates/wp-admin/settings/tab-addons.php:126
-#: templates/wp-admin/settings/header.php:17
 #: includes/updraftplus-notices.php:31
+#: templates/wp-admin/settings/header.php:17
+#: templates/wp-admin/settings/tab-addons.php:28
+#: templates/wp-admin/settings/tab-addons.php:139
 msgid "Support"
 msgstr "Suporte"
 
@@ -2237,11 +2173,11 @@ msgstr "Suporte"
 msgid "More plugins"
 msgstr "Mais plugins"
 
-#: admin.php:2481
+#: admin.php:2634
 msgid "This looks like a file created by UpdraftPlus, but this install does not know about this type of object: %s. Perhaps you need to install an add-on?"
 msgstr "Isto parece um ficheiro criado pelo UpdraftPlus, mas esta instalação não conhece este tipo de objecto: %s. Talvez seja necessário instalar algum add-on?"
 
-#: templates/wp-admin/advanced/site-info.php:104
+#: templates/wp-admin/advanced/site-info.php:118
 msgid "Show raw backup and file list"
 msgstr "Mostrar backups e lista de ficheiros com código em bruto"
 
@@ -2250,23 +2186,22 @@ msgstr "Mostrar backups e lista de ficheiros com código em bruto"
 msgid "Your WordPress installation has a problem with outputting extra whitespace. This can corrupt backups that you download from here."
 msgstr "A sua instalação WordPress tem um problema em mostrar espaços extra em branco. Isto pode corromper os backups que descarregar daqui."
 
-#: class-updraftplus.php:1101 class-updraftplus.php:1107
-#: class-updraftplus.php:4493 class-updraftplus.php:4495
-#: class-updraftplus.php:4668 class-updraftplus.php:4742
-#: methods/googledrive.php:486 methods/s3.php:351 admin.php:2452 admin.php:2473
-#: admin.php:2481
+#: admin.php:2605 admin.php:2626 admin.php:2634 class-updraftplus.php:1165
+#: class-updraftplus.php:1171 class-updraftplus.php:4886
+#: class-updraftplus.php:4888 class-updraftplus.php:5073
+#: class-updraftplus.php:5150 methods/googledrive.php:534 methods/s3.php:383
 msgid "Error: %s"
 msgstr "Erro: %s"
 
-#: class-updraftplus.php:4672 admin.php:987 admin.php:2686 restorer.php:3018
+#: admin.php:1044 admin.php:2871 class-updraftplus.php:5077 restorer.php:3615
 msgid "Warning:"
 msgstr "Aviso:"
 
-#: templates/wp-admin/advanced/site-info.php:45
+#: templates/wp-admin/advanced/site-info.php:58
 msgid "show PHP information (phpinfo)"
 msgstr "mostrar as informações do PHP (phpinfo)"
 
-#: templates/wp-admin/advanced/site-info.php:70
+#: templates/wp-admin/advanced/site-info.php:84
 msgid "zip executable found:"
 msgstr "Encontrado um zip executável:"
 
@@ -2278,7 +2213,7 @@ msgstr "Deseja migrar ou clonar/duplicar um site?"
 msgid "Also delete from remote storage"
 msgstr "Apague também do armazenamento remoto"
 
-#: admin.php:3211
+#: admin.php:3409
 msgid "Latest UpdraftPlus.com news:"
 msgstr "Últimas notícias do UpdraftPlus.com"
 
@@ -2286,69 +2221,22 @@ msgstr "Últimas notícias do UpdraftPlus.com"
 msgid "News"
 msgstr "Notícias"
 
-#: templates/wp-admin/settings/tab-addons.php:73
 #: templates/wp-admin/settings/header.php:11
+#: templates/wp-admin/settings/tab-addons.php:73
 msgid "Premium"
 msgstr "Premium"
 
-#: templates/wp-admin/advanced/site-info.php:31
+#: templates/wp-admin/advanced/site-info.php:35
 msgid "Web server:"
 msgstr "Servidor web:"
 
-#: templates/wp-admin/advanced/site-info.php:42
+#: templates/wp-admin/advanced/site-info.php:55
 msgid "Peak memory usage"
 msgstr "Pico na utilização de memória"
 
-#: templates/wp-admin/advanced/site-info.php:43
+#: templates/wp-admin/advanced/site-info.php:56
 msgid "Current memory usage"
 msgstr "Utilização actual de memória"
-
-#: templates/wp-admin/settings/tab-addons.php:79
-#: templates/wp-admin/settings/tab-addons.php:92
-#: templates/wp-admin/settings/tab-addons.php:95
-#: templates/wp-admin/settings/tab-addons.php:108
-#: templates/wp-admin/settings/tab-addons.php:121
-#: templates/wp-admin/settings/tab-addons.php:134
-#: templates/wp-admin/settings/tab-addons.php:147
-#: templates/wp-admin/settings/tab-addons.php:160
-#: templates/wp-admin/settings/tab-addons.php:173
-#: templates/wp-admin/settings/tab-addons.php:186
-#: templates/wp-admin/settings/tab-addons.php:199
-#: templates/wp-admin/settings/tab-addons.php:212
-#: templates/wp-admin/settings/tab-addons.php:225
-#: templates/wp-admin/settings/tab-addons.php:238
-#: templates/wp-admin/settings/tab-addons.php:251
-#: templates/wp-admin/settings/tab-addons.php:264
-#: templates/wp-admin/settings/tab-addons.php:277
-#: templates/wp-admin/settings/tab-addons.php:294
-#: templates/wp-admin/settings/tab-addons.php:300
-#: templates/wp-admin/advanced/site-info.php:60
-#: templates/wp-admin/advanced/site-info.php:63
-#: templates/wp-admin/advanced/site-info.php:66
-#: templates/wp-admin/advanced/site-info.php:70
-msgid "Yes"
-msgstr "Sim"
-
-#: templates/wp-admin/settings/tab-addons.php:105
-#: templates/wp-admin/settings/tab-addons.php:118
-#: templates/wp-admin/settings/tab-addons.php:131
-#: templates/wp-admin/settings/tab-addons.php:144
-#: templates/wp-admin/settings/tab-addons.php:157
-#: templates/wp-admin/settings/tab-addons.php:170
-#: templates/wp-admin/settings/tab-addons.php:183
-#: templates/wp-admin/settings/tab-addons.php:196
-#: templates/wp-admin/settings/tab-addons.php:209
-#: templates/wp-admin/settings/tab-addons.php:222
-#: templates/wp-admin/settings/tab-addons.php:235
-#: templates/wp-admin/settings/tab-addons.php:248
-#: templates/wp-admin/settings/tab-addons.php:261
-#: templates/wp-admin/settings/tab-addons.php:274
-#: templates/wp-admin/settings/tab-addons.php:291
-#: templates/wp-admin/advanced/site-info.php:60
-#: templates/wp-admin/advanced/site-info.php:66
-#: templates/wp-admin/advanced/site-info.php:70
-msgid "No"
-msgstr "Não"
 
 #: templates/wp-admin/advanced/total-size.php:6
 msgid "Total (uncompressed) on-disk data:"
@@ -2366,6 +2254,55 @@ msgstr "contar"
 #: templates/wp-admin/settings/tab-backups.php:70
 msgid "UpdraftPlus - Upload backup files"
 msgstr "UpdraftPlus - Carregar ficheiros de backup"
+
+#: templates/wp-admin/advanced/site-info.php:74
+#: templates/wp-admin/advanced/site-info.php:77
+#: templates/wp-admin/advanced/site-info.php:80
+#: templates/wp-admin/advanced/site-info.php:84
+#: templates/wp-admin/settings/tab-addons.php:79
+#: templates/wp-admin/settings/tab-addons.php:92
+#: templates/wp-admin/settings/tab-addons.php:95
+#: templates/wp-admin/settings/tab-addons.php:108
+#: templates/wp-admin/settings/tab-addons.php:121
+#: templates/wp-admin/settings/tab-addons.php:134
+#: templates/wp-admin/settings/tab-addons.php:147
+#: templates/wp-admin/settings/tab-addons.php:160
+#: templates/wp-admin/settings/tab-addons.php:173
+#: templates/wp-admin/settings/tab-addons.php:186
+#: templates/wp-admin/settings/tab-addons.php:199
+#: templates/wp-admin/settings/tab-addons.php:212
+#: templates/wp-admin/settings/tab-addons.php:225
+#: templates/wp-admin/settings/tab-addons.php:238
+#: templates/wp-admin/settings/tab-addons.php:251
+#: templates/wp-admin/settings/tab-addons.php:264
+#: templates/wp-admin/settings/tab-addons.php:277
+#: templates/wp-admin/settings/tab-addons.php:290
+#: templates/wp-admin/settings/tab-addons.php:307
+#: templates/wp-admin/settings/tab-addons.php:313
+msgid "Yes"
+msgstr "Sim"
+
+#: templates/wp-admin/advanced/site-info.php:74
+#: templates/wp-admin/advanced/site-info.php:80
+#: templates/wp-admin/advanced/site-info.php:84
+#: templates/wp-admin/settings/tab-addons.php:105
+#: templates/wp-admin/settings/tab-addons.php:118
+#: templates/wp-admin/settings/tab-addons.php:131
+#: templates/wp-admin/settings/tab-addons.php:144
+#: templates/wp-admin/settings/tab-addons.php:157
+#: templates/wp-admin/settings/tab-addons.php:170
+#: templates/wp-admin/settings/tab-addons.php:183
+#: templates/wp-admin/settings/tab-addons.php:196
+#: templates/wp-admin/settings/tab-addons.php:209
+#: templates/wp-admin/settings/tab-addons.php:222
+#: templates/wp-admin/settings/tab-addons.php:235
+#: templates/wp-admin/settings/tab-addons.php:248
+#: templates/wp-admin/settings/tab-addons.php:261
+#: templates/wp-admin/settings/tab-addons.php:274
+#: templates/wp-admin/settings/tab-addons.php:287
+#: templates/wp-admin/settings/tab-addons.php:304
+msgid "No"
+msgstr "Não"
 
 #: templates/wp-admin/settings/delete-and-restore-modals.php:8
 msgid "Delete backup set"
@@ -2395,19 +2332,19 @@ msgstr "Terá que restaurar manualmente."
 msgid "Do read this helpful article of useful things to know before restoring."
 msgstr "Leia este artigo com informações bastante úteis que deverá saber antes de restaurar."
 
-#: templates/wp-admin/settings/take-backup.php:46
+#: templates/wp-admin/settings/take-backup.php:47
 msgid "Time now"
 msgstr "Hora atual"
 
-#: templates/wp-admin/settings/take-backup.php:71 admin.php:3194 admin.php:3200
+#: admin.php:3392 admin.php:3398 templates/wp-admin/settings/take-backup.php:72
 msgid "Last log message"
 msgstr "Última mensagem do log"
 
-#: central/bootstrap.php:194
+#: central/translations-updraftplus.php:17
 msgid "(Nothing yet logged)"
 msgstr "(Nenhuma informação ainda no log)"
 
-#: admin.php:3238
+#: admin.php:3436
 msgid "Download most recently modified log file"
 msgstr "Descarregar o ficheiro de log modificado mais recentemente"
 
@@ -2430,13 +2367,13 @@ msgstr "Se estiver a utilizar isto, desligue o modo Turbo/Road."
 msgid "This is a count of the contents of your Updraft directory"
 msgstr "Este é uma contagem do conteúdo do seu directório do Updraft."
 
-#: templates/wp-admin/advanced/site-info.php:38
 #: includes/class-filesystem-functions.php:126
+#: templates/wp-admin/advanced/site-info.php:51
 msgid "Web-server disk space in use by UpdraftPlus"
 msgstr "Espaço utilizado pelo UpdraftPlus no disco do servidor web"
 
-#: templates/wp-admin/advanced/site-info.php:38
 #: includes/class-filesystem-functions.php:105
+#: templates/wp-admin/advanced/site-info.php:51
 msgid "refresh"
 msgstr "actualizar"
 
@@ -2448,11 +2385,11 @@ msgstr "Página do programador principal"
 msgid "Version"
 msgstr "Versão"
 
-#: admin.php:2708
+#: admin.php:2893
 msgid "Your backup has been restored."
 msgstr "O seu backup foi restaurado."
 
-#: admin.php:2733
+#: admin.php:2931
 msgid "Current limit is:"
 msgstr "O limite actual é:"
 
@@ -2464,11 +2401,11 @@ msgstr "Aviso de JavaScript"
 msgid "This admin interface uses JavaScript heavily. You either need to activate it within your browser, or to use a JavaScript-capable browser."
 msgstr "Este interface de administração utiliza JavaScript intensamente. Deve activá-lo no seu navegador ou utilizar um navegador capaz de executar JavaScript."
 
-#: admin.php:314 admin.php:335 admin.php:342 admin.php:387 admin.php:418
+#: admin.php:353 admin.php:374 admin.php:381 admin.php:424 admin.php:455
 msgid "Nothing currently scheduled"
 msgstr "Nada agendado neste momento"
 
-#: admin.php:324
+#: admin.php:363
 msgid "At the same time as the files backup"
 msgstr "Ao mesmo tempo que o backup de ficheiros"
 
@@ -2476,57 +2413,57 @@ msgstr "Ao mesmo tempo que o backup de ficheiros"
 msgid "Next scheduled backups"
 msgstr "Próximos backups agendados"
 
-#: templates/wp-admin/settings/take-backup.php:24 admin.php:345 admin.php:5468
+#: admin.php:384 admin.php:5732 templates/wp-admin/settings/take-backup.php:24
 msgid "Files"
 msgstr "Ficheiros"
 
-#: admin.php:2095
+#: admin.php:2225
 msgid "Could not find that job - perhaps it has already finished?"
 msgstr "Não foi possível encontrar a tarefa - talvez já tenha terminado?"
 
-#: admin.php:2328
+#: admin.php:2481
 msgid "Download failed"
 msgstr "Falha ao descarregar"
 
-#: admin.php:2361
+#: admin.php:2514
 msgid "No local copy present."
 msgstr "Nenhuma cópia local presente."
 
-#: admin.php:2473
+#: admin.php:2626
 msgid "Bad filename format - this does not look like a file created by UpdraftPlus"
 msgstr "Formato de nome de ficheiro incorreto - este não parece ser um ficheiro criado pelo UpdraftPlus"
 
-#: admin.php:2573
+#: admin.php:2737
 msgid "Bad filename format - this does not look like an encrypted database file created by UpdraftPlus"
 msgstr "Formato de nome de ficheiro incorreto - este não parece ser um ficheiro encriptado de base de dados criado pelo UpdraftPlus"
 
-#: templates/wp-admin/settings/existing-backups-table.php:19
-#: templates/wp-admin/settings/existing-backups-table.php:143 admin.php:827
-#: admin.php:2674 admin.php:3578 admin.php:4696 admin.php:4708 admin.php:4719
+#: admin.php:877 admin.php:2852 admin.php:3777 admin.php:4910 admin.php:4922
+#: admin.php:4933 templates/wp-admin/settings/existing-backups-table.php:19
+#: templates/wp-admin/settings/existing-backups-table.php:142
 msgid "Actions"
 msgstr "Acções"
 
-#: admin.php:2665
+#: admin.php:2843
 msgid "Backup directory could not be created"
 msgstr "Directório de backup não pôde ser criado"
 
-#: admin.php:2672
+#: admin.php:2850
 msgid "Backup directory successfully created."
 msgstr "Directório de backup criado com sucesso."
 
-#: backup.php:1204 admin.php:2415
+#: admin.php:2568 backup.php:1262
 msgid "Backup directory (%s) is not writable, or does not exist."
 msgstr "O directório de backup (%s) não é gravável, ou não existe."
 
-#: class-updraftplus.php:3295
+#: class-updraftplus.php:3526
 msgid "The backup apparently succeeded and is now complete"
 msgstr "Aparentemente o backup foi bem sucedido e está agora concluído"
 
-#: class-updraftplus.php:655 admin.php:2277 admin.php:2281
+#: admin.php:2430 admin.php:2434 class-updraftplus.php:684
 msgid "The log file could not be read."
 msgstr "O ficheiro de log não pôde ser lido."
 
-#: admin.php:2689
+#: admin.php:2874
 msgid "The UpdraftPlus directory in wp-content/plugins has white-space in it; WordPress does not like this. You should rename the directory to wp-content/plugins/updraftplus to fix this problem."
 msgstr "A pasta do UpdraftPlus em wp-content/plugins tem espaço(s) em branco no nome, o WordPress não gosta disto. Deverá renomear a pasta para wp-content/plugins/updraftplus para corrigir este problema."
 
@@ -2536,7 +2473,7 @@ msgstr "A pasta do UpdraftPlus em wp-content/plugins tem espaço(s) em branco no
 msgid "Select Files"
 msgstr "Seleccione os ficheiros"
 
-#: admin.php:2686
+#: admin.php:2871
 msgid "If you can still read these words after the page finishes loading, then there is a JavaScript or jQuery problem in the site."
 msgstr "Caso esteja a ler isto após a página ter terminado de carregar, então há um problema de JavaScript ou JQuery no site."
 
@@ -2545,7 +2482,7 @@ msgstr "Caso esteja a ler isto após a página ter terminado de carregar, então
 msgid "Press here to look inside your UpdraftPlus directory (in your web hosting space) for any new backup sets that you have uploaded."
 msgstr "Clique aqui para procurar dentro do seu directório do UpdraftPlus (na área de armazenamento do seu alojamento web) por novos conjuntos de backup que tenha carregado."
 
-#: admin.php:5362
+#: admin.php:5626
 msgid "Your settings have been wiped."
 msgstr "As suas definições foram apagadas."
 
@@ -2553,12 +2490,12 @@ msgstr "As suas definições foram apagadas."
 msgid "This will delete all your UpdraftPlus settings - are you sure you want to do this?"
 msgstr "Isto apagará todas as definições do UpdraftPlus - tem certeza de que quer isto?"
 
-#: admin.php:2415
+#: admin.php:2568
 msgid "You will find more information about this in the Settings section."
 msgstr "Encontrará mais informação sobre isto na secção de Definições."
 
+#: admin.php:1291 includes/class-commands.php:495
 #: templates/wp-admin/settings/take-backup.php:13
-#: includes/class-commands.php:469 admin.php:1180
 msgid "The 'Backup Now' button is disabled as your backup directory is not writable (go to the 'Settings' tab and find the relevant option)."
 msgstr "O botão 'Backup Agora' está desactivado porque o seu directório de backup não é gravável (vá ao separador \"Definições\" e procure a opção relevante)."
 
@@ -2566,7 +2503,7 @@ msgstr "O botão 'Backup Agora' está desactivado porque o seu directório de ba
 msgid "For the ability to lock access to UpdraftPlus settings with a password, upgrade to UpdraftPlus Premium."
 msgstr "Para possiblitar o bloqueio do acesso às definições do UpdraftPlus através duma senha, actualize para o UpdraftPlus Premium."
 
-#: admin.php:2358
+#: admin.php:2511
 msgid "Download in progress"
 msgstr "Descarga em curso"
 
@@ -2574,14 +2511,14 @@ msgstr "Descarga em curso"
 msgid "%s restoration options:"
 msgstr "Opções do restauro %s:"
 
-#: templates/wp-admin/advanced/site-info.php:45
-#: templates/wp-admin/advanced/site-info.php:51
-#: templates/wp-admin/advanced/site-info.php:58
-#: templates/wp-admin/advanced/site-info.php:59 admin.php:5681 admin.php:5685
+#: admin.php:5946 admin.php:5950 templates/wp-admin/advanced/site-info.php:58
+#: templates/wp-admin/advanced/site-info.php:64
+#: templates/wp-admin/advanced/site-info.php:72
+#: templates/wp-admin/advanced/site-info.php:73
 msgid "%s version:"
 msgstr "Versão de %s:"
 
-#: templates/wp-admin/settings/take-backup.php:51 admin.php:5211
+#: admin.php:5475 templates/wp-admin/settings/take-backup.php:52
 msgid "This button is disabled because your backup directory is not writable (see the settings)."
 msgstr "Este botão está desactivado porque o seu directório de backup não é gravável (ver as definições)."
 
@@ -2599,100 +2536,96 @@ msgstr "Restaurar substituirá o tema, plugins, uploads, base de dados e/ou outr
 msgid "Or, you can place them manually into your UpdraftPlus directory (usually wp-content/updraft), e.g. via FTP, and then use the \"rescan\" link above."
 msgstr "Ou pode colocá-los manualmente no seu directório do UpdraftPlus (normalmente wp-content/updraft), por exemplo via FTP, depois use a ligação abaixo para verificar novamente."
 
-#: admin.php:3281
+#: admin.php:3479
 msgid "Your WordPress install has old directories from its state before you restored/migrated (technical information: these are suffixed with -old). You should press this button to delete them as soon as you have verified that the restoration worked."
 msgstr "A sua instalação WordPress tem directórios antigos do seu estado anterior ao restauro/migração (informação técnica: estão com o sufixo -old). Deve premir este botão para apagá-los assim que verificar que o restauro funcionou."
 
-#: class-updraftplus.php:4609
+#: class-updraftplus.php:5013
 msgid "You can search and replace your database (for migrating a website to a new location/URL) with the Migrator add-on - follow this link for more information"
 msgstr "Pode procurar e substituir na sua base de dados (para migrar um website para um novo local/URL) com o add-on Migrator - siga esta ligação para mais informações"
 
-#: templates/wp-admin/settings/take-backup.php:94
+#: templates/wp-admin/settings/take-backup.php:95
 msgid "Multisite"
 msgstr "Multissite"
 
-#: templates/wp-admin/settings/take-backup.php:98
+#: templates/wp-admin/settings/take-backup.php:99
 msgid "Do you need WordPress Multisite support?"
 msgstr "Precisa de suporte para o WordPress multissite?"
 
-#: templates/wp-admin/settings/take-backup.php:98
-msgid "Please check out UpdraftPlus Premium, or the stand-alone Multisite add-on."
-msgstr "Por favor, experimente o UpdraftPlus Premium, ou o add-on Multisite."
-
-#: admin.php:1237
+#: admin.php:1348
 msgid "%s has been chosen for remote storage, but you are not currently connected."
 msgstr "A sua escolha para o alojamento remoto foi %s, mas actualmente não está ligado."
 
-#: admin.php:1237
+#: admin.php:1348
 msgid "Go to the remote storage settings in order to connect."
 msgstr "Vá às definições do alojamento remoto para efectivar a ligação."
 
-#: admin.php:862
+#: admin.php:914
 msgid "Connecting..."
 msgstr "A ligar..."
 
-#: admin.php:864
+#: admin.php:916
 msgid "Disconnecting..."
 msgstr "A desligar..."
 
-#: admin.php:865
+#: admin.php:917
 msgid "Counting..."
 msgstr "A contar..."
 
-#: admin.php:866
+#: admin.php:918
 msgid "Update quota count"
 msgstr "Actualizar a contagem da cota"
 
-#: includes/class-remote-send.php:377 admin.php:872
+#: admin.php:924 includes/class-remote-send.php:411
 msgid "You should check that the remote site is online, not firewalled, does not have security modules that may be blocking access, has UpdraftPlus version %s or later active and that the keys have been entered correctly."
 msgstr "Deverá verificar se o site remoto está online, sem firewall, não tem módulos de segurança que poderão estar a bloquear o acesso, tem a versão do UpdraftPlus %s ou superior activa e as chaves foram introduzidas correctamente."
 
-#: admin.php:870
+#: admin.php:922
 msgid "Creating..."
 msgstr "A criar..."
 
-#: admin.php:873
+#: admin.php:925
 msgid "Please give this key a name (e.g. indicate the site it is for):"
 msgstr "Por favor dê um nome a esta chave (p. ex. indique o site para onde é):"
 
-#: admin.php:875
+#: admin.php:927
 msgid "key name"
 msgstr "nome da chave"
 
-#: templates/wp-admin/settings/existing-backups-table.php:174 admin.php:876
+#: admin.php:928 templates/wp-admin/settings/existing-backups-table.php:173
 msgid "Deleting..."
 msgstr "A apagar..."
 
-#: includes/class-remote-send.php:407 admin.php:879
+#: admin.php:931 includes/class-remote-send.php:441
 msgid "Testing connection..."
 msgstr "A testar ligação..."
 
-#: includes/class-wpadmin-commands.php:136
+#: includes/class-wpadmin-commands.php:134
 msgid "This backup set was not known by UpdraftPlus to be created by the current WordPress installation, but was either found in remote storage, or was sent from a remote site."
 msgstr "Este conjunto de backup não é reconhecido pelo UpraftPlus como sendo criado pela actual instalação do WordPress, terá sido encontrado no alojamento remoto ou foi enviado por um site remoto."
 
-#: includes/class-wpadmin-commands.php:136
+#: includes/class-wpadmin-commands.php:134
 msgid "You should make sure that this really is a backup set intended for use on this website, before you restore (rather than a backup set of an unrelated website)."
 msgstr "Deverá ter a certeza que este é mesmo um conjunto de backup para utilizar neste site, antes fazer o restauro (e não ser um conjunto de backup de outro site qualquer)."
 
-#: includes/class-remote-send.php:616 admin.php:871
+#: admin.php:923 includes/class-remote-send.php:652
 msgid "Send to site:"
 msgstr "Enviar para o site:"
 
-#: includes/class-remote-send.php:438 includes/class-remote-send.php:622
-#: admin.php:880
+#: admin.php:932 includes/class-remote-send.php:472
+#: includes/class-remote-send.php:658
 msgid "Send"
 msgstr "Enviar"
 
-#: admin.php:867
+#: admin.php:919
 msgid "Adding..."
 msgstr "A adicionar..."
 
-#: admin.php:868
+#: admin.php:920
 msgid "Add site"
 msgstr "Adicionar site"
 
-#: admin.php:859 admin.php:885 admin.php:886
+#: admin.php:911 admin.php:937 admin.php:938
 msgid "You have made changes to your settings, and not saved."
 msgstr "Fez algumas alterações às suas definições, e não estão guardadas."
 
@@ -2709,8 +2642,8 @@ msgstr "Descartar (por %s meses)"
 msgid "Free Newsletter"
 msgstr "Newsletter gratuita"
 
-#: templates/wp-admin/settings/tab-addons.php:72
 #: templates/wp-admin/notices/thanks-for-using-main-dash.php:12
+#: templates/wp-admin/settings/tab-addons.php:72
 msgid "UpdraftPlus Premium"
 msgstr "UpdraftPlus Premium"
 
@@ -2730,427 +2663,415 @@ msgstr "Plugin gratuito de segurança em duas etapas"
 msgid "Premium WooCommerce plugins"
 msgstr "Plugins premium de WooCommerce"
 
-#: admin.php:853
+#: admin.php:903
 msgid "You did not select any components to restore. Please select at least one, and then try again."
 msgstr "Não seleccionou qualquer componente para restaurar. Por favor seleccione pelo menos um e tente de novo."
 
-#: admin.php:858
+#: admin.php:910
 msgid "Automatic backup before update"
 msgstr "Backup automático antes de actualização"
 
-#: includes/class-commands.php:839 admin.php:2190 admin.php:2213
+#: admin.php:2341 admin.php:2364 includes/class-commands.php:937
 msgid "Start backup"
 msgstr "Iniciar o backup"
 
-#: templates/wp-admin/settings/downloading-and-restoring.php:21
-#: templates/wp-admin/settings/tab-backups.php:21
-#: templates/wp-admin/settings/tab-backups.php:44
-msgid "Existing Backups"
-msgstr "Backups existentes"
-
-#: admin.php:1185
+#: admin.php:1296
 msgid "Welcome to UpdraftPlus!"
 msgstr "Bem-vindo ao UpdraftPlus!"
 
-#: admin.php:1185
+#: admin.php:1296
 msgid "To make a backup, just press the Backup Now button."
 msgstr "Para efectuar um backup, prima o botão Backup Agora."
 
-#: includes/class-wpadmin-commands.php:148
+#: includes/class-wpadmin-commands.php:146
 msgid "Only the WordPress database can be restored; you will need to deal with the external database manually."
 msgstr "Apenas a base de dados do WordPress pode ser restaurada, terá que lidar com a base de dados externa manualmente."
 
-#: templates/wp-admin/settings/temporary-clone.php:63 admin.php:874
+#: admin.php:926 templates/wp-admin/settings/temporary-clone.php:63
 msgid "Key"
 msgstr "Chave"
 
-#: admin.php:1217
+#: admin.php:1328
 msgid "WordPress has a number (%d) of scheduled tasks which are overdue. Unless this is a development site, this probably means that the scheduler in your WordPress install is not working."
 msgstr "O WordPress tem um número (%d) de tarefas agendadas que estão atrasadas. A menos que este seja um site de desenvolvimento, isto provavelmente significa que a agenda da sua instalação de WordPress não está a funcionar."
 
-#: admin.php:1217
+#: admin.php:1328
 msgid "Read this page for a guide to possible causes and how to fix it."
 msgstr "Leia esta página para um guia sobre as possíveis causas e como solucionar."
 
-#: includes/class-backup-history.php:513 admin.php:836 admin.php:837
+#: admin.php:886 admin.php:887 includes/class-backup-history.php:512
 msgid "This file does not appear to be an UpdraftPlus backup archive (such files are .zip or .gz files which have a name like: backup_(time)_(site name)_(code)_(type).(zip|gz))."
 msgstr "Este não parece ser um ficheiro de backup do UpdraftPlus (deverão ser .zip ou .gz e nomeados como: backup_(hora)_(nome do site)_(código)_(tipo).(zip|gz))."
 
-#: admin.php:836
+#: admin.php:886
 msgid "However, UpdraftPlus archives are standard zip/SQL files - so if you are sure that your file has the right format, then you can rename it to match that pattern."
 msgstr "Entretanto, os ficheiros do UpdraftPlus são arquivos padrão zip/SQL - se tem a certeza que o seu ficheiro tem o formato correcto, renomeie-o segundo o padrão adequado."
 
-#: includes/class-backup-history.php:513 admin.php:837
+#: admin.php:887 includes/class-backup-history.php:512
 msgid "If this is a backup created by a different backup plugin, then UpdraftPlus Premium may be able to help you."
 msgstr "Se este backup foi criado por outro plugin de backup, o UpdraftPlus Premium pode ajudá-lo."
 
-#: includes/class-wpadmin-commands.php:161 admin.php:4229 restorer.php:2352
+#: admin.php:4437 includes/class-wpadmin-commands.php:159 restorer.php:2596
 msgid "Backup created by unknown source (%s) - cannot be restored."
 msgstr "Backup criado por uma origem desconhecida (%s) - não pode ser restaurado."
 
-#: admin.php:803
+#: admin.php:852
 msgid "Rescanning remote and local storage for backup sets..."
 msgstr "A procurar novamente conjuntos de backup no armazenamento remoto e local..."
 
-#: includes/class-wpadmin-commands.php:371
+#: includes/class-wpadmin-commands.php:385
 msgid "Constants"
 msgstr "Constantes"
 
-#: includes/class-wpadmin-commands.php:132
+#: includes/class-wpadmin-commands.php:130
 msgid "The PHP setup on this webserver allows only %s seconds for PHP to run, and does not allow this limit to be raised. If you have a lot of data to import, and if the restore operation times out, then you will need to ask your web hosting company for ways to raise this limit (or attempt the restoration piece-by-piece)."
 msgstr "A configuração do PHP neste servidor web permite que o PHP seja executado apenas durante %s segundos e não permite que este limite seja aumentado. Se tem muitos dados para importar e se a operação de restauro esgotar o tempo, então deverá solicitar ao serviço de alojamento web algum modo de aumentar este limite (ou tentar o restauro por partes)."
 
-#: central/bootstrap.php:580 admin.php:851
+#: admin.php:901 central/translations-updraftplus.php:58
 msgid "Create"
 msgstr "Criar"
 
-#: admin.php:811
+#: admin.php:861
 msgid "The new user's RackSpace console password is (this will not be shown again):"
 msgstr "A senha de consola do Rackspace do novo utilizador é (isto não será mostrado novamente):"
 
-#: admin.php:812
+#: admin.php:862
 msgid "Trying..."
 msgstr "Tentando..."
 
-#: admin.php:822 restorer.php:259
+#: admin.php:872 restorer.php:285
 msgid "Error data:"
 msgstr "Dados do erro:"
 
-#: admin.php:800
+#: admin.php:849
 msgid "Be aware that mail servers tend to have size limits; typically around %s Mb; backups larger than any limits will likely not arrive."
 msgstr "Esteja ciente de que os servidores de correio tendem a ter limites de tamanho, tipicamente em torno dos %s Mb; backups maiores do que quaisquer limites provavelmente não serão recebidos."
 
-#: admin.php:5496
+#: admin.php:5760
 msgid "Options (raw)"
 msgstr "Opções (código em bruto)"
 
-#: admin.php:798
+#: admin.php:847
 msgid "Send a report only when there are warnings/errors"
 msgstr "Envie um relatório apenas quando houver avisos/erros"
 
-#: admin.php:810
+#: admin.php:860
 msgid "The web server returned an error code (try again, or check your web server logs)"
 msgstr "O servidor web devolveu um código de erro (tente novamente, ou verifique os logs do seu navegador)"
 
-#: admin.php:805
+#: admin.php:854
 msgid "If you exclude both the database and the files, then you have excluded everything!"
 msgstr "Se excluir a base de dados e os ficheiros, então excluiu tudo!"
 
-#: admin.php:1147
+#: admin.php:1243
 msgid "Update Plugin"
 msgstr "Actualizar Plugin"
 
-#: admin.php:1151
+#: admin.php:1247
 msgid "Update Theme"
 msgstr "Actualizar Tema"
 
-#: admin.php:1012
-msgid "Be safe with an automatic backup"
-msgstr "Esteja seguro com um backup automático"
-
-#: admin.php:842
+#: admin.php:892
 msgid "Follow this link to attempt decryption and download the database file to your computer."
 msgstr "Clique nesta ligação para tentar desencriptar e descarregar o ficheiro da base de dados para o seu computador."
 
-#: admin.php:843
+#: admin.php:893
 msgid "This decryption key will be attempted:"
 msgstr "Será utilizada esta chave de desencriptação:"
 
-#: admin.php:844
+#: admin.php:894
 msgid "Unknown server response:"
 msgstr "Resposta do servidor desconhecida:"
 
-#: admin.php:845
+#: admin.php:895
 msgid "Unknown server response status:"
 msgstr "Estado de resposta do servidor desconhecido:"
 
-#: admin.php:846
+#: admin.php:896
 msgid "The file was uploaded."
 msgstr "O ficheiro foi carregado."
 
-#: admin.php:838
+#: admin.php:888
 msgid "(make sure that you were trying to upload a zip file previously created by UpdraftPlus)"
 msgstr "(certifique-se de que está a tentar carregar um ficheiro previamente criado pelo UpdraftPlus)"
 
-#: admin.php:839
+#: admin.php:889
 msgid "Upload error:"
 msgstr "Erro de carregamento:"
 
-#: admin.php:840
+#: admin.php:890
 msgid "This file does not appear to be an UpdraftPlus encrypted database archive (such files are .gz.crypt files which have a name like: backup_(time)_(site name)_(code)_db.crypt.gz)."
 msgstr "Este ficheiro não parece ser uma base de dados encriptada do UpdraftPlus (tais ficheiros são .gz.crypt e são nomeados como: backup_(hora)_(nome do site)_(código)_db.crypt.gz)."
 
-#: admin.php:841
+#: admin.php:891
 msgid "Upload error"
 msgstr "Erro de carregamento"
 
-#: admin.php:828
+#: admin.php:878
 msgid "Delete from your web server"
 msgstr "Apagar do seu servidor web"
 
-#: admin.php:829
+#: admin.php:879
 msgid "Download to your computer"
 msgstr "Descarregar para o seu computador"
 
-#: admin.php:818
+#: admin.php:868
 msgid "Error: the server sent an empty response."
 msgstr "Erro: o servidor enviou uma resposta sem nada."
 
-#: admin.php:819
+#: admin.php:869
 msgid "Warnings:"
 msgstr "Avisos:"
 
-#: includes/class-wpadmin-commands.php:238
-#: includes/class-wpadmin-commands.php:263
+#: includes/class-wpadmin-commands.php:236
+#: includes/class-wpadmin-commands.php:261
 msgid "The backup archive files have been processed, but with some errors. You will need to cancel and correct any problems before retrying."
 msgstr "Os ficheiros referentes ao backup foram processados, mas com alguns erros. Tem que cancelar e corrigir quaisquer problemas antes de tentar novamente."
 
-#: includes/class-storage-methods-interface.php:380
+#: includes/class-storage-methods-interface.php:386
 msgid "The backup archive for this file could not be found. The remote storage method in use (%s) does not allow us to retrieve files. To perform any restoration using UpdraftPlus, you will need to obtain a copy of this file and place it inside UpdraftPlus's working folder"
 msgstr "Não foram encontrados os ficheiros referentes a este backup. O método de armazenamento remoto em uso (%s) não nos permite obter os ficheiros. Para executar qualquer restauro com o UpdraftPlus, terá que obter uma cópia desse ficheiro e colocá-lo dentro da pasta de trabalho do UpdraftPlus"
 
-#: includes/class-wpadmin-commands.php:113
+#: includes/class-wpadmin-commands.php:111
 msgid "No such backup set exists"
 msgstr "Este conjunto de backup não existe"
 
-#: includes/class-wpadmin-commands.php:185
+#: includes/class-wpadmin-commands.php:183
 msgid "File not found (you need to upload it): %s"
 msgstr "Ficheiro não encontrado (tem que o carregar): %s"
 
-#: includes/class-wpadmin-commands.php:187
+#: includes/class-wpadmin-commands.php:185
 msgid "File was found, but is zero-sized (you need to re-upload it): %s"
 msgstr "O ficheiro foi encontrado mas tem tamanho igual a zero (tem que o carregar novamente): %s"
 
-#: includes/class-wpadmin-commands.php:192
+#: includes/class-wpadmin-commands.php:190
 msgid "File (%s) was found, but has a different size (%s) from what was expected (%s) - it may be corrupt."
 msgstr "O ficheiro (%s) foi encontrado, mas tem um tamanho diferente (%s) do que era esperado (%s) - pode estar corrompido."
 
-#: includes/class-wpadmin-commands.php:207
+#: includes/class-wpadmin-commands.php:205
 msgid "This multi-archive backup set appears to have the following archives missing: %s"
 msgstr "Este conjunto de backup de múltiplos ficheiros parece ter os seguintes ficheiros em falta: %s"
 
-#: admin.php:835
+#: admin.php:885
 msgid "Raw backup history"
 msgstr "Histórico de backups com código em bruto"
 
-#: admin.php:817
+#: admin.php:867
 msgid "Processing files - please wait..."
 msgstr "A processar os ficheiros - por favor, aguarde..."
 
-#: admin.php:5461
+#: admin.php:5725
 msgid "Known backups (raw)"
 msgstr "Backups conhecidos (código em bruto)"
 
-#: updraftplus.php:157 backup.php:3313 class-updraftplus.php:4765
-#: admin.php:1194 admin.php:2691
+#: admin.php:1305 admin.php:2876 admin.php:4966 backup.php:4169
+#: class-updraftplus.php:5175 updraftplus.php:158
 msgid "Go here for more information."
 msgstr "Clique aqui para mais informações."
 
-#: admin.php:816
+#: admin.php:866
 msgid "Some files are still downloading or being processed - please wait."
 msgstr "Alguns ficheiros ainda estão a ser descarregados ou estão a ser processados - por favor, aguarde."
 
-#: includes/updraftplus-tour.php:96 admin.php:855
+#: admin.php:907 includes/updraftplus-tour.php:97
 msgid "Close"
 msgstr "Fechar"
 
-#: methods/remotesend.php:69 methods/remotesend.php:77
-#: methods/remotesend.php:239 methods/remotesend.php:255 admin.php:809
+#: admin.php:859 methods/remotesend.php:69 methods/remotesend.php:77
+#: methods/remotesend.php:239 methods/remotesend.php:255
 msgid "Unexpected response:"
 msgstr "Resposta inesperada:"
 
-#: admin.php:804
+#: admin.php:853
 msgid "To send to more than one address, separate each address with a comma."
 msgstr "Para enviar para mais que um endereço, separe cada endereço com uma vírgula."
 
-#: admin.php:833
+#: admin.php:883
 msgid "PHP information"
 msgstr "Informação de PHP"
 
-#: includes/class-wpadmin-commands.php:581 admin.php:1746
+#: admin.php:1877 includes/class-wpadmin-commands.php:597
 msgid "Backup set not found"
 msgstr "Conjunto de backup não encontrado"
 
-#: admin.php:1212 admin.php:1265
-msgid "Notice"
-msgstr "Nota"
-
-#: admin.php:1212
+#: admin.php:1323
 msgid "UpdraftPlus's debug mode is on. You may see debugging notices on this page not just from UpdraftPlus, but from any other plugin installed. Please try to make sure that the notice you are seeing is from UpdraftPlus before you raise a support request."
 msgstr "O modo de depuração do UpdraftPlus está ligado. Poderá ver notas sobre a depuração nesta página, não apenas do UpdraftPlus mas de qualquer outro plugin instalado. Por favor verifique que a nota que está a ver é do UpdraftPlus antes de fazer um pedido de suporte."
 
-#: admin.php:801
+#: admin.php:850
 msgid "Rescanning (looking for backups that you have uploaded manually into the internal backup store)..."
 msgstr "A verificar novamente (procurar backups que tenha carregado manualmente no armazenamento interno de backups)..."
 
-#: admin.php:815
+#: admin.php:865
 msgid "Begun looking for this entity"
 msgstr "Começou a procura por esta entidade"
 
-#: admin.php:820
+#: admin.php:870
 msgid "Errors:"
 msgstr "Erros:"
 
-#: includes/class-remote-send.php:542 methods/ftp.php:425 methods/ftp.php:429
-#: methods/addon-base-v2.php:341 methods/cloudfiles.php:522
-#: methods/cloudfiles.php:527 methods/openstack2.php:180
-#: methods/openstack2.php:185 methods/openstack2.php:190
-#: methods/openstack2.php:195 methods/s3.php:1155 methods/s3.php:1159
-#: methods/cloudfiles-new.php:179 methods/cloudfiles-new.php:184 admin.php:875
+#: admin.php:927 includes/class-remote-send.php:576
+#: methods/addon-base-v2.php:348 methods/cloudfiles-new.php:181
+#: methods/cloudfiles-new.php:186 methods/cloudfiles.php:534
+#: methods/cloudfiles.php:539 methods/ftp.php:426 methods/ftp.php:430
+#: methods/openstack2.php:180 methods/openstack2.php:185
+#: methods/openstack2.php:190 methods/openstack2.php:195 methods/s3.php:1180
+#: methods/s3.php:1184
 msgid "Failure: No %s was given."
 msgstr "Falha: Nenhum %s foi indicado."
 
-#: templates/wp-admin/settings/delete-and-restore-modals.php:94 admin.php:849
+#: admin.php:899 templates/wp-admin/settings/delete-and-restore-modals.php:94
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: admin.php:832
+#: admin.php:882
 msgid "Requesting start of backup..."
 msgstr "Solicitar o início do backup..."
 
+#: admin.php:900 admin.php:3807 admin.php:3841 admin.php:4600
+#: includes/class-remote-send.php:692
+#: templates/wp-admin/settings/existing-backups-table.php:167
 #: templates/wp-admin/settings/file-backup-exclude.php:11
-#: templates/wp-admin/settings/existing-backups-table.php:168
-#: includes/class-remote-send.php:646 admin.php:850 admin.php:3608
-#: admin.php:3642 admin.php:4412
 msgid "Delete"
 msgstr "Apagar"
 
-#: admin.php:857 admin.php:3846
+#: admin.php:909 admin.php:4045
 msgid "Download log file"
 msgstr "Descarregar o ficheiro de log"
 
-#: includes/class-remote-send.php:325 includes/class-remote-send.php:371
-#: includes/class-remote-send.php:377 includes/class-remote-send.php:442
-#: includes/class-remote-send.php:500 includes/class-remote-send.php:527
-#: includes/class-remote-send.php:555 includes/class-remote-send.php:565
-#: includes/class-remote-send.php:570 includes/class-remote-send.php:582
-#: methods/remotesend.php:74 methods/remotesend.php:252
-#: methods/updraftvault.php:564 admin.php:89 admin.php:823 restorer.php:412
-#: restorer.php:440 restorer.php:2069
+#: admin.php:91 admin.php:873 includes/class-remote-send.php:359
+#: includes/class-remote-send.php:405 includes/class-remote-send.php:411
+#: includes/class-remote-send.php:476 includes/class-remote-send.php:534
+#: includes/class-remote-send.php:561 includes/class-remote-send.php:589
+#: includes/class-remote-send.php:599 includes/class-remote-send.php:604
+#: includes/class-remote-send.php:616 includes/class-search-replace.php:326
+#: includes/class-search-replace.php:496 methods/remotesend.php:74
+#: methods/remotesend.php:252 methods/updraftvault.php:625 restorer.php:438
+#: restorer.php:466 restorer.php:2155 restorer.php:4136
 msgid "Error:"
 msgstr "Erro:"
 
-#: admin.php:831
+#: admin.php:881
 msgid "Download error: the server sent us a response which we did not understand."
 msgstr "Erro ao descarregar: o servidor enviou-nos uma resposta que não entendemos."
 
-#: templates/wp-admin/settings/take-backup.php:51 admin.php:848
+#: admin.php:898 templates/wp-admin/settings/take-backup.php:52
 msgid "Backup Now"
 msgstr "Backup Agora"
 
-#: admin.php:662 admin.php:856 admin.php:4328
+#: admin.php:701 admin.php:908 admin.php:4516
 msgid "Restore"
 msgstr "Restaurar"
 
-#: admin.php:834 admin.php:3287
+#: admin.php:884 admin.php:3485
 msgid "Delete Old Directories"
 msgstr "Apagar Directórios Antigos"
 
+#: admin.php:394 admin.php:4341 admin.php:4394 admin.php:4984
+#: includes/class-remote-send.php:445 includes/class-wpadmin-commands.php:154
+#: includes/class-wpadmin-commands.php:612 restorer.php:576
 #: templates/wp-admin/settings/delete-and-restore-modals.php:81
 #: templates/wp-admin/settings/delete-and-restore-modals.php:82
 #: templates/wp-admin/settings/take-backup.php:34
-#: includes/class-wpadmin-commands.php:156
-#: includes/class-wpadmin-commands.php:596 includes/class-remote-send.php:411
-#: admin.php:355 admin.php:4133 admin.php:4186 admin.php:4764 restorer.php:552
 msgid "Database"
 msgstr "Base de dados"
 
-#: admin.php:1208
+#: admin.php:1319
 msgid "Please consult this FAQ if you have problems backing up."
 msgstr "Por favor, consulte esta FAQ se tiver problemas em fazer backups."
 
-#: admin.php:901
+#: admin.php:954
 msgid "Nothing yet logged"
 msgstr "Ainda não foi registado nada no log"
 
-#: includes/class-commands.php:839 admin.php:2190
+#: admin.php:2341 includes/class-commands.php:937
 msgid "OK. You should soon see activity in the \"Last log message\" field below."
 msgstr "OK. Brevemente deverá ver alguma actividade no campo \"Última mensagem no log\" abaixo."
 
-#: admin.php:2087
+#: admin.php:2218
 msgid "Job deleted"
 msgstr "Tarefa apagada"
 
-#: updraftplus.php:157 class-updraftplus.php:1441 class-updraftplus.php:1485
-#: includes/class-filesystem-functions.php:420
-#: includes/class-storage-methods-interface.php:326
-#: methods/googledrive.php:1251 methods/addon-base-v2.php:93
-#: methods/addon-base-v2.php:98 methods/addon-base-v2.php:244
-#: methods/addon-base-v2.php:264 admin.php:824 restorer.php:3344
-#: restorer.php:3369 restorer.php:3465
+#: admin.php:874 class-updraftplus.php:1505 class-updraftplus.php:1549
+#: includes/class-filesystem-functions.php:437
+#: includes/class-storage-methods-interface.php:332
+#: methods/addon-base-v2.php:93 methods/addon-base-v2.php:98
+#: methods/addon-base-v2.php:251 methods/addon-base-v2.php:271
+#: methods/googledrive.php:1343 restorer.php:3972 restorer.php:3997
+#: restorer.php:4093 updraftplus.php:158
 msgid "Error"
 msgstr "Erro"
 
-#: admin.php:826 admin.php:2347
+#: admin.php:876 admin.php:2500
 msgid "File ready."
 msgstr "Ficheiro pronto."
 
-#: admin.php:1084
+#: admin.php:1180
 msgid "Allowed Files"
 msgstr "Ficheiros Permitidos"
 
-#: admin.php:1128
-msgid "Add-Ons / Pro Support"
-msgstr "Add-Ons / Suporte Pro"
-
+#: admin.php:1300 admin.php:1305 admin.php:1311 admin.php:1315 admin.php:1319
+#: admin.php:1328 admin.php:4273 admin.php:4280 admin.php:4282 admin.php:5916
+#: admin.php:6194 methods/cloudfiles-new.php:96 methods/cloudfiles.php:455
+#: methods/ftp.php:344 methods/openstack-base.php:576 methods/s3.php:893
+#: methods/s3.php:897 methods/updraftvault.php:345
 #: templates/wp-admin/settings/downloading-and-restoring.php:27
-#: templates/wp-admin/settings/tab-backups.php:27 methods/ftp.php:343
-#: methods/cloudfiles.php:443 methods/updraftvault.php:321 methods/s3.php:883
-#: methods/s3.php:887 methods/cloudfiles-new.php:96
-#: methods/openstack-base.php:576 admin.php:1189 admin.php:1194 admin.php:1200
-#: admin.php:1204 admin.php:1208 admin.php:1217 admin.php:4065 admin.php:4072
-#: admin.php:4074 admin.php:5652
+#: templates/wp-admin/settings/tab-backups.php:27
 msgid "Warning"
 msgstr "Aviso"
 
-#: admin.php:1200
+#: admin.php:1311
 msgid "You have less than %s of free disk space on the disk which UpdraftPlus is configured to use to create backups. UpdraftPlus could well run out of space. Contact your the operator of your server (e.g. your web hosting company) to resolve this issue."
 msgstr "Tem menos de %s de espaço disponível no disco em que o UpdraftPlus está configurado para fazer backups. O UpdraftPlus poderá ficar sem espaço. Contacte o responsável pelo seu servidor (p.ex.: o seu serviço de alojamento web) para resolver esta questão."
 
-#: class-updraftplus.php:595 class-updraftplus.php:655
-#: class-updraftplus.php:660 class-updraftplus.php:665 admin.php:1237
-#: admin.php:1258 admin.php:1282
+#: admin.php:1348 admin.php:1369 admin.php:1407 class-updraftplus.php:617
+#: class-updraftplus.php:684 class-updraftplus.php:689
+#: class-updraftplus.php:694
 msgid "UpdraftPlus notice:"
 msgstr "Nota do UpdraftPlus:"
 
+#: admin.php:913 admin.php:3215 methods/updraftvault.php:358
+#: methods/updraftvault.php:413
 #: templates/wp-admin/settings/temporary-clone.php:82
-#: methods/updraftvault.php:334 methods/updraftvault.php:389 admin.php:861
-#: admin.php:3017
 msgid "Connect"
 msgstr "Ligar"
 
-#: methods/updraftvault.php:419 methods/updraftvault.php:489 admin.php:863
+#: admin.php:915 methods/updraftvault.php:443 methods/updraftvault.php:519
 msgid "Disconnect"
 msgstr "Desligar"
 
-#: admin.php:678 admin.php:1126 admin.php:2895
+#: admin.php:717 admin.php:1222 admin.php:3093
 msgid "Settings"
 msgstr "Definições"
 
-#: admin.php:1204
+#: admin.php:1315
 msgid "UpdraftPlus does not officially support versions of WordPress before %s. It may work for you, but if it does not, then please be aware that no support is available until you upgrade WordPress."
 msgstr "O UpdraftPlus não suporta oficialmente as versões do WordPress antes da %s. Pode ser que funcione, mas se não funcionar, por favor esteja ciente que nenhum suporte estará disponível até que actualize o WordPress."
 
-#: admin.php:854
+#: admin.php:906
 msgid "Proceed with update"
 msgstr "Prosseguir com a actualização"
 
-#: admin.php:1194
+#: admin.php:1305
 msgid "The scheduler is disabled in your WordPress install, via the DISABLE_WP_CRON setting. No backups can run (even &quot;Backup Now&quot;) unless either you have set up a facility to call the scheduler manually, or until it is enabled."
 msgstr "O agendamento está desactivado na sua instalação do WordPress, através da definição DISABLE_WP_CRON. Nenhum backup pode ser executado (nem o &quot;Backup Agora&quot;) a menos que tenha definido um método para executar os backups manualmente, ou até que a função seja activada."
 
-#: admin.php:1185
+#: admin.php:1296
 msgid "To change any of the default settings of what is backed up, to configure scheduled backups, to send your backups to remote storage (recommended), and more, go to the settings tab."
 msgstr "Para alterar quaisquer definições sobre o que será copiado por omissão, para configurar backups agendados, para enviar os backups para um alojamento remoto (recomendado), ou outras definições, vá ao separador Definições."
 
-#: class-updraftplus.php:918 admin.php:1189
+#: admin.php:1300 class-updraftplus.php:965
 msgid "The amount of time allowed for WordPress plugins to run is very low (%s seconds) - you should increase it to avoid backup failures due to time-outs (consult your web hosting company for more help - it is the max_execution_time PHP setting; the recommended value is %s seconds or more)"
 msgstr "A quantidade de tempo permitida para um plugin do WordPress ser executado é muito baixa (%s segundos) - deverá aumentá-la para evitar falhas no backup por ultrapassar o tempo de espera (consulte o seu serviço de alojamento web para mais ajuda - é o parâmetro do PHP max_execution_time; o valor recomendado é %s segundos ou mais)"
 
-#: admin.php:1208
+#: admin.php:1319
 msgid "Your website is hosted using the %s web server."
 msgstr "O seu website está alojado utilizando o servidor web %s."
 
-#: admin.php:814
+#: admin.php:864
 msgid "calculating..."
 msgstr "a calcular..."
+
+#: admin.php:1323 admin.php:1376
+msgid "Notice"
+msgstr "Notificação"

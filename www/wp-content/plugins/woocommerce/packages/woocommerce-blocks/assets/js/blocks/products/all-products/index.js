@@ -14,11 +14,11 @@ import Editor from './edit';
 import { attributes as sharedAttributes, defaults } from '../attributes';
 import { getBlockClassName } from '../utils.js';
 
-const blockSettings = {
+export const blockSettings = {
 	title: __( 'All Products', 'woocommerce' ),
 	icon: {
 		src: <Icon srcElement={ grid } />,
-		foreground: '#96588a',
+		foreground: '#7f54b3',
 	},
 	category: 'woocommerce',
 	keywords: [ __( 'WooCommerce', 'woocommerce' ) ],

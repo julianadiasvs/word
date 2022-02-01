@@ -3,16 +3,6 @@
 
 $TvrLang = array(
 
-	/*// animation events - not currently translatable as other props aren't translated and it would be tricky
-	'css_events' => esc_html__('CSS Events', 'microthemer'),
-	'js_events' => esc_html__('JavaScript Events', 'microthemer'),
-	'hover' => esc_html__('hover', 'microthemer'),
-	'focus' => esc_html__('focus', 'microthemer'),
-	'inView' => esc_html__('inView', 'microthemer'),
-	'inView (once)' => esc_html__('inView (once)', 'microthemer'),
-	'click' => esc_html__('click', 'microthemer'),
-	*/
-
 	'google_font' => esc_html__('Google Font...', 'microthemer'),
 	'browse_gf' => esc_html__('Browse fonts...', 'microthemer'),
 
@@ -44,7 +34,7 @@ $TvrLang = array(
 	'notify_folder_limit_long' => esc_html__('Your last selector was added to an auto-generated folder (%s) because your "%s" folder reached the limit of 40 selectors.', 'microthemer'),
 
 	'learn_more' => esc_html__('Learn more', 'microthemer'),
-	'slow_styles_tab' => esc_html__('Styles tab slows the browser: %1$s sec (avg)', 'microthemer'),
+	'slow_styles_tab' => esc_html__('Styles tab slows the browser: %s sec (avg)', 'microthemer'),
 
 
 	'drag_picker' => esc_html__('Drag to move color picker', 'microthemer'),
@@ -59,8 +49,8 @@ $TvrLang = array(
 	// strings for main script: ../js/tvr-microthemer.js
 	'invalid_sel' => esc_html__('Invalid selector', 'microthemer'),
 	'invalid_sel_long' => esc_html__('Microthemer found the selector to be invalid. It will not target any elements on the page.', 'microthemer'),
-	'n_els' => esc_html__('Targets %1$s element on the page', 'microthemer'),
-	'n_els_plural' => esc_html__('Targets %1$s elements on the page', 'microthemer'),
+	'n_els' => esc_html__('Targets %s element', 'microthemer'),
+	'n_els_plural' => esc_html__('Targets %s elements', 'microthemer'),
 	'interface' => esc_html__('Microthemer interface', 'microthemer'),
 	'frontend' => esc_html__('Frontend preview', 'microthemer'),
 	'css_parse_error' => esc_html__('CSS processing error', 'microthemer'),
@@ -72,6 +62,9 @@ $TvrLang = array(
 	'already_exists_folder' => esc_html__('A folder with that name already exists. Please enter a unique name.', 'microthemer'),
 	'already_exists_selector' => esc_html__('A selector with that name already exists. Please enter a unique name.', 'microthemer'),
 	'already_exists_misc' => esc_html__('A %s with that name already exists. Please enter a unique name.', 'microthemer'),
+	'popup_blocked' => esc_html__('Preview window blocked', 'microthemer'),
+	'popup_blocked_long' => esc_html__('Microthemer tried to load the preview in a new window, as per your "Detach preview" setting in the VIEW menu. But your browser blocked this. Please use the option in your address bar to allow popups on this site, then refresh the page.', 'microthemer'),
+	'untitled' => esc_html__('Untitled', 'microthemer'),
 	'untitled_folder' => esc_html__('Untitled folder', 'microthemer'),
 	'custom_code' => esc_html__('Full code editor', 'microthemer'),
 	'item' => esc_html__('item', 'microthemer'),
@@ -99,11 +92,10 @@ $TvrLang = array(
 	'selector_disabled' => esc_html__('Current selector is disabled', 'microthemer'),
 	'group_disabled' => esc_html__('Group disabled', 'microthemer'),
 	'enable_with_icon' => esc_html__('Click the un/disable icon in the folders and selectors menu to re-enable it.', 'microthemer'),
-	'enter_name_folder' => esc_html__('Please enter a value for the folder name', 'microthemer'),
-	'enter_name_selector' => esc_html__('Please enter a value for the selector name', 'microthemer'),
+	'enter_folder_name' => esc_html__('Please enter a value for the folder name', 'microthemer'),
 	'enter_name_misc' => esc_html__('Please enter a value for the %s name', 'microthemer'),
 	'load_after_moving' => esc_html__('load selector after moving', 'microthemer'),
-	'trial_notice' => esc_html__('Please validate your purchase to unlock the full program! With the free trial you are limited to editing or creating 15 Selectors. And not all style options are available e.g. flexbox, grid, animation, transition', 'microthemer'),
+	'trial_notice' => esc_html__('Please enter your license key to unlock the full program! With the free trial you are limited to editing or creating 15 Selectors. And not all style options are available e.g. flexbox, grid, animation, transition', 'microthemer'),
 	'complete_media_fields' => esc_html__('Please complete all media query fields or delete empty ones.', 'microthemer'),
 	'load_style_opt' => esc_html__('Loading style options', 'microthemer'),
 	'load_style_opt_failed' => esc_html__('Options failed to load', 'microthemer'),
@@ -120,10 +112,23 @@ $TvrLang = array(
 	'sec_copy' => esc_html__('Loading folder before copying', 'microthemer'),
 	'sec_clear' => esc_html__('Loading folder before clearing', 'microthemer'),
 	'fields_sync' => esc_html__('fields synchronized', 'microthemer'),
+	'select_enter_folder' => esc_html__('Select folder, or enter new name', 'microthemer'),
+	'original_label' => esc_html__('Original label', 'microthemer'),
+	'label_suggestions' => esc_html__('Label suggestions', 'microthemer'),
 	//'save_settings' => esc_html__('Save settings', 'microthemer'),
-	'settings_saved' => esc_html__('Settings saved', 'microthemer'),
+	'settings_saved_and_published' => esc_html__('Settings saved and published', 'microthemer'),
+	'settings_saved' => esc_html__('Draft saved', 'microthemer'),
 	'save_settings' => esc_html__('Saving settings', 'microthemer'),
 	'save_settings_error' => esc_html__('Save error', 'microthemer'),
+	'initial_welcome' => esc_html__('Click to style anything', 'microthemer'),
+	'publish' => esc_html__('Publish', 'microthemer'),
+	'published' => esc_html__('Published', 'microthemer'),
+	'ready_to_publish' => esc_html__('Ready to publish', 'microthemer'),
+	'publishing_settings' => esc_html__('Publishing settings', 'microthemer'),
+	'settings_published' => esc_html__('Settings published', 'microthemer'),
+	'settings_published_long' => esc_html__('Your latest changes are live.', 'microthemer'),
+	'settings_published_long_p2' => esc_html__('Remember to clear your cache if you use a caching plugin.', 'microthemer'),
+	'publish_failed' => esc_html__('Publish failed', 'microthemer'),
 	//'draft_mode' => esc_html__('draft mode', 'microthemer'),
 	'draft_enabled' => esc_html__('draft mode enabled', 'microthemer'),
 	'draft_disabled' => esc_html__('draft mode disabled (changes published)', 'microthemer'),
@@ -136,10 +141,10 @@ $TvrLang = array(
 	'retrieve_css_failed' => esc_html__('CSS failed to load', 'microthemer'),
 	'remove_builder_edit_lock' => esc_html__('Removing %s edit lock', 'microthemer'),
 	'remove_builder_edit_lock_failed' => esc_html__('%s edit lock could not be removed', 'microthemer'),
-	'loading_sass_import' => esc_html__('Fetching SCSS import', 'microthemer'),
-	'loading_sass_import_failed' => esc_html__('SCSS import failed to load', 'microthemer'),
-	'scss_error' => esc_html__('SCSS error - compilation failed', 'microthemer'),
-	'scss_error_long' => esc_html__('An error in your SCSS code prevented it from being compiled to CSS', 'microthemer'),
+	'loading_sass_import' => esc_html__('Fetching Sass import', 'microthemer'),
+	'loading_sass_import_failed' => esc_html__('Sass import failed to load', 'microthemer'),
+	'scss_error' => esc_html__('Sass error - compilation failed', 'microthemer'),
+	'scss_error_long' => esc_html__('An error in your Sass code prevented it from being compiled to CSS', 'microthemer'),
 	'scss_error_line' => esc_html__('View the error line (Ctrl + Alt + G)', 'microthemer'),
 	'compile_scss' => esc_html__('Compiling SCSS', 'microthemer'),
 	'color_var_label' => esc_html__('Enter variable', 'microthemer'),
@@ -155,6 +160,7 @@ $TvrLang = array(
 	//'clear_styles_confirm' => esc_html__('Are you sure you want to clear all styles?', 'microthemer'),
 	'beaver_builder_confirm' => esc_html__('Beaver Builder is active. You will lose any unsaved Beaver Builder changes. Continue anyway?', 'microthemer'),
 	'page_reload_aborted' => esc_html__('Settings were saved. But you may need to reload the Microthemer interface to see the effects', 'microthemer'),
+	'current_page' => esc_html__('current page', 'microthemer'),
 	'halted' => esc_html__('halted', 'microthemer'),
 	//'clear_styles' => esc_html__('Clearing styles', 'microthemer'),
 	'value_cleared' => esc_html__('value cleared', 'microthemer'),
@@ -162,6 +168,9 @@ $TvrLang = array(
 	'previous_code' => esc_html__('Previous code', 'microthemer'),
 	'new_name' => esc_html__('New name', 'microthemer'),
 	'new_code' => esc_html__('New code', 'microthemer'),
+	'selector_created' => esc_html__('Create selector', 'microthemer'),
+	'selector_modified' => esc_html__('Modify selector', 'microthemer'),
+
 	'restore_settings_confirm' => esc_html__('Are you sure you want to restore previous settings?', 'microthemer'),
 	'restore_settings' => esc_html__('Restoring settings', 'microthemer'),
 
@@ -193,10 +202,14 @@ $TvrLang = array(
 	'wizard_folder_alert' => esc_html__('Please select an existing folder or enter a new folder name', 'microthemer'),
 	//'wizard_selector_alert' => esc_html__('Please enter a selector name', 'microthemer'),
 	'load_wp' => esc_html__('Loading WordPress site', 'microthemer'),
+	'loading_builder' => esc_html__('Loading builder', 'microthemer'),
+	'mt_targeting_disabled' => esc_html__('MT targeting is OFF', 'microthemer'),
+	'mt_targeting_enable' => esc_html__('Microthemer targeting has been switched off to allow for the builder targeting controls. To turn this back on, use the "Targeting mode" switch at the bottom right of the interface. Alternatively, use the keyboard shortcut (Ctrl + Alt + T)', 'microthemer'),
+	'exiting_builder' => esc_html__('Exiting builder', 'microthemer'),
 	'auto_conversion_performed' => esc_html__('Microthemer performed an auto-conversion of your input', 'microthemer'),
 	'auto_values_rounded' => esc_html__('Note: values in the fields are rounded to 3 decimal places if necessary.', 'microthemer'),
 	'something_wrong' => esc_html__('Something\'s wrong', 'microthemer'),
-	'something_wrong_intro' => esc_html__('%1$s took more than %2$s seconds. A JavaScript error may be preventing the action from completing.', 'microthemer'),
+	'something_wrong_intro' => esc_html__('%s took more than %s seconds. A JavaScript error may be preventing the action from completing.', 'microthemer'),
 	'js_error_site' => esc_html__('Microthemer discovered a JavaScript error on your site', 'microthemer'),
 	'something_wrong_discovered' => esc_html__('The following errors were detected:', 'microthemer'),
 	'something_wrong_no_errors' => esc_html__('Microthemer hasn\'t discovered any yet though.', 'microthemer'),
@@ -227,28 +240,8 @@ $TvrLang = array(
 
 	// frontend
 	// text strings used by both parent and iframe
-	//'load_wp' => $js_i18n_main['load_wp'],
-	//'refresh_styles' => $js_i18n_main['refresh_styles'],
-	//'refresh_js' => $js_i18n_main['refresh_js'],
 
 	// iframe only strings
-	'element_type_target' => esc_html__('Element type targeting (very broad)', 'microthemer'),
-	'elements_of_type' => esc_html__('elements of type:', 'microthemer'),
-	'all_elements' => esc_html__('all <%s> elements', 'microthemer'),
-	'element_class_target' => esc_html__('Element with class targeting', 'microthemer'),
-	'elements_of_class' => esc_html__('elements with a class of ', 'microthemer'),
-	'parent_class_target' => esc_html__('Parent with class targeting', 'microthemer'),
-	'parent_class_target_desc' => esc_html__('child <%1$s> elements inside parent <%2$s> container elements that have a class of <%3$s>', 'microthemer'),
-	'parent_element_class_target' => esc_html__('Parent & element with class targeting', 'microthemer'),
-	'parent_element_class_target_desc' => esc_html__('child <%1$s> elements that have a class of \'%2$s\' inside parent <%3$s> container elements that have a class of \'%4$s\'', 'microthemer'),
-	'element_id_target' => esc_html__('Element ID targeting', 'microthemer'),
-	'element_id_target_desc' => esc_html__('<%1$s> element with a unique id of \'%2$s\'', 'microthemer'),
-	'parent_id_target' => esc_html__('Parent with ID targeting', 'microthemer'),
-	'parent_id_target_desc' => esc_html__('child <%1$s> elements inside a parent <%2$s> container element that has a unique id of \'%3$s\'', 'microthemer'),
-	'parent_id_element_class_target' => esc_html__('Parent with ID & element with class targeting', 'microthemer'),
-	'parent_id_element_class_target_desc' => esc_html__('child <%1$s> elements that have a class of \'%2$s\' inside a parent <%3$s> container element that has a unique id of \'%4$s\'', 'microthemer'),
-	'parent_element_id_target' => esc_html__('Parent & element with ID targeting', 'microthemer'),
-	'parent_element_id_target_desc' => esc_html__('child <%1$s> element that has a unique id of \'%2$s\' inside a parent <%3$s> container element that has a unique id of \'%4$s\'', 'microthemer'),
 	'update_jquery' => esc_html__('Update your jQuery! (1.9+)', 'microthemer'),
 	'update_jquery_long' => esc_html__('Your WordPress install is running a version of jQuery older than 1.9. This means Microthemer can\'t retrieve the existing computed CSS values elements on your web page. Please update to the latest version of WordPress (which should also update jQuery). If this doesn\'t help please check your code for any functions that deregister the default version of jQuery. You can ask Themeover to help you with this. Thanks.', 'microthemer'),
 	'highlighting_capped' => esc_html__('Highlighting capped', 'microthemer'),
@@ -266,6 +259,12 @@ $TvrLang = array(
 	'num_els_n' => esc_html__('The number of elements a selector targets', 'microthemer'),
 	'equiv_sels' => esc_html__('Equivalent selectors', 'microthemer'),
 	'choose_suggestion' => esc_html__('Choose suggestion', 'microthemer'),
+	'choose_selector' => esc_html__('Choose selector', 'microthemer'),
+	'targets_x_els' => esc_html__('Targets %d element', 'microthemer'),
+	'targets_x_els_plural' => esc_html__('Targets %d elements', 'microthemer'),
+	'custom' => esc_html__('Custom', 'microthemer'),
+	'refresh_suggestions' => esc_html__('Refresh suggestions', 'microthemer'),
+	'set' => esc_html__('set %d', 'microthemer'),
 
 	// note, if changing key text - must update $this->css_filters = array
 	'cur_pid_filter' => esc_html__('page-id', 'microthemer'),
@@ -280,102 +279,32 @@ $TvrLang = array(
 	'download_failed' => esc_html__('Microthemer was not able to download the design pack', 'microthemer'),
 	'delete_pack_confirm' => esc_html__('Are you sure you want to delete this design pack?', 'microthemer'),
 	'delete_pack_failed' => esc_html__('Microthemer was not able to delete the design pack', 'microthemer'),
-	//'error_connection' => $js_i18n_main['error_connection'],
-	//'error_404' => $js_i18n_main['error_404'],
-	//'error_500' => $js_i18n_main['error_500'],
-	//'error_parser' => $js_i18n_main['error_parser'],
-	//'error_timeout' => $js_i18n_main['error_timeout'],
-	//'error_unknown' => $js_i18n_main['error_unknown'],
 	'external_notice' => esc_html__("Warning: this theme links to external images. If someone else installs your zipped theme the background images won't show.", 'microthemer'),
 	'delete_file_confirm' => esc_html__('Are you sure you want to delete this file?', 'microthemer'),
 	'view_pack_failed' => esc_html__('This file could not be opened in a browser.', 'microthemer'),
 	'delete_failed' => esc_html__('Delete failed', 'microthemer'),
 	'unable_load' => esc_html__('Microthemer was not able to load: ', 'microthemer'),
 
-
-);
-
-/*
-
-// strings for micro themes script: ../js/manage-micro.js
-$js_i18n_manage = array(
-	'theme_skin' => esc_html__('Theme Skin', 'microthemer'),
-	'plugin_skin' => esc_html__('Plugin Skin', 'microthemer'),
-	'theme_scaffold' => esc_html__('Theme Scaffold', 'microthemer'),
-	'plugin_scaffold' => esc_html__('Plugin Scaffold', 'microthemer'),
-	'select_zip' => esc_html__('Please select a design pack zip file to upload', 'microthemer'),
-	'download_failed' => esc_html__('Microthemer was not able to download the design pack', 'microthemer'),
-	'delete_pack_confirm' => esc_html__('Are you sure you want to delete this design pack?', 'microthemer'),
-	'delete_pack_failed' => esc_html__('Microthemer was not able to delete the design pack', 'microthemer'),
-	'error_connection' => $js_i18n_main['error_connection'],
-	'error_404' => $js_i18n_main['error_404'],
-	'error_500' => $js_i18n_main['error_500'],
-	'error_parser' => $js_i18n_main['error_parser'],
-	'error_timeout' => $js_i18n_main['error_timeout'],
-	'error_unknown' => $js_i18n_main['error_unknown'],
-	'external_notice' => esc_html__("Warning: this theme links to external images. If someone else installs your zipped theme the background images won't show.", 'microthemer'),
-	'delete_file_confirm' => esc_html__('Are you sure you want to delete this file?', 'microthemer'),
-	'view_pack_failed' => esc_html__('This file could not be opened in a browser.', 'microthemer'),
-	'delete_failed' => esc_html__('Delete failed', 'microthemer'),
-	'unable_load' => esc_html__('Microthemer was not able to load: ', 'microthemer'),
 );
 
 
-// strings for firebug style overlay script: ../js/jquery.overlay.js
-$js_i18n_overlay = array(
-	// text strings used by both parent and iframe
-	'load_wp' => $js_i18n_main['load_wp'],
-	'refresh_styles' => $js_i18n_main['refresh_styles'],
-	'refresh_js' => $js_i18n_main['refresh_js'],
 
-	// iframe only strings
-	'element_type_target' => esc_html__('Element type targeting (very broad)', 'microthemer'),
-	'elements_of_type' => esc_html__('elements of type:', 'microthemer'),
-	'all_elements' => esc_html__('all <%s> elements', 'microthemer'),
-	'element_class_target' => esc_html__('Element with class targeting', 'microthemer'),
-	'elements_of_class' => esc_html__('elements with a class of ', 'microthemer'),
-	'parent_class_target' => esc_html__('Parent with class targeting', 'microthemer'),
-	'parent_class_target_desc' => esc_html__('child <%1$s> elements inside parent <%2$s> container elements that have a class of <%3$s>', 'microthemer'),
-	'parent_element_class_target' => esc_html__('Parent & element with class targeting', 'microthemer'),
-	'parent_element_class_target_desc' => esc_html__('child <%1$s> elements that have a class of \'%2$s\' inside parent <%3$s> container elements that have a class of \'%4$s\'', 'microthemer'),
-	'element_id_target' => esc_html__('Element ID targeting', 'microthemer'),
-	'element_id_target_desc' => esc_html__('<%1$s> element with a unique id of \'%2$s\'', 'microthemer'),
-	'parent_id_target' => esc_html__('Parent with ID targeting', 'microthemer'),
-	'parent_id_target_desc' => esc_html__('child <%1$s> elements inside a parent <%2$s> container element that has a unique id of \'%3$s\'', 'microthemer'),
-	'parent_id_element_class_target' => esc_html__('Parent with ID & element with class targeting', 'microthemer'),
-	'parent_id_element_class_target_desc' => esc_html__('child <%1$s> elements that have a class of \'%2$s\' inside a parent <%3$s> container element that has a unique id of \'%4$s\'', 'microthemer'),
-	'parent_element_id_target' => esc_html__('Parent & element with ID targeting', 'microthemer'),
-	'parent_element_id_target_desc' => esc_html__('child <%1$s> element that has a unique id of \'%2$s\' inside a parent <%3$s> container element that has a unique id of \'%4$s\'', 'microthemer'),
-	'update_jquery' => esc_html__('Update your jQuery! (1.9+)', 'microthemer'),
-	'update_jquery_long' => esc_html__('Your WordPress install is running a version of jQuery older than 1.9. This means Microthemer can\'t retrieve the existing computed CSS values elements on your web page. Please update to the latest version of WordPress (which should also update jQuery). If this doesn\'t help please check your code for any functions that deregister the default version of jQuery. You can ask Themeover to help you with this. Thanks.', 'microthemer'),
-	'highlighting_capped' => esc_html__('Highlighting capped', 'microthemer'),
-	'highlighting_capped_long' => esc_html__('If your selector targets more than 20 elements on the page, Microthemer will only highlight and analyse the first 20 elements on the page. This is to avoid overworking your browser.', 'microthemer'),
-	'navigate_wp_admin' => esc_html__('Admin area uneditable.', 'microthemer'),
-	'navigate_wp_admin_long' => esc_html__('Navigating to the WP admin area from within a Microthemer preview is best avoided. Conceivably, you could end up editing a Microthemer interface from within a Microthemer interface. Think of the universe.', 'microthemer'),
-	'wizard_mode' => esc_html__("the 'Close wizard' link in the top toolbar.", 'microthemer'),
-	'regular_mode' => esc_html__('the icon with horizontal green lines in the top toolbar.', 'microthemer'),
-	'quick_create' => esc_html__('Create new', 'microthemer'),
-	'quick_go' => esc_html__('Go to', 'microthemer'),
-	'equiv_sels' => esc_html__('Equivalent selectors', 'microthemer'),
-
-	// note, if changing key text - must update $this->css_filters = array
-	'cur_pid_filter' => esc_html__('page-id', 'microthemer'),
-	'cur_pname_filter' => esc_html__('page-name', 'microthemer')
-);
-
-*/
 
 // main script
 if ($_GET['page'] == $this->microthemeruipage){
-	wp_localize_script( 'tvr_main_ui', 'TvrLang', $TvrLang);
-}
-// stand alone prefs page needs too
-else if ($_GET['page'] == $this->preferencespage){
-	wp_localize_script( 'tvr_man', 'TvrLang', $TvrLang);
 
-	//$js_i18n_manage = array_merge($js_i18n_manage, $js_i18n_main);
-	//wp_localize_script( 'tvr_man', 'js_i18n_manage', $js_i18n_manage);
-	//wp_enqueue_script( 'tvr_man' );
+	// we now use TvrLang in the mt-spectrum file so set the handle to tvr_deps when minified
+	// so the var has loaded before the deps.js script
+	$load_before_handle = TVR_DEV_MODE ? 'tvr_core' : 'tvr_deps';
+	wp_localize_script( $load_before_handle, 'TvrLang', $TvrLang);
+}
+// any other page - add load deps.js (e.g. detached preview, manage packs etc)
+else { // if ($_GET['page'] == $this->preferencespage) // stand alone prefs page needs too
+
+	//wp_die('kill the script here');
+
+	$load_before_handle = TVR_DEV_MODE ? 'tvr_core' : 'tvr_deps';
+	wp_localize_script( $load_before_handle, 'TvrLang', $TvrLang); // tvr_man now
 }
 
 ?>

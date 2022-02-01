@@ -36,7 +36,7 @@ const Block = ( { className } ) => {
 	};
 
 	const ratingText = sprintf(
-		/* Translators: %f is referring to the average rating value */
+		/* translators: %f is referring to the average rating value */
 		__( 'Rated %f out of 5', 'woocommerce' ),
 		rating
 	);
@@ -45,7 +45,6 @@ const Block = ( { className } ) => {
 		<div
 			className={ classnames(
 				className,
-				'star-rating',
 				'wc-block-components-product-rating',
 				{
 					[ `${ parentClassName }__product-rating` ]: parentClassName,
@@ -67,7 +66,6 @@ const Block = ( { className } ) => {
 };
 
 const getAverageRating = ( product ) => {
-	// eslint-disable-next-line camelcase
 	const rating = parseFloat( product.average_rating );
 
 	return Number.isFinite( rating ) && rating > 0 ? rating : 0;

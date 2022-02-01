@@ -9,14 +9,7 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
 
 <div id="v-frontend-wrap">
 
-	<div id="rHighlight-wrap" class="ruler-stuff">
-		<div id="min-neg" class="ruler-stuff"></div>
-		<div id="max-neg" class="ruler-stuff"></div>
-	</div>
-
 	<div id="rHighlight" class="ruler-stuff"></div>
-
-
 
 	<div id="v-frontend">
 
@@ -33,19 +26,18 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
 		?>
 		<iframe id="viframe" frameborder="0" name="viframe"
 	        rel="<?php echo $iframe_url; ?>"
-	        src="<?php echo $this->thispluginurl; ?>includes/place-holder2.html"></iframe>
+	        src="about:blank"></iframe>
 
 		<div id="iframe-width-feedback"></div>
 
 	</div>
-
-    <div class="frame-shadow"></div>
 
 	<div id="v-mq-controls" class="ruler-stuff">
 		<span id="iframe-max-width"></span>
 		<div id="v-mq-slider" class="tvr-slider"></div>
 		<span id="iframe-min-width"></span>
 	</div>
+
 
 	<?php
 	// do we show the mob devices preview?
